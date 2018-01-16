@@ -253,29 +253,3 @@ ModelManifest.xml
 /bin/Release/*
 !/bin/Release/libfbxsdk.dll
 
-# Libraries
-/libraries/
-!/libraries/*
-/Project/res/models/balle.fbx
-/Project/res/models/soldier_undisguise.fbx
-/Project/res/textures/mt-ruapehu-and-mt-ngauruhoe.tga
-/Project/res/textures/mountains.tga
-/Project/res/textures/river.tga
-/Project/res/models/box_mat_ascii.fbx1.fbx
-/Project/res/models/box_mat_ascii.fbx
-/Project/res/textures/hexagon/specular.tga
-/Project/res/textures/hexagon/diffuse.tga
-/Project/res/textures/hexagon/normal.tga
-/Project/res/models/box_tex.fbx
-/Project/res/models/untitled.mtl
-/Project/res/models/skinned_box.fbx
-/Project/res/models/skinned_box_ascii.fbx
-/Project/res/models/bear.fbx
-/Project/res/textures/Bear_D_hair_length.tga
-/Project/res/textures/Bear_D.tga
-/DV1542_Project-report.docx
-/Project/res/textures/skybox2.dds
-/Project/res/textures/desert_dunes.tga
-/Project/res/models/house.fbx
-/Project/res/textures/sponza
-/Project/res/models
