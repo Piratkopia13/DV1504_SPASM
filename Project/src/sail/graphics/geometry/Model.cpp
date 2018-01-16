@@ -1,0 +1,117 @@
+#include "Model.h"
+
+#include "../shader/basic/SimpleColorShader.h"
+#include "../shader/ShaderSet.h"
+#include "Material.h"
+
+using namespace DirectX::SimpleMath;
+
+Model::Model(Data& buildData)
+	: m_data(buildData)
+	, m_vertexBuffer(nullptr)
+	, m_indexBuffer(nullptr)
+	, m_aabb(Vector3::Zero, Vector3(.2f, .2f, .2f))
+{
+	m_material = new Material();
+}
+Model::Model() 
+	: m_aabb(Vector3::Zero, Vector3(.2f, .2f, .2f))
+	, m_vertexBuffer(nullptr)
+	, m_indexBuffer(nullptr)
+{
+	m_material = new Material();
+}
+Model::~Model() {
+	Memory::safeRelease(m_vertexBuffer);
+	Memory::safeRelease(m_indexBuffer);
+
+	Memory::safeDeleteArr(m_data.indices);
+	Memory::safeDeleteArr(m_data.positions);
+	Memory::safeDeleteArr(m_data.normals);
+	Memory::safeDeleteArr(m_data.bitangents);
+	Memory::safeDeleteArr(m_data.colors);
+	Memory::safeDeleteArr(m_data.tangents);
+	Memory::safeDeleteArr(m_data.texCoords);
+
+	Memory::safeDelete(m_material);
+}
+
+void Model::setBuildData(Data& buildData) {
+	m_data = buildData;
+}
+const Model::Data& Model::getBuildData() const {
+	return m_data;
+}
+
+void Model::buildBufferForShader(ShaderSet* shader) {
+
+	shader->createBufferFromModelData(&m_vertexBuffer, &m_indexBuffer, &m_data);
+	m_shader = shader;
+	calculateAABB();
+
+}
+
+void Model::draw(bool bindShader) {
+
+	if (!m_shader) {
+		Logger::Error("Buffer was not build for this model, can not draw!");
+		return;
+	}
+
+	m_shader->draw(*this, bindShader);
+}
+
+UINT Model::getNumVertices() const {
+	return m_data.numVertices;
+}
+UINT Model::getNumIndices() const {
+	return m_data.numIndices;
+}
+ID3D11Buffer* const* Model::getVertexBuffer() const {
+	return const_cast<ID3D11Buffer**>(&m_vertexBuffer);
+}
+ID3D11Buffer* Model::getIndexBuffer() const {
+	return const_cast<ID3D11Buffer*>(m_indexBuffer);
+}
+
+Transform& Model::getTransform() {
+	return m_transform;
+}
+
+ShaderSet* Model::getShader() const {
+	return m_shader;
+}
+
+Material* Model::getMaterial() {
+	return m_material;
+}
+
+const AABB& Model::getAABB() const {
+	return m_aabb;
+}
+void Model::updateAABB() {
+	m_aabb.updateTransform(m_transform.getMatrix());
+}
+
+void Model::calculateAABB() {
+
+	Vector3 minCorner(FLT_MAX, FLT_MAX, FLT_MAX );
+	Vector3 maxCorner(-FLT_MIN, -FLT_MIN, -FLT_MIN);
+
+	for (UINT i = 0; i < m_data.numVertices; i++) {
+		Vector3& p = m_data.positions[i];
+
+		if (p.x < minCorner.x) minCorner.x = p.x;
+		if (p.y < minCorner.y) minCorner.y = p.y;
+		if (p.z < minCorner.z) minCorner.z = p.z;
+
+		if (p.x > maxCorner.x) maxCorner.x = p.x;
+		if (p.y > maxCorner.y) maxCorner.y = p.y;
+		if (p.z > maxCorner.z) maxCorner.z = p.z;
+
+	}
+
+	m_aabb.setMinPos(minCorner);
+	m_aabb.setMaxPos(maxCorner);
+
+}

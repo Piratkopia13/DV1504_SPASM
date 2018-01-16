@@ -1,0 +1,39 @@
+#pragma once
+
+#include "Camera.h"
+//#include "../Application.h"
+
+// Forward declaration
+class Application;
+
+class CameraController {
+public:
+
+	CameraController(Camera* cam) : m_cam(cam) {};
+
+	virtual void update(float dt) = 0;
+
+protected:
+	void setCameralookAt(const DirectX::SimpleMath::Vector3& pos) {
+		m_cam->lookAt(pos);
+	}
+	void setCameraDirection(const DirectX::SimpleMath::Vector3& direction) {
+		m_cam->setDirection(direction);
+	}
+	void setCameraPosition(const DirectX::SimpleMath::Vector3& pos) {
+		m_cam->setPosition(pos);
+	}
+	const DirectX::SimpleMath::Vector3& getCameraDirection() {
+		return m_cam->m_direction;
+	}
+	const DirectX::SimpleMath::Vector3& getCameraPosition() {
+		return m_cam->m_pos;
+	}
+	const DirectX::SimpleMath::Vector3& getCameraUp() {
+		return m_cam->getUp();
+	}
+
+private:
+	Camera* m_cam;
+
+};
