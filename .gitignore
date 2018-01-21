@@ -253,3 +253,4 @@ ModelManifest.xml
 /bin/Release/*
 !/bin/Release/libfbxsdk.dll
 
+/Project/ClassDiagram.cd

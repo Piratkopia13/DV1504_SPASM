@@ -135,9 +135,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\PlayerCameraController.cpp" />
+    <ClCompile Include="src\game\PlayerCameraController.cpp" />
     <ClCompile Include="src\sail\Application.cpp" />
     <ClCompile Include="src\sail\DXManager.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\billboards\Billboard.cpp" />
@@ -189,13 +189,14 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Game.h" />
-    <ClInclude Include="src\PlayerCameraController.h" />
+    <ClInclude Include="src\game\Game.h" />
+    <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\sail\Application.h" />
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\geometry\billboards\Billboard.h" />

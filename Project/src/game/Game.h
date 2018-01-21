@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sail/Sail.h"
+#include "../sail/Sail.h"
 #include "PlayerCameraController.h"
 
 class Game : public Application {

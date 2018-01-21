@@ -23,7 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\PlayerCameraController.cpp" />
     <ClCompile Include="src\sail\Application.cpp" />
     <ClCompile Include="src\sail\DXManager.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\Model.cpp" />
@@ -73,10 +72,10 @@
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
     <ClCompile Include="src\sail\graphics\shadows\DirLightShadowMap.cpp" />
     <ClCompile Include="src\sail\graphics\shadows\ShadowMap.cpp" />
-    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\game\Game.cpp" />
+    <ClCompile Include="src\game\PlayerCameraController.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\PlayerCameraController.h" />
     <ClInclude Include="src\sail\Application.h" />
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
@@ -139,11 +138,13 @@
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
     <ClInclude Include="src\sail\graphics\shadows\DirLightShadowMap.h" />
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
-    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\game\PlayerCameraController.h" />
+    <ClInclude Include="src\game\Game.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

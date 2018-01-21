@@ -1,8 +1,7 @@
-#include "sail/Sail.h"
+#include "../sail/Sail.h"
 
 class PlayerCameraController : public CameraController {
 public:
-
 	PlayerCameraController(Camera* cam);
 
 	virtual void update(float dt);
