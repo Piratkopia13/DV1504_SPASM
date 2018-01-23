@@ -74,6 +74,8 @@
     <ClCompile Include="src\sail\graphics\shadows\ShadowMap.cpp" />
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\PlayerCameraController.cpp" />
+    <ClCompile Include="src\sail\states\State.cpp" />
+    <ClCompile Include="src\sail\states\StateStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -140,6 +142,9 @@
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\Game.h" />
+    <ClInclude Include="src\sail\states\State.h" />
+    <ClInclude Include="src\sail\states\StateIdentifiers.h" />
+    <ClInclude Include="src\sail\states\StateStack.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

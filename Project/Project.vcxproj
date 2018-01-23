@@ -185,6 +185,8 @@
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
     <ClCompile Include="src\sail\resources\parsers\FBXParser.cpp" />
     <ClCompile Include="src\sail\resources\TextureData.cpp" />
+    <ClCompile Include="src\sail\states\State.cpp" />
+    <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
   </ItemGroup>
@@ -256,6 +258,9 @@
     <ClInclude Include="src\sail\resources\ResourceManager.h" />
     <ClInclude Include="src\sail\resources\TextureData.h" />
     <ClInclude Include="src\sail\Sail.h" />
+    <ClInclude Include="src\sail\states\State.h" />
+    <ClInclude Include="src\sail\states\StateIdentifiers.h" />
+    <ClInclude Include="src\sail\states\StateStack.h" />
     <ClInclude Include="src\sail\utils\Timer.h" />
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
