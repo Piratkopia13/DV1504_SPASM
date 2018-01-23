@@ -34,7 +34,7 @@ void FlyingCameraController::update(float dt) {
 	if (gpState.triggers.left > 0)
 		lookSensitivityController *= gpState.triggers.left * 5.0f;
 
-	app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
+	//app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
 
 
 	//

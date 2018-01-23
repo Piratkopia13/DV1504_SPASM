@@ -2,6 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
+#include "../objects/Character.h"
 
 class GameState : public State {
 public:
@@ -27,6 +28,9 @@ private:
 	std::unique_ptr<Model> m_plane;
 	std::unique_ptr<Model> m_texturePlane;
 	std::unique_ptr<Model> m_texturePlane2;
+
+	Character* player;
+
 
 	// Stuff to show that the octree is culling models
 	PerspectiveCamera m_quadtreeCam;

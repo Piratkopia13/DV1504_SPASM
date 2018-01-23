@@ -19,6 +19,8 @@ GameState::GameState(StateStack& stack)
 {
 
 	m_app = Application::getInstance();
+	this->player = new Character();
+	this->player->setController(1);
 
 	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
@@ -40,7 +42,6 @@ GameState::GameState(StateStack& stack)
 
 	// Add skybox to the scene
 	m_scene.addSkybox(L"skybox2_512.dds");
-
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
@@ -160,6 +161,10 @@ bool GameState::processInput(float dt) {
 		}
 	}
 #endif
+
+
+	this->player->input();
+
 
 	// Update the camera controller from input devices
 	if (m_flyCam)
