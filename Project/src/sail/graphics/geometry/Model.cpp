@@ -13,6 +13,7 @@ Model::Model(Data& buildData)
 	, m_aabb(Vector3::Zero, Vector3(.2f, .2f, .2f))
 {
 	m_material = new Material();
+	m_transform = new Transform();
 }
 Model::Model() 
 	: m_aabb(Vector3::Zero, Vector3(.2f, .2f, .2f))
@@ -20,6 +21,7 @@ Model::Model()
 	, m_indexBuffer(nullptr)
 {
 	m_material = new Material();
+	m_transform = new Transform();
 }
 Model::~Model() {
 	Memory::safeRelease(m_vertexBuffer);
@@ -52,6 +54,11 @@ void Model::buildBufferForShader(ShaderSet* shader) {
 }
 
 void Model::draw(bool bindShader) {
+	if (m_transform == nullptr) {
+		Logger::Error("Model has not been assigned with a transform.");
+		return;
+	}
+
 
 	if (!m_shader) {
 		Logger::Error("Buffer was not build for this model, can not draw!");
@@ -74,8 +81,13 @@ ID3D11Buffer* Model::getIndexBuffer() const {
 	return const_cast<ID3D11Buffer*>(m_indexBuffer);
 }
 
+void Model::setTransform(Transform* newTransform) {
+	Memory::safeDelete(m_transform);
+	m_transform = newTransform;
+}
+
 Transform& Model::getTransform() {
-	return m_transform;
+	return *m_transform;
 }
 
 ShaderSet* Model::getShader() const {
@@ -90,7 +102,7 @@ const AABB& Model::getAABB() const {
 	return m_aabb;
 }
 void Model::updateAABB() {
-	m_aabb.updateTransform(m_transform.getMatrix());
+	m_aabb.updateTransform(m_transform->getMatrix());
 }
 
 void Model::calculateAABB() {
