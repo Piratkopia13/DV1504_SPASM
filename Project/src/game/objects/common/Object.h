@@ -19,4 +19,6 @@ public:
 
 	Transform& getTransformation();
 	AABB* getBoundingBox() const;
+
+	virtual void draw() = 0;
 };
