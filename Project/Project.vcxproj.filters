@@ -7,12 +7,9 @@
     <FxCompile Include="res\shaders\MaterialShader.hlsl" />
     <FxCompile Include="res\shaders\Phong.hlsl" />
     <FxCompile Include="res\shaders\CubeMapShader.hlsl" />
-    <FxCompile Include="res\shaders\ParticleShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\DirectionalLightShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\GeometryShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\PointLightShader.hlsl" />
-    <FxCompile Include="res\shaders\ParticleCSUpdate.hlsl" />
-    <FxCompile Include="res\shaders\ParticleCSInsert.hlsl" />
     <FxCompile Include="res\shaders\DepthShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
@@ -46,9 +43,6 @@
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\Skybox.cpp" />
     <ClCompile Include="src\sail\graphics\shader\GeometryShader.cpp" />
-    <ClCompile Include="src\sail\graphics\geometry\billboards\Billboard.cpp" />
-    <ClCompile Include="src\sail\graphics\geometry\billboards\BillboardSystem.cpp" />
-    <ClCompile Include="src\sail\graphics\shader\basic\ParticleShader.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\spatial\Quadtree.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\spatial\AABB.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
@@ -65,7 +59,9 @@
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\PlayerCameraController.cpp" />
     <ClCompile Include="src\game\objects\common\Object.cpp" />
-    <ClCompile Include="src\game\objects\Block.cpp" />
+    <ClCompile Include="src\game\states\GameState.cpp" />
+    <ClCompile Include="src\sail\states\State.cpp" />
+    <ClCompile Include="src\sail\states\StateStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -109,9 +105,6 @@
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\Skybox.h" />
     <ClInclude Include="src\sail\graphics\shader\GeometryShader.h" />
-    <ClInclude Include="src\sail\graphics\geometry\billboards\Billboard.h" />
-    <ClInclude Include="src\sail\graphics\geometry\billboards\BillboardSystem.h" />
-    <ClInclude Include="src\sail\graphics\shader\basic\ParticleShader.h" />
     <ClInclude Include="src\sail\graphics\geometry\spatial\AABB.h" />
     <ClInclude Include="src\sail\graphics\geometry\spatial\Quadtree.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
@@ -129,7 +122,10 @@
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\Game.h" />
     <ClInclude Include="src\game\objects\common\Object.h" />
-    <ClInclude Include="src\game\objects\Block.h" />
+    <ClInclude Include="src\game\states\GameState.h" />
+    <ClInclude Include="src\sail\states\State.h" />
+    <ClInclude Include="src\sail\states\StateIdentifiers.h" />
+    <ClInclude Include="src\sail\states\StateStack.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

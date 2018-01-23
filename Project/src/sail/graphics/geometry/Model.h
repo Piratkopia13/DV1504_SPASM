@@ -44,6 +44,7 @@ public:
 	UINT getNumIndices() const;
 	ID3D11Buffer* const* getVertexBuffer() const;
 	ID3D11Buffer* getIndexBuffer() const;
+	void setTransform(Transform* newTransform);
 	Transform& getTransform();
 	ShaderSet* getShader() const;
 	Material* getMaterial();
@@ -58,7 +59,7 @@ private:
 	ID3D11Buffer* m_indexBuffer;
 	ShaderSet* m_shader;
 
-	Transform m_transform;
+	Transform* m_transform;
 	Material* m_material;
 
 	Data m_data;

@@ -8,7 +8,6 @@ class Object {
 private:
 	AABB * m_boundingBox; //Pointer to be able to detect if a bounding box has been made
 	Transform m_transformation;
-	DirectX::SimpleMath::Vector3 m_pos;
 
 public:
 	Object();

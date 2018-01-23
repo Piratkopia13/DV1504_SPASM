@@ -1,7 +1,6 @@
 #include "Object.h"
 
 Object::Object() {
-	m_pos = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	m_boundingBox = nullptr;
 }
 

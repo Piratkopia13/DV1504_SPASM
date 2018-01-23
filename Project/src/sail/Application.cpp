@@ -60,6 +60,9 @@ int Application::startGameLoop() {
 	float secCounter = 0.f;
 	UINT frameCounter = 0;
 
+	float updateTimer = 0.f;
+	float timeBetweenUpdates = 1.f / 30.f;
+
 	// Main message loop
 	while (msg.message != WM_QUIT) {
 
@@ -94,6 +97,7 @@ int Application::startGameLoop() {
 			m_input.gamepadState = GamePad::Get().GetState(0);
 			m_input.keyboardState = Keyboard::Get().GetState();
 
+
 			// Update mouse deltas
 			m_input.newFrame();
 
@@ -101,14 +105,22 @@ int Application::startGameLoop() {
 			if (m_input.keyboardState.Escape || m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
 				PostQuitMessage(0);
 
-			// Update and render
 			processInput(delta);
-			update(delta);
+
+			// Update
+			if(delta < 1.f)
+				updateTimer += delta;
+
+			while (updateTimer >= timeBetweenUpdates) {
+				update(timeBetweenUpdates);
+				updateTimer -= timeBetweenUpdates;
+			}
+
+			// Render
 			render(delta);
 
 			// Update wasJustPressed bools
 			m_input.endOfFrame();
-
 		}
 
 	}
