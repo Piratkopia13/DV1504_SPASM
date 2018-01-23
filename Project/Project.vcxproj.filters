@@ -64,6 +64,7 @@
     <ClCompile Include="src\sail\graphics\shadows\ShadowMap.cpp" />
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\PlayerCameraController.cpp" />
+    <ClCompile Include="src\game\objects\common\Object.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -126,11 +127,12 @@
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\Game.h" />
+    <ClInclude Include="src\game\objects\common\Object.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="ClassDiagram.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
