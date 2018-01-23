@@ -100,12 +100,8 @@ GameState::GameState(StateStack& stack)
 	Vector2 fbxPos(0.f, 0.f);
 	m_fbxModel->getModel()->getTransform().setTranslation(Vector3(fbxPos.x, fbxPos.x / 10.f, fbxPos.y));
 
-	m_particleSystem = std::make_unique<BillboardSystem>(m_particleShader, "smoke_white.tga");
-	m_particleSystem->setEmitterLocation(Vector3(10.f, 10.f, 0.f));
-
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));
-	m_debugParticleText.setPosition(Vector2(0.f, 60.f));
 
 	// Add models to the scene
 	m_fbxModel->getModel()->updateAABB();
@@ -211,19 +207,6 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
-	m_debugParticleText.setText(L"Amount of particles in system: " + std::to_wstring(m_particleSystem->getNumParticles()));
-
-	if (counter >= 0.01f) {
-		float rnd1 = Utils::rnd() * 2.f - 1.f, rnd2 = Utils::rnd() * 2.f - 1.f, rnd3 = Utils::rnd() * 2.f - 1.f;
-		DirectX::SimpleMath::Vector3 rndVec = DirectX::SimpleMath::Vector3(rnd1, rnd2, rnd3);
-		rndVec.Normalize();
-		rndVec *= 5.f;
-		m_particleSystem->setRandEmitVector(rndVec);
-		m_particleSystem->emitBillboards(1);
-		counter = 0.f;
-	}
-	m_particleSystem->update();
-
 
 	return true;
 }
@@ -239,12 +222,7 @@ bool GameState::render(float dt) {
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
 
-	m_particleShader.updateCamera(m_cam);
-	m_app->getDXManager()->enableAlphaBlending();
-	//m_app->getDXManager()->enableAdditiveBlending();
-	m_app->getDXManager()->disableDepthBuffer();
-	m_particleShader.draw(true);
-	m_app->getDXManager()->enableDepthBuffer();
+	//m_app->getDXManager()->enableAlphaBlending();
 
 	// Draw HUD
 	m_scene.drawHUD();
