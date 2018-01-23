@@ -51,7 +51,7 @@ DeferredGeometryShader::~DeferredGeometryShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DeferredGeometryShader::updateCamera(Camera& cam, bool waterReflection) {
+void DeferredGeometryShader::updateCamera(Camera& cam) {
 	m_mView = cam.getViewMatrix();
 	m_mProjection = cam.getProjMatrix();
 }

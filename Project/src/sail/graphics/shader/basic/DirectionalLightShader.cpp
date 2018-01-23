@@ -36,7 +36,7 @@ DirectionalLightShader::~DirectionalLightShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DirectionalLightShader::updateCamera(Camera& cam, bool waterReflection) {
+void DirectionalLightShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
 }
 

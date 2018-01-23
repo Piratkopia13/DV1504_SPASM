@@ -43,12 +43,10 @@ CubeMapShader::~CubeMapShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void CubeMapShader::updateCamera(Camera& cam, bool waterReflection) {
+void CubeMapShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
-	if (!waterReflection) {
-		m_cameraPos = cam.getPosition();
-		m_cameraPosHasChanged = true;
-	}
+	m_cameraPos = cam.getPosition();
+	m_cameraPosHasChanged = true;
 }
 
 void CubeMapShader::setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {

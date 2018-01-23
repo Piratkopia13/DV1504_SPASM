@@ -40,7 +40,7 @@ DeferredPointLightShader::~DeferredPointLightShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DeferredPointLightShader::updateCamera(Camera& cam, bool waterReflection) {
+void DeferredPointLightShader::updateCamera(Camera& cam) {
 	m_mV = cam.getViewMatrix();
 	m_mP = cam.getProjMatrix();
 }

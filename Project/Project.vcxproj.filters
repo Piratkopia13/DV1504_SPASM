@@ -4,7 +4,6 @@
     <FxCompile Include="res\shaders\DirectionalLightShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
-    <FxCompile Include="res\shaders\WaterShader.hlsl" />
     <FxCompile Include="res\shaders\MaterialShader.hlsl" />
     <FxCompile Include="res\shaders\Phong.hlsl" />
     <FxCompile Include="res\shaders\CubeMapShader.hlsl" />
@@ -12,11 +11,6 @@
     <FxCompile Include="res\shaders\deferred\DirectionalLightShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\GeometryShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\PointLightShader.hlsl" />
-    <FxCompile Include="res\shaders\tessellation\Domain.hlsl" />
-    <FxCompile Include="res\shaders\tessellation\Hull.hlsl" />
-    <FxCompile Include="res\shaders\tessellation\Pixel.hlsl" />
-    <FxCompile Include="res\shaders\tessellation\Vertex.hlsl" />
-    <FxCompile Include="res\shaders\tessellation\Geometry.hlsl" />
     <FxCompile Include="res\shaders\ParticleCSUpdate.hlsl" />
     <FxCompile Include="res\shaders\ParticleCSInsert.hlsl" />
     <FxCompile Include="res\shaders\DepthShader.hlsl" />
@@ -26,7 +20,6 @@
     <ClCompile Include="src\sail\Application.cpp" />
     <ClCompile Include="src\sail\DXManager.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\Model.cpp" />
-    <ClCompile Include="src\sail\graphics\geometry\terrain\Terrain.cpp" />
     <ClCompile Include="src\sail\graphics\models\FbxModel.cpp" />
     <ClCompile Include="src\sail\graphics\Scene.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DirectionalLightShader.cpp" />
@@ -46,8 +39,6 @@
     <ClCompile Include="src\sail\graphics\camera\FlyingCameraController.cpp" />
     <ClCompile Include="src\sail\graphics\text\SailFont.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
-    <ClCompile Include="src\sail\graphics\Water.cpp" />
-    <ClCompile Include="src\sail\graphics\shader\basic\WaterShader.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\Material.cpp" />
     <ClCompile Include="src\sail\graphics\shader\material\MaterialShader.cpp" />
     <ClCompile Include="src\sail\graphics\Lights.cpp" />
@@ -67,7 +58,6 @@
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredPointLightShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\DomainShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\HullShader.cpp" />
-    <ClCompile Include="src\sail\graphics\shader\tessellation\TessellationTestShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\ComputeShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
     <ClCompile Include="src\sail\graphics\shadows\DirLightShadowMap.cpp" />
@@ -80,7 +70,6 @@
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
-    <ClInclude Include="src\sail\graphics\geometry\terrain\Terrain.h" />
     <ClInclude Include="src\sail\graphics\geometry\Model.h" />
     <ClInclude Include="src\sail\graphics\geometry\Transform.h" />
     <ClInclude Include="src\sail\graphics\models\FbxModel.h" />
@@ -111,8 +100,6 @@
     <ClInclude Include="src\sail\graphics\camera\PerspectiveCamera.h" />
     <ClInclude Include="src\sail\graphics\text\SailFont.h" />
     <ClInclude Include="src\sail\graphics\text\Text.h" />
-    <ClInclude Include="src\sail\graphics\Water.h" />
-    <ClInclude Include="src\sail\graphics\shader\basic\WaterShader.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
     <ClInclude Include="src\sail\graphics\shader\material\MaterialShader.h" />
     <ClInclude Include="src\sail\graphics\Lights.h" />
@@ -132,7 +119,6 @@
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredPointLightShader.h" />
     <ClInclude Include="src\sail\graphics\shader\DomainShader.h" />
     <ClInclude Include="src\sail\graphics\shader\HullShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\tessellation\TessellationTestShader.h" />
     <ClInclude Include="src\sail\graphics\shader\component\BindShader.h" />
     <ClInclude Include="src\sail\graphics\shader\ComputeShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
