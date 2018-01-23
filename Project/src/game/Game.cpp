@@ -128,10 +128,6 @@ int Game::run() {
 void Game::resize(int width, int height) {
 	m_cam.resize(width, height);
 	m_scene.resize(width, height);
-
-	// Update textureplane SRVs since they got resized
-	//m_texturePlane->getMaterial()->setDiffuseTexture(*m_scene.getWater()->getReflection()->getColorSRV());
-	//m_texturePlane2->getMaterial()->setDiffuseTexture(*m_scene.getWater()->getRefraction()->getColorSRV());
 }
 
 void Game::processInput(float dt) {
@@ -155,8 +151,6 @@ void Game::processInput(float dt) {
 		m_scene.getLights().addPointLight(pl);
 
 		m_matShader.updateLights(m_scene.getLights());
-		if (m_scene.getWater())
-			m_scene.getWater()->getShader()->updateLights(m_scene.getLights());
 	}
 
 	if (kbTracker.pressed.C) {
@@ -237,7 +231,6 @@ void Game::render(float dt) {
 	// Clear back buffer
 
 	// Draw the scene
-	// This will draw multiple passes (for water)
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
 

@@ -147,7 +147,6 @@
     <ClCompile Include="src\sail\graphics\geometry\Model.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\spatial\AABB.cpp" />
     <ClCompile Include="src\sail\graphics\geometry\spatial\Quadtree.cpp" />
-    <ClCompile Include="src\sail\graphics\geometry\terrain\Terrain.cpp" />
     <ClCompile Include="src\sail\graphics\Lights.cpp" />
     <ClCompile Include="src\sail\graphics\models\FbxModel.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
@@ -155,7 +154,6 @@
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\ParticleShader.cpp" />
-    <ClCompile Include="src\sail\graphics\shader\basic\WaterShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\ComputeShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredDirectionalLightShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredGeometryShader.cpp" />
@@ -164,7 +162,6 @@
     <ClCompile Include="src\sail\graphics\shader\GeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\HullShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\material\MaterialShader.cpp" />
-    <ClCompile Include="src\sail\graphics\shader\tessellation\TessellationTestShader.cpp" />
     <ClCompile Include="src\sail\graphics\shadows\DirLightShadowMap.cpp" />
     <ClCompile Include="src\sail\graphics\shadows\ShadowMap.cpp" />
     <ClCompile Include="src\sail\graphics\Skybox.cpp" />
@@ -179,7 +176,6 @@
     <ClCompile Include="src\sail\graphics\shader\ShaderSet.cpp" />
     <ClCompile Include="src\sail\graphics\shader\VertexShader.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
-    <ClCompile Include="src\sail\graphics\Water.cpp" />
     <ClCompile Include="src\sail\resources\DXCubeMap.cpp" />
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
@@ -210,7 +206,6 @@
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
     <ClInclude Include="src\sail\graphics\geometry\spatial\AABB.h" />
     <ClInclude Include="src\sail\graphics\geometry\spatial\Quadtree.h" />
-    <ClInclude Include="src\sail\graphics\geometry\terrain\Terrain.h" />
     <ClInclude Include="src\sail\graphics\geometry\Model.h" />
     <ClInclude Include="src\sail\graphics\geometry\Transform.h" />
     <ClInclude Include="src\sail\graphics\Lights.h" />
@@ -222,7 +217,6 @@
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\ParticleShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\basic\WaterShader.h" />
     <ClInclude Include="src\sail\graphics\shader\ComputeShader.h" />
     <ClInclude Include="src\sail\graphics\shader\component\BindShader.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredDirectionalLightShader.h" />
@@ -232,7 +226,6 @@
     <ClInclude Include="src\sail\graphics\shader\GeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\HullShader.h" />
     <ClInclude Include="src\sail\graphics\shader\material\MaterialShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\tessellation\TessellationTestShader.h" />
     <ClInclude Include="src\sail\graphics\shadows\DirLightShadowMap.h" />
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
     <ClInclude Include="src\sail\graphics\Skybox.h" />
@@ -247,7 +240,6 @@
     <ClInclude Include="src\sail\graphics\shader\ShaderSet.h" />
     <ClInclude Include="src\sail\graphics\shader\VertexShader.h" />
     <ClInclude Include="src\sail\graphics\text\Text.h" />
-    <ClInclude Include="src\sail\graphics\Water.h" />
     <ClInclude Include="src\sail\resources\DXCubeMap.h" />
     <ClInclude Include="src\sail\resources\DXTexture.h" />
     <ClInclude Include="src\sail\resources\loaders\TGALoader.h" />
@@ -361,54 +353,6 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="res\shaders\tessellation\Domain.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">DSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">DSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="res\shaders\tessellation\Geometry.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">GSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">GSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="res\shaders\tessellation\Hull.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">HSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">HSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="res\shaders\tessellation\Pixel.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="res\shaders\tessellation\Vertex.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="res\shaders\WaterShader.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

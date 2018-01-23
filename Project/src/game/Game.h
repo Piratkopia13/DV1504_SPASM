@@ -37,7 +37,6 @@ private:
 	DirectionalLightShader m_dirLightShader;
 	MaterialShader m_matShader;
 	ParticleShader m_particleShader;
-	TessellationTestShader m_tessShader;
 	SailFont m_font;
 
 	Timer m_timer;

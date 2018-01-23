@@ -38,7 +38,6 @@
 #include "graphics/shader/basic/CubeMapShader.h"
 #include "graphics/shader/basic/ParticleShader.h"
 #include "graphics/shader/material/MaterialShader.h"
-#include "graphics/shader/tessellation/TessellationTestShader.h"
 #include "graphics/geometry/factory/CubeModel.h"
 #include "graphics/geometry/factory/PlaneModel.h"
 #include "graphics/models/FbxModel.h"
