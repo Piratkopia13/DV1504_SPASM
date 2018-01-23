@@ -31,7 +31,7 @@ public:
 		bool insert(const Element& element);
 		std::vector<Model*> query(const Frustum& frustum);
 
-		void draw(Camera& cam, int& counter, bool waterReflection = false, std::function<void(ShaderSet*)>& preDraw = std::function<void(ShaderSet*)>(), std::function<void(ShaderSet*)>& postDraw = std::function<void(ShaderSet*)>());
+		void draw(Camera& cam, int& counter, std::function<void(ShaderSet*)>& preDraw = std::function<void(ShaderSet*)>(), std::function<void(ShaderSet*)>& postDraw = std::function<void(ShaderSet*)>());
 		void drawSimple();
 
 #ifdef _DEBUG

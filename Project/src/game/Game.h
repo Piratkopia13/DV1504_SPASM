@@ -37,7 +37,6 @@ private:
 	DirectionalLightShader m_dirLightShader;
 	MaterialShader m_matShader;
 	ParticleShader m_particleShader;
-	TessellationTestShader m_tessShader;
 	SailFont m_font;
 
 	Timer m_timer;
@@ -46,9 +45,6 @@ private:
 	Text m_debugText;
 	Text m_debugCamText;
 	Text m_debugParticleText;
-
-	std::unique_ptr<Terrain> m_terrain;
-	std::unique_ptr<Terrain> m_tessTerrainGrass;
 
 	PlayerCameraController m_playerCamController;
 	bool m_flyCam;

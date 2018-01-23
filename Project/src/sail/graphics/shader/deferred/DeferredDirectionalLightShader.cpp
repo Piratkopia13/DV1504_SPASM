@@ -43,7 +43,7 @@ DeferredDirectionalLightShader::~DeferredDirectionalLightShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DeferredDirectionalLightShader::updateCamera(Camera& cam, bool waterReflection) {
+void DeferredDirectionalLightShader::updateCamera(Camera& cam) {
 	m_mV = cam.getViewMatrix();
 	m_mInvP = cam.getProjMatrix().Invert();
 }

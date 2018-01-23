@@ -26,19 +26,12 @@ void Scene::addText(Text* text) {
 	m_texts.push_back(text);
 }
 
-void Scene::addWater(float height) {
-	m_waterShader = make_unique<WaterShader>();
-	m_water = make_unique<Water>(height, m_waterShader.get());
-}
-
 void Scene::addSkybox(const std::wstring& filename) {
 	m_cubeMapShader = make_unique<CubeMapShader>();
 	m_skybox = make_unique<Skybox>(filename, m_cubeMapShader.get());
 }
 
 void Scene::resize(int width, int height) {
-	if (m_water)
-		m_water->resize(width, height);
 	m_deferredRenderer.resize(width, height);
 }
 
@@ -62,16 +55,6 @@ void Scene::draw(float dt, Camera& cam) {
 	for (Model* m : toBeDrawn)
 		m_depthShader.draw(*m, true);
 	dxm->enableBackFaceCulling();
-
-	// Update and render water if water is set in this scene
-	if (m_water) {
-		m_waterShader->updateCamera(cam);
-		m_water->updateWaves(dt);
-		//m_timer.getFrameTime();
-		m_water->drawWaterTexture(this, cam, m_skybox.get(), m_dirLightShadowMap);
-		//double time = m_timer.getFrameTime();
-		//std::cout << "drawWaterTexture() took " << time * 1000.f << "ms to complete" << std::endl;
-	}
 
 	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
 	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
@@ -105,14 +88,6 @@ void Scene::draw(float dt, Camera& cam) {
 
 	// Change active depth buffer to the one used in the deferred geometry pass
 	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
-
-	if (m_water) {
-		// Draw the water quad after everything else since it uses transparency
-		dxm->enableAlphaBlending();
-		m_water->getShader()->updateCamera(cam);
-		m_water->getModel().draw();
-		dxm->disableAlphaBlending();
-	}
 
 }
 
@@ -169,11 +144,6 @@ void Scene::setShadowLight() {
 	//m_lights.setDirectionalLight(temp);
 
 	m_depthShader.updateCamera(dlCam);
-}
-
-Water* Scene::getWater() const {
-	if (!m_water) return nullptr;
-	return m_water.get();
 }
 
 Lights& Scene::getLights() {
