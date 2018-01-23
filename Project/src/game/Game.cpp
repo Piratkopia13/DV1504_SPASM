@@ -262,7 +262,7 @@ void Game::processInput(float dt) {
 	if (m_flyCam)
 		m_camController.update(dt);
 	else
-		m_playerCamController.update(dt, m_terrain.get());
+		m_playerCamController.update(dt);
 
 }
 
