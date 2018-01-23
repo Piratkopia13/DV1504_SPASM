@@ -7,8 +7,9 @@ private:
 	Model *m_drawModel;
 
 public:
-	Block::Block(Model *drawModel);
-	virtual Block::~Block();
+	Block();
+	Block(Model *drawModel);
+	virtual ~Block();
 
 	void setModel(Model* newModel);
 

@@ -59,6 +59,7 @@ private:
 	ID3D11Buffer* m_indexBuffer;
 	ShaderSet* m_shader;
 
+	bool m_transformChanged;
 	Transform* m_transform;
 	Material* m_material;
 
