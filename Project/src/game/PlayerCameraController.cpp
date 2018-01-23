@@ -6,10 +6,15 @@ using namespace DirectX::SimpleMath;
 PlayerCameraController::PlayerCameraController(Camera* cam)
 	: CameraController(cam)
 {
-	setCameraDirection(Vector3(0.f, 0.f, 1.0f));
+	cameraOffset = -10.0f;
 }
 
 void PlayerCameraController::update(float dt) {
+	update(dt, Vector3(0.f, 0.f, 0.f));
+}
 
+void PlayerCameraController::update(float dt, Vector3 playerPos) {
+	
+	setCameraPosition(Vector3(playerPos.x, playerPos.y, cameraOffset));
 }
 
