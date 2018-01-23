@@ -8,12 +8,16 @@ Object::~Object() {
 
 }
 
-void Object::setPosition(DirectX::SimpleMath::Vector3 newPosition) {
-	m_pos = newPosition;
+void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
+	m_transformation.setTranslation(newPosition);
 }
 
-DirectX::SimpleMath::Vector3 Object::getPosition() const {
-	return m_pos;
+void Object::move(const DirectX::SimpleMath::Vector3 &distanceToMove) {
+	m_transformation.translate(distanceToMove);
+}
+
+Transform& Object::getTransformation() {
+	return m_transformation;
 }
 
 AABB* Object::getBoundingBox() const {
