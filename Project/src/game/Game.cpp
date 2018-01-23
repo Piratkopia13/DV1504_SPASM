@@ -93,7 +93,7 @@ Game::Game(HINSTANCE hInstance)
 	m_fbxModel->getModel()->getMaterial()->setDiffuseTexture("ped_m_sold_aa_hr_diffuse.tga");
 	m_fbxModel->getModel()->getMaterial()->setNormalTexture("ped_m_sold_aa_hr_normal.tga");
 	m_fbxModel->getModel()->getMaterial()->setSpecularTexture("ped_m_sold_aa_hr_specular.tga");
-	m_fbxModel->getModel()->buildBufferForShader(&m_tessShader);
+	m_fbxModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	m_fbxModel->getModel()->getTransform().setScale(0.1f);
 	Vector2 fbxPos(0.f, 0.f);
 	m_fbxModel->getModel()->getTransform().setTranslation(Vector3(fbxPos.x, fbxPos.x / 10.f, fbxPos.y));
@@ -106,8 +106,8 @@ Game::Game(HINSTANCE hInstance)
 	m_debugParticleText.setPosition(Vector2(0.f, 60.f));
 
 	// Add models to the scene
-	//m_fbxModel->getModel()->updateAABB();
-	//m_scene.addModelViaQuadtree(m_fbxModel->getModel());
+	m_fbxModel->getModel()->updateAABB();
+	m_scene.addModelViaQuadtree(m_fbxModel->getModel());
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
