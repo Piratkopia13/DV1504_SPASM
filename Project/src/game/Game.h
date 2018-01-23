@@ -47,9 +47,6 @@ private:
 	Text m_debugCamText;
 	Text m_debugParticleText;
 
-	std::unique_ptr<Terrain> m_terrain;
-	std::unique_ptr<Terrain> m_tessTerrainGrass;
-
 	PlayerCameraController m_playerCamController;
 	bool m_flyCam;
 

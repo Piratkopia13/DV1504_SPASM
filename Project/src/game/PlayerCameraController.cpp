@@ -18,10 +18,6 @@ PlayerCameraController::PlayerCameraController(Camera* cam)
 }
 
 void PlayerCameraController::update(float dt) {
-	update(dt, nullptr);
-}
-
-void PlayerCameraController::update(float dt, Terrain* collider) {
 	Application* app = Application::getInstance();
 
 	auto& keyboard = app->getInput().keyboard;
@@ -115,13 +111,5 @@ void PlayerCameraController::update(float dt, Terrain* collider) {
 	);
 	m_facing.Normalize();
 	m_right = Vector3::Up.Cross(m_facing);
-
-
-	if (collider) {
-		// Set y position to the terrain height
-		auto& pos = getCameraPosition();
-		float y = collider->getHeightAtWorldCoords(pos.x, pos.z);
-		setCameraPosition(Vector3(pos.x, y + m_playerHeight, pos.z));
-	}
 
 }
