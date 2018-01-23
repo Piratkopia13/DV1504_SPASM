@@ -37,7 +37,7 @@ DepthShader::~DepthShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DepthShader::updateCamera(Camera& cam, bool waterReflection) {
+void DepthShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
 }
 

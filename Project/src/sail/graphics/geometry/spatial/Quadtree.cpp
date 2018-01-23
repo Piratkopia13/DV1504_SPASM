@@ -82,7 +82,7 @@ bool Quadtree::Node::insert(const Element& element) {
 
 }
 
-void Quadtree::Node::draw(Camera& cam, int& counter, bool waterReflection, std::function<void(ShaderSet*)>& preDraw, std::function<void(ShaderSet*)>& postDraw) {
+void Quadtree::Node::draw(Camera& cam, int& counter, std::function<void(ShaderSet*)>& preDraw, std::function<void(ShaderSet*)>& postDraw) {
 
 	// Dont do anything if this node is outside the frustum
 	if (!cam.getFrustum().containsOrIntersects(m_boundary))
@@ -90,7 +90,7 @@ void Quadtree::Node::draw(Camera& cam, int& counter, bool waterReflection, std::
 
 	for (auto& e : m_elements) {
 		if (cam.getFrustum().containsOrIntersects(*e->boundary)) {
-			e->model->getShader()->updateCamera(cam, waterReflection);
+			e->model->getShader()->updateCamera(cam);
 
 			if (preDraw) preDraw(e->model->getShader());
 			e->model->draw();
@@ -102,7 +102,7 @@ void Quadtree::Node::draw(Camera& cam, int& counter, bool waterReflection, std::
 
 	if (m_hasChildren) {
 		for (int i = 0; i < 4; i++) {
-			m_children[i]->draw(cam, counter, waterReflection, preDraw, postDraw);
+			m_children[i]->draw(cam, counter, preDraw, postDraw);
 		}
 	}
 

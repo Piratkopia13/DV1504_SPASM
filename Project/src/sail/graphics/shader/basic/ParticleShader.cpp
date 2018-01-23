@@ -211,7 +211,7 @@ void ParticleShader::draw(bool bindFirst) {
 
 }
 
-void ParticleShader::updateCamera(Camera& cam, bool waterReflection) {
+void ParticleShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
 
 	m_camPos = cam.getPosition();

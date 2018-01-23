@@ -35,7 +35,7 @@ SimpleTextureShader::~SimpleTextureShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void SimpleTextureShader::updateCamera(Camera& cam, bool waterReflection) {
+void SimpleTextureShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
 }
 

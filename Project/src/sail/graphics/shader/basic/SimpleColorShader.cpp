@@ -34,7 +34,7 @@ SimpleColorShader::~SimpleColorShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void SimpleColorShader::updateCamera(Camera& cam, bool waterReflection) {
+void SimpleColorShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
 }
 
