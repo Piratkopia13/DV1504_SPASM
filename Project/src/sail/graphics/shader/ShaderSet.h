@@ -36,7 +36,7 @@ public:
 
 	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data) = 0;
 
-	virtual void updateCamera(Camera& cam, bool waterReflection = false) {};
+	virtual void updateCamera(Camera& cam) {};
 	virtual void setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {};
 
 protected:

@@ -20,7 +20,7 @@ public:
 
 	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data);
 
-	virtual void updateCamera(Camera& cam, bool waterReflection = false);
+	virtual void updateCamera(Camera& cam);
 
 	void setLight(const Lights::DirectionalLight& dl);
 

@@ -5,8 +5,6 @@
 #include <map>
 #include "geometry/Model.h"
 #include "Lights.h"
-#include "Water.h"
-#include "shader/basic/WaterShader.h"
 #include "shader/basic/CubeMapShader.h"
 #include "Skybox.h"
 #include "text/Text.h"
@@ -30,9 +28,6 @@ public:
 	// This does not take ownership of the object
 	void addText(Text* text);
 
-	// Adds water at the specified y-level
-	void addWater(float height);
-
 	// Adds a skybox using the specified cube texture
 	void addSkybox(const std::wstring& filename);
 
@@ -43,14 +38,11 @@ public:
 
 	// Resizes textures used
 	// This has to be called on window  
-	// resize when rendering water
 	void resize(int width, int height);
 
 	// Setup the DL for shadows
 	void setShadowLight();
 
-	// Return the Water
-	Water* getWater() const;
 	// Return the lights
 	Lights& getLights();
 	// Return the Quadtree
@@ -72,10 +64,6 @@ private:
 
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	std::vector<Text*> m_texts;
-
-	// Water
-	std::unique_ptr<WaterShader> m_waterShader;
-	std::unique_ptr<Water> m_water;
 
 	// Lights
 	Lights m_lights;

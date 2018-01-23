@@ -23,7 +23,7 @@ public:
 
 	virtual void draw(bool bindFirst = true);
 
-	virtual void updateCamera(Camera& cam, bool waterReflection = false);
+	virtual void updateCamera(Camera& cam);
 	void updateModelDataBuffer() const;
 	void updateParticleParameterBuffer(const DirectX::SimpleMath::Vector3& EmitterLocation = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f),
 		const DirectX::SimpleMath::Vector3& RandomVector = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
