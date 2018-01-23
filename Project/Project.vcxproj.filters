@@ -65,6 +65,9 @@
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\PlayerCameraController.cpp" />
     <ClCompile Include="src\game\objects\common\Object.cpp" />
+    <ClCompile Include="src\game\states\GameState.cpp" />
+    <ClCompile Include="src\sail\states\State.cpp" />
+    <ClCompile Include="src\sail\states\StateStack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -128,6 +131,10 @@
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\Game.h" />
     <ClInclude Include="src\game\objects\common\Object.h" />
+    <ClInclude Include="src\game\states\GameState.h" />
+    <ClInclude Include="src\sail\states\State.h" />
+    <ClInclude Include="src\sail\states\StateIdentifiers.h" />
+    <ClInclude Include="src\sail\states\StateStack.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

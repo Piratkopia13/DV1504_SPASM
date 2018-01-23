@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\objects\common\Object.cpp" />
+    <ClCompile Include="src\game\states\GameState.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\game\PlayerCameraController.cpp" />
     <ClCompile Include="src\sail\Application.cpp" />
@@ -181,6 +182,8 @@
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
     <ClCompile Include="src\sail\resources\parsers\FBXParser.cpp" />
     <ClCompile Include="src\sail\resources\TextureData.cpp" />
+    <ClCompile Include="src\sail\states\State.cpp" />
+    <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
   </ItemGroup>
@@ -194,6 +197,7 @@
     <ClInclude Include="src\game\Game.h" />
     <ClInclude Include="src\game\objects\common\Object.h" />
     <ClInclude Include="src\game\PlayerCameraController.h" />
+    <ClInclude Include="src\game\states\GameState.h" />
     <ClInclude Include="src\sail\Application.h" />
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\geometry\billboards\Billboard.h" />
@@ -249,6 +253,9 @@
     <ClInclude Include="src\sail\resources\ResourceManager.h" />
     <ClInclude Include="src\sail\resources\TextureData.h" />
     <ClInclude Include="src\sail\Sail.h" />
+    <ClInclude Include="src\sail\states\State.h" />
+    <ClInclude Include="src\sail\states\StateIdentifiers.h" />
+    <ClInclude Include="src\sail\states\StateStack.h" />
     <ClInclude Include="src\sail\utils\Timer.h" />
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
