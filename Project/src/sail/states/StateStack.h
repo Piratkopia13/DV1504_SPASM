@@ -29,11 +29,13 @@ class StateStack {
 		void registerState(States::ID stateID);
 
 		// Passes input to the states in the stack
-		virtual void processInput(float dt) = 0;
+		virtual void processInput(float dt);
+		// Process window resizing for the states in the stack
+		virtual void resize(int width, int height);
 		// Updates the states in the stack
-		virtual void update(float dt) = 0;
+		virtual void update(float dt);
 		// Renders the states in the stack
-		virtual void render(float dt) = 0;
+		virtual void render(float dt);
 
 		// Pushes a new state the next update
 		void pushState(States::ID stateID);
@@ -76,7 +78,7 @@ void StateStack::registerState(States::ID stateID) {
 	
 	// Store a function to initialize a new pointer to the state
 	m_factories[stateID] = [this]() {
-		return State::Ptr(new T(*this, m_context));
+		return State::Ptr(new T(*this));
 	};
 
 }

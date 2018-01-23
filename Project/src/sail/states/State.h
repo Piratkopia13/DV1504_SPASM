@@ -18,6 +18,8 @@ class State {
 
 		// Process input for the state
 		virtual bool processInput(float dt) = 0;
+		// Process window resizing for the state
+		virtual bool resize(int width, int height) = 0;
 		// Updates the state
 		virtual bool update(float dt) = 0;
 		// Renders the state
