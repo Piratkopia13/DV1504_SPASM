@@ -23,7 +23,6 @@ private:
 	OrthographicCamera m_hudCam;
 	FlyingCameraController m_camController;
 	Scene m_scene;
-	std::unique_ptr<FbxModel> m_tessSphere;
 	std::unique_ptr<FbxModel> m_sphere;
 	std::unique_ptr<Model> m_plane;
 	std::unique_ptr<Model> m_texturePlane;
@@ -39,7 +38,6 @@ private:
 	SimpleTextureShader m_hudShader;
 	DirectionalLightShader m_dirLightShader;
 	MaterialShader m_matShader;
-	ParticleShader m_particleShader;
 	SailFont m_font;
 
 	Timer m_timer;
@@ -58,6 +56,4 @@ private:
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
-
-	std::unique_ptr<BillboardSystem> m_particleSystem;
 };
