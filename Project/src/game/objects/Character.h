@@ -6,6 +6,7 @@ class Character : public Object {
 public:
 	Character();
 	Character(Model * model);
+	Character(Model * model, unsigned int usingController, unsigned int port);
 	~Character();
 
 	void input();
@@ -14,6 +15,8 @@ public:
 
 	void setController(bool usingController);
 	void setControllerPort(unsigned int port);
+	void addVibration(unsigned int index, float addition);
+	
 
 private:
 
@@ -23,6 +26,9 @@ private:
 
 	DirectX::SimpleMath::Vector3 inputVec;
 	float speed;
+	float padVibration[4];
 
 
+
+	void updateVibration(float dt);
 }; 
