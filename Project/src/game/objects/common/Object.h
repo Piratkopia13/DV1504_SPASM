@@ -14,7 +14,7 @@ public:
 	virtual ~Object();
 
 	void setPosition(const DirectX::SimpleMath::Vector3 &newPosition);
-	void move(const DirectX::SimpleMath::Vector3 &distanceToMove);
+
 
 	Transform& getTransformation();
 	AABB* getBoundingBox() const;
