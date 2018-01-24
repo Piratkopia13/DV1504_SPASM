@@ -62,6 +62,8 @@
     <ClCompile Include="src\game\states\GameState.cpp" />
     <ClCompile Include="src\sail\states\State.cpp" />
     <ClCompile Include="src\sail\states\StateStack.cpp" />
+    <ClCompile Include="src\game\objects\Block.cpp" />
+    <ClCompile Include="src\game\level\Level.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -126,11 +128,14 @@
     <ClInclude Include="src\sail\states\State.h" />
     <ClInclude Include="src\sail\states\StateIdentifiers.h" />
     <ClInclude Include="src\sail\states\StateStack.h" />
+    <ClInclude Include="src\game\objects\Block.h" />
+    <ClInclude Include="src\game\level\Level.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
+    <None Include="res\levels\the_void.level" />
   </ItemGroup>
 </Project>

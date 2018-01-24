@@ -1,5 +1,7 @@
 #include "GameState.h"
 
+#include "../level/Level.h"
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -19,6 +21,8 @@ GameState::GameState(StateStack& stack)
 {
 
 	m_app = Application::getInstance();
+
+	Level level("the_void.level");
 
 	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
