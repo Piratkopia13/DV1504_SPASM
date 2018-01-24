@@ -13,8 +13,8 @@ void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
 }
 
 
-Transform& Object::getTransformation() {
-	return m_transformation;
+Transform& Object::getTransform() {
+	return m_transform;
 }
 
 AABB* Object::getBoundingBox() const {
