@@ -17,6 +17,6 @@ void Block::setModel(Model *newModel) {
 }
 
 void Block::draw() {
-	m_drawModel->setTransform(&getTransformation());
+	m_drawModel->setTransform(&getTransform());
 	m_drawModel->draw();
 }
