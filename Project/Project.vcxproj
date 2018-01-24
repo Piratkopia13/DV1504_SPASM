@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\objects\Character.cpp" />
+    <ClCompile Include="src\game\objects\Block.cpp" />
     <ClCompile Include="src\game\objects\common\Object.cpp" />
     <ClCompile Include="src\game\states\GameState.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -194,6 +195,7 @@
   <ItemGroup>
     <ClInclude Include="src\game\Game.h" />
     <ClInclude Include="src\game\objects\Character.h" />
+    <ClInclude Include="src\game\objects\Block.h" />
     <ClInclude Include="src\game\objects\common\Object.h" />
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\states\GameState.h" />
