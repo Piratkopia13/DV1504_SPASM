@@ -88,10 +88,10 @@ GameState::GameState(StateStack& stack)
 	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	Block tempBlock;
 	tempBlock.setModel(m_blockFbx->getModel());
-	tempBlock.getTransformation().setScale(0.1f);
+	tempBlock.getTransform().setScale(0.1f);
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 10; j++) {
-			tempBlock.getTransformation().setTranslation(DirectX::SimpleMath::Vector3(i * 10.0f, j * 10.0f, 0.0f));
+			tempBlock.getTransform().setTranslation(DirectX::SimpleMath::Vector3(i * 10.0f, j * 10.0f, 0.0f));
 			m_blocks.push_back(tempBlock);
 		}
 	}

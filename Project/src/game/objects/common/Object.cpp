@@ -9,15 +9,15 @@ Object::~Object() {
 }
 
 void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
-	m_transformation.setTranslation(newPosition);
+	m_transform.setTranslation(newPosition);
 }
 
 void Object::move(const DirectX::SimpleMath::Vector3 &distanceToMove) {
-	m_transformation.translate(distanceToMove);
+	m_transform.translate(distanceToMove);
 }
 
-Transform& Object::getTransformation() {
-	return m_transformation;
+Transform& Object::getTransform() {
+	return m_transform;
 }
 
 AABB* Object::getBoundingBox() const {
