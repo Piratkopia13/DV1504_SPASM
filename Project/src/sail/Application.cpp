@@ -63,6 +63,7 @@ int Application::startGameLoop() {
 	float updateTimer = 0.f;
 	float timeBetweenUpdates = 1.f / 30.f;
 
+	static_cast<float>(m_timer.getFrameTime());
 	// Main message loop
 	while (msg.message != WM_QUIT) {
 

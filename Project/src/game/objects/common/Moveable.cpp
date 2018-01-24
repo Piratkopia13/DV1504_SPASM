@@ -14,7 +14,7 @@ Moveable::~Moveable() {
 }
 
 void Moveable::update(const float dt) {
-	
+	this->getTransform().translate(this->m_velocity);
 }
 
 void Moveable::setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity) {

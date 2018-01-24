@@ -1,6 +1,9 @@
 #pragma once
+#include "../../sail/Application.h"
 #include "common/Moveable.h"
 #include "../../sail/graphics/geometry/Model.h"
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 class Character : public Moveable {
 public:
@@ -19,16 +22,19 @@ public:
 	
 
 private:
-
+	Application * app;
 	Model * model;
 	bool usingController;
 	unsigned int controllerPort;
 
 	DirectX::SimpleMath::Vector3 inputVec;
+	DirectX::SimpleMath::Vector3 aimVec;
+
+
 	float speed;
 	float padVibration[4];
+	float vibrationReduction[4];
 
 
-
-	void updateVibration(float dt);
+	bool updateVibration(float dt);
 }; 

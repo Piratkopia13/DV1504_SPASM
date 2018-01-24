@@ -141,7 +141,6 @@ bool GameState::processInput(float dt) {
 	// Toggle camera controller on 'F' key or 'Y' btn
 	if (kbTracker.pressed.F || gpTracker.y == gpTracker.PRESSED)
 		m_flyCam = !m_flyCam;
-
 	// Add red point light at camera pos
 	if (kbTracker.pressed.E) {
 		Lights::PointLight pl;
@@ -164,6 +163,15 @@ bool GameState::processInput(float dt) {
 
 		m_scene.addModelViaQuadtree(models.back().get());
 	}*/
+
+	if(kbTracker.pressed.Q)
+		for (int i = 0; i < 4; i++) {
+			this->player[i]->addVibration(0, 1);
+			this->player[i]->addVibration(1, 1);
+			this->player[i]->addVibration(2, 1);
+			this->player[i]->addVibration(3, 1);
+		}
+	
 
 	for(int i = 0; i < 4; i++)
 		this->player[i]->input();
