@@ -1,7 +1,5 @@
 #include "GameState.h"
 
-#include "../level/Level.h"
-
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -18,6 +16,7 @@ GameState::GameState(StateStack& stack)
 , m_playerCamController(&m_cam)
 , m_flyCam(true)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
+, m_level("the_void.level")
 {
 
 	m_app = Application::getInstance();
@@ -226,6 +225,8 @@ bool GameState::render(float dt) {
 	// Draw the scene
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
+
+	m_level.render();
 
 	//m_app->getDXManager()->enableAlphaBlending();
 

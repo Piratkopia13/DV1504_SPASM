@@ -8,7 +8,7 @@
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
 	// The size in x- and y-axis of a block
-	static const int DEFAULT_BLOCKSIZE = 1;
+	static const float DEFAULT_BLOCKSIZE = 1.f;
 }
 
 /**
@@ -22,7 +22,7 @@ public:
 	~Level();
 
 	void update(const float delta);
-	void render(const float delta);
+	void render();
 
 private:
 	// Number of blocks in the x-axis
@@ -31,5 +31,6 @@ private:
 	int m_height;
 	
 	std::vector<FbxModel> m_models;
+	std::vector<Block> m_blocks;
 
 };

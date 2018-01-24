@@ -2,6 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
+#include "../level/Level.h"
 
 class GameState : public State {
 public:
@@ -53,6 +54,7 @@ private:
 	std::unique_ptr<FbxModel> m_fbxModel;
 	std::vector<Model*> m_modelCopies;
 
+	Level m_level;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;

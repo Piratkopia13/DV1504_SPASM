@@ -14,7 +14,7 @@ Level::Level(const std::string& filename) {
 	if (infile) {
 		std::string line;
 		unsigned int currTask = 0;
-		Object *object;
+		Object* object = nullptr;
 		unsigned int x = 0;
 		unsigned int y = 0;
 
@@ -30,7 +30,7 @@ Level::Level(const std::string& filename) {
 			
 			case 0: // Load models
 				std::cout << line << std::endl;
-				//m_models.push_back(FbxModel(line));
+				m_models.push_back(FbxModel(line));
 				break;
 			
 			case 1: // Load map
@@ -42,6 +42,8 @@ Level::Level(const std::string& filename) {
 					case '1':
 						//object = new Block(m_models.at(0).getModel());
 						//grid.add(object, pos)
+						m_blocks.push_back(Block(m_models.at(0).getModel()));
+						m_blocks.end()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x * DEFAULT_BLOCKSIZE, y * DEFAULT_BLOCKSIZE, 0.f));
 						break;
 					default:
 						break;
@@ -71,6 +73,8 @@ void Level::update(const float delta) {
 
 }
 
-void Level::render(const float delta) {
-
+void Level::render() {
+	for (Block block : m_blocks) {
+		block.draw();
+	}
 }
