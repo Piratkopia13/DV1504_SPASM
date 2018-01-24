@@ -1,8 +1,8 @@
 #pragma once
-#include "common/Object.h"
+#include "common/Moveable.h"
 #include "../../sail/graphics/geometry/Model.h"
 
-class Character : public Object {
+class Character : public Moveable {
 public:
 	Character();
 	Character(Model * model);

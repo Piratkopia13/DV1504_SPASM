@@ -33,12 +33,6 @@ private:
 
 	Character* player[4];
 
-
-	// Stuff to show that the octree is culling models
-	PerspectiveCamera m_quadtreeCam;
-	RenderableTexture m_quadtreeCamTex;
-	std::unique_ptr<Model> m_quadtreeCamtexPlane;
-
 	SimpleColorShader m_colorShader;
 	SimpleTextureShader m_texShader;
 	SimpleTextureShader m_hudShader;
