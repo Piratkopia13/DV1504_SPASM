@@ -34,7 +34,7 @@ void Character::input() {
 		auto& pad = app->getInput().gamepad;
 		auto statex = pad->GetState(controllerPort);
 		for(int i = 0;i<4;i++)
-			pad->SetVibration(i, state.A, state.D);
+			pad->SetVibration(i, state.Q, state.E);
 
 
 	}

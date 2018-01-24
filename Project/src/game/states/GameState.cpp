@@ -20,11 +20,7 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
-	for (int i = 0; i < 4; i++) {
-		this->player[i] = new Character();
-		this->player[i]->setController(0);
-		this->player[i]->setControllerPort(i);
-	}
+
 
 
 	// Load in textures from file
@@ -118,6 +114,14 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugText);
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
+
+	// Add players
+	for (int i = 0; i < 4; i++) {
+		this->player[i] = new Character();
+		this->player[i]->setController(0);
+		this->player[i]->setControllerPort(i);
+	}
+
 
 }
 
