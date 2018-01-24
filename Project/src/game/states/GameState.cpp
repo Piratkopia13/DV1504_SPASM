@@ -97,7 +97,8 @@ GameState::GameState(StateStack& stack)
 	m_fbxModel->getModel()->getMaterial()->setDiffuseTexture("ped_m_sold_aa_hr_diffuse.tga");
 	m_fbxModel->getModel()->getMaterial()->setNormalTexture("ped_m_sold_aa_hr_normal.tga");
 	m_fbxModel->getModel()->getMaterial()->setSpecularTexture("ped_m_sold_aa_hr_specular.tga");
-	m_fbxModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_fbxModel->getModel()->buildBufferForShader(&m_matShader);
+	//m_fbxModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	m_fbxModel->getModel()->getTransform().setScale(0.1f);
 	Vector2 fbxPos(0.f, 0.f);
 	m_fbxModel->getModel()->getTransform().setTranslation(Vector3(fbxPos.x, fbxPos.x / 10.f, fbxPos.y));
@@ -107,7 +108,7 @@ GameState::GameState(StateStack& stack)
 
 	// Add models to the scene
 	m_fbxModel->getModel()->updateAABB();
-	m_scene.addModelViaQuadtree(m_fbxModel->getModel());
+	//m_scene.addModelViaQuadtree(m_fbxModel->getModel());
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
@@ -117,7 +118,7 @@ GameState::GameState(StateStack& stack)
 
 	// Add players
 	for (int i = 0; i < 4; i++) {
-		this->player[i] = new Character();
+		this->player[i] = new Character(m_fbxModel->getModel());
 		this->player[i]->setController(0);
 		this->player[i]->setControllerPort(i);
 	}
@@ -237,6 +238,8 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam);
 
 	//m_app->getDXManager()->enableAlphaBlending();
+
+	player[0]->draw();
 
 	// Draw HUD
 	m_scene.drawHUD();
