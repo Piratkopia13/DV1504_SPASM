@@ -74,8 +74,7 @@ void Character::update(float dt) {
 	}
 	
 	this->setVelocity(this->inputVec * dt * this->speed);
-
-
+	this->move(dt);
 }
 
 void Character::draw() {

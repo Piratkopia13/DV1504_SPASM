@@ -2,6 +2,7 @@
 
 Moveable::Moveable() {
 	m_velocity = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
+	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 }
 
 Moveable::Moveable(const float mass) {
@@ -13,7 +14,13 @@ Moveable::~Moveable() {
 
 }
 
-void Moveable::update(const float dt) {
+void Moveable::move(const float dt) {
+
+	DirectX::SimpleMath::Vector3 gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
+
+	m_acceleration += gravity * dt;
+
+	this->getTransform().translate(m_velocity + m_acceleration);
 	
 }
 
