@@ -7,6 +7,7 @@
 class GameState : public State {
 public:
 	GameState(StateStack& stack);
+	~GameState();
 
 	// Process input for the state
 	virtual bool processInput(float dt);

@@ -18,11 +18,18 @@ Character::Character(Model * model) : Character()
 
 Character::~Character()
 {
-	delete this->model;
+	//delete this->model;
 
 }
 
 void Character::input() {
+
+
+
+}
+
+void Character::update(float dt) {
+
 
 	Application* app = Application::getInstance();
 	if (!usingController) {
@@ -63,12 +70,6 @@ void Character::input() {
 
 
 	}
-
-
-}
-
-void Character::update(float dt)
-{
 	
 	this->move(this->inputVec * dt * this->speed);
 

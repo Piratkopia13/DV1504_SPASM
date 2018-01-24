@@ -129,6 +129,11 @@ GameState::GameState(StateStack& stack)
 	
 }
 
+GameState::~GameState() {
+	for (int i = 0; i < 4; i++)
+		delete player[i];
+}
+
 // Process input for the state
 bool GameState::processInput(float dt) {
 
