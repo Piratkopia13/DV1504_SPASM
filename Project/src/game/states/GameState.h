@@ -2,7 +2,6 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/Block.h"
 
 class GameState : public State {
 public:
@@ -52,8 +51,6 @@ private:
 	bool m_flyCam;
 
 	std::unique_ptr<FbxModel> m_fbxModel;
-	std::unique_ptr<FbxModel> m_blockFbx;
-	Block m_block;
 	std::vector<Model*> m_modelCopies;
 
 

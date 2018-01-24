@@ -101,11 +101,6 @@ GameState::GameState(StateStack& stack)
 	Vector2 fbxPos(0.f, 0.f);
 	m_fbxModel->getModel()->getTransform().setTranslation(Vector3(fbxPos.x, fbxPos.x / 10.f, fbxPos.y));
 
-	m_blockFbx = std::make_unique<FbxModel>("block.fbx");
-	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("grass.tga");
-	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-	m_block.setModel(m_blockFbx->getModel());
-
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));
 
@@ -228,7 +223,6 @@ bool GameState::render(float dt) {
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
 
-	m_block.draw();
 	//m_app->getDXManager()->enableAlphaBlending();
 
 	// Draw HUD
