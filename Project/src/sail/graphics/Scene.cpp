@@ -1,11 +1,12 @@
 #include "Scene.h"
+#include "../../game/objects/common/Object.h"
 
 using namespace std;
 
 Scene::Scene(const AABB& worldSize)
-	: m_quadtree(worldSize)
-	//, m_dirLightShadowMap(16384, 8640)
-	, m_dirLightShadowMap(8192, 4320)
+	:
+	//m_dirLightShadowMap(16384, 8640),
+	m_dirLightShadowMap(8192, 4320)
 	//, m_dirLightShadowMap(4096, 2160)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
@@ -18,7 +19,7 @@ Scene::Scene(const AABB& worldSize)
 Scene::~Scene() {}
 
 void Scene::addObject(Object* newObject) {
-	
+	m_objects.push_back(newObject);
 }
 
 void Scene::addText(Text* text) {
@@ -46,13 +47,14 @@ void Scene::draw(float dt, Camera& cam) {
 
 
 	// Renders the depth of the scene out of the directional lights position
+
+	//To-do: Fix shadow pass to work with draw call from object
 	m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
 	dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
 	m_depthShader.bind();
 	dxm->enableFrontFaceCulling();
-	std::vector<Model*> toBeDrawn = m_quadtree.getRoot().query(m_lights.getDirectionalLightCamera().getFrustum());
-	for (Model* m : toBeDrawn)
-		m_depthShader.draw(*m, true);
+	for (Object* m : m_objects)
+		m->draw();
 	dxm->enableBackFaceCulling();
 
 	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
@@ -73,9 +75,8 @@ void Scene::draw(float dt, Camera& cam) {
 	m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
 
 	m_timer.getFrameTime();
-	toBeDrawn = m_quadtree.getRoot().query(cam.getFrustum());
-	for (Model* m : toBeDrawn)
-		m->draw(false);
+	for (Object* m : m_objects)
+		m->draw();
 	double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
@@ -147,10 +148,6 @@ void Scene::setShadowLight() {
 
 Lights& Scene::getLights() {
 	return m_lights;
-}
-
-Quadtree& Scene::getQuadtree() {
-	return m_quadtree;
 }
 
 DeferredRenderer& Scene::getDeferredRenderer() {

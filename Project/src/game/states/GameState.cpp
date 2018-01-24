@@ -6,7 +6,6 @@ using namespace DirectX::SimpleMath;
 GameState::GameState(StateStack& stack)
 : State(stack)
 , m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
-, m_quadtreeCam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
 , m_hudCam(1280.f, 720.f, -1.f, 1.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
@@ -86,18 +85,25 @@ GameState::GameState(StateStack& stack)
 
 	m_blockFbx = std::make_unique<FbxModel>("block.fbx");
 	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("grass.tga");
-	m_blockFbx->getModel()->buildBufferForShader(&m_matShader);
-	m_block.setModel(m_blockFbx->getModel());
-	m_block.getTransformation().setScale(0.1f);
+	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	Block tempBlock;
+	tempBlock.setModel(m_blockFbx->getModel());
+	tempBlock.getTransformation().setScale(0.1f);
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			tempBlock.getTransformation().setTranslation(DirectX::SimpleMath::Vector3(i * 10.0f, j * 10.0f, 0.0f));
+			m_blocks.push_back(tempBlock);
+		}
+	}
 
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));
 
 	// Add models to the scene
-	m_fbxModel->getModel()->updateAABB();
-	m_scene.addModelViaQuadtree(m_fbxModel->getModel());
-	//m_blockFbx->getModel()->updateAABB();
-	//m_scene.addModelViaQuadtree(m_blockFbx->getModel());
+	m_blockFbx->getModel()->updateAABB();
+	for (unsigned int i = 0; i < m_blocks.size(); i++) {
+		m_scene.addObject(&m_blocks.at(i));
+	}
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
@@ -131,7 +137,7 @@ bool GameState::processInput(float dt) {
 		m_matShader.updateLights(m_scene.getLights());
 	}
 
-	if (kbTracker.pressed.C) {
+	/*if (kbTracker.pressed.C) {
 		Vector3 halfSizes(.2f, .2f, .2f);
 		auto model = ModelFactory::CubeModel::Create(halfSizes);
 		model->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
@@ -140,18 +146,7 @@ bool GameState::processInput(float dt) {
 		models.push_back(std::move(model));
 
 		m_scene.addModelViaQuadtree(models.back().get());
-	}
-
-#ifdef _DEBUG
-	if (kbTracker.pressed.H) {
-		auto nodes = m_scene.getQuadtree().getRoot().getNodesAsModels();
-		for (auto* model : nodes) {
-			model->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-			model->getMaterial()->setColor(Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 0.3f));
-			m_scene.addModelViaQuadtree(model);
-		}
-	}
-#endif
+	}*/
 
 	// Update the camera controller from input devices
 	if (m_flyCam)
@@ -181,15 +176,12 @@ bool GameState::update(float dt) {
 
 	//m_cube->getModel()->getTransform().rotateAroundY(0.005f);
 
-	m_fbxModel->getModel()->getTransform().rotateAroundY(0.005f * dt);
 	//m_plane->getTransform().rotateAroundY(0.005f);
 
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
 	auto& cPos = m_cam.getPosition();
-	m_quadtreeCam.setPosition(Vector3(cPos.x, cPos.y + 15.f, cPos.z));
-	m_quadtreeCam.setDirection(Vector3(.1f, -1.f, .1f));
 
 	std::wstring flying(L"Flying (shift for boost, rmouse to toggle cursor)");
 	std::wstring Walking(L"Walking (rmouse to toggle cursor)");

@@ -13,7 +13,9 @@
 #include "renderer/DeferredRenderer.h"
 #include "../utils/Timer.h"
 #include "shader/basic/DepthShader.h"
+//#include "../../game/objects/common/Object.h"
 
+class Object;
 class Scene {
 
 public:
@@ -58,6 +60,7 @@ private:
 	Timer m_timer;
 
 	//std::map<ShaderSet*, std::vector<Model*>> m_mappedModels;
+	std::vector<Object*> m_objects;
 
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	std::vector<Text*> m_texts;
