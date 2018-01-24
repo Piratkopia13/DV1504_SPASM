@@ -68,6 +68,7 @@
     <ClCompile Include="src\game\states\GameState.cpp" />
     <ClCompile Include="src\sail\states\State.cpp" />
     <ClCompile Include="src\sail\states\StateStack.cpp" />
+    <ClCompile Include="src\game\Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="src\sail\states\State.h" />
     <ClInclude Include="src\sail\states\StateIdentifiers.h" />
     <ClInclude Include="src\sail\states\StateStack.h" />
+    <ClInclude Include="src\game\Grid.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />
