@@ -19,6 +19,9 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
+
+
+
 	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("sand/normal.tga");
@@ -40,7 +43,6 @@ GameState::GameState(StateStack& stack)
 
 	// Add skybox to the scene
 	m_scene.addSkybox(L"skybox2_512.dds");
-
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
@@ -69,11 +71,11 @@ GameState::GameState(StateStack& stack)
 	float texPlaneHeight = windowHeight / 2.5f;
 	Vector2 texPlaneHalfSize(texPlaneHeight / 2.f * (windowWidth / windowHeight), texPlaneHeight / 2.f);
 	m_texturePlane = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_texturePlane->buildBufferForShader(&m_hudShader);
+	m_texturePlane->buildBufferForShader(&m_colorShader);
 	m_texturePlane->getMaterial()->setTextures(m_scene.getDLShadowMap().getSRV(), 1);
-	m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
-	m_texturePlane->getTransform().rotateAroundY(XM_PI);
-	m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
+	//m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
+	//m_texturePlane->getTransform().rotateAroundY(XM_PI);
+	//m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
 
 	m_texturePlane2 = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
 	m_texturePlane2->buildBufferForShader(&m_hudShader);
@@ -111,6 +113,21 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
+	// Add players
+	this->player[0] = new Character(m_texturePlane.get());
+	this->player[0]->setController(0);
+
+	for (int i = 0; i < 3; i++) {
+		this->player[i+1] = new Character(m_texturePlane.get());
+		this->player[i+1]->setController(1);
+		this->player[i+1]->setControllerPort(i);
+	}
+	
+}
+
+GameState::~GameState() {
+	for (int i = 0; i < 4; i++)
+		delete player[i];
 }
 
 // Process input for the state
@@ -147,6 +164,10 @@ bool GameState::processInput(float dt) {
 
 		m_scene.addModelViaQuadtree(models.back().get());
 	}*/
+
+	for(int i = 0; i < 4; i++)
+		this->player[i]->input();
+
 
 	// Update the camera controller from input devices
 	if (m_flyCam)
@@ -191,6 +212,10 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
+	for (int i = 0; i < 4; i++)
+		this->player[i]->update(dt);
+
+
 
 	return true;
 }
@@ -204,13 +229,18 @@ bool GameState::render(float dt) {
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
 
+	//m_app->getDXManager()->enableAlphaBlending();
+	m_colorShader.updateCamera(m_cam);
+	for(int i = 0; i < 4; i++)
+		player[i]->draw();
+
 	// Draw HUD
 	m_scene.drawHUD();
 
 	/* Debug Stuff */
-	//m_app->getDXManager()->disableDepthBuffer();
-	//m_app->getDXManager()->disableAlphaBlending();
-	//m_texturePlane->draw();
+	m_app->getDXManager()->disableDepthBuffer();
+	m_app->getDXManager()->disableAlphaBlending();
+	m_texturePlane->draw();
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
 	//m_app->getDXManager()->enableDepthBuffer();
