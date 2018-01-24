@@ -29,7 +29,7 @@ private:
 	std::unique_ptr<Model> m_texturePlane;
 	std::unique_ptr<Model> m_texturePlane2;
 
-	Character* player;
+	Character* player[4];
 
 
 	// Stuff to show that the octree is culling models

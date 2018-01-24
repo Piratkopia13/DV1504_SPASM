@@ -19,8 +19,13 @@ GameState::GameState(StateStack& stack)
 {
 
 	m_app = Application::getInstance();
-	this->player = new Character();
-	this->player->setController(1);
+
+	for (int i = 0; i < 4; i++) {
+		this->player[i] = new Character();
+		this->player[i]->setController(0);
+		this->player[i]->setControllerPort(i);
+	}
+
 
 	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
@@ -162,8 +167,8 @@ bool GameState::processInput(float dt) {
 	}
 #endif
 
-
-	this->player->input();
+	for(int i = 0; i < 4; i++)
+		this->player[i]->input();
 
 
 	// Update the camera controller from input devices

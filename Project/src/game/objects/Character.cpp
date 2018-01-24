@@ -31,15 +31,26 @@ void Character::input() {
 		auto state = app->getInput().keyboardState;
 
 		this->inputVec = DirectX::SimpleMath::Vector3(state.D - state.A, 0, 0);
+		auto& pad = app->getInput().gamepad;
+		auto statex = pad->GetState(controllerPort);
+		for(int i = 0;i<4;i++)
+			pad->SetVibration(i, state.A, state.D);
+
 
 	}
 	else {
 		auto& pad = app->getInput().gamepad;
 		auto state = pad->GetState(controllerPort);
-		//pad->SetVibration(this->controllerPort, state.triggers.left, state.triggers.right);
+		if(this->controllerPort == 0)
+			pad->SetVibration(this->controllerPort, state.triggers.left, state.triggers.right);
+		if(this->controllerPort == 1)
+			pad->SetVibration(this->controllerPort, state.triggers.right, state.triggers.left);
+		if(this->controllerPort == 2)
+			pad->SetVibration(this->controllerPort, state.IsXPressed(), state.triggers.right);
+
 
 		this->inputVec = DirectX::SimpleMath::Vector3(state.thumbSticks.leftX, state.thumbSticks.leftY, 0);
-		pad->SetVibration(this->controllerPort, inputVec.x, inputVec.y);
+		//pad->SetVibration(this->controllerPort, inputVec.x, inputVec.y);
 
 
 	}
