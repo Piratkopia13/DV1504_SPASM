@@ -6,7 +6,6 @@ using namespace DirectX::SimpleMath;
 GameState::GameState(StateStack& stack)
 : State(stack)
 , m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
-, m_quadtreeCam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
 , m_hudCam(1280.f, 720.f, -1.f, 1.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
@@ -82,31 +81,29 @@ GameState::GameState(StateStack& stack)
 	m_texturePlane2->getTransform().rotateAroundX(-XM_PIDIV2);
 	m_texturePlane2->getTransform().rotateAroundY(XM_PI);
 	m_texturePlane2->getTransform().translate(Vector3(windowWidth / 2.f - texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
-
-	m_quadtreeCamtexPlane = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_quadtreeCamtexPlane->buildBufferForShader(&m_hudShader);
-	m_quadtreeCamtexPlane->getMaterial()->setDiffuseTexture(*m_quadtreeCamTex.getColorSRV());
-	m_quadtreeCamtexPlane->getTransform().rotateAroundX(-XM_PIDIV2);
-	m_quadtreeCamtexPlane->getTransform().rotateAroundY(XM_PI);
-	m_quadtreeCamtexPlane->getTransform().translate(Vector3(windowWidth / 2.f - texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
 	/* Planes for debugging */
 
-	m_fbxModel = std::make_unique<FbxModel>("soldier_disguise.fbx");
-	m_fbxModel->getModel()->getMaterial()->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_fbxModel->getModel()->getMaterial()->setDiffuseTexture("ped_m_sold_aa_hr_diffuse.tga");
-	m_fbxModel->getModel()->getMaterial()->setNormalTexture("ped_m_sold_aa_hr_normal.tga");
-	m_fbxModel->getModel()->getMaterial()->setSpecularTexture("ped_m_sold_aa_hr_specular.tga");
-	m_fbxModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-	m_fbxModel->getModel()->getTransform().setScale(0.1f);
-	Vector2 fbxPos(0.f, 0.f);
-	m_fbxModel->getModel()->getTransform().setTranslation(Vector3(fbxPos.x, fbxPos.x / 10.f, fbxPos.y));
+	m_blockFbx = std::make_unique<FbxModel>("block.fbx");
+	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("grass.tga");
+	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	Block tempBlock;
+	tempBlock.setModel(m_blockFbx->getModel());
+	tempBlock.getTransform().setScale(0.1f);
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
+			tempBlock.getTransform().setTranslation(DirectX::SimpleMath::Vector3(i * 10.0f, j * 10.0f, 0.0f));
+			m_blocks.push_back(tempBlock);
+		}
+	}
 
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));
 
 	// Add models to the scene
-	m_fbxModel->getModel()->updateAABB();
-	m_scene.addModelViaQuadtree(m_fbxModel->getModel());
+	m_blockFbx->getModel()->updateAABB();
+	for (unsigned int i = 0; i < m_blocks.size(); i++) {
+		m_scene.addObject(&m_blocks.at(i));
+	}
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
@@ -140,7 +137,7 @@ bool GameState::processInput(float dt) {
 		m_matShader.updateLights(m_scene.getLights());
 	}
 
-	if (kbTracker.pressed.C) {
+	/*if (kbTracker.pressed.C) {
 		Vector3 halfSizes(.2f, .2f, .2f);
 		auto model = ModelFactory::CubeModel::Create(halfSizes);
 		model->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
@@ -149,18 +146,7 @@ bool GameState::processInput(float dt) {
 		models.push_back(std::move(model));
 
 		m_scene.addModelViaQuadtree(models.back().get());
-	}
-
-#ifdef _DEBUG
-	if (kbTracker.pressed.H) {
-		auto nodes = m_scene.getQuadtree().getRoot().getNodesAsModels();
-		for (auto* model : nodes) {
-			model->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-			model->getMaterial()->setColor(Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 0.3f));
-			m_scene.addModelViaQuadtree(model);
-		}
-	}
-#endif
+	}*/
 
 	// Update the camera controller from input devices
 	if (m_flyCam)
@@ -190,15 +176,12 @@ bool GameState::update(float dt) {
 
 	//m_cube->getModel()->getTransform().rotateAroundY(0.005f);
 
-	m_fbxModel->getModel()->getTransform().rotateAroundY(0.005f * dt);
 	//m_plane->getTransform().rotateAroundY(0.005f);
 
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
 	auto& cPos = m_cam.getPosition();
-	m_quadtreeCam.setPosition(Vector3(cPos.x, cPos.y + 15.f, cPos.z));
-	m_quadtreeCam.setDirection(Vector3(.1f, -1.f, .1f));
 
 	std::wstring flying(L"Flying (shift for boost, rmouse to toggle cursor)");
 	std::wstring Walking(L"Walking (rmouse to toggle cursor)");
@@ -213,8 +196,6 @@ bool GameState::update(float dt) {
 }
 // Renders the state
 bool GameState::render(float dt) {
-	
-
 	// Clear the buffer where the deferred light pass will render to
 	m_app->getDXManager()->clear(DirectX::Colors::Teal);
 	// Clear back buffer
@@ -222,8 +203,6 @@ bool GameState::render(float dt) {
 	// Draw the scene
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
-
-	//m_app->getDXManager()->enableAlphaBlending();
 
 	// Draw HUD
 	m_scene.drawHUD();
