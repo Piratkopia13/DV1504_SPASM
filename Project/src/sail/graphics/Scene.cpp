@@ -17,9 +17,8 @@ Scene::Scene(const AABB& worldSize)
 }
 Scene::~Scene() {}
 
-void Scene::addModelViaQuadtree(Model* model) {
-	Quadtree::Element e(model);
-	m_quadtree.getRoot().insert(e);
+void Scene::addObject(Object* newObject) {
+	
 }
 
 void Scene::addText(Text* text) {

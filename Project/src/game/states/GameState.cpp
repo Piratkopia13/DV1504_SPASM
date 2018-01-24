@@ -82,29 +82,13 @@ GameState::GameState(StateStack& stack)
 	m_texturePlane2->getTransform().rotateAroundX(-XM_PIDIV2);
 	m_texturePlane2->getTransform().rotateAroundY(XM_PI);
 	m_texturePlane2->getTransform().translate(Vector3(windowWidth / 2.f - texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
-
-	m_quadtreeCamtexPlane = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_quadtreeCamtexPlane->buildBufferForShader(&m_hudShader);
-	m_quadtreeCamtexPlane->getMaterial()->setDiffuseTexture(*m_quadtreeCamTex.getColorSRV());
-	m_quadtreeCamtexPlane->getTransform().rotateAroundX(-XM_PIDIV2);
-	m_quadtreeCamtexPlane->getTransform().rotateAroundY(XM_PI);
-	m_quadtreeCamtexPlane->getTransform().translate(Vector3(windowWidth / 2.f - texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
 	/* Planes for debugging */
-
-	m_fbxModel = std::make_unique<FbxModel>("soldier_disguise.fbx");
-	m_fbxModel->getModel()->getMaterial()->setColor(Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-	m_fbxModel->getModel()->getMaterial()->setDiffuseTexture("ped_m_sold_aa_hr_diffuse.tga");
-	m_fbxModel->getModel()->getMaterial()->setNormalTexture("ped_m_sold_aa_hr_normal.tga");
-	m_fbxModel->getModel()->getMaterial()->setSpecularTexture("ped_m_sold_aa_hr_specular.tga");
-	m_fbxModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-	m_fbxModel->getModel()->getTransform().setScale(0.1f);
-	Vector2 fbxPos(0.f, 0.f);
-	m_fbxModel->getModel()->getTransform().setTranslation(Vector3(fbxPos.x, fbxPos.x / 10.f, fbxPos.y));
 
 	m_blockFbx = std::make_unique<FbxModel>("block.fbx");
 	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("grass.tga");
-	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_blockFbx->getModel()->buildBufferForShader(&m_matShader);
 	m_block.setModel(m_blockFbx->getModel());
+	m_block.getTransformation().setScale(0.1f);
 
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));
@@ -112,6 +96,8 @@ GameState::GameState(StateStack& stack)
 	// Add models to the scene
 	m_fbxModel->getModel()->updateAABB();
 	m_scene.addModelViaQuadtree(m_fbxModel->getModel());
+	//m_blockFbx->getModel()->updateAABB();
+	//m_scene.addModelViaQuadtree(m_blockFbx->getModel());
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
@@ -218,8 +204,6 @@ bool GameState::update(float dt) {
 }
 // Renders the state
 bool GameState::render(float dt) {
-	
-
 	// Clear the buffer where the deferred light pass will render to
 	m_app->getDXManager()->clear(DirectX::Colors::Teal);
 	// Clear back buffer
@@ -227,9 +211,6 @@ bool GameState::render(float dt) {
 	// Draw the scene
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
-
-	m_block.draw();
-	//m_app->getDXManager()->enableAlphaBlending();
 
 	// Draw HUD
 	m_scene.drawHUD();
