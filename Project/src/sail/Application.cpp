@@ -94,8 +94,9 @@ int Application::startGameLoop() {
 				//std::cout << "FPS: " << m_fps << std::endl;
 			}
 
-			// Update input states
-			m_input.gamepadState = GamePad::Get().GetState(0);
+			// Update input states for keyboard and X controllers
+			for(int i = 0 ; i < 4 ; i++)
+				m_input.gamepadState[i] = GamePad::Get().GetState(i);
 			m_input.keyboardState = Keyboard::Get().GetState();
 
 

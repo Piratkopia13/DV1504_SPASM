@@ -12,7 +12,7 @@ public:
 	Character(Model * model, unsigned int usingController, unsigned int port);
 	~Character();
 
-	void input();
+	void input(GamePad::ButtonStateTracker & padState, Keyboard::KeyboardStateTracker & keyState);
 	void update(float dt);
 	void draw();
 
@@ -22,7 +22,7 @@ public:
 	
 
 private:
-	Application * app;
+	
 	Model * model;
 	bool usingController;
 	unsigned int controllerPort;

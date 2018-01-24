@@ -134,12 +134,15 @@ GameState::~GameState() {
 bool GameState::processInput(float dt) {
 
 	static Keyboard::KeyboardStateTracker kbTracker;
-	static GamePad::ButtonStateTracker gpTracker;
+	static GamePad::ButtonStateTracker gpTracker[4];
+	for(int i = 0; i < 4; i++)
+		gpTracker[i].Update(m_app->getInput().gamepadState[i]);
 	kbTracker.Update(m_app->getInput().keyboardState);
-	gpTracker.Update(m_app->getInput().gamepadState);
+
+
 
 	// Toggle camera controller on 'F' key or 'Y' btn
-	if (kbTracker.pressed.F || gpTracker.y == gpTracker.PRESSED)
+	if (kbTracker.pressed.F)
 		m_flyCam = !m_flyCam;
 	// Add red point light at camera pos
 	if (kbTracker.pressed.E) {
@@ -174,7 +177,7 @@ bool GameState::processInput(float dt) {
 	
 
 	for(int i = 0; i < 4; i++)
-		this->player[i]->input();
+		this->player[i]->input(gpTracker[i], kbTracker);
 
 
 	// Update the camera controller from input devices

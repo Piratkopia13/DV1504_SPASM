@@ -29,21 +29,16 @@ Character::~Character() {
 
 }
 
-void Character::input() {
-	if (!usingController) {
-		Application * apc = Application::getInstance();
-		//auto& keyboard = this->app->getInput().keyboard;
-		auto state = apc->getInput().keyboardState;
+void Character::input(GamePad::ButtonStateTracker & padState, Keyboard::KeyboardStateTracker & keyState) {
 
-		this->inputVec = DirectX::SimpleMath::Vector3(state.D - state.A, state.W - state.S, 0);
+	if (!usingController) {
+		
+		this->inputVec = DirectX::SimpleMath::Vector3(keyState.pressed.D - keyState.pressed.A, keyState.pressed.W - keyState.pressed.S, 0);
 		
 
 	}
 	else {
-
-		auto& pad = app->getInput().gamepad;
-		auto state = pad->GetState(controllerPort);
-		if (state.IsConnected()) {
+		//if (padState.	IsConnected()) {
 
 			// on button click
 			if (state.buttons.a == GamePad::ButtonStateTracker::PRESSED) {
@@ -58,7 +53,11 @@ void Character::input() {
 			if (state.buttons.y == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(3, 1);
 			}
-
+			/*
+			if (state.buttons.a == GamePad::ButtonStateTracker::HELD) {
+				this->addVibration(1,1);
+			}
+			*/
 
 			//update inputVector
 			this->inputVec = Vector3(
@@ -85,7 +84,8 @@ void Character::input() {
 }
 
 void Character::update(float dt) {
-	auto& pad = this->app->getInput().gamepad;
+	Application* app = Application::getInstance();
+	auto& pad = app->getInput().gamepad;
 
 	if (updateVibration(dt))
 		pad->SetVibration(this->controllerPort,
