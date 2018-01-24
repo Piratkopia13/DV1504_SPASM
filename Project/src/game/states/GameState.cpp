@@ -72,11 +72,11 @@ GameState::GameState(StateStack& stack)
 	float texPlaneHeight = windowHeight / 2.5f;
 	Vector2 texPlaneHalfSize(texPlaneHeight / 2.f * (windowWidth / windowHeight), texPlaneHeight / 2.f);
 	m_texturePlane = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_texturePlane->buildBufferForShader(&m_hudShader);
+	m_texturePlane->buildBufferForShader(&m_colorShader);
 	m_texturePlane->getMaterial()->setTextures(m_scene.getDLShadowMap().getSRV(), 1);
-	m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
-	m_texturePlane->getTransform().rotateAroundY(XM_PI);
-	m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
+	//m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
+	//m_texturePlane->getTransform().rotateAroundY(XM_PI);
+	//m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
 
 	m_texturePlane2 = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
 	m_texturePlane2->buildBufferForShader(&m_hudShader);
@@ -118,13 +118,15 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugParticleText);
 
 	// Add players
-	for (int i = 0; i < 4; i++) {
-		this->player[i] = new Character(m_fbxModel->getModel());
-		this->player[i]->setController(0);
-		this->player[i]->setControllerPort(i);
+	this->player[0] = new Character(m_texturePlane.get());
+	this->player[0]->setController(0);
+
+	for (int i = 0; i < 3; i++) {
+		this->player[i+1] = new Character(m_texturePlane.get());
+		this->player[i+1]->setController(1);
+		this->player[i+1]->setControllerPort(i);
 	}
-
-
+	
 }
 
 // Process input for the state
@@ -223,6 +225,10 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
+	for (int i = 0; i < 4; i++)
+		this->player[i]->update(dt);
+
+
 
 	return true;
 }
@@ -239,16 +245,17 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam);
 
 	//m_app->getDXManager()->enableAlphaBlending();
-
-	player[0]->draw();
+	m_colorShader.updateCamera(m_cam);
+	for(int i = 0; i < 4; i++)
+		player[i]->draw();
 
 	// Draw HUD
 	m_scene.drawHUD();
 
 	/* Debug Stuff */
-	//m_app->getDXManager()->disableDepthBuffer();
-	//m_app->getDXManager()->disableAlphaBlending();
-	//m_texturePlane->draw();
+	m_app->getDXManager()->disableDepthBuffer();
+	m_app->getDXManager()->disableAlphaBlending();
+	m_texturePlane->draw();
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
 	//m_app->getDXManager()->enableDepthBuffer();

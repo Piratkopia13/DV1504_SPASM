@@ -4,11 +4,11 @@
 
 Character::Character()
 {
+	
 	this->usingController = 0;
 	this->controllerPort = 0;
 	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
-	this->speed = 1;
-
+	this->speed = 100;
 }
 
 Character::Character(Model * model) : Character()
@@ -39,17 +39,26 @@ void Character::input() {
 
 	}
 	else {
+		
 		auto& pad = app->getInput().gamepad;
 		auto state = pad->GetState(controllerPort);
-		if(this->controllerPort == 0)
-			pad->SetVibration(this->controllerPort, state.triggers.left, state.triggers.right);
-		if(this->controllerPort == 1)
-			pad->SetVibration(this->controllerPort, state.triggers.right, state.triggers.left);
-		if(this->controllerPort == 2)
-			pad->SetVibration(this->controllerPort, state.IsXPressed(), state.triggers.right);
+		if (state.IsConnected()) {
+			if (this->controllerPort == 0)
+				pad->SetVibration(this->controllerPort, state.IsXPressed() + state.triggers.left, state.IsAPressed() + state.triggers.right);
+			if (this->controllerPort == 1)
+				pad->SetVibration(this->controllerPort, state.IsXPressed() + state.triggers.left, state.IsAPressed() + state.triggers.right);
+			if (this->controllerPort == 2)
+				pad->SetVibration(this->controllerPort, state.IsXPressed() + state.triggers.left, state.IsAPressed() + state.triggers.right);
+			if (this->controllerPort == 3)
+				pad->SetVibration(this->controllerPort, state.IsXPressed() + state.triggers.left, state.IsAPressed() + state.triggers.right);
 
+			this->inputVec = DirectX::SimpleMath::Vector3(state.thumbSticks.leftX, state.thumbSticks.leftY, 0);
+			if (state.IsViewPressed()) {
+				PostQuitMessage(this->controllerPort);
+			}
 
-		this->inputVec = DirectX::SimpleMath::Vector3(state.thumbSticks.leftX, state.thumbSticks.leftY, 0);
+		}
+
 		//pad->SetVibration(this->controllerPort, inputVec.x, inputVec.y);
 
 
@@ -68,7 +77,7 @@ void Character::update(float dt)
 
 void Character::draw()
 {
-	this->model->setTransform(&this->getTransformation());
+	this->model->setTransform(&this->getTransform());
 	this->model->draw();
 }
 
@@ -81,4 +90,6 @@ void Character::setControllerPort(const unsigned int port)
 {
 	if (port < 4)
 		this->controllerPort = port;
+
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port, port, port));
 }
