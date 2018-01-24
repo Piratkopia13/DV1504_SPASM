@@ -38,6 +38,9 @@ Model::~Model() {
 	Memory::safeDeleteArr(m_data.texCoords);
 
 	Memory::safeDelete(m_material);
+	if (!m_transformChanged) {
+		Memory::safeDelete(m_transform);
+	}
 }
 
 void Model::setBuildData(Data& buildData) {
