@@ -30,6 +30,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("grass.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/normal.tga");
+	//m_app->getResourceManager().LoadDXTexture("block.tga");
 
 	// Update the hud shader
 	m_hudShader.updateCamera(m_hudCam);

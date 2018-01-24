@@ -7,7 +7,7 @@
 class Object {
 private:
 	AABB * m_boundingBox; //Pointer to be able to detect if a bounding box has been made
-	Transform m_transformation;
+	Transform m_transform;
 
 public:
 	Object();
@@ -16,7 +16,7 @@ public:
 	void setPosition(const DirectX::SimpleMath::Vector3 &newPosition);
 	void move(const DirectX::SimpleMath::Vector3 &distanceToMove);
 
-	Transform& getTransformation();
+	Transform& getTransform();
 	AABB* getBoundingBox() const;
 
 	virtual void draw() = 0;

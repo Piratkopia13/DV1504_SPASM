@@ -14,6 +14,7 @@ Model::Model(Data& buildData)
 {
 	m_material = new Material();
 	m_transform = new Transform();
+	m_transformChanged = false;
 }
 Model::Model() 
 	: m_aabb(Vector3::Zero, Vector3(.2f, .2f, .2f))
@@ -22,6 +23,7 @@ Model::Model()
 {
 	m_material = new Material();
 	m_transform = new Transform();
+	m_transformChanged = false;
 }
 Model::~Model() {
 	Memory::safeRelease(m_vertexBuffer);
@@ -36,6 +38,9 @@ Model::~Model() {
 	Memory::safeDeleteArr(m_data.texCoords);
 
 	Memory::safeDelete(m_material);
+	if (!m_transformChanged) {
+		Memory::safeDelete(m_transform);
+	}
 }
 
 void Model::setBuildData(Data& buildData) {
@@ -82,7 +87,10 @@ ID3D11Buffer* Model::getIndexBuffer() const {
 }
 
 void Model::setTransform(Transform* newTransform) {
-	Memory::safeDelete(m_transform);
+	if (!m_transformChanged) {
+		Memory::safeDelete(m_transform);
+		m_transformChanged = true;
+	}
 	m_transform = newTransform;
 }
 
