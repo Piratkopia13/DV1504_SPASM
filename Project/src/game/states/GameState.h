@@ -2,6 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
+#include "../../game/objects/Block.h"
 
 class GameState : public State {
 public:
