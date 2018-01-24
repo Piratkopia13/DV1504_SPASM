@@ -32,7 +32,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("grass.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/normal.tga");
-	//m_app->getResourceManager().LoadDXTexture("block.tga");
+	m_app->getResourceManager().LoadDXTexture("block.tga");
 
 	// Update the hud shader
 	m_hudShader.updateCamera(m_hudCam);
@@ -86,7 +86,7 @@ GameState::GameState(StateStack& stack)
 	/* Planes for debugging */
 
 	m_blockFbx = std::make_unique<FbxModel>("block.fbx");
-	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("grass.tga");
+	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("block.tga");
 	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	Block tempBlock;
 	tempBlock.setModel(m_blockFbx->getModel());
