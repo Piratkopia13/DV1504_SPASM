@@ -13,7 +13,9 @@
 #include "renderer/DeferredRenderer.h"
 #include "../utils/Timer.h"
 #include "shader/basic/DepthShader.h"
+//#include "../../game/objects/common/Object.h"
 
+class Object;
 class Scene {
 
 public:
@@ -22,7 +24,7 @@ public:
 
 	// Adds the specified model to the scene and it's quadtree
 	// The model will only be drawn when its aabb is inside or intersecting the cameras frustum
-	void addModelViaQuadtree(Model* model);
+	void addObject(Object* newObject);
 
 	// Adds the specified text to the scene
 	// This does not take ownership of the object
@@ -45,8 +47,6 @@ public:
 
 	// Return the lights
 	Lights& getLights();
-	// Return the Quadtree
-	Quadtree& getQuadtree();
 	// Return the deferred renderer
 	DeferredRenderer& getDeferredRenderer();
 
@@ -56,11 +56,11 @@ private:
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
 
 private:
-	Quadtree m_quadtree;
 	DeferredRenderer m_deferredRenderer;
 	Timer m_timer;
 
 	//std::map<ShaderSet*, std::vector<Model*>> m_mappedModels;
+	std::vector<Object*> m_objects;
 
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	std::vector<Text*> m_texts;

@@ -9,8 +9,9 @@ Object::~Object() {
 }
 
 void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
-	m_transformation.setTranslation(newPosition);
+	m_transform.setTranslation(newPosition);
 }
+
 
 Transform& Object::getTransformation() {
 	return m_transformation;
