@@ -33,13 +33,15 @@ private:
 
 	DirectX::SimpleMath::Vector3 inputVec;
 	DirectX::SimpleMath::Vector3 aimVec;
-
+	bool jumping;
 
 	float speed;
 	float padVibration[4];
 	float vibrationReduction[4];
 	void jump();
-
+	void stopJump();
+	void fire();
+	void hook();
 
 	bool updateVibration(float dt);
 }; 

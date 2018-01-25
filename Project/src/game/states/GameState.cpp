@@ -160,6 +160,7 @@ bool GameState::processInput(float dt) {
 		m_matShader.updateLights(m_scene.getLights());
 	}
 
+
 	
 	if(kbTracker.pressed.Q)
 		for (int i = 0; i < 4; i++) {

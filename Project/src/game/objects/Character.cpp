@@ -9,6 +9,7 @@ Character::Character()
 	this->controllerPort = 0;
 	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
 	this->speed = 100;
+	this->jumping = 0;
 	for (int i = 0; i < 4; i++) {
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
@@ -49,24 +50,69 @@ void Character::input(
 	else {
 		if (padState.IsConnected()) {
 
-			// on button click
+			// ON BUTTON CLICK
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
+				this->addVibration(1, 1);
+				this->jump();
+			}
+			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
-				this->addVibration(1, 1);
-			}
-			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(2, 1);
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(3, 1);
 			}
-			
-			if (padState.buttons.a == GamePad::ButtonStateTracker::HELD) {
-				this->addVibration(1,1);
+
+			// ON BUTTON RELEASE
+			if (padTracker.a == GamePad::ButtonStateTracker::RELEASED) {
+				this->addVibration(1, 1);
+				this->stopJump();
+			}
+			if (padTracker.b == GamePad::ButtonStateTracker::RELEASED) {
+				this->addVibration(0, 1);
+			}
+			if (padTracker.x == GamePad::ButtonStateTracker::RELEASED) {
+				this->addVibration(2, 1);
+			}
+			if (padTracker.y == GamePad::ButtonStateTracker::RELEASED) {
+				this->addVibration(3, 1);
 			}
 			
+
+			// ON BUTTON HOLD
+			if (padState.buttons.a == GamePad::ButtonStateTracker::HELD) {
+				
+			}
+			if (padState.buttons.b == GamePad::ButtonStateTracker::HELD) {
+				
+			}
+			if (padState.buttons.x == GamePad::ButtonStateTracker::HELD) {
+			
+			}
+			if (padState.buttons.y == GamePad::ButtonStateTracker::HELD) {
+			
+			}
+
+			// ON TRIGGER CLICK
+			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::PRESSED) {
+
+			}
+			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::PRESSED) {
+
+			}
+
+			// ON SHOULDER CLICK
+			if (padTracker.rightShoulder == GamePad::ButtonStateTracker::PRESSED) {
+
+			}
+			if (padTracker.leftShoulder == GamePad::ButtonStateTracker::PRESSED) {
+
+			}
+
+
+
 
 			//update inputVector
 			this->inputVec = Vector3(
@@ -105,6 +151,7 @@ void Character::update(float dt) {
 	
 	
 	this->setVelocity(this->inputVec * dt * this->speed);
+	this->getTransform().setRotations(this->aimVec);
 
 	Moveable::update(dt);
 }
@@ -121,8 +168,10 @@ void Character::setController(const bool usingController) {
 void Character::setControllerPort(const unsigned int port) {
 	if (port < 4)
 		this->controllerPort = port;
-
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port, port, port));
+	
+#ifdef _DEBUG
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(int(port * -10)-20, port, 0));
+#endif
 }
 
 void Character::addVibration(unsigned int index, float addition) {
@@ -146,6 +195,27 @@ unsigned int Character::getPort()
 
 
 
+
+void Character::jump()
+{
+	this->getTransform().translate(Vector3(0,10,0));
+}
+
+void Character::stopJump()
+{
+	this->getTransform().translate(Vector3(0, -10, 0));
+}
+
+void Character::fire()
+{
+	Application * app = Application::getInstance();
+	
+}
+
+void Character::hook()
+{
+
+}
 
 bool Character::updateVibration(float dt) {
 	static float freq = 1.f / 30.f;
