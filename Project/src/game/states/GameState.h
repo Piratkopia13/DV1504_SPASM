@@ -3,7 +3,6 @@
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
 #include "../objects/Character.h"
-#include "../../game/objects/Block.h"
 #include "../level/Level.h"
 
 class GameState : public State {
@@ -51,8 +50,6 @@ private:
 	PlayerCameraController m_playerCamController;
 	bool m_flyCam;
 
-	std::unique_ptr<FbxModel> m_blockFbx;
-	std::vector <Block> m_blocks;
 	std::vector<Model*> m_modelCopies;
 
 	std::unique_ptr<FbxModel> m_fbxModel;

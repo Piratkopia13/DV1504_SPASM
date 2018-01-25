@@ -49,13 +49,13 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	// Renders the depth of the scene out of the directional lights position
 
 	//To-do: Fix shadow pass to work with draw call from object
-	m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
+	/*m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
 	dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
 	m_depthShader.bind();
 	dxm->enableFrontFaceCulling();
 	for (Object* m : m_objects)
 		m->draw();
-	dxm->enableBackFaceCulling();
+	dxm->enableBackFaceCulling();*/
 
 	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
 	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
@@ -77,8 +77,8 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	m_timer.getFrameTime();
 	/* draw level here */
 	level.draw();
-	//for (Object* m : m_objects)
-		//m->draw();
+	for (Object* m : m_objects)
+		m->draw();
 	double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
