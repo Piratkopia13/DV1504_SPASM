@@ -166,7 +166,7 @@ bool GameState::processInput(float dt) {
 
 		m_scene.addModelViaQuadtree(models.back().get());
 	}*/
-
+	
 	if(kbTracker.pressed.Q)
 		for (int i = 0; i < 4; i++) {
 			this->player[i]->addVibration(0, 1);
@@ -177,7 +177,11 @@ bool GameState::processInput(float dt) {
 	
 
 	for(int i = 0; i < 4; i++)
-		this->player[i]->input(gpTracker[i], kbTracker);
+		this->player[i]->input(
+			m_app->getInput().gamepadState[this->player[i]->getPort()], 
+			gpTracker[this->player[i]->getPort()],
+			m_app->getInput().keyboardState, 
+			kbTracker);
 
 
 	// Update the camera controller from input devices

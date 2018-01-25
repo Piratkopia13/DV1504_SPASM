@@ -29,53 +29,61 @@ Character::~Character() {
 
 }
 
-void Character::input(GamePad::ButtonStateTracker & padState, Keyboard::KeyboardStateTracker & keyState) {
+void Character::input(
+	DirectX::GamePad::State& padState,
+	GamePad::ButtonStateTracker& padTracker,
+	DirectX::Keyboard::State& keyState,
+	Keyboard::KeyboardStateTracker& keyTracker) {
 
 	if (!usingController) {
 		
-		this->inputVec = DirectX::SimpleMath::Vector3(keyState.pressed.D - keyState.pressed.A, keyState.pressed.W - keyState.pressed.S, 0);
+		this->inputVec = Vector3(
+			
+			keyState.D - keyState.A, 
+			keyState.W - keyState.S, 
+			0);
 		
 
 	}
 	else {
-		//if (padState.	IsConnected()) {
+		if (padState.IsConnected()) {
 
 			// on button click
-			if (state.buttons.a == GamePad::ButtonStateTracker::PRESSED) {
+			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
 			}
-			if (state.buttons.x == GamePad::ButtonStateTracker::PRESSED) {
+			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(1, 1);
 			}
-			if (state.buttons.b == GamePad::ButtonStateTracker::PRESSED) {
+			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(2, 1);
 			}
-			if (state.buttons.y == GamePad::ButtonStateTracker::PRESSED) {
+			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(3, 1);
 			}
-			/*
-			if (state.buttons.a == GamePad::ButtonStateTracker::HELD) {
+			
+			if (padState.buttons.a == GamePad::ButtonStateTracker::HELD) {
 				this->addVibration(1,1);
 			}
-			*/
+			
 
 			//update inputVector
 			this->inputVec = Vector3(
-				state.thumbSticks.leftX, 
-				state.thumbSticks.leftY, 
+				padState.thumbSticks.leftX,
+				padState.thumbSticks.leftY, 
 				0);
 			//update aim Direction
 			this->aimVec = Vector3(
-				state.thumbSticks.rightX,
-				state.thumbSticks.rightY,
+				padState.thumbSticks.rightX,
+				padState.thumbSticks.rightY,
 				0);
 			
-			if (state.IsStartPressed()) {
+			if (padTracker.menu == 3) {
 
 				//change to pause
 				PostQuitMessage(this->controllerPort);
 			}
-			if (state.IsBackPressed()) {
+			if (padTracker.back == 3) {
 
 				// show scoreboard ? 
 			}
@@ -125,6 +133,11 @@ void Character::addVibration(unsigned int index, float addition) {
 			this->padVibration[index] = 1;
 		}
 	}
+}
+
+unsigned int Character::getPort()
+{
+	return this->controllerPort;
 }
 
 
