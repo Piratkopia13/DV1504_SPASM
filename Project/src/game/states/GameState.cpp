@@ -32,7 +32,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("grass.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/normal.tga");
-	//m_app->getResourceManager().LoadDXTexture("block.tga");
+	m_app->getResourceManager().LoadDXTexture("block.tga");
 
 	// Update the hud shader
 	m_hudShader.updateCamera(m_hudCam);
@@ -86,14 +86,15 @@ GameState::GameState(StateStack& stack)
 	/* Planes for debugging */
 
 	m_blockFbx = std::make_unique<FbxModel>("block.fbx");
-	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("grass.tga");
+	m_blockFbx->getModel()->getMaterial()->setDiffuseTexture("block.tga");
 	m_blockFbx->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	Block tempBlock;
 	tempBlock.setModel(m_blockFbx->getModel());
 	tempBlock.getTransform().setScale(0.1f);
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			tempBlock.getTransform().setTranslation(DirectX::SimpleMath::Vector3(i * 10.0f, j * 10.0f, 0.0f));
+	for (float i = 0; i < 10; i++) {
+		for (float j = 0; j < 10; j++) {
+			tempBlock.getTransform().setTranslation(DirectX::SimpleMath::Vector3(i, j, 0.0f));
+			//tempBlock.getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, DirectX::XMConvertToRadians(45.0f)));
 			m_blocks.push_back(tempBlock);
 		}
 	}
