@@ -2,7 +2,7 @@
 
 Object::Object() {
 	m_boundingBox = nullptr;
-	this->m_transform.setScale(0.01);
+	this->m_transform.setScale(0.01f);
 }
 
 Object::~Object() {

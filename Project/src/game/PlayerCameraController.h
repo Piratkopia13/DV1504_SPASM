@@ -1,14 +1,14 @@
 #include "../sail/Sail.h"
+#include "objects\common\Object.h"
 
 class PlayerCameraController : public CameraController {
 public:
 	PlayerCameraController(Camera* cam);
 
-	virtual void update(float dt);//Probably won't need dt
-	void update(float dt, const DirectX::SimpleMath::Vector3& playerPos);
+	void update(float dt, Object& focusObject);
 
 private:
 
-	float cameraOffset;
+	float m_cameraOffset;
 
 };
