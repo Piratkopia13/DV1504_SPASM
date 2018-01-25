@@ -44,7 +44,7 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	// The skybox needs to be rendered first in the scene since it should be behind all models
 	if (m_skybox)
 		m_skybox->draw(cam);
-
+		
 
 	// Renders the depth of the scene out of the directional lights position
 
@@ -57,20 +57,20 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 		m->draw();
 	dxm->enableBackFaceCulling();*/
 
-	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
-	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
-	//m_rotation += 0.00000005f * dt;
-	temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	dl.setPosition(temp);
-	temp = dl.getDirection();
-	temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	dl.setDirection(temp);
-	m_lights.setDirectionalLightCamera(dl);
-	Lights::DirectionalLight _dl;
-	_dl.direction = dl.getDirection();
-	//_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
-	m_lights.setDirectionalLight(_dl);
-	m_depthShader.updateCamera(dl);
+	//OrthographicCamera dl = m_lights.getDirectionalLightCamera();
+	//DirectX::SimpleMath::Vector3 temp = dl.getPosition();
+	////m_rotation += 0.00000005f * dt;
+	//temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
+	//dl.setPosition(temp);
+	//temp = dl.getDirection();
+	//temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
+	//dl.setDirection(temp);
+	//m_lights.setDirectionalLightCamera(dl);
+	//Lights::DirectionalLight _dl;
+	//_dl.direction = dl.getDirection();
+	////_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
+	//m_lights.setDirectionalLight(_dl);
+	//m_depthShader.updateCamera(dl);
 
 	m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
 
