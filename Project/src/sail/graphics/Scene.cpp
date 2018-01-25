@@ -36,7 +36,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam) {
+void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -75,8 +75,10 @@ void Scene::draw(float dt, Camera& cam) {
 	m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
 
 	m_timer.getFrameTime();
-	for (Object* m : m_objects)
-		m->draw();
+	/* draw level here */
+	level.draw();
+	//for (Object* m : m_objects)
+		//m->draw();
 	double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 

@@ -19,10 +19,7 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
-
-
-
-	// Load in textures from file
+	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("sand/normal.tga");
 	m_app->getResourceManager().LoadDXTexture("sand/specular.tga");
@@ -98,6 +95,8 @@ GameState::GameState(StateStack& stack)
 			m_blocks.push_back(tempBlock);
 		}
 	}
+
+
 
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));
@@ -228,7 +227,7 @@ bool GameState::render(float dt) {
 
 	// Draw the scene
 	// before rendering the final output to the back buffer
-	m_scene.draw(dt, m_cam);
+	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	//m_app->getDXManager()->enableAlphaBlending();
 	m_colorShader.updateCamera(m_cam);
