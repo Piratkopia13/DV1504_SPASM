@@ -17,6 +17,7 @@ namespace {
 class FbxModel{
 public:
 	FbxModel(const std::string& filename);
+
 	~FbxModel();
 
 	Model* getModel();

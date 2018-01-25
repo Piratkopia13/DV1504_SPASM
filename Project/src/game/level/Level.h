@@ -1,28 +1,27 @@
 #pragma once
 
 #include "../../sail/Sail.h"
-#include "../objects/common/Object.h"
-#include "../objects/Block.h"
 #include "../../sail/graphics/models/FbxModel.h"
+#include "../../sail/graphics/renderer/DeferredRenderer.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
 	// The size in x- and y-axis of a block
-	static const float DEFAULT_BLOCKSIZE = 1.f;
+	static const float DEFAULT_BLOCKSIZE = 8.f;
 }
 
 /**
 	Handles all objects of a level
 */
+class Block;
 class Level {
 
 public:
-	Level();
-	Level(const std::string& filename);
+	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
 	~Level();
 
 	void update(const float delta);
-	void render();
+	void draw();
 
 private:
 	// Number of blocks in the x-axis
@@ -30,7 +29,7 @@ private:
 	// Number of blocks in the y-axis
 	int m_height;
 	
-	std::vector<FbxModel> m_models;
-	std::vector<Block> m_blocks;
+	std::vector<std::unique_ptr<FbxModel>> m_models;
+	std::vector<std::unique_ptr<Block>> m_blocks;
 
 };

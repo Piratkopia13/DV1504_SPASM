@@ -13,9 +13,11 @@
 #include "renderer/DeferredRenderer.h"
 #include "../utils/Timer.h"
 #include "shader/basic/DepthShader.h"
+#include "../../game/level/Level.h"
 //#include "../../game/objects/common/Object.h"
 
 class Object;
+class Level;
 class Scene {
 
 public:
@@ -80,4 +82,8 @@ private:
 
 	// Camera rotation
 	float m_rotation;
+
+	// Currently used level
+	std::unique_ptr<Level> m_currLevel;
+
 };

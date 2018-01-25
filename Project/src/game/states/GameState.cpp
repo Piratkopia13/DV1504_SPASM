@@ -15,12 +15,9 @@ GameState::GameState(StateStack& stack)
 , m_playerCamController(&m_cam)
 , m_flyCam(true)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
-, m_level("the_void.level")
 {
 
 	m_app = Application::getInstance();
-
-	Level level("the_void.level");
 
 	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
@@ -98,6 +95,8 @@ GameState::GameState(StateStack& stack)
 			m_blocks.push_back(tempBlock);
 		}
 	}
+
+
 
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	m_debugText.setPosition(Vector2(0.f, 40.f));

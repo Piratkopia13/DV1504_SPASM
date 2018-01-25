@@ -15,6 +15,8 @@ Scene::Scene(const AABB& worldSize)
 	// Camera rotation
 	m_rotation = 0.f;
 
+	m_currLevel = std::make_unique<Level>("the_void.level", m_deferredRenderer);
+
 }
 Scene::~Scene() {}
 
@@ -75,8 +77,10 @@ void Scene::draw(float dt, Camera& cam) {
 	m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
 
 	m_timer.getFrameTime();
-	for (Object* m : m_objects)
-		m->draw();
+	/* draw level here */
+	m_currLevel->draw();
+	//for (Object* m : m_objects)
+		//m->draw();
 	double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 

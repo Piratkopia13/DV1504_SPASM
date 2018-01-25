@@ -51,7 +51,7 @@ private:
 	std::vector <Block> m_blocks;
 	std::vector<Model*> m_modelCopies;
 
-	Level m_level;
+	std::unique_ptr<FbxModel> m_fbxModel;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
