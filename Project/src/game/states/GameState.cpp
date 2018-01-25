@@ -91,9 +91,10 @@ GameState::GameState(StateStack& stack)
 	Block tempBlock;
 	tempBlock.setModel(m_blockFbx->getModel());
 	tempBlock.getTransform().setScale(0.1f);
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
-			tempBlock.getTransform().setTranslation(DirectX::SimpleMath::Vector3(i * 10.0f, j * 10.0f, 0.0f));
+	for (float i = 0; i < 10; i++) {
+		for (float j = 0; j < 10; j++) {
+			tempBlock.getTransform().setTranslation(DirectX::SimpleMath::Vector3(i, j, 0.0f));
+			//tempBlock.getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, DirectX::XMConvertToRadians(45.0f)));
 			m_blocks.push_back(tempBlock);
 		}
 	}
