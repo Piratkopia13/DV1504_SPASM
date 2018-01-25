@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <time.h>
 
 class Timer {
 
@@ -48,5 +49,52 @@ private:
 	INT64 m_counterStart = 0;
 
 	INT64 m_oldframeTime = 0;
+
+};
+
+
+
+class TimerH {
+public:
+	TimerH() {
+		this->startTime = GetTickCount();
+		this->lastTime = GetTickCount();
+		this->smoothing = 0.95;
+		this->avg = 0;
+	}
+
+	TimerH(const float smoothing) {
+		this->smoothing = smoothing;
+	}
+	~TimerH() {
+
+	}
+	float reset() {
+		this->startTime = GetTickCount();
+		this->lastTime = GetTickCount();
+		return 0;
+	}
+	float getTime() {
+		return difftime(GetTickCount(), startTime);
+	}
+	float deltaTime() {
+		float t = difftime(GetTickCount(), this->lastTime);
+		this->lastTime = GetTickCount();
+
+		this->avg = (this->avg * this->smoothing) + (t * (1 - this->smoothing));
+		return t;
+	}
+	float getFPS() {
+		return 1000 / this->avg;
+	}
+	float getAvg() {
+		return this->avg;
+	}
+
+private:
+	time_t startTime;
+	time_t lastTime;
+	float avg;
+	float smoothing;
 
 };

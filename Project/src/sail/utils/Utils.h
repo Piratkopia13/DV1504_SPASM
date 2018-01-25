@@ -46,6 +46,29 @@ public:
 class Logger {
 
 public:
+
+	inline static void log(const std::string& msg) {
+
+		HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		// Save currently set color
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(hstdout, &csbi);
+
+		SetConsoleTextAttribute(hstdout, 0xC0);
+		std::cout << "LOG: " << msg << std::endl;
+
+		// Revert color
+		SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+
+#ifdef _SAIL_THROW_ON_WARNING
+#ifdef _DEBUG
+		throw std::exception();
+#endif
+#endif
+	}
+
+
 	inline static void Warning(const std::string& msg) {
 		
 		HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);

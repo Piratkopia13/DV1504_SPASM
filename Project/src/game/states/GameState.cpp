@@ -179,7 +179,7 @@ bool GameState::processInput(float dt) {
 	for(int i = 0; i < 4; i++)
 		this->player[i]->input(
 			m_app->getInput().gamepadState[this->player[i]->getPort()], 
-			gpTracker[this->player[i]->getPort()],
+			gpTracker[this->player[i]->getPort()], 
 			m_app->getInput().keyboardState, 
 			kbTracker);
 
@@ -244,18 +244,18 @@ bool GameState::render(float dt) {
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
 
-	//m_app->getDXManager()->enableAlphaBlending();
+	////m_app->getDXManager()->enableAlphaBlending();
 	m_colorShader.updateCamera(m_cam);
 	for(int i = 0; i < 4; i++)
 		player[i]->draw();
 
-	// Draw HUD
-	m_scene.drawHUD();
+	//// Draw HUD
+	//m_scene.drawHUD();
 
-	/* Debug Stuff */
-	m_app->getDXManager()->disableDepthBuffer();
-	m_app->getDXManager()->disableAlphaBlending();
-	m_texturePlane->draw();
+	///* Debug Stuff */
+	//m_app->getDXManager()->disableDepthBuffer();
+	//m_app->getDXManager()->disableAlphaBlending();
+	//m_texturePlane->draw();
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
 	//m_app->getDXManager()->enableDepthBuffer();

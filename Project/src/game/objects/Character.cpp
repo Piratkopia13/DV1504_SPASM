@@ -147,11 +147,11 @@ unsigned int Character::getPort()
 
 
 bool Character::updateVibration(float dt) {
-	static float freq = float(1) / float(30);
+	static float freq = 1.f / 30.f;
 	static float deltaAcc = 0;
 	int upd = 0;
 	deltaAcc += dt;
-	if(deltaAcc > freq)
+	if(deltaAcc >= freq)
 		for (int i = 0; i < 4; i++) {
 			if (this->padVibration[i] > 0) {
 				upd++;

@@ -52,18 +52,20 @@ int Application::startGameLoop() {
 
 	// Start delta timer
 	m_timer.startTimer();
-
+	
 	MSG msg = {0};
 
 	m_fps = 0;
 
 	float secCounter = 0.f;
+	float elapsedTime = 0.f;
 	UINT frameCounter = 0;
 
 	float updateTimer = 0.f;
-	float timeBetweenUpdates = 1.f / 30.f;
+	float timeBetweenUpdates = 1.f / 60.f;
 
 	static_cast<float>(m_timer.getFrameTime());
+	TimerH asdasd;
 	// Main message loop
 	while (msg.message != WM_QUIT) {
 
@@ -86,12 +88,20 @@ int Application::startGameLoop() {
 
 			// Update fps counter
 			secCounter += delta;
+			elapsedTime += delta;
 			frameCounter++;
+			//if (asdasd.getTime() >= 1000.0) {
+				//Logger::log("Time_H: " + std::to_string(elapsedTime) + " : " + std::to_string(asdasd.deltaTime()));
+				//asdasd.reset();
+			//}
 			if (secCounter >= 1) {
 				m_fps = frameCounter;
 				frameCounter = 0;
 				secCounter = 0.f;
 				//std::cout << "FPS: " << m_fps << std::endl;
+				Logger::log("Time_H: " + std::to_string(elapsedTime) + " : " + std::to_string(asdasd.deltaTime()));
+
+
 			}
 
 			// Update input states for keyboard and X controllers
@@ -101,7 +111,7 @@ int Application::startGameLoop() {
 
 
 			// Update mouse deltas
-			m_input.newFrame();
+			//m_input.newFrame();
 
 			// Quit on escape or alt-f4
 			if (m_input.keyboardState.Escape || m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
@@ -110,19 +120,26 @@ int Application::startGameLoop() {
 			processInput(delta);
 
 			// Update
-			if(delta < 0.4f)
-				updateTimer += delta;
+			if(delta > 0.016)
+				Logger::Warning(std::to_string(elapsedTime) + " delta: " + std::to_string(delta));
 
-			while (updateTimer >= timeBetweenUpdates) {
-				update(timeBetweenUpdates);
-				updateTimer -= timeBetweenUpdates;
-			}
+			updateTimer += delta;
+
+			int maxCounter = 0;
+			update(delta);
+
+			//while (updateTimer >= timeBetweenUpdates) {
+			//	if (maxCounter >= 2)
+			//		break;
+			//	updateTimer -= timeBetweenUpdates;
+			//	maxCounter++;
+			//}
 
 			// Render
 			render(delta);
 
 			// Update wasJustPressed bools
-			m_input.endOfFrame();
+			//m_input.endOfFrame();
 		}
 
 	}
