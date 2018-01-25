@@ -55,4 +55,7 @@ private:
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
+
+	// Currently used level
+	std::unique_ptr<Level> m_currLevel;
 };

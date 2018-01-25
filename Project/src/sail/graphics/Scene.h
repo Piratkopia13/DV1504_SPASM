@@ -36,7 +36,7 @@ public:
 	void addSkybox(const std::wstring& filename);
 
 	// Draws the scene
-	void draw(float dt, Camera& cam);
+	void draw(float dt, Camera& cam, Level& level);
 	// Draws the HUD
 	void drawHUD();
 
@@ -82,8 +82,5 @@ private:
 
 	// Camera rotation
 	float m_rotation;
-
-	// Currently used level
-	std::unique_ptr<Level> m_currLevel;
 
 };

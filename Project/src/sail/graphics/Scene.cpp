@@ -15,8 +15,6 @@ Scene::Scene(const AABB& worldSize)
 	// Camera rotation
 	m_rotation = 0.f;
 
-	m_currLevel = std::make_unique<Level>("the_void.level", m_deferredRenderer);
-
 }
 Scene::~Scene() {}
 
@@ -38,7 +36,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam) {
+void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -78,7 +76,7 @@ void Scene::draw(float dt, Camera& cam) {
 
 	m_timer.getFrameTime();
 	/* draw level here */
-	m_currLevel->draw();
+	level.draw();
 	//for (Object* m : m_objects)
 		//m->draw();
 	double time = m_timer.getFrameTime();

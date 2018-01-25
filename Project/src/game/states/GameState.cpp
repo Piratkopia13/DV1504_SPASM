@@ -19,6 +19,8 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
+	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());
+
 	// Load in textures from file
 	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("sand/normal.tga");
@@ -204,7 +206,7 @@ bool GameState::render(float dt) {
 
 	// Draw the scene
 	// before rendering the final output to the back buffer
-	m_scene.draw(dt, m_cam);
+	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	// Draw HUD
 	m_scene.drawHUD();
