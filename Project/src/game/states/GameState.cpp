@@ -114,15 +114,19 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugParticleText);
 
 	// Add players
-	this->player[0] = new Character(m_texturePlane.get());
+	/*this->player[0] = new Character(m_blockFbx->getModel());
 	this->player[0]->setController(0);
 
 	for (int i = 0; i < 3; i++) {
-		this->player[i+1] = new Character(m_texturePlane.get());
+		this->player[i+1] = new Character(m_blockFbx->getModel());
 		this->player[i+1]->setController(1);
 		this->player[i+1]->setControllerPort(i);
+	}*/
+	for (int i = 0; i < 4; i++) {
+		this->player[i] = new Character(m_blockFbx->getModel());
+		this->player[i]->setController(1);
+		this->player[i]->setControllerPort(i);
 	}
-	
 }
 
 GameState::~GameState() {
@@ -156,16 +160,6 @@ bool GameState::processInput(float dt) {
 		m_matShader.updateLights(m_scene.getLights());
 	}
 
-	/*if (kbTracker.pressed.C) {
-		Vector3 halfSizes(.2f, .2f, .2f);
-		auto model = ModelFactory::CubeModel::Create(halfSizes);
-		model->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-		model->getTransform().setTranslation(m_cam.getPosition());
-		model->updateAABB();
-		models.push_back(std::move(model));
-
-		m_scene.addModelViaQuadtree(models.back().get());
-	}*/
 	
 	if(kbTracker.pressed.Q)
 		for (int i = 0; i < 4; i++) {
@@ -244,7 +238,7 @@ bool GameState::render(float dt) {
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam);
 
-	////m_app->getDXManager()->enableAlphaBlending();
+	//m_app->getDXManager()->enableAlphaBlending();
 	m_colorShader.updateCamera(m_cam);
 	for(int i = 0; i < 4; i++)
 		player[i]->draw();

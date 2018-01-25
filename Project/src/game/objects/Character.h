@@ -38,6 +38,7 @@ private:
 	float speed;
 	float padVibration[4];
 	float vibrationReduction[4];
+	void jump();
 
 
 	bool updateVibration(float dt);

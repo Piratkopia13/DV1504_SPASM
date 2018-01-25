@@ -13,6 +13,7 @@ Character::Character()
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
+	this->getTransform().setScale(0.1);
 }
 
 Character::Character(Model * model) : Character() {
