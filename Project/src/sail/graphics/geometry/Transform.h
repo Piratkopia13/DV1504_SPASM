@@ -57,13 +57,13 @@ public:
 
 	DirectX::SimpleMath::Matrix getMatrix() {
 		if (m_matNeedsUpdate) {
-			m_transformMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_translation)
+			m_transformMatrix = DirectX::SimpleMath::Matrix::CreateScale(m_scale)
 				* DirectX::SimpleMath::Matrix::CreateRotationX(m_rotation.x)
 				* DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y)
 				* DirectX::SimpleMath::Matrix::CreateRotationZ(m_rotation.z)
-				* DirectX::SimpleMath::Matrix::CreateScale(m_scale);
+				* DirectX::SimpleMath::Matrix::CreateTranslation(m_translation);
 
-			m_matNeedsUpdate = false;
+				m_matNeedsUpdate = false;
 		}
 		return m_transformMatrix;
 	}

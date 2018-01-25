@@ -2,12 +2,14 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
+#include "../objects/Character.h"
 #include "../../game/objects/Block.h"
 #include "../level/Level.h"
 
 class GameState : public State {
 public:
 	GameState(StateStack& stack);
+	~GameState();
 
 	// Process input for the state
 	virtual bool processInput(float dt);
@@ -29,6 +31,8 @@ private:
 	std::unique_ptr<Model> m_plane;
 	std::unique_ptr<Model> m_texturePlane;
 	std::unique_ptr<Model> m_texturePlane2;
+
+	Character* player[4];
 
 	SimpleColorShader m_colorShader;
 	SimpleTextureShader m_texShader;

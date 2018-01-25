@@ -108,7 +108,7 @@ int Application::startGameLoop() {
 			processInput(delta);
 
 			// Update
-			if(delta < 1.f)
+			if(delta < 0.4f)
 				updateTimer += delta;
 
 			while (updateTimer >= timeBetweenUpdates) {

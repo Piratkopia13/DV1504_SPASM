@@ -34,7 +34,7 @@ void FlyingCameraController::update(float dt) {
 	if (gpState.triggers.left > 0)
 		lookSensitivityController *= gpState.triggers.left * 5.0f;
 
-	app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
+	//app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
 
 
 	//
@@ -42,7 +42,7 @@ void FlyingCameraController::update(float dt) {
 	//
 
 	// Gamepad
-	setCameraPosition(getCameraPosition() + getCameraDirection() * gpState.thumbSticks.leftY * movementSpeed);
+	//setCameraPosition(getCameraPosition() + getCameraDirection() * gpState.thumbSticks.leftY * movementSpeed);
 
 	// Keyboard
 	if (kbState.W)
@@ -57,7 +57,7 @@ void FlyingCameraController::update(float dt) {
 	Vector3 right = getCameraDirection().Cross(Vector3::Up);
 	right.Normalize();
 	// Gamepad
-	setCameraPosition(getCameraPosition() - right * gpState.thumbSticks.leftX * movementSpeed);
+	//setCameraPosition(getCameraPosition() - right * gpState.thumbSticks.leftX * movementSpeed);
 
 	// Keyboard
 	if (kbState.A)
@@ -70,8 +70,8 @@ void FlyingCameraController::update(float dt) {
 	//
 
 	// Gamepad
-	setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Up * gpState.buttons.a * movementSpeed);
-	setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Down * gpState.buttons.x * movementSpeed);
+	//setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Up * gpState.buttons.a * movementSpeed);
+	//setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Down * gpState.buttons.x * movementSpeed);
 
 	// Keyboard
 	if (kbState.Space)
@@ -84,8 +84,8 @@ void FlyingCameraController::update(float dt) {
 	//
 
 	// Gamepad
-	m_pitch += gpState.thumbSticks.rightY * lookSensitivityController;
-	m_yaw -= gpState.thumbSticks.rightX * lookSensitivityController;
+	//m_pitch += gpState.thumbSticks.rightY * lookSensitivityController;
+	//m_yaw -= gpState.thumbSticks.rightX * lookSensitivityController;
 
 	// Mouse input
 
