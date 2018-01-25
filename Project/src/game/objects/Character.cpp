@@ -150,15 +150,12 @@ void Character::update(float dt) {
 			this->padVibration[3]);
 	
 	
-	bool test = false;
-	if (test) {
-		this->setVelocity(this->inputVec * dt * this->speed);
-	}
-	this->move(dt);
-	this->setVelocity(this->inputVec * dt * this->speed);
-	this->getTransform().setRotations(this->aimVec);
 
-	Moveable::update(dt);
+	this->setVelocity(this->inputVec * dt * this->speed);
+
+	this->getTransform().setRotations(Vector3(0,0,this->sinDegFromVec(this->aimVec)));
+
+	Moveable::move(dt);
 }
 
 void Character::draw() {
@@ -213,7 +210,7 @@ void Character::stopJump()
 
 void Character::fire()
 {
-	Application * app = Application::getInstance();
+	//Application * app = Application::getInstance();
 	
 }
 

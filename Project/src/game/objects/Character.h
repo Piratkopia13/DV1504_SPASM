@@ -44,4 +44,9 @@ private:
 	void hook();
 
 	bool updateVibration(float dt);
+	float sinDegFromVec(Vector3 vec) {
+
+		return atan2(vec.y, vec.x);
+	}
 }; 
+
