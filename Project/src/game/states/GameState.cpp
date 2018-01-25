@@ -174,7 +174,7 @@ bool GameState::processInput(float dt) {
 	if (m_flyCam)
 		m_camController.update(dt);
 	else
-		m_playerCamController.update(dt, m_blocks.at(0));
+		m_playerCamController.update(dt, *player[3]);
 
 
 	return true;
