@@ -62,10 +62,10 @@
     <ClCompile Include="src\game\states\GameState.cpp" />
     <ClCompile Include="src\sail\states\State.cpp" />
     <ClCompile Include="src\sail\states\StateStack.cpp" />
-    <ClCompile Include="src\game\Grid.cpp" />
     <ClCompile Include="src\game\objects\Block.cpp" />
-    <ClCompile Include="src\game\level\Level.cpp" />    
-	<ClCompile Include="src\game\objects\common\Moveable.cpp" />
+    <ClCompile Include="src\game\level\Level.cpp" />
+    <ClCompile Include="src\game\objects\common\Moveable.cpp" />
+    <ClCompile Include="src\game\level\Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -129,10 +129,11 @@
     <ClInclude Include="src\game\states\GameState.h" />
     <ClInclude Include="src\sail\states\State.h" />
     <ClInclude Include="src\sail\states\StateIdentifiers.h" />
-    <ClInclude Include="src\sail\states\StateStack.h" />    <ClInclude Include="src\game\objects\common\Moveable.h" />
-	<ClInclude Include="src\game\objects\Block.h" />
+    <ClInclude Include="src\sail\states\StateStack.h" />
+    <ClInclude Include="src\game\objects\common\Moveable.h" />
+    <ClInclude Include="src\game\objects\Block.h" />
     <ClInclude Include="src\game\level\Level.h" />
-    <ClInclude Include="src\game\Grid.h" />
+    <ClInclude Include="src\game\level\Grid.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

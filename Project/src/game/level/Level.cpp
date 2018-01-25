@@ -1,5 +1,6 @@
 #include "Level.h"
 #include "../objects/Block.h"
+#include "Grid.h"
 
 #include <string>
 #include <fstream>
@@ -12,7 +13,6 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 		unsigned int currTask = 0;
 		unsigned int x = 0;
 		unsigned int y = 0;
-		std::unique_ptr<Block> block;
 
 		std::cout << "models" << std::endl;
 		while (infile >> line) {
@@ -23,6 +23,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 			if (!line.compare("map")) {
 				currTask = 2;
 				infile >> line;
+				m_grid = std::make_unique<Grid>(m_width, m_height);
 			}
 
 
@@ -40,6 +41,10 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 					m_height = std::stoi(line.substr(find + 1, line.length() - find));
 					y = m_height;
 				}
+				if (!line.compare(0, 5, "width")) {
+					int find = line.find('=');
+					m_width = std::stoi(line.substr(find + 1, line.length() - find));
+				}
 				break;
 
 			case 2: // Load map
@@ -50,6 +55,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x * DEFAULT_BLOCKSIZE, y * DEFAULT_BLOCKSIZE, 0.f));
+						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
 					default:
 						break;

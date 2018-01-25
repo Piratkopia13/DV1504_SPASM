@@ -14,6 +14,7 @@ namespace {
 	Handles all objects of a level
 */
 class Block;
+class Grid;
 class Level {
 
 public:
@@ -31,5 +32,7 @@ private:
 	
 	std::vector<std::unique_ptr<FbxModel>> m_models;
 	std::vector<std::unique_ptr<Block>> m_blocks;
+
+	std::unique_ptr<Grid> m_grid;
 
 };
