@@ -150,6 +150,11 @@ void Character::update(float dt) {
 			this->padVibration[3]);
 	
 	
+	bool test = false;
+	if (test) {
+		this->setVelocity(this->inputVec * dt * this->speed);
+	}
+	this->move(dt);
 	this->setVelocity(this->inputVec * dt * this->speed);
 	this->getTransform().setRotations(this->aimVec);
 
