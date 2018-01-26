@@ -6,15 +6,12 @@ using namespace DirectX::SimpleMath;
 PlayerCameraController::PlayerCameraController(Camera* cam)
 	: CameraController(cam)
 {
-	cameraOffset = -10.0f;
+	m_cameraOffset = -60.0f;
 }
 
-void PlayerCameraController::update(float dt) {
-	update(dt, Vector3(0.f, 0.f, 0.f));
-}
-
-void PlayerCameraController::update(float dt, const Vector3& playerPos) {
+void PlayerCameraController::update(float dt, Object& focusObject) {
 	
-	setCameraPosition(Vector3(playerPos.x, playerPos.y, cameraOffset));
+	setCameraPosition(focusObject.getTransform().getTranslation() + Vector3(0.0f, 35.0f, m_cameraOffset));
+	setCameralookAt(focusObject.getTransform().getTranslation());
 }
 

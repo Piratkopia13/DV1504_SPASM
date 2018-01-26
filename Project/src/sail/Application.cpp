@@ -52,16 +52,19 @@ int Application::startGameLoop() {
 
 	// Start delta timer
 	m_timer.startTimer();
-
+	
 	MSG msg = {0};
 
 	m_fps = 0;
 
 	float secCounter = 0.f;
+	float elapsedTime = 0.f;
 	UINT frameCounter = 0;
 
 	float updateTimer = 0.f;
-	float timeBetweenUpdates = 1.f / 30.f;
+	float timeBetweenUpdates = 1.f / 60.f;
+
+	static_cast<float>(m_timer.getFrameTime());
 
 	// Main message loop
 	while (msg.message != WM_QUIT) {
@@ -86,15 +89,16 @@ int Application::startGameLoop() {
 			// Update fps counter
 			secCounter += delta;
 			frameCounter++;
+
 			if (secCounter >= 1) {
 				m_fps = frameCounter;
 				frameCounter = 0;
 				secCounter = 0.f;
-				//std::cout << "FPS: " << m_fps << std::endl;
 			}
 
-			// Update input states
-			m_input.gamepadState = GamePad::Get().GetState(0);
+			// Update input states for keyboard and X controllers
+			for(int i = 0 ; i < 4 ; i++)
+				m_input.gamepadState[i] = GamePad::Get().GetState(i);
 			m_input.keyboardState = Keyboard::Get().GetState();
 
 
@@ -108,12 +112,21 @@ int Application::startGameLoop() {
 			processInput(delta);
 
 			// Update
-			if(delta < 0.4f)
-				updateTimer += delta;
+#ifdef _DEBUG
+			if(delta > 0.0166)
+				Logger::Warning(std::to_string(elapsedTime) + " delta over 0.0166: " + std::to_string(delta));
+#endif
+			updateTimer += delta;
+
+			int maxCounter = 0;
+		
 
 			while (updateTimer >= timeBetweenUpdates) {
+				if (maxCounter >= 2)
+					break;
 				update(timeBetweenUpdates);
 				updateTimer -= timeBetweenUpdates;
+				maxCounter++;
 			}
 
 			// Render

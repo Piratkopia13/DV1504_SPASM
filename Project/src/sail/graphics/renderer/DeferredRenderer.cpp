@@ -59,7 +59,7 @@ void DeferredRenderer::beginGeometryPass(Camera& camera, ID3D11RenderTargetView*
 
 	// Update the camera in the shaders
 	m_geometryShader.updateCamera(camera);
-	m_dirLightShader.updateCamera(camera);
+	//m_dirLightShader.updateCamera(camera);
 	m_pointLightShader.updateCamera(camera);
 
 	// Bind the geometry shader

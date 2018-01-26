@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <time.h>
 
 class Timer {
 
@@ -50,3 +51,4 @@ private:
 	INT64 m_oldframeTime = 0;
 
 };
+

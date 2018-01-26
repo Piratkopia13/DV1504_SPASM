@@ -3,7 +3,7 @@
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
 #include "../objects/Character.h"
-#include "../../game/objects/Block.h"
+#include "../level/Level.h"
 
 class GameState : public State {
 public:
@@ -31,7 +31,6 @@ private:
 	std::unique_ptr<Model> m_texturePlane;
 	std::unique_ptr<Model> m_texturePlane2;
 
-	Character* player[4];
 
 	SimpleColorShader m_colorShader;
 	SimpleTextureShader m_texShader;
@@ -50,11 +49,19 @@ private:
 	PlayerCameraController m_playerCamController;
 	bool m_flyCam;
 
-	std::unique_ptr<FbxModel> m_blockFbx;
-	std::vector <Block> m_blocks;
 	std::vector<Model*> m_modelCopies;
 
+	std::unique_ptr<FbxModel> m_fbxModel;
+	std::unique_ptr<FbxModel> m_characterModel;
+	std::unique_ptr<FbxModel> m_WeaponModel1;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
+
+	// Currently used level
+	std::unique_ptr<Level> m_currLevel;
+
+	Weapon* weapons[4];
+	Character* player[4];
+
 };

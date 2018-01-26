@@ -57,7 +57,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam) {
+void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -73,33 +73,33 @@ void Scene::draw(float dt, Camera& cam) {
 	// The skybox needs to be rendered first in the scene since it should be behind all models
 	if (m_skybox)
 		m_skybox->draw(cam);
-
+		
 
 	// Renders the depth of the scene out of the directional lights position
 
 	//To-do: Fix shadow pass to work with draw call from object
-	m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
+	/*m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
 	dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
 	m_depthShader.bind();
 	dxm->enableFrontFaceCulling();
 	for (Object* m : m_objects)
 		m->draw();
-	dxm->enableBackFaceCulling();
+	dxm->enableBackFaceCulling();*/
 
-	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
-	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
-	//m_rotation += 0.00000005f * dt;
-	temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	dl.setPosition(temp);
-	temp = dl.getDirection();
-	temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	dl.setDirection(temp);
-	m_lights.setDirectionalLightCamera(dl);
-	Lights::DirectionalLight _dl;
-	_dl.direction = dl.getDirection();
-	//_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
-	m_lights.setDirectionalLight(_dl);
-	m_depthShader.updateCamera(dl);
+	//OrthographicCamera dl = m_lights.getDirectionalLightCamera();
+	//DirectX::SimpleMath::Vector3 temp = dl.getPosition();
+	////m_rotation += 0.00000005f * dt;
+	//temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
+	//dl.setPosition(temp);
+	//temp = dl.getDirection();
+	//temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
+	//dl.setDirection(temp);
+	//m_lights.setDirectionalLightCamera(dl);
+	//Lights::DirectionalLight _dl;
+	//_dl.direction = dl.getDirection();
+	////_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
+	//m_lights.setDirectionalLight(_dl);
+	//m_depthShader.updateCamera(dl);
 
 	if (m_doPostProcessing) {
 		m_deferredRenderer.beginGeometryPass(cam, *m_prePostTex->getRenderTargetView());
@@ -109,6 +109,8 @@ void Scene::draw(float dt, Camera& cam) {
 	}
 
 	m_timer.getFrameTime();
+	/* draw level here */
+	level.draw();
 	for (Object* m : m_objects)
 		m->draw();
 	double time = m_timer.getFrameTime();

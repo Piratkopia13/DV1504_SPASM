@@ -15,9 +15,11 @@
 #include "shader/basic/DepthShader.h"
 #include "shader/postprocess/PostProcessFlushShader.h"
 #include "shader/postprocess/GaussianBlurCShader.h"
+#include "../../game/level/Level.h"
 //#include "../../game/objects/common/Object.h"
 
 class Object;
+class Level;
 class Scene {
 
 public:
@@ -36,7 +38,7 @@ public:
 	void addSkybox(const std::wstring& filename);
 
 	// Draws the scene
-	void draw(float dt, Camera& cam);
+	void draw(float dt, Camera& cam, Level& level);
 	// Draws the HUD
 	void drawHUD();
 
@@ -97,4 +99,5 @@ private:
 
 	// Camera rotation
 	float m_rotation;
+
 };

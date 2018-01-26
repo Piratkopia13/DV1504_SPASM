@@ -65,10 +65,16 @@
     <ClCompile Include="src\sail\states\State.cpp" />
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\game\objects\Character.cpp" />
+    <ClCompile Include="src\game\objects\Block.cpp" />
+    <ClCompile Include="src\game\level\Level.cpp" />
     <ClCompile Include="src\game\objects\common\Moveable.cpp" />
     <ClCompile Include="src\game\objects\Block.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
+    <ClCompile Include="src\game\level\Grid.cpp" />
+    <ClCompile Include="src\game\objects\Weapon.cpp" />
+    <ClCompile Include="src\game\objects\Projectile.cpp" />
+    <ClCompile Include="src\game\ProjectileHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -138,11 +144,18 @@
     <ClInclude Include="src\game\objects\Block.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
+    <ClInclude Include="src\game\objects\Block.h" />
+    <ClInclude Include="src\game\level\Level.h" />
+    <ClInclude Include="src\game\level\Grid.h" />
+    <ClInclude Include="src\game\objects\Weapon.h" />
+    <ClInclude Include="src\game\objects\Projectile.h" />
+    <ClInclude Include="src\game\ProjectileHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
+    <None Include="res\levels\the_void.level" />
   </ItemGroup>
 </Project>
