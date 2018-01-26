@@ -16,6 +16,10 @@ void Block::setModel(Model *newModel) {
 	m_drawModel = newModel;
 }
 
+Model* Block::getModel() {
+	return m_drawModel;
+}
+
 void Block::draw() {
 	m_drawModel->setTransform(&getTransform());
 	m_drawModel->draw();

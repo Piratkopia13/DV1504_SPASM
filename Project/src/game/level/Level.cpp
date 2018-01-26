@@ -90,3 +90,7 @@ void Level::draw() {
 	for (const auto& block : m_blocks) 
 		block->draw();
 }
+
+std::vector<std::unique_ptr<Block>>& Level::getBlockList() {
+	return m_blocks;
+}

@@ -71,7 +71,7 @@ GameState::GameState(StateStack& stack)
 	m_texturePlane->buildBufferForShader(&m_hudShader);
 	//m_texturePlane->getMaterial()->setTextures(m_scene.getDLShadowMap().getSRV(), 1);
 	//m_texturePlane->getMaterial()->setTextures(m_scene.getPreProcessRenderableTexture().getColorSRV(), 1);
-	m_texturePlane->getMaterial()->setTextures(m_scene.getDeferredRenderer().getGBufferSRV(DeferredRenderer::DIFFUSE_GBUFFER), 1);
+	m_texturePlane->getMaterial()->setTextures(m_scene.getDLShadowMap().getSRV(), 1);
 	m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
 	m_texturePlane->getTransform().rotateAroundY(XM_PI);
 	m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
@@ -234,12 +234,12 @@ bool GameState::render(float dt) {
 	m_scene.drawHUD();
 
 	///* Debug Stuff */
-	//m_app->getDXManager()->disableDepthBuffer();
-	//m_app->getDXManager()->disableAlphaBlending();
-	//m_texturePlane->draw();
+ 	m_app->getDXManager()->disableDepthBuffer();
+ 	m_app->getDXManager()->disableAlphaBlending();
+	m_texturePlane->draw();
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
-	//m_app->getDXManager()->enableDepthBuffer();
+	m_app->getDXManager()->enableDepthBuffer();
 	/* Debug Stuff */
 
 	// Swap backbuffers

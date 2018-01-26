@@ -10,10 +10,19 @@ GaussianBlurCShader::GaussianBlurCShader()
 	, m_vertPassUAV(nullptr)
 {
 
+	auto window = Application::getInstance()->getWindow();
+	UINT width = window->getWindowWidth();
+	UINT height = window->getWindowHeight();
+
+	// Set up the "middle" texture used betwwen the two passes
+	m_middleTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false, false, D3D11_BIND_UNORDERED_ACCESS));
+	m_vertInputSRV = m_middleTex->getColorSRV();
+	setHorPassUAV(m_middleTex->getTexture2D());
+
+
 	// Compile shader
 	auto csHorBlob = compileShader(L"postprocess/GaussianBlurCS.hlsl", "CSHorizontal", "cs_5_0");
 	auto csVertBlob = compileShader(L"postprocess/GaussianBlurCS.hlsl", "CSVertical", "cs_5_0");
-
 
 	// Set both the compute shaders
 	ID3D10Blob** csBlobs = new ID3D10Blob*[2];
@@ -50,7 +59,8 @@ void GaussianBlurCShader::createBuffers() {
 void GaussianBlurCShader::setInputSRV(ID3D11ShaderResourceView** srv) {
 	m_horInputSRV = srv;
 }
-void GaussianBlurCShader::setOutputTexture(ID3D11Texture2D* tex) {
+
+void GaussianBlurCShader::setHorPassUAV(ID3D11Texture2D* tex) {
 	auto* dev = Application::getInstance()->getDXManager()->getDevice();
 	D3D11_TEXTURE2D_DESC texDesc;
 	tex->GetDesc(&texDesc);
@@ -67,7 +77,7 @@ void GaussianBlurCShader::setOutputTexture(ID3D11Texture2D* tex) {
 	ThrowIfFailed(dev->CreateUnorderedAccessView(tex, &descView, &m_horPassUAV));
 }
 
-void GaussianBlurCShader::setInputTexture(ID3D11Texture2D* tex) {
+void GaussianBlurCShader::setOutputTexture(ID3D11Texture2D* tex) {
 	auto* dev = Application::getInstance()->getDXManager()->getDevice();
 	D3D11_TEXTURE2D_DESC texDesc;
 	tex->GetDesc(&texDesc);
@@ -84,10 +94,11 @@ void GaussianBlurCShader::setInputTexture(ID3D11Texture2D* tex) {
 	ThrowIfFailed(dev->CreateUnorderedAccessView(tex, &descView, &m_vertPassUAV));
 }
 
-void GaussianBlurCShader::setOutputSRV(ID3D11ShaderResourceView** srv) {
-	m_vertInputSRV = srv;
+void GaussianBlurCShader::resize(int width, int height) {
+	m_middleTex->resize(width, height);
+	m_vertInputSRV = m_middleTex->getColorSRV();
+	setHorPassUAV(m_middleTex->getTexture2D());
 }
-
 
 void GaussianBlurCShader::draw(bool bindFirst) {
 
@@ -130,42 +141,3 @@ void GaussianBlurCShader::draw(bool bindFirst) {
 	con->CSSetShaderResources(0, 1, &pNullSRV);
 
 }
-
-//void GaussianBlurCShader::updateParticles(UINT& numParticles) {
-//
-//	// Binds the update CS
-//	bindCS(1);
-//	m_particleCountBuffer->bind(ShaderComponent::BIND_SHADER::CS, 0);
-//
-//	// -1 indicates to keep the current offset
-//	UINT pUAVInitCounts = -1;
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CSSetUnorderedAccessViews(0, 1, &m_nextUAV, 0);
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CSSetUnorderedAccessViews(1, 1, &m_currUAV, &pUAVInitCounts);
-//	UINT numGroups = (numParticles - numParticles % 512) / 512 + 1;
-//	Application::getInstance()->getDXManager()->getDeviceContext()->Dispatch(numGroups, 1, 1);
-//	ID3D11UnorderedAccessView* pNullUAV = nullptr;
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CSSetUnorderedAccessViews(0, 1, &pNullUAV, nullptr);
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CSSetUnorderedAccessViews(1, 1, &pNullUAV, nullptr);
-//
-//	// Swap the UAVs
-//	std::swap(m_currUAV, m_nextUAV);
-//
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CopyStructureCount(m_particleCountBuffer->getBuffer(), 0, m_currUAV);
-//}
-
-//void GaussianBlurCShader::emitParticles(UINT& numBatches) {
-//
-//	// Binds the insert CS
-//	bindCS(0);
-//	m_particleParameterBuffer->bind(ShaderComponent::CS, 0);
-//
-//	// -1 indicates to keep the current offset
-//	UINT pUAVInitCounts = -1;
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CSSetUnorderedAccessViews(0, 1, &m_currUAV, &pUAVInitCounts);
-//	Application::getInstance()->getDXManager()->getDeviceContext()->Dispatch(numBatches, 1, 1);
-//	ID3D11UnorderedAccessView* pNullUAV = nullptr;
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CSSetUnorderedAccessViews(0, 1, &pNullUAV, nullptr);
-//
-//	Application::getInstance()->getDXManager()->getDeviceContext()->CopyStructureCount(m_particleCountBuffer->getBuffer(), 0, m_currUAV);
-//
-//}

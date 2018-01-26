@@ -92,8 +92,6 @@ private:
 	std::unique_ptr<RenderableTexture> m_prePostTex;
 	// This is what the post process pass will render to
 	std::unique_ptr<RenderableTexture> m_postProcOutputTex;
-	// temp
-	std::unique_ptr<RenderableTexture> m_gaussianFirstPassTex;
 
 	bool m_doPostProcessing;
 

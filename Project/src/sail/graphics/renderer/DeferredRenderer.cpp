@@ -93,7 +93,7 @@ void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMa
 
 	// Draw all pixels on the screen since the directional light affects them all
 	m_dirLightShader.draw(m_fullScreenPlane, false);
-	//m_fullScreenPlane.draw(false);
+// 	m_fullScreenPlane.draw(false);
 
 	// Bind for point light rendering pass
 	m_pointLightShader.bind();

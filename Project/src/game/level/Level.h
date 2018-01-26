@@ -25,6 +25,8 @@ public:
 	void update(const float delta);
 	void draw();
 
+	std::vector<std::unique_ptr<Block>>& getBlockList();
+
 private:
 	// Number of blocks in the x-axis
 	int m_width;

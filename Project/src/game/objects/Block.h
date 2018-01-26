@@ -12,6 +12,7 @@ public:
 	virtual ~Block();
 
 	void setModel(Model* newModel);
+	Model* getModel();
 
 	virtual void draw();
 };

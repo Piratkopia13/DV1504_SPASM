@@ -8,6 +8,7 @@
 #include "../../camera/Camera.h"
 #include "../../../Application.h"
 #include "../ShaderSet.h"
+#include "../../RenderableTexture.h"
 
 class GaussianBlurCShader : public ShaderSet {
 public:
@@ -22,20 +23,14 @@ public:
 
 	virtual void draw(bool bindFirst = true);
 
-	void setInputSRV(ID3D11ShaderResourceView** srv);
-	void setInputTexture(ID3D11Texture2D* tex);
 	void setOutputTexture(ID3D11Texture2D* tex);
-	void setOutputSRV(ID3D11ShaderResourceView** srv);
+ 	void setInputSRV(ID3D11ShaderResourceView** srv);
 
-	//void updateModelDataBuffer() const;
-
-	//void setTextureSRV(ID3D11ShaderResourceView* srv);
-
-	//void updateParticles(UINT& numParticles);
-	//void emitParticles(UINT& numBatches);
+	void resize(int width, int height);
 
 private:
 	void updateConstantBuffer() const;
+	void setHorPassUAV(ID3D11Texture2D* tex);
 
 private:
 
@@ -44,6 +39,8 @@ private:
 
 	ID3D11ShaderResourceView** m_horInputSRV;
 	ID3D11ShaderResourceView** m_vertInputSRV;
+
+	std::unique_ptr<RenderableTexture> m_middleTex;
 
 	// Components
 
