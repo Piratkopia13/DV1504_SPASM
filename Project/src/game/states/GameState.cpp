@@ -92,15 +92,19 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugParticleText);
 
 	// Add players
-	this->player[0] = new Character(m_texturePlane.get());
+	/*this->player[0] = new Character(m_blockFbx->getModel());
 	this->player[0]->setController(0);
 
 	for (int i = 0; i < 3; i++) {
-		this->player[i+1] = new Character(m_texturePlane.get());
+		this->player[i+1] = new Character(m_blockFbx->getModel());
 		this->player[i+1]->setController(1);
 		this->player[i+1]->setControllerPort(i);
+	}*/
+	for (int i = 0; i < 4; i++) {
+		this->player[i] = new Character(m_texturePlane.get());
+		this->player[i]->setController(1);
+		this->player[i]->setControllerPort(i);
 	}
-	
 }
 
 GameState::~GameState() {
@@ -112,14 +116,16 @@ GameState::~GameState() {
 bool GameState::processInput(float dt) {
 
 	static Keyboard::KeyboardStateTracker kbTracker;
-	static GamePad::ButtonStateTracker gpTracker;
+	static GamePad::ButtonStateTracker gpTracker[4];
+	for(int i = 0; i < 4; i++)
+		gpTracker[i].Update(m_app->getInput().gamepadState[i]);
 	kbTracker.Update(m_app->getInput().keyboardState);
-	gpTracker.Update(m_app->getInput().gamepadState);
+
+
 
 	// Toggle camera controller on 'F' key or 'Y' btn
-	if (kbTracker.pressed.F || gpTracker.y == gpTracker.PRESSED)
+	if (kbTracker.pressed.F)
 		m_flyCam = !m_flyCam;
-
 	// Add red point light at camera pos
 	if (kbTracker.pressed.E) {
 		Lights::PointLight pl;
@@ -132,19 +138,23 @@ bool GameState::processInput(float dt) {
 		m_matShader.updateLights(m_scene.getLights());
 	}
 
-	/*if (kbTracker.pressed.C) {
-		Vector3 halfSizes(.2f, .2f, .2f);
-		auto model = ModelFactory::CubeModel::Create(halfSizes);
-		model->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-		model->getTransform().setTranslation(m_cam.getPosition());
-		model->updateAABB();
-		models.push_back(std::move(model));
 
-		m_scene.addModelViaQuadtree(models.back().get());
-	}*/
+	
+	if(kbTracker.pressed.Q)
+		for (int i = 0; i < 4; i++) {
+			this->player[i]->addVibration(0, 1);
+			this->player[i]->addVibration(1, 1);
+			this->player[i]->addVibration(2, 1);
+			this->player[i]->addVibration(3, 1);
+		}
+	
 
 	for(int i = 0; i < 4; i++)
-		this->player[i]->input();
+		this->player[i]->input(
+			m_app->getInput().gamepadState[this->player[i]->getPort()], 
+			gpTracker[this->player[i]->getPort()], 
+			m_app->getInput().keyboardState, 
+			kbTracker);
 
 
 	// Update the camera controller from input devices
@@ -212,13 +222,13 @@ bool GameState::render(float dt) {
 	for(int i = 0; i < 4; i++)
 		player[i]->draw();
 
-	// Draw HUD
-	m_scene.drawHUD();
+	//// Draw HUD
+	//m_scene.drawHUD();
 
-	/* Debug Stuff */
-	m_app->getDXManager()->disableDepthBuffer();
-	m_app->getDXManager()->disableAlphaBlending();
-	m_texturePlane->draw();
+	///* Debug Stuff */
+	//m_app->getDXManager()->disableDepthBuffer();
+	//m_app->getDXManager()->disableAlphaBlending();
+	//m_texturePlane->draw();
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
 	//m_app->getDXManager()->enableDepthBuffer();
