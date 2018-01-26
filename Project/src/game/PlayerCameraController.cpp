@@ -11,7 +11,7 @@ PlayerCameraController::PlayerCameraController(Camera* cam)
 
 void PlayerCameraController::update(float dt, Object& focusObject) {
 	
-	setCameraPosition(focusObject.getTransform().getTranslation() + Vector3(0.0f, 25.0f, m_cameraOffset));
+	setCameraPosition(focusObject.getTransform().getTranslation() + Vector3(0.0f, 35.0f, m_cameraOffset));
 	setCameralookAt(focusObject.getTransform().getTranslation());
 }
 

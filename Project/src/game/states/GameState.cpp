@@ -100,7 +100,16 @@ GameState::GameState(StateStack& stack)
 		this->player[i+1]->setController(1);
 		this->player[i+1]->setControllerPort(i);
 	}*/
+
+
+
+
+	for (int i = 0; i < 4; i++)
+	{
+
+	}
 	for (int i = 0; i < 4; i++) {
+		
 		this->player[i] = new Character(m_texturePlane.get());
 		this->player[i]->setController(1);
 		this->player[i]->setControllerPort(i);

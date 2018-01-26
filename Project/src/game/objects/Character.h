@@ -25,19 +25,27 @@ public:
 	void addVibration(unsigned int index, float addition);
 	unsigned int getPort();
 
+	void setTeam(unsigned int team);
+	void setWeapon(Moveable* weapon);
+
+
 private:
 	
 	Model * model;
+	Moveable* currentWeapon;
+
+	unsigned int currentTeam;
 	bool usingController;
 	unsigned int controllerPort;
 
 	DirectX::SimpleMath::Vector3 inputVec;
 	DirectX::SimpleMath::Vector3 aimVec;
 	bool jumping;
+	float jumpTimer();
 
 	float speed;
-	float padVibration[4];
-	float vibrationReduction[4];
+	float padVibration[2];
+	float vibrationReduction[2];
 	void jump();
 	void stopJump();
 	void fire();
