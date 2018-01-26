@@ -6,34 +6,49 @@ static const float filter[13] = {
 
 };
 
-[numthreads(1, 1, 1)]
+#define NUM_THREADS 1024
+[numthreads(NUM_THREADS, 1, 1)]
 void CSHorizontal(uint3 DispatchThreadID : SV_DispatchThreadID) {
 
-  float4 color;
+	float4 color;
 
-  uint width;
-  uint height;
-  input.GetDimensions(width, height);
+	uint width;
+	uint height;
+	input.GetDimensions(width, height);
 
-  for (int x = 0; x < 13; x++) {
-    uint2 index = uint2(clamp(DispatchThreadID.x + x - 6, 0, width), DispatchThreadID.y);
-      color += input[index] * filter[x];
-  }
+    uint2 pixCoords = uint2(DispatchThreadID.x + NUM_THREADS * DispatchThreadID.z, DispatchThreadID.y);
 
-  output[DispatchThreadID.xy] = color;
+    if (pixCoords.x > width)
+		return;
+
+    for (int x = 0; x < 13; x++) {
+        uint2 index = uint2(clamp(pixCoords.x + x - 6, 0, width), pixCoords.y);
+        color += input[index] * filter[x];
+    }
+
+    output[pixCoords] = color;
 
 }
 
-[numthreads(1, 1, 1)]
+[numthreads(1, NUM_THREADS, 1)]
 void CSVertical(uint3 DispatchThreadID : SV_DispatchThreadID)
 {
 
-  float4 color;
+	float4 color;
 
-  for (int y = 0; y < 13; y++) {
-    color += input[DispatchThreadID.xy + uint2(0, y - 6)] * filter[y];
-  }
+	uint width;
+	uint height;
+	input.GetDimensions(width, height);
 
-  output[DispatchThreadID.xy] = color;
+    uint2 pixCoords = uint2(DispatchThreadID.x, DispatchThreadID.y + NUM_THREADS * DispatchThreadID.z);
+
+	if (pixCoords.y > height)
+		return;
+
+	for (int y = 0; y < 13; y++) {
+		color += input[pixCoords + uint2(0, y - 6)] * filter[y];
+	}
+
+    output[pixCoords] = color;
 
 }

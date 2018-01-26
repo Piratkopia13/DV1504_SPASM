@@ -231,7 +231,7 @@ bool GameState::render(float dt) {
 		player[i]->draw();*/
 
 	// Draw HUD
-	//m_scene.drawHUD();
+	m_scene.drawHUD();
 
 	///* Debug Stuff */
 	//m_app->getDXManager()->disableDepthBuffer();

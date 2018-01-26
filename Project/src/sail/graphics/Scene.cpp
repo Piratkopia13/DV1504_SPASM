@@ -114,7 +114,7 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	for (Object* m : m_objects)
 		m->draw();
 	double time = m_timer.getFrameTime();
-	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
+// 	std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
 	// Switch render target to where the deferred output should be
 	if (m_doPostProcessing) {
