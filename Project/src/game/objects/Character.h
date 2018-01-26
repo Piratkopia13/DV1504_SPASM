@@ -2,6 +2,7 @@
 #include "../../sail/Application.h"
 #include "common/Moveable.h"
 #include "../../sail/graphics/geometry/Model.h"
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 

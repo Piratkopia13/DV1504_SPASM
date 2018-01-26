@@ -53,6 +53,7 @@ private:
 	std::vector<Model*> m_modelCopies;
 
 	std::unique_ptr<FbxModel> m_fbxModel;
+	std::unique_ptr<FbxModel> m_characterModel;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;

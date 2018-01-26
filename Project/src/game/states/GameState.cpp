@@ -91,15 +91,8 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
-	// Add players
-	/*this->player[0] = new Character(m_blockFbx->getModel());
-	this->player[0]->setController(0);
-
-	for (int i = 0; i < 3; i++) {
-		this->player[i+1] = new Character(m_blockFbx->getModel());
-		this->player[i+1]->setController(1);
-		this->player[i+1]->setControllerPort(i);
-	}*/
+	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
 
 
@@ -110,7 +103,7 @@ GameState::GameState(StateStack& stack)
 	}
 	for (int i = 0; i < 4; i++) {
 		
-		this->player[i] = new Character(m_texturePlane.get());
+		this->player[i] = new Character(m_characterModel->getModel());
 		this->player[i]->setController(1);
 		this->player[i]->setControllerPort(i);
 	}
