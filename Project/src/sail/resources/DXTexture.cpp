@@ -43,12 +43,12 @@ DXTexture::DXTexture(const std::string& filename) {
 
 }
 
-DXTexture::DXTexture(UINT width, UINT height, UINT aaSamples) {
+DXTexture::DXTexture(UINT width, UINT height, UINT aaSamples, UINT bindFlags) {
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
 	texDesc.ArraySize = 1;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | bindFlags;
 	texDesc.CPUAccessFlags = 0;
 	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	texDesc.Height = height;

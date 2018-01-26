@@ -11,6 +11,8 @@
     <FxCompile Include="res\shaders\deferred\GeometryShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\PointLightShader.hlsl" />
     <FxCompile Include="res\shaders\DepthShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
@@ -64,6 +66,9 @@
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\game\objects\Character.cpp" />
     <ClCompile Include="src\game\objects\common\Moveable.cpp" />
+    <ClCompile Include="src\game\objects\Block.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -130,6 +135,9 @@
     <ClInclude Include="src\sail\states\StateStack.h" />
     <ClInclude Include="src\game\objects\common\Moveable.h" />
     <ClInclude Include="src\game\objects\Character.h" />
+    <ClInclude Include="src\game\objects\Block.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

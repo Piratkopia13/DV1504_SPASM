@@ -13,6 +13,8 @@
 #include "renderer/DeferredRenderer.h"
 #include "../utils/Timer.h"
 #include "shader/basic/DepthShader.h"
+#include "shader/postprocess/PostProcessFlushShader.h"
+#include "shader/postprocess/GaussianBlurCShader.h"
 //#include "../../game/objects/common/Object.h"
 
 class Object;
@@ -52,12 +54,19 @@ public:
 
 	DirLightShadowMap& getDLShadowMap();
 
+	RenderableTexture& getPreProcessRenderableTexture();
+
 private:
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
+	void createFullscreenQuad();
 
 private:
 	DeferredRenderer m_deferredRenderer;
 	Timer m_timer;
+
+	Model m_postProcessfullScreenPlane;
+	PostProcessFlushShader m_postProcessFlushShader;
+	GaussianBlurCShader m_gaussianBlurShader;
 
 	//std::map<ShaderSet*, std::vector<Model*>> m_mappedModels;
 	std::vector<Object*> m_objects;
@@ -77,6 +86,14 @@ private:
 	// Shadow maps
 	DirLightShadowMap m_dirLightShadowMap;
 
+	// This is what the deferred renderer will render to
+	std::unique_ptr<RenderableTexture> m_prePostTex;
+	// This is what the post process pass will render to
+	std::unique_ptr<RenderableTexture> m_postProcOutputTex;
+	// temp
+	std::unique_ptr<RenderableTexture> m_gaussianFirstPassTex;
+
+	bool m_doPostProcessing;
 
 	// Camera rotation
 	float m_rotation;

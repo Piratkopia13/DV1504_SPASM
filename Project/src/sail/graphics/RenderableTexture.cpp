@@ -1,7 +1,7 @@
 #include "RenderableTexture.h"
 #include "../Application.h"
 
-RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bool createDepthStencilView, bool createOnlyDSV)
+RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bool createDepthStencilView, bool createOnlyDSV, UINT bindFlags)
 	: m_width(width)
 	, m_height(height)
 	, m_hasDepthStencilView(createDepthStencilView)
@@ -12,6 +12,7 @@ RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bo
 	, m_nonMSAAColorSRV(nullptr)
 	, m_nonMSAADepthSRV(nullptr)
 	, m_onlyDSV(createOnlyDSV)
+	, m_bindFlags(bindFlags)
 {
 	createTextures();
 }
@@ -43,7 +44,7 @@ void RenderableTexture::createTextures() {
 	// Color
 	if (!m_onlyDSV) {
 		Memory::safeDelete(m_dxColorTexture);
-		m_dxColorTexture = new DXTexture(m_width, m_height, m_aaSamples);
+		m_dxColorTexture = new DXTexture(m_width, m_height, m_aaSamples, m_bindFlags);
 
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 		ZeroMemory(&rtvDesc, sizeof(rtvDesc));
@@ -81,7 +82,7 @@ void RenderableTexture::createTextures() {
 		// Create a non MSAA'd copy of the color texture for use in shaders
 		D3D11_TEXTURE2D_DESC texDesc;
 		m_dxColorTexture->getTexture2D()->GetDesc(&texDesc);
-		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | m_bindFlags;
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
 
@@ -137,6 +138,10 @@ ID3D11DepthStencilView** RenderableTexture::getDepthStencilView() {
 
 D3D11_VIEWPORT* RenderableTexture::getViewPort() {
 	return &m_viewport;
+}
+
+ID3D11Texture2D* RenderableTexture::getTexture2D() {
+	return m_dxColorTexture->getTexture2D();
 }
 
 void RenderableTexture::begin() {
