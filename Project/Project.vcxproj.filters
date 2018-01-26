@@ -68,6 +68,8 @@
     <ClCompile Include="src\game\objects\common\Moveable.cpp" />
     <ClCompile Include="src\game\level\Grid.cpp" />
     <ClCompile Include="src\game\objects\Weapon.cpp" />
+    <ClCompile Include="src\game\objects\Projectile.cpp" />
+    <ClCompile Include="src\game\ProjectileFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -138,6 +140,8 @@
     <ClInclude Include="src\game\level\Level.h" />
     <ClInclude Include="src\game\level\Grid.h" />
     <ClInclude Include="src\game\objects\Weapon.h" />
+    <ClInclude Include="src\game\objects\Projectile.h" />
+    <ClInclude Include="src\game\ProjectileFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />
