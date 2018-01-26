@@ -13,7 +13,7 @@ GameState::GameState(StateStack& stack)
 , m_debugCamText(&m_font, L"")
 , m_debugParticleText(&m_font, L"")
 , m_playerCamController(&m_cam)
-, m_flyCam(true)
+, m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
 
@@ -91,25 +91,29 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
-	// Add players
-	/*this->player[0] = new Character(m_blockFbx->getModel());
-	this->player[0]->setController(0);
+	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
-	for (int i = 0; i < 3; i++) {
-		this->player[i+1] = new Character(m_blockFbx->getModel());
-		this->player[i+1]->setController(1);
-		this->player[i+1]->setControllerPort(i);
-	}*/
+	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
+	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+	
+
 	for (int i = 0; i < 4; i++) {
-		this->player[i] = new Character(m_texturePlane.get());
+		this->weapons[i] = new Weapon(m_WeaponModel1->getModel(), i % 2);
+		this->player[i] = new Character(m_characterModel->getModel());
 		this->player[i]->setController(1);
 		this->player[i]->setControllerPort(i);
+		this->player[i]->setWeapon(this->weapons[i]);
 	}
 }
 
 GameState::~GameState() {
 	for (int i = 0; i < 4; i++)
+	{
+		delete weapons[i];
 		delete player[i];
+	}
 }
 
 // Process input for the state
