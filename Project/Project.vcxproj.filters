@@ -69,7 +69,7 @@
     <ClCompile Include="src\game\level\Grid.cpp" />
     <ClCompile Include="src\game\objects\Weapon.cpp" />
     <ClCompile Include="src\game\objects\Projectile.cpp" />
-    <ClCompile Include="src\game\ProjectileFactory.cpp" />
+    <ClCompile Include="src\game\ProjectileHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -141,7 +141,7 @@
     <ClInclude Include="src\game\level\Grid.h" />
     <ClInclude Include="src\game\objects\Weapon.h" />
     <ClInclude Include="src\game\objects\Projectile.h" />
-    <ClInclude Include="src\game\ProjectileFactory.h" />
+    <ClInclude Include="src\game\ProjectileHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

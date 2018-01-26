@@ -6,10 +6,15 @@ class Projectile : public Moveable {
 private:
 	Model * m_drawModel;
 	float m_damage;
+	int m_team;
 
 public:
-	Projectile(Model *drawModel, DirectX::SimpleMath::Vector3 position, DirectX::SimpleMath::Vector3 velocity, float damage, float mass);
+	Projectile(const DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3 velocity, float damage, int team, float mass);
 	virtual ~Projectile();
 
+	int getTeam() const;
+	float getDamage() const;
+
+	void setModel(Model *drawModel);
 	virtual void draw();
 };
