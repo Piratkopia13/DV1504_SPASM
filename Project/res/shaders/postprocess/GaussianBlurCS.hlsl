@@ -11,8 +11,13 @@ void CSHorizontal(uint3 DispatchThreadID : SV_DispatchThreadID) {
 
   float4 color;
 
+  uint width;
+  uint height;
+  input.GetDimensions(width, height);
+
   for (int x = 0; x < 13; x++) {
-      color += input[DispatchThreadID.xy + uint2(x - 6, 0)] * filter[x];
+    uint2 index = uint2(clamp(DispatchThreadID.x + x - 6, 0, width), DispatchThreadID.y);
+      color += input[index] * filter[x];
   }
 
   output[DispatchThreadID.xy] = color;

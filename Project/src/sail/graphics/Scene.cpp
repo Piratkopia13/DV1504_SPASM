@@ -9,7 +9,7 @@ Scene::Scene(const AABB& worldSize)
 	//m_dirLightShadowMap(16384, 8640),
 	m_dirLightShadowMap(8192, 4320)
 	//, m_dirLightShadowMap(4096, 2160)
-	, m_doPostProcessing(false)
+	, m_doPostProcessing(true)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
 	m_timer.startTimer();

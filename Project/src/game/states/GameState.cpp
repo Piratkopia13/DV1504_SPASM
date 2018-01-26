@@ -107,6 +107,8 @@ GameState::GameState(StateStack& stack)
 		this->player[i]->setController(1);
 		this->player[i]->setControllerPort(i);
 		this->player[i]->setWeapon(this->weapons[i]);
+
+		m_scene.addObject(player[i]);
 	}
 }
 
@@ -224,11 +226,11 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	//m_app->getDXManager()->enableAlphaBlending();
-	//m_colorShader.updateCamera(m_cam);
-	//for(int i = 0; i < 4; i++)
-	//	player[i]->draw();
+	/*m_colorShader.updateCamera(m_cam);
+	for(int i = 0; i < 4; i++)
+		player[i]->draw();*/
 
-	//// Draw HUD
+	// Draw HUD
 	//m_scene.drawHUD();
 
 	///* Debug Stuff */
