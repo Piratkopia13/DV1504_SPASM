@@ -31,7 +31,6 @@ private:
 	std::unique_ptr<Model> m_texturePlane;
 	std::unique_ptr<Model> m_texturePlane2;
 
-	Character* player[4];
 
 	SimpleColorShader m_colorShader;
 	SimpleTextureShader m_texShader;
@@ -54,10 +53,15 @@ private:
 
 	std::unique_ptr<FbxModel> m_fbxModel;
 	std::unique_ptr<FbxModel> m_characterModel;
+	std::unique_ptr<FbxModel> m_WeaponModel1;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
 
 	// Currently used level
 	std::unique_ptr<Level> m_currLevel;
+
+	Weapon* weapons[4];
+	Character* player[4];
+
 };

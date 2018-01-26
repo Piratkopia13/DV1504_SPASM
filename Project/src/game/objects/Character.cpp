@@ -15,6 +15,7 @@ Character::Character()
 		this->vibrationReduction[i] = 1;
 	}
 	this->getTransform().setScale(0.1);
+	this->getTransform().setRotations(Vector3(0, 1.55, 0));
 }
 
 Character::Character(Model * model) : Character() {
@@ -139,10 +140,11 @@ void Character::update(float dt) {
 	
 	
 
-	this->setVelocity(this->inputVec * dt * this->speed);
+	this->setVelocity(this->inputVec * this->speed);
+	this->currentWeapon->setVelocity(this->inputVec * this->speed);
 
-	this->getTransform().setRotations(Vector3(0,0,this->sinDegFromVec(this->aimVec)));
-	
+	this->currentWeapon->getTransform().setRotations(Vector3(1.6, -1.6, this->sinDegFromVec(this->aimVec) - 1.6));
+	this->currentWeapon->move(dt);
 
 	Moveable::move(dt);
 
@@ -153,6 +155,8 @@ void Character::update(float dt) {
 void Character::draw() {
 	this->model->setTransform(&this->getTransform());
 	this->model->draw();
+	this->currentWeapon->draw();
+
 }
 
 void Character::setController(const bool usingController) {
@@ -164,7 +168,7 @@ void Character::setControllerPort(const unsigned int port) {
 		this->controllerPort = port;
 	
 #ifdef _DEBUG
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(int(port * -10)-20, port, 0));
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(int(port * 10)+50, 50, 0));
 #endif
 }
 
@@ -189,18 +193,14 @@ void Character::setTeam(unsigned int team)
 	this->currentTeam = team;
 }
 
-void Character::setWeapon(Moveable * weapon)
+void Character::setWeapon(Weapon * weapon)
 {
-	//this->currentWeapon->setHeld(false);
-
-	//this->currentWeapon->setHeld(true, this->currentTeam);
+	this->currentWeapon = weapon;
+	this->currentWeapon->setHeld(true);
+	this->currentWeapon->setPosition(this->getTransform().getTranslation());
+	this->currentWeapon->getTransform().setScale(0.7);
+	
 }
-
-
-
-
-
-
 
 void Character::jump()
 {

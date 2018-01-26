@@ -2,7 +2,7 @@
 #include "../../sail/Application.h"
 #include "common/Moveable.h"
 #include "../../sail/graphics/geometry/Model.h"
-
+#include "Weapon.h"
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -27,13 +27,13 @@ public:
 	unsigned int getPort();
 
 	void setTeam(unsigned int team);
-	void setWeapon(Moveable* weapon);
+	void setWeapon(Weapon* weapon);
 
 
 private:
 	
 	Model * model;
-	Moveable* currentWeapon;
+	Weapon* currentWeapon;
 
 	unsigned int currentTeam;
 	bool usingController;
