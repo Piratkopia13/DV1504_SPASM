@@ -18,7 +18,6 @@ void FlyingCameraController::update(float dt) {
 
 	auto& keyboard = app->getInput().keyboard;
 	auto kbState = app->getInput().keyboardState;
-	auto gpState = app->getInput().gamepadState;
 
 	float movementSpeed = dt * 5.f;
 	float lookSensitivityMouse = 0.1f;
@@ -27,12 +26,8 @@ void FlyingCameraController::update(float dt) {
 	// Increase speed if shift or right trigger is pressed
 	if (kbState.LeftShift)
 		movementSpeed *= 5.f;
-	if (gpState.triggers.right > 0)
-		movementSpeed *= gpState.triggers.right * 5.f;
 
 	// Increase controller sensitivity with the left trigger
-	if (gpState.triggers.left > 0)
-		lookSensitivityController *= gpState.triggers.left * 5.0f;
 
 	//app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
 

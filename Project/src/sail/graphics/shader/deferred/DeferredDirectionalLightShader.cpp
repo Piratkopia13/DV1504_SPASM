@@ -54,7 +54,7 @@ void DeferredDirectionalLightShader::updateModelDataBuffer(const Matrix& invP) c
 		invP.Transpose()
 	};
 
-	m_modelDataBuffer->updateData(&data, sizeof(data));
+	//m_modelDataBuffer->updateData(&data, sizeof(data));
 }
 
 void DeferredDirectionalLightShader::setLight(const Lights::DirectionalLight& dl) {
