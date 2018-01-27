@@ -101,7 +101,7 @@ void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMa
 	for (const Lights::PointLight& pl : lights.getPLs()) {
 		m_pointLightShader.setLight(pl);
 
-		m_pointLightVolume->getModel()->getTransform().setTranslation(pl.getPosition() / pl.getRadius());
+		m_pointLightVolume->getModel()->getTransform().setTranslation(pl.getPosition());
 		m_pointLightVolume->getModel()->getTransform().setScale(pl.getRadius());
 		m_pointLightVolume->getModel()->draw(false);
 

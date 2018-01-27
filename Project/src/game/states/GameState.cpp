@@ -44,17 +44,17 @@ GameState::GameState(StateStack& stack)
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
 // 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	dl.direction = Vector3(0.4f, -1.f, 1.f);
+	dl.direction = Vector3(0.4f, -0.5f, 1.f);
 	dl.direction.Normalize();
 	l.setDirectionalLight(dl);
 
 	m_scene.setShadowLight();
 
-	Lights::PointLight pl;
-	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
-	pl.setPosition(Vector3(0.f, 4.f, -2.f));
-	pl.setAttenuation(1.f, 1.f, 1.f);
-	l.addPointLight(pl);
+// 	Lights::PointLight pl;
+// 	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
+// 	pl.setPosition(Vector3(0.f, 4.f, -2.f));
+// 	pl.setAttenuation(1.f, 1.f, 1.f);
+// 	l.addPointLight(pl);
 
 
 	m_matShader.updateLights(m_scene.getLights());
