@@ -95,20 +95,20 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	}
 	dxm->enableBackFaceCulling();
 
-	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
-	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
-// 	m_rotation += 0.00000005f * dt;
-	temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	dl.setPosition(temp);
-	temp = dl.getDirection();
-	temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	dl.setDirection(temp);
-	m_lights.setDirectionalLightCamera(dl);
-	Lights::DirectionalLight _dl;
-	_dl.direction = dl.getDirection();
-	//_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
-	m_lights.setDirectionalLight(_dl);
-// 	m_depthShader.updateCamera(dl);
+// 	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
+// 	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
+//  	m_rotation += 0.00005f * dt;
+// 	temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
+// 	dl.setPosition(temp);
+// 	temp = dl.getDirection();
+// 	temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
+// 	dl.setDirection(temp);
+// 	m_lights.setDirectionalLightCamera(dl);
+// 	Lights::DirectionalLight _dl;
+// 	_dl.direction = dl.getDirection();
+// 	//_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
+// 	m_lights.setDirectionalLight(_dl);
+//  	m_depthShader.updateCamera(dl);
 
 	if (m_doPostProcessing) {
 		m_deferredRenderer.beginGeometryPass(cam, *m_prePostTex->getRenderTargetView());
@@ -149,7 +149,7 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 		m_postProcessfullScreenPlane.draw();
 	}
 
-	dxm->renderToBackBuffer();
+// 	dxm->renderToBackBuffer();
 
 }
 

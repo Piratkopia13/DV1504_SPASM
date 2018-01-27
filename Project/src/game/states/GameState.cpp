@@ -43,8 +43,8 @@ GameState::GameState(StateStack& stack)
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
-	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	//dl.direction = Vector3(0.f, -1.f, 0.f);
+// 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
+	dl.direction = Vector3(0.4f, -1.f, 1.f);
 	dl.direction.Normalize();
 	l.setDirectionalLight(dl);
 
