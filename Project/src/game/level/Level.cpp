@@ -92,53 +92,58 @@ void Level::draw() {
 		block->draw();
 }
 
-DirectX::SimpleMath::Vector3 Level::tempCollisionTest(DirectX::SimpleMath::Vector3 pos) {
+DirectX::SimpleMath::Vector3 Level::tempCollisionTest(DirectX::SimpleMath::Vector3& pos, DirectX::SimpleMath::Vector3& vel, DirectX::SimpleMath::Vector2& boundaries) {
 	int indexX = 0;
 	int indexY = 0;
 
-	float mMinX = pos.x - 0.0005f;
-	float mMaxX = pos.x + 0.0005f;
-	float mMinY = pos.y - 0.0005f;
-	float mMaxY = pos.y + 0.0005f;
 
-	float EPS = 0.5f;
-	float bMinX = indexX * DEFAULT_BLOCKSIZE;
-	float bMaxX = (indexX + 1) * DEFAULT_BLOCKSIZE;
-	float bMinY = indexY * DEFAULT_BLOCKSIZE;
-	float bMaxY = (indexY + 1) * DEFAULT_BLOCKSIZE;
+	float mMinX = pos.x;
+	float mMaxX = pos.x + boundaries.x;
+	float mMinY = pos.y;
+	float mMaxY = pos.y + boundaries.y;
+	float velX = vel.x;
+	float velY = vel.y;
+	
+	AABB tempBB(DirectX::SimpleMath::Vector3(mMinX, mMinY, 0.0f), DirectX::SimpleMath::Vector3(mMaxX, mMaxY, 0.0f));
 
-	float velX = 1.f;
-	float velY = 1.f;
+	float EPS = 0.1f;
+	std::vector<Grid::Index> indices = m_grid->getCollisionIndices(tempBB, DEFAULT_BLOCKSIZE);
+	DirectX::SimpleMath::Vector3 toMove(0.f, 0.f, 0.f);
 
-	DirectX::SimpleMath::Vector3 toMove;
-	toMove.x = 0.f;
-	toMove.y = 0.f;
-	toMove.z = 0.f;
+	if (indices.size() > 0) {
+		for (Grid::Index index : indices) {
+			float bMinX = index.x * DEFAULT_BLOCKSIZE;
+			float bMaxX = (index.x + 1) * DEFAULT_BLOCKSIZE;
+			float bMinY = index.y * DEFAULT_BLOCKSIZE;
+			float bMaxY = (index.y + 1) * DEFAULT_BLOCKSIZE;
 
-	if (mMaxX + velX > bMinX &&
-		mMinX + velX < bMinX &&
-		mMaxY > bMinY &&
-		mMinY < bMaxY) {
-		toMove.x = bMinX - (mMaxX + velX);
-	}
-	else if (mMinX - velX < bMaxX &&
-			mMaxX - velX > bMaxX &&
-			mMaxY > bMinY &&
-			mMinY < bMaxY) {
-		toMove.x = bMaxX - (mMinX - velX);
-	}
 
-	if (mMaxY + velY > bMinY &&
-		mMinY + velY < bMinY &&
-		mMaxX > bMinX &&
-		mMinX < bMaxX) {
-		toMove.y = bMinY - (mMaxY + velY);
-	}
-	else if (mMinY - velY < bMaxY &&
-		mMaxY - velY > bMaxY &&
-		mMaxX > bMinX &&
-		mMinX < bMaxX) {
-		toMove.y = bMaxY - (mMinY - velY);
+			if (mMaxX + velX > bMinX && mMinX + velX < bMaxX &&
+				mMaxY > bMinY && mMinY < bMaxY) {
+
+				if (vel.x < 0)
+					toMove.x = bMaxX - (mMinX + velX) + EPS;
+				else if (vel.x > 0)
+					toMove.x = bMinX - (mMaxX + velX) - EPS;
+			}
+
+			if (mMaxY + velY > bMinY && mMinY + velY < bMaxY &&
+				mMaxX > bMinX && mMinX < bMaxX) {
+
+				if (vel.y < 0)
+					toMove.y = bMaxY - (mMinY + velY) + EPS;
+				else if (vel.y > 0)
+					toMove.y = bMinY - (mMaxY + velY) - EPS;
+			}
+
+			if (toMove.x || toMove.y) {
+				if (abs(toMove.x) <= EPS) toMove.x = 0.f;
+				if (abs(toMove.y) <= EPS) toMove.y = 0.f;
+			}
+
+			//std::cout << index.x << "   " << index.y << std::endl;
+		}
+		//std::cout << "_______________________________" << std::endl;
 	}
 
 	return toMove;

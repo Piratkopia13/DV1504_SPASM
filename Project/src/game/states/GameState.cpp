@@ -30,6 +30,16 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("shrine/diffuse.tga");
 	m_app->getResourceManager().LoadDXTexture("shrine/normal.tga");
 	
+	/*	!!FOR TESTING PURPOSES!!	*/
+	m_playerModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_playerModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_playerModel->getModel()->getTransform().setScale(0.03);
+	m_playerPos = DirectX::SimpleMath::Vector3(1.0, 1.0, 0.0);
+	m_playerModel->getModel()->getTransform().setTranslation(m_playerPos);
+	m_playerModel->getModel()->updateAABB();
+	m_playerBoundaries = DirectX::SimpleMath::Vector2(3.5f, 3.0f);
+	std::cout << "MODEL MAX X: " << m_playerModel->getModel()->getAABB().getMaxPos().x << std::endl;
+	/*	!!FOR TESTING PURPOSES!!	*/
 
 	// Update the hud shader
 	m_hudShader.updateCamera(m_hudCam);
@@ -100,8 +110,6 @@ GameState::GameState(StateStack& stack)
 		this->player[i+1]->setController(1);
 		this->player[i+1]->setControllerPort(i);
 	}*/
-
-	Block block = new Block();
 
 	for (int i = 0; i < 4; i++) {
 		this->player[i] = new Character();
@@ -206,6 +214,31 @@ bool GameState::update(float dt) {
 	for (int i = 0; i < 4; i++)
 		this->player[i]->update(dt);
 
+	// TEST TEST TEST
+	DirectX::SimpleMath::Vector3 velocity = camPos - m_playerPos;
+	m_playerPos = camPos;
+	m_playerPos.z = -2.f;
+	//std::cout << "PLAYER X: " << m_playerPos.x << " Y: " << m_playerPos.y << " VEL X: " << velocity.x << " Y: " << velocity.y << std::endl;
+	DirectX::SimpleMath::Vector3 toMove = m_currLevel->tempCollisionTest(m_playerPos, velocity, m_playerBoundaries);
+	//std::cout << toMove.x << "  " << toMove.y << std::endl;
+	m_playerPos += toMove;
+	m_cam.setPosition(DirectX::SimpleMath::Vector3(m_playerPos.x, m_playerPos.y, -20.0f));
+	m_playerModel->getModel()->getTransform().setTranslation(m_playerPos);
+
+	if (abs(toMove.x) > 2.0f) {
+		std::cout << "__Weird movement__" << std::endl;
+		std::cout << toMove.x << "  " << toMove.y << std::endl;
+	}
+	// TEST TEST TEST
+
+	/*auto& camPos = m_cam.getPosition();
+	auto toMove = m_currLevel->tempCollisionTest(camPos);
+	if (toMove.Length() > 0.f) {
+		std::cout << camPos.x << " + " << toMove.x << " --- " << camPos.y << " + " << toMove.y << std::endl;
+		m_cam.setPosition(m_cam.getPosition() + toMove);
+	}*/
+
+
 	return true;
 }
 // Renders the state
@@ -214,21 +247,16 @@ bool GameState::render(float dt) {
 	m_app->getDXManager()->clear(DirectX::Colors::Teal);
 	// Clear back buffer
 
-	auto& camPos = m_cam.getPosition();
-	auto toMove = m_currLevel->tempCollisionTest(camPos);
-	if (toMove.Length() > 0.f) {
-		std::cout << camPos.x << " + " << toMove.x << " --- " << camPos.y << " + " << toMove.y << std::endl;
-		m_cam.setPosition(m_cam.getPosition() + toMove);
-	}
-
 	// Draw the scene
 	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	//m_app->getDXManager()->enableAlphaBlending();
 	m_colorShader.updateCamera(m_cam);
-	for(int i = 0; i < 4; i++)
-		player[i]->draw();
+	/*for(int i = 0; i < 4; i++)
+		player[i]->draw();*/
+
+	m_playerModel->getModel()->draw();
 
 	//// Draw HUD
 	//m_scene.drawHUD();

@@ -25,7 +25,7 @@ public:
 	void update(const float delta);
 	void draw();
 
-	DirectX::SimpleMath::Vector3 tempCollisionTest(DirectX::SimpleMath::Vector3);
+	DirectX::SimpleMath::Vector3 tempCollisionTest(DirectX::SimpleMath::Vector3& pos, DirectX::SimpleMath::Vector3& vel, DirectX::SimpleMath::Vector2& boundaries);
 
 private:
 	// Number of blocks in the x-axis

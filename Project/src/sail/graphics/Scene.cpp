@@ -42,8 +42,8 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	// Update and render skybox if one is set
 	// The skybox needs to be rendered first in the scene since it should be behind all models
-	if (m_skybox)
-		m_skybox->draw(cam);
+	/*if (m_skybox)
+		m_skybox->draw(cam);*/
 		
 
 	// Renders the depth of the scene out of the directional lights position

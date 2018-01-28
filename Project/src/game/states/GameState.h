@@ -54,9 +54,15 @@ private:
 
 	std::unique_ptr<FbxModel> m_fbxModel;
 
+	// Currently used level
+	std::unique_ptr<Level> m_currLevel;
+
+
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
 
-	// Currently used level
-	std::unique_ptr<Level> m_currLevel;
+	std::unique_ptr<Character> m_player;
+	std::unique_ptr<FbxModel> m_playerModel;
+	DirectX::SimpleMath::Vector3 m_playerPos;
+	DirectX::SimpleMath::Vector2 m_playerBoundaries;
 };
