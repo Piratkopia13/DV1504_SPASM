@@ -100,8 +100,11 @@ GameState::GameState(StateStack& stack)
 		this->player[i+1]->setController(1);
 		this->player[i+1]->setControllerPort(i);
 	}*/
+
+	Block block = new Block();
+
 	for (int i = 0; i < 4; i++) {
-		this->player[i] = new Character(m_texturePlane.get());
+		this->player[i] = new Character();
 		this->player[i]->setController(1);
 		this->player[i]->setControllerPort(i);
 	}
@@ -203,8 +206,6 @@ bool GameState::update(float dt) {
 	for (int i = 0; i < 4; i++)
 		this->player[i]->update(dt);
 
-
-
 	return true;
 }
 // Renders the state
@@ -212,6 +213,13 @@ bool GameState::render(float dt) {
 	// Clear the buffer where the deferred light pass will render to
 	m_app->getDXManager()->clear(DirectX::Colors::Teal);
 	// Clear back buffer
+
+	auto& camPos = m_cam.getPosition();
+	auto toMove = m_currLevel->tempCollisionTest(camPos);
+	if (toMove.Length() > 0.f) {
+		std::cout << camPos.x << " + " << toMove.x << " --- " << camPos.y << " + " << toMove.y << std::endl;
+		m_cam.setPosition(m_cam.getPosition() + toMove);
+	}
 
 	// Draw the scene
 	// before rendering the final output to the back buffer

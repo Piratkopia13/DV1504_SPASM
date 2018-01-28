@@ -8,7 +8,7 @@ namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
 	// The size in x- and y-axis of a block
 	static const float DEFAULT_BLOCKSIZE = 4.f;
-	static const float DEFAULT_SCALING = 0.5f;
+	static const float DEFAULT_SCALING = 0.04f;
 }
 
 /**
@@ -24,6 +24,8 @@ public:
 
 	void update(const float delta);
 	void draw();
+
+	DirectX::SimpleMath::Vector3 tempCollisionTest(DirectX::SimpleMath::Vector3);
 
 private:
 	// Number of blocks in the x-axis
