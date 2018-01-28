@@ -70,7 +70,6 @@ void DeferredRenderer::beginGeometryPass(Camera& camera, ID3D11RenderTargetView*
 void DeferredRenderer::beginLightDepthPass(ID3D11DepthStencilView* const dsv) {
 	auto dxm = Application::getInstance()->getDXManager();
 
-
 	dxm->getDeviceContext()->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	dxm->getDeviceContext()->OMSetRenderTargets(0, nullptr, dsv);
 

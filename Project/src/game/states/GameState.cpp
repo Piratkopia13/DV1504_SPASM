@@ -39,7 +39,7 @@ GameState::GameState(StateStack& stack)
 	m_timer.startTimer();
 
 	// Add skybox to the scene
-	m_scene.addSkybox(L"skybox2_512.dds");
+	m_scene.addSkybox(L"skybox_space_512.dds");
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
@@ -218,7 +218,7 @@ bool GameState::update(float dt) {
 // Renders the state
 bool GameState::render(float dt) {
 	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear(DirectX::Colors::Teal);
+	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 	// Clear back buffer
 
 	// Draw the scene

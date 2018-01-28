@@ -25,6 +25,7 @@ public:
 
 	void setOutputTexture(ID3D11Texture2D* tex);
  	void setInputSRV(ID3D11ShaderResourceView** srv);
+	void setTextureSize(UINT width, UINT height);
 
 	void resize(int width, int height);
 
@@ -34,6 +35,8 @@ private:
 
 private:
 
+	UINT m_texWidth, m_texHeight;
+
 	ID3D11UnorderedAccessView* m_horPassUAV;
 	ID3D11UnorderedAccessView* m_vertPassUAV;
 
@@ -42,6 +45,13 @@ private:
 
 	std::unique_ptr<RenderableTexture> m_middleTex;
 
+	struct CBuffer {
+		float pixelSize;
+		float padding[3];
+	};
+
 	// Components
+	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cBuffer;
+	std::unique_ptr<ShaderComponent::Sampler> m_sampler;
 
 };

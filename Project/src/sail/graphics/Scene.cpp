@@ -9,7 +9,8 @@ Scene::Scene(const AABB& worldSize)
 	//m_dirLightShadowMap(16384, 8640),
 	m_dirLightShadowMap(8192, 4320)
 	//, m_dirLightShadowMap(4096, 2160)
-	, m_doPostProcessing(false)
+	, m_doPostProcessing(true)
+	, m_blurTexScale(8.f)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
 	m_timer.startTimer();
@@ -22,8 +23,9 @@ Scene::Scene(const AABB& worldSize)
 	UINT height = window->getWindowHeight();
 
 	m_prePostTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
-	m_postProcOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false, false, D3D11_BIND_UNORDERED_ACCESS));
+	m_postProcOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width / m_blurTexScale, height / m_blurTexScale, false, false, D3D11_BIND_UNORDERED_ACCESS));
 
+	m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
 	m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
 	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex->getTexture2D());
 
@@ -50,14 +52,13 @@ void Scene::resize(int width, int height) {
 	// Resize textures
 	m_deferredRenderer.resize(width, height);
 	m_prePostTex->resize(width, height);
-	m_postProcOutputTex->resize(width, height);
  	m_gaussianBlurShader.resize(width, height);
+	m_postProcOutputTex->resize(width / m_blurTexScale, height / m_blurTexScale);
 
 	// Reset resource views to map to the new textures created by the resize
 	m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
 	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex->getTexture2D());
-
-	m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
+	m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
 
 }
 
@@ -95,21 +96,7 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	}
 	dxm->enableBackFaceCulling();
 
-// 	OrthographicCamera dl = m_lights.getDirectionalLightCamera();
-// 	DirectX::SimpleMath::Vector3 temp = dl.getPosition();
-//  	m_rotation += 0.00005f * dt;
-// 	temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-// 	dl.setPosition(temp);
-// 	temp = dl.getDirection();
-// 	temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-// 	dl.setDirection(temp);
-// 	m_lights.setDirectionalLightCamera(dl);
-// 	Lights::DirectionalLight _dl;
-// 	_dl.direction = dl.getDirection();
-// 	//_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
-// 	m_lights.setDirectionalLight(_dl);
-//  	m_depthShader.updateCamera(dl);
-
+	// Begin geometry pass - store depth in the correct texture
 	if (m_doPostProcessing) {
 		m_deferredRenderer.beginGeometryPass(cam, *m_prePostTex->getRenderTargetView());
 	}
@@ -145,8 +132,21 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 		m_postProcOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
 		m_gaussianBlurShader.draw();
 
-		// Flush post processing effects to back buffer
+		// Draw base scene
+// 		dxm->clear({ 0.f, 0.f, 0.f, 0.0f });
+		dxm->enableAdditiveBlending();
+		dxm->disableDepthBuffer();
+  		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
+  		m_postProcessfullScreenPlane.draw();
+
+		// Draw bloom using additive blending
+   		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
 		m_postProcessfullScreenPlane.draw();
+		dxm->disableAlphaBlending();
+		dxm->enableDepthBuffer();
+
+		// Flush post processing effects to back buffer
+// 		m_postProcessfullScreenPlane.draw();
 	}
 
 // 	dxm->renderToBackBuffer();

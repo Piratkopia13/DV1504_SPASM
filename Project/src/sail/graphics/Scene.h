@@ -70,6 +70,8 @@ private:
 	PostProcessFlushShader m_postProcessFlushShader;
 	GaussianBlurCShader m_gaussianBlurShader;
 
+	float m_blurTexScale;
+
 	//std::map<ShaderSet*, std::vector<Model*>> m_mappedModels;
 	std::vector<Object*> m_objects;
 

@@ -10,7 +10,7 @@ D3D11_INPUT_ELEMENT_DESC PostProcessFlushShader::IED[1] = {
 PostProcessFlushShader::PostProcessFlushShader() {
 
 	// Set up sampler for point sampling
-	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_POINT);
+	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
 	// Compile VS
 	auto vsBlob = compileShader(L"postprocess/PostProcessFlushShader.hlsl", "VSMain", "vs_5_0");
