@@ -13,6 +13,7 @@
     <FxCompile Include="res\shaders\DepthShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurPS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
