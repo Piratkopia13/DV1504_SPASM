@@ -62,8 +62,8 @@ private:
 	// Currently used level
 	std::unique_ptr<Level> m_currLevel;
 
-	Weapon* weapons[4];
-	Character* player[4];
-	ProjectileHandler* projHandler;
+	Weapon* m_weapons[4];
+	Character* m_player[4];
+	ProjectileHandler* m_projHandler;
 
 };

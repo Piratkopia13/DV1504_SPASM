@@ -8,7 +8,7 @@ Character::Character()
 	this->usingController = 0;
 	this->controllerPort = 0;
 	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
-	this->speed = 100;
+	this->speed = 50;
 	this->jumping = 0;
 	for (int i = 0; i < 2; i++) {
 		this->padVibration[i] = 1;
@@ -53,6 +53,7 @@ void Character::input(
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				this->fire();
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
@@ -92,7 +93,7 @@ void Character::input(
 
 			// ON TRIGGER HOLD
 			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::HELD) {
-				this->fire();
+				
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::HELD) {
 				this->hook();
@@ -217,8 +218,7 @@ void Character::stopJump()
 
 void Character::fire()
 {
-	this->getTransform().scaleUniformly(1.001);
-	
+	currentWeapon->fire(aimVec);
 }
 
 void Character::hook()

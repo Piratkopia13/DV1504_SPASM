@@ -3,10 +3,12 @@
 Weapon::Weapon() {
 	m_held = false;
 	int m_team = -1;
+	m_projectileHandler = nullptr;
 }
 
-Weapon::Weapon(Model *drawModel, int team) {
+Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) {
 	m_Model = drawModel;
+	m_projectileHandler = projHandler;
 	m_team = team;
 	m_held = true;
 }
@@ -24,8 +26,12 @@ void Weapon::setHeld(bool held) {
 }
 
 void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
-	//Create projectile with inputs; startPos, direction, speed/force etc.
-	Projectile temp(getTransform().getTranslation(), direction * 5.0f, 10.0f, 1);
+	if (m_projectileHandler != nullptr) {
+		//Create projectile with inputs; startPos, direction, speed/force etc.
+		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 200.0f, 10.0f, 1);
+		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
+		m_projectileHandler->addProjectile(temp);
+	}
 }
 
 void Weapon::update(float dt) {

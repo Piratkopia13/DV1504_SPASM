@@ -2,7 +2,7 @@
 
 Moveable::Moveable() {
 	m_velocity = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
-	m_gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
+	m_gravity = DirectX::SimpleMath::Vector3(0.f, -0.0f, 0.f);
 	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 }
 
@@ -16,7 +16,7 @@ void Moveable::move(const float dt) {
 
 	m_velocity += m_acceleration * dt;
 
-	this->getTransform().translate(m_velocity);
+	this->getTransform().translate(m_velocity*dt);
 	this->updateBoundingBox();
 }
 
