@@ -36,16 +36,16 @@ Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const 
 	float nextIntersectY, nextIntersectX;
 	float tY, tX, t;
 
-	if (aimVec.x > 0)
+	if (aimVec.x > 0.f)
 		deltaX = 1;
-	else if (aimVec.x < 0)
+	else if (aimVec.x < 0.f)
 		deltaX = -1;
 	else
 		deltaX = 0;
 
-	if (aimVec.y > 0)
+	if (aimVec.y > 0.f)
 		deltaY = 1;
-	else if (aimVec.y < 0)
+	else if (aimVec.y < 0.f)
 		deltaY = -1;
 	else
 		deltaY = 0;
@@ -56,11 +56,11 @@ Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const 
 	bool intersection = false;
 
 	while (!intersection) {
-		 nextIntersectX = (deltaX + currentIndex.x) * m_cellSize;
+		 nextIntersectX = float(deltaX + currentIndex.x) * m_cellSize;
 		 
 		 tX = (nextIntersectX - currentPos.x) / aimVec.x;
 		 
-		 nextIntersectY = (deltaY + currentIndex.y) * m_cellSize;
+		 nextIntersectY = float(deltaY + currentIndex.y) * m_cellSize;
 
 		 tY = (nextIntersectY - currentPos.y) / aimVec.y;
 
