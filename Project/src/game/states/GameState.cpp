@@ -107,6 +107,21 @@ GameState::GameState(StateStack& stack)
 		this->player[i]->setControllerPort(i);
 		this->player[i]->setWeapon(this->weapons[i]);
 	}
+
+	m_playerCamController.setTargets(
+		this->player[0],
+		this->player[1],
+		this->player[2],
+		this->player[3]
+	);
+	//m_playerCamController.setTargets(
+	//	this->player[0],
+	//	this->player[1],
+	//	nullptr,
+	//	nullptr
+	//);
+
+
 }
 
 GameState::~GameState() {
@@ -207,7 +222,7 @@ bool GameState::update(float dt) {
 	if (m_flyCam)
 		m_camController.update(dt);
 	else
-		m_playerCamController.update(dt, *player[0]);
+		m_playerCamController.update(dt);
 
 
 	return true;
