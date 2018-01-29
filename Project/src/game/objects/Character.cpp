@@ -8,8 +8,9 @@ Character::Character()
 	this->usingController = 0;
 	this->controllerPort = 0;
 	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
-	this->speed = 50;
+	this->speed = 10;
 	this->jumping = 0;
+	this->jumpTimer = 0;
 	for (int i = 0; i < 2; i++) {
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
@@ -50,16 +51,21 @@ void Character::input(
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(1, 1);
 				this->jump();
+				this->currentWeapon->cooldownTime += 0.02;
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
-				this->fire();
+				if(this->currentWeapon->cooldownTime > 0.02)
+					this->currentWeapon->cooldownTime -= 0.02;
+
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				this->currentWeapon->automatic = true;
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				this->currentWeapon->automatic = false;
 			}
 
 			// ON BUTTON RELEASE
@@ -92,11 +98,16 @@ void Character::input(
 			}
 
 			// ON TRIGGER HOLD
-			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::HELD) {
+
+			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::PRESSED) {
+				this->currentWeapon->triggerPull();
 				
 			}
+			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::RELEASED) {
+				this->currentWeapon->triggerRelease();
+
+			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::HELD) {
-				this->hook();
 			}
 
 
@@ -139,14 +150,23 @@ void Character::update(float dt) {
 			this->padVibration[1],
 			this->padVibration[2],
 			this->padVibration[3]);
-	
+	//if (this->jumping) {
+
+	//	float jumpStr = 10;
+	//	jumpStr -= this->jumpTimer * 10;
+	//	this->addAcceleration(Vector3(0, jumpStr, 0));
+	//	this->jumpTimer += dt;
+	//}
 	
 
-	this->setVelocity(this->inputVec * this->speed);
-	this->currentWeapon->setVelocity(this->inputVec * this->speed);
+	this->setVelocity(Vector3(this->inputVec.x * this->speed,0,0));
+	//this->currentWeapon->addAcceleration(this->inputVec * this->speed);
 
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation());
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6, -1.6, this->sinDegFromVec(this->aimVec) - 1.6));
-	this->currentWeapon->move(dt);
+
+	this->currentWeapon->update(dt, this->aimVec);
+
 
 	Moveable::move(dt);
 
@@ -207,13 +227,14 @@ void Character::setWeapon(Weapon * weapon)
 void Character::jump()
 {
 	this->jumping = true;
-	this->getTransform().translate(Vector3(0,10,0));
+
+	//this->getTransform().translate(Vector3(0,10,0));
 }
 
 void Character::stopJump()
 {
 	this->jumping = false;
-	this->getTransform().translate(Vector3(0, -10, 0));
+	//this->getTransform().translate(Vector3(0, -10, 0));
 }
 
 void Character::fire()

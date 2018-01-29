@@ -4,9 +4,14 @@ Weapon::Weapon() {
 	m_held = false;
 	int m_team = -1;
 	m_projectileHandler = nullptr;
+
+	this->automatic = true;
+	this->triggerHeld = false;
+	this->timeSinceFire = 0;
+	this->cooldownTime = 0.1;
 }
 
-Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) {
+Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) : Weapon() {
 	m_Model = drawModel;
 	m_projectileHandler = projHandler;
 	m_team = team;
@@ -25,6 +30,17 @@ void Weapon::setHeld(bool held) {
 	m_held = held;
 }
 
+void Weapon::triggerPull()
+{
+	this->triggerHeld = true;
+}
+
+void Weapon::triggerRelease()
+{
+	this->triggerHeld = false;
+	this->timeSinceFire = 0;
+}
+
 void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
 	if (m_projectileHandler != nullptr) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
@@ -34,10 +50,24 @@ void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
 	}
 }
 
-void Weapon::update(float dt) {
-	if (!m_held) {
-		move(dt);
+void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
+
+	if (this->triggerHeld) {
+		if (timeSinceFire == 0.0 && !this->automatic) {
+			this->fire(direction);
+		}
+		else if (this->automatic && this->timeSinceFire >= this->cooldownTime) {
+			this->fire(direction);
+
+			this->timeSinceFire = 0.0;
+		}
+		this->timeSinceFire += dt;
+		Logger::log("timeSinceFire :" + std::to_string(this->timeSinceFire));
 	}
+
+
+
+	this->move(dt);
 }
 
 void Weapon::draw() {

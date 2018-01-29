@@ -109,10 +109,10 @@ GameState::GameState(StateStack& stack)
 	}
 
 	m_playerCamController.setTargets(
-		this->player[0],
-		this->player[1],
-		this->player[2],
-		this->player[3]
+		this->m_player[0],
+		this->m_player[1],
+		this->m_player[2],
+		this->m_player[3]
 	);
 	//m_playerCamController.setTargets(
 	//	this->player[0],
@@ -221,7 +221,7 @@ bool GameState::update(float dt) {
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
 	for (int i = 0; i < 4; i++)
-		this->player[i]->update(dt);
+		this->m_player[i]->update(dt);
 
 	if(!m_flyCam)
 		m_playerCamController.update(dt);

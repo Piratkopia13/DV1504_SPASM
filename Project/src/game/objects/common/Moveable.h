@@ -10,6 +10,7 @@ public:
 	void move(const float dt);
 	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
 	void setAcceleration(const DirectX::SimpleMath::Vector3 &newAcceleration);
+	void addAcceleration(const DirectX::SimpleMath::Vector3& accel );
 	virtual void draw() = 0;
 
 private:
@@ -17,5 +18,6 @@ private:
 	DirectX::SimpleMath::Vector3 m_gravity;
 	DirectX::SimpleMath::Vector3 m_velocity;
 	DirectX::SimpleMath::Vector3 m_acceleration;
+	float grav;
 
 };

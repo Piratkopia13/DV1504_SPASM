@@ -9,7 +9,13 @@ private:
 	bool m_held;
 	int m_team;
 
+
+	bool triggerHeld;
+	float timeSinceFire;
+
 public:
+	bool automatic;
+	float cooldownTime;
 	Weapon();
 	Weapon(Model *drawModel, ProjectileHandler* projHandler, int team);
 	virtual ~Weapon();
@@ -17,7 +23,13 @@ public:
 	const bool getHeld() const;
 
 	void setHeld(bool held);
+	
+	void triggerPull();
+	void triggerRelease();
 	void fire(DirectX::SimpleMath::Vector3 direction);
-	void update(float dt);
+
+
+
+	void update(float dt, DirectX::SimpleMath::Vector3 direction);
 	virtual void draw();
 };
