@@ -8,7 +8,7 @@ Character::Character()
 	this->usingController = 0;
 	this->controllerPort = 0;
 	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
-	this->speed = 100;
+	this->speed = 50;
 	this->jumping = 0;
 	for (int i = 0; i < 2; i++) {
 		this->padVibration[i] = 1;
