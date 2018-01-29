@@ -4,7 +4,6 @@
 
 class Projectile : public Moveable {
 private:
-	Model * m_drawModel;
 	float m_damage;
 	int m_team;
 
@@ -15,6 +14,5 @@ public:
 	int getTeam() const;
 	float getDamage() const;
 
-	void setModel(Model *drawModel);
 	virtual void draw();
 };

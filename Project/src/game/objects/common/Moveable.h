@@ -6,6 +6,7 @@ class Moveable : public Object {
 public:
 	Moveable();
 	Moveable(const float mass);
+	
 	virtual ~Moveable();
 
 	void move(const float dt);
