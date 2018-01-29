@@ -98,14 +98,14 @@ GameState::GameState(StateStack& stack)
 	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
 	
-
+	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
 	for (int i = 0; i < 4; i++) {
-		this->weapons[i] = new Weapon(m_WeaponModel1->getModel(), i % 2);
-		this->player[i] = new Character(m_characterModel->getModel());
-		this->player[i]->setController(1);
-		this->player[i]->setControllerPort(i);
-		this->player[i]->setWeapon(this->weapons[i]);
+		this->m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
+		this->m_player[i] = new Character(m_characterModel->getModel());
+		this->m_player[i]->setController(1);
+		this->m_player[i]->setControllerPort(i);
+		this->m_player[i]->setWeapon(this->m_weapons[i]);
 	}
 
 	m_playerCamController.setTargets(
@@ -127,9 +127,10 @@ GameState::GameState(StateStack& stack)
 GameState::~GameState() {
 	for (int i = 0; i < 4; i++)
 	{
-		delete weapons[i];
-		delete player[i];
+		delete m_weapons[i];
+		delete m_player[i];
 	}
+	delete m_projHandler;
 }
 
 // Process input for the state
@@ -162,17 +163,17 @@ bool GameState::processInput(float dt) {
 	
 	if(kbTracker.pressed.Q)
 		for (int i = 0; i < 4; i++) {
-			this->player[i]->addVibration(0, 1);
-			this->player[i]->addVibration(1, 1);
-			this->player[i]->addVibration(2, 1);
-			this->player[i]->addVibration(3, 1);
+			this->m_player[i]->addVibration(0, 1);
+			this->m_player[i]->addVibration(1, 1);
+			this->m_player[i]->addVibration(2, 1);
+			this->m_player[i]->addVibration(3, 1);
 		}
 	
 
 	for(int i = 0; i < 4; i++)
-		this->player[i]->input(
-			m_app->getInput().gamepadState[this->player[i]->getPort()], 
-			gpTracker[this->player[i]->getPort()], 
+		this->m_player[i]->input(
+			m_app->getInput().gamepadState[this->m_player[i]->getPort()],
+			gpTracker[this->m_player[i]->getPort()],
 			m_app->getInput().keyboardState, 
 			kbTracker);
 
@@ -225,6 +226,7 @@ bool GameState::update(float dt) {
 	if(!m_flyCam)
 		m_playerCamController.update(dt);
 
+	m_projHandler->update(dt);
 
 	return true;
 }
@@ -241,7 +243,9 @@ bool GameState::render(float dt) {
 	//m_app->getDXManager()->enableAlphaBlending();
 	m_colorShader.updateCamera(m_cam);
 	for(int i = 0; i < 4; i++)
-		player[i]->draw();
+		m_player[i]->draw();
+
+	m_projHandler->draw();
 
 	//// Draw HUD
 	//m_scene.drawHUD();

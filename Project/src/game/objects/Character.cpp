@@ -53,6 +53,7 @@ void Character::input(
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				this->fire();
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
@@ -92,7 +93,7 @@ void Character::input(
 
 			// ON TRIGGER HOLD
 			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::HELD) {
-				this->fire();
+				
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::HELD) {
 				this->hook();
@@ -217,8 +218,7 @@ void Character::stopJump()
 
 void Character::fire()
 {
-	this->getTransform().scaleUniformly(1.001);
-	
+	currentWeapon->fire(aimVec);
 }
 
 void Character::hook()

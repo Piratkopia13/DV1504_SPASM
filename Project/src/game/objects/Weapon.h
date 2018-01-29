@@ -5,12 +5,13 @@
 
 class Weapon : public Moveable {
 private:
+	ProjectileHandler * m_projectileHandler;
 	bool m_held;
 	int m_team;
 
 public:
 	Weapon();
-	Weapon(Model *drawModel, int team);
+	Weapon(Model *drawModel, ProjectileHandler* projHandler, int team);
 	virtual ~Weapon();
 
 	const bool getHeld() const;
