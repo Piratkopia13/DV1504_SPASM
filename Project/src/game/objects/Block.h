@@ -11,7 +11,5 @@ public:
 	Block(Model *drawModel);
 	virtual ~Block();
 
-	void setModel(Model* newModel);
-
 	virtual void draw();
 };

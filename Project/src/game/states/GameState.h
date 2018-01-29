@@ -4,6 +4,7 @@
 #include "../PlayerCameraController.h"
 #include "../objects/Character.h"
 #include "../level/Level.h"
+#include "../ProjectileHandler.h"
 
 class GameState : public State {
 public:
@@ -63,5 +64,6 @@ private:
 
 	Weapon* weapons[4];
 	Character* player[4];
+	ProjectileHandler* projHandler;
 
 };
