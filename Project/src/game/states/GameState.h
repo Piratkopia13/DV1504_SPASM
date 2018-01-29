@@ -31,7 +31,6 @@ private:
 	std::unique_ptr<Model> m_texturePlane;
 	std::unique_ptr<Model> m_texturePlane2;
 
-	Character* player[4];
 
 	SimpleColorShader m_colorShader;
 	SimpleTextureShader m_texShader;
@@ -53,16 +52,16 @@ private:
 	std::vector<Model*> m_modelCopies;
 
 	std::unique_ptr<FbxModel> m_fbxModel;
-
-	// Currently used level
-	std::unique_ptr<Level> m_currLevel;
-
+	std::unique_ptr<FbxModel> m_characterModel;
+	std::unique_ptr<FbxModel> m_WeaponModel1;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
 
-	std::unique_ptr<Character> m_player;
-	std::unique_ptr<FbxModel> m_playerModel;
-	DirectX::SimpleMath::Vector3 m_playerPos;
-	DirectX::SimpleMath::Vector2 m_playerBoundaries;
+	// Currently used level
+	std::unique_ptr<Level> m_currLevel;
+
+	Weapon* weapons[4];
+	Character* player[4];
+
 };
