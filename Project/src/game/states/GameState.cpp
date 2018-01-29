@@ -179,6 +179,8 @@ bool GameState::processInput(float dt) {
 
 	// Update the camera controller from input devices
 
+	if (m_flyCam)
+		m_camController.update(dt);
 
 
 	return true;
@@ -219,9 +221,8 @@ bool GameState::update(float dt) {
 
 	for (int i = 0; i < 4; i++)
 		this->player[i]->update(dt);
-	if (m_flyCam)
-		m_camController.update(dt);
-	else
+
+	if(!m_flyCam)
 		m_playerCamController.update(dt);
 
 
