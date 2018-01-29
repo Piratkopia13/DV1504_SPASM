@@ -32,7 +32,6 @@ public:
 
 private:
 	
-	Model * model;
 	Weapon* currentWeapon;
 
 	unsigned int currentTeam;
