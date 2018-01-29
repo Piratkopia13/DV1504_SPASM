@@ -19,10 +19,11 @@ Character::Character()
 }
 
 Character::Character(Model * model) : Character() {
-	this->model = model;
+	this->setModel(model);
+
 }
-Character::Character(Model * model, unsigned int usingController = 0, unsigned int port = 0) 
-	: Character() {
+Character::Character(Model * model, unsigned int usingController, unsigned int port) 
+	: Character(model) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -153,8 +154,8 @@ void Character::update(float dt) {
 }
 
 void Character::draw() {
-	this->model->setTransform(&this->getTransform());
-	this->model->draw();
+	this->m_Model->setTransform(&this->getTransform());
+	this->m_Model->draw();
 	this->currentWeapon->draw();
 
 }

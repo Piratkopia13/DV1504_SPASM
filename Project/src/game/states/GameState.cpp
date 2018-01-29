@@ -99,6 +99,7 @@ GameState::GameState(StateStack& stack)
 
 	
 
+
 	for (int i = 0; i < 4; i++) {
 		this->weapons[i] = new Weapon(m_WeaponModel1->getModel(), i % 2);
 		this->player[i] = new Character(m_characterModel->getModel());
