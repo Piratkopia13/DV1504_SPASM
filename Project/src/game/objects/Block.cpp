@@ -12,9 +12,6 @@ Block::~Block() {
 
 }
 
-void Block::setModel(Model *newModel) {
-	m_drawModel = newModel;
-}
 
 Model* Block::getModel() {
 	return m_drawModel;

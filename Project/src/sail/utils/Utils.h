@@ -61,11 +61,7 @@ public:
 		// Revert color
 		SetConsoleTextAttribute(hstdout, csbi.wAttributes);
 
-#ifdef _SAIL_THROW_ON_WARNING
-#ifdef _DEBUG
-		throw std::exception();
-#endif
-#endif
+
 	}
 
 

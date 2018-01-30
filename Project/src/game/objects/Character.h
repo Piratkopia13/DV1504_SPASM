@@ -32,7 +32,6 @@ public:
 
 private:
 	
-	Model * model;
 	Weapon* currentWeapon;
 
 	unsigned int currentTeam;
@@ -42,7 +41,7 @@ private:
 	DirectX::SimpleMath::Vector3 inputVec;
 	DirectX::SimpleMath::Vector3 aimVec;
 	bool jumping;
-	float jumpTimer();
+	float jumpTimer;
 
 	float speed;
 	float padVibration[2];
