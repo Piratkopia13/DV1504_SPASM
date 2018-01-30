@@ -7,7 +7,7 @@ class ProjectileHandler {
 private:
 	std::unique_ptr<FbxModel> m_projectileModel1;
 	std::vector<Projectile*> m_projectiles;
-	//std::vector<float> m_projectileLifeSpan;
+	std::vector<float> m_projectileLifeSpan;
 public:
 	ProjectileHandler(DeferredRenderer& deferredRenderer);
 	~ProjectileHandler();

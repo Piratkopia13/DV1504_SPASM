@@ -247,8 +247,10 @@ bool GameState::render(float dt) {
 
 	m_projHandler->draw();
 
-	//// Draw HUD
-	//m_scene.drawHUD();
+	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
+
+	// Draw HUD
+	m_scene.drawHUD();
 
 	///* Debug Stuff */
 	//m_app->getDXManager()->disableDepthBuffer();

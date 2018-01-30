@@ -43,7 +43,7 @@ void PlayerCameraController::setTargets(Object * focusObject1, Object * focusObj
 void PlayerCameraController::updatePosition(float dt)
 {
 	Vector3 newTarget(0, 0, 0);
-	float lengthDiff = 0;
+	float lengthDiff = 0.0f;
 	int nr = 0;
 	float maxL = 0;
 	for (int i = 0; i < 4; i++) {
@@ -68,12 +68,12 @@ void PlayerCameraController::updatePosition(float dt)
 	
 
 
-	this->extraZ = maxL * 0.87;
+	this->extraZ = maxL * 0.87f;
 	if (nr > 0) {
-		newTarget /= nr;
+		newTarget /= float(nr); 
 		Vector3 moveVec = newTarget - this->target;
 		
-		if (moveVec.LengthSquared() > 0.1)
+		if (moveVec.LengthSquared() > 0.1f)
 		{
 			moveVec.Normalize();
 		}
@@ -84,7 +84,7 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 	Vector3 diff = this->target - this->position;
-	if (diff.LengthSquared() > 10.0)
+	if (diff.LengthSquared() > 10.0f)
 		diff.Normalize();
 	this->position += diff * dt * moveSpeed;
 }

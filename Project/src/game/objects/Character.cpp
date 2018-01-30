@@ -7,7 +7,8 @@ Character::Character()
 
 	this->usingController = 0;
 	this->controllerPort = 0;
-	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
+	this->inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	this->aimVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
 	this->speed = 10;
 	this->jumping = 0;
 	this->jumpTimer = 0;
@@ -15,8 +16,8 @@ Character::Character()
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
-	this->getTransform().setScale(0.1);
-	this->getTransform().setRotations(Vector3(0, 1.55, 0));
+	this->getTransform().setScale(0.01f);
+	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
 }
 
 Character::Character(Model * model) : Character() {
@@ -51,12 +52,12 @@ void Character::input(
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(1, 1);
 				this->jump();
-				this->currentWeapon->cooldownTime += 0.02;
+				this->currentWeapon->cooldownTime += 0.02f;
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
-				if(this->currentWeapon->cooldownTime > 0.02)
-					this->currentWeapon->cooldownTime -= 0.02;
+				if(this->currentWeapon->cooldownTime > 0.02f)
+					this->currentWeapon->cooldownTime -= 0.02f;
 
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
@@ -159,11 +160,10 @@ void Character::update(float dt) {
 	//}
 	
 
-	this->setVelocity(Vector3(this->inputVec.x * this->speed,0,0));
-	//this->currentWeapon->addAcceleration(this->inputVec * this->speed);
+	this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
 
 	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation());
-	this->currentWeapon->getTransform().setRotations(Vector3(1.6, -1.6, this->sinDegFromVec(this->aimVec) - 1.6));
+	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
 	this->currentWeapon->update(dt, this->aimVec);
 
@@ -190,7 +190,7 @@ void Character::setControllerPort(const unsigned int port) {
 		this->controllerPort = port;
 	
 #ifdef _DEBUG
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(int(port * 10)+50, 50, 0));
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 10.0f + 50.0f, 50.0f, 0.0f));
 #endif
 }
 
@@ -220,7 +220,7 @@ void Character::setWeapon(Weapon * weapon)
 	this->currentWeapon = weapon;
 	this->currentWeapon->setHeld(true);
 	this->currentWeapon->setPosition(this->getTransform().getTranslation());
-	this->currentWeapon->getTransform().setScale(0.7);
+	this->currentWeapon->getTransform().setScale(0.7f);
 	
 }
 
@@ -244,7 +244,7 @@ void Character::fire()
 
 void Character::hook()
 {
-	this->getTransform().scaleUniformly(0.999);
+	this->getTransform().scaleUniformly(0.999f);
 }
 
 bool Character::updateVibration(float dt) {
