@@ -225,6 +225,10 @@ bool GameState::update(float dt) {
 	if(!m_flyCam)
 		m_playerCamController.update(dt);
 
+	//TEST REMOVE THIS
+	DirectX::SimpleMath::Vector3 pos = player[0]->getTransform().getTranslation();
+
+	m_currLevel->update(dt, pos, player[0]->aimVec);
 
 	return true;
 }

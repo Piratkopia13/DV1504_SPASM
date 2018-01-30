@@ -8,6 +8,8 @@ Character::Character()
 	this->usingController = 0;
 	this->controllerPort = 0;
 	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
+	this->aimVec = DirectX::SimpleMath::Vector3(-1, -1, 0);
+	this->aimVec.Normalize();
 	this->speed = 50;
 	this->jumping = 0;
 	for (int i = 0; i < 2; i++) {

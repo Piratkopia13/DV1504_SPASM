@@ -28,6 +28,7 @@ public:
 
 	void setTeam(unsigned int team);
 	void setWeapon(Weapon* weapon);
+	DirectX::SimpleMath::Vector3 aimVec;
 
 
 private:
@@ -39,7 +40,7 @@ private:
 	unsigned int controllerPort;
 
 	DirectX::SimpleMath::Vector3 inputVec;
-	DirectX::SimpleMath::Vector3 aimVec;
+
 	bool jumping;
 	float jumpTimer();
 

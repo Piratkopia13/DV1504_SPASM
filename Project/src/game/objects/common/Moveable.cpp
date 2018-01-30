@@ -16,7 +16,7 @@ void Moveable::move(const float dt) {
 
 	m_velocity += m_acceleration * dt;
 
-	this->getTransform().translate(m_velocity);
+	this->getTransform().translate(m_velocity * dt);
 	this->updateBoundingBox();
 }
 

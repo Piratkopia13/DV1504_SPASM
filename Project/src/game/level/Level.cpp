@@ -54,7 +54,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 					switch (c) {
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
-						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x * DEFAULT_BLOCKSIZE, y * DEFAULT_BLOCKSIZE, 0.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x * DEFAULT_BLOCKSIZE, (y - 1) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
@@ -82,8 +82,12 @@ Level::~Level() {
 
 }
 
-void Level::update(const float delta) {
+void Level::update(const float delta, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 dir) {
 
+	DirectX::SimpleMath::Vector3 tempVec = DirectX::SimpleMath::Vector3(0.0f, -2.0f, 0.0f);
+	tempVec.Normalize();
+
+	m_grid->raytraceBlock(pos, dir, delta);
 }
 
 void Level::draw() {
