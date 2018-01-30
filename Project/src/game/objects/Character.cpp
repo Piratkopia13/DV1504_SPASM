@@ -7,15 +7,17 @@ Character::Character()
 
 	this->usingController = 0;
 	this->controllerPort = 0;
-	this->inputVec = DirectX::SimpleMath::Vector3(0, 0, 0);
-	this->speed = 50;
+	this->inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	this->aimVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
+	this->speed = 10;
 	this->jumping = 0;
+	this->jumpTimer = 0;
 	for (int i = 0; i < 2; i++) {
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
-	this->getTransform().setScale(0.1);
-	this->getTransform().setRotations(Vector3(0, 1.55, 0));
+	this->getTransform().setScale(0.01f);
+	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
 }
 
 Character::Character(Model * model) : Character() {
@@ -49,15 +51,21 @@ void Character::input(
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(1, 1);
 				this->jump();
+				this->currentWeapon->cooldownTime += 0.02f;
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				if(this->currentWeapon->cooldownTime > 0.02f)
+					this->currentWeapon->cooldownTime -= 0.02f;
+
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				this->currentWeapon->automatic = true;
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
+				this->currentWeapon->automatic = false;
 			}
 
 			// ON BUTTON RELEASE
@@ -90,11 +98,16 @@ void Character::input(
 			}
 
 			// ON TRIGGER HOLD
-			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::HELD) {
-				this->fire();
+
+			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::PRESSED) {
+				this->currentWeapon->triggerPull();
+				
+			}
+			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::RELEASED) {
+				this->currentWeapon->triggerRelease();
+
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::HELD) {
-				this->hook();
 			}
 
 
@@ -137,17 +150,25 @@ void Character::update(float dt) {
 			this->padVibration[1],
 			this->padVibration[2],
 			this->padVibration[3]);
-	
+	//if (this->jumping) {
+
+	//	float jumpStr = 10;
+	//	jumpStr -= this->jumpTimer * 10;
+	//	this->addAcceleration(Vector3(0, jumpStr, 0));
+	//	this->jumpTimer += dt;
+	//}
 	
 	Moveable::move(dt);
 
-	this->setVelocity(this->inputVec * this->speed);
-	this->currentWeapon->setVelocity(this->inputVec * this->speed);
+	this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
 
-	this->currentWeapon->getTransform().setRotations(Vector3(1.6, -1.6, this->sinDegFromVec(this->aimVec) - 1.6));
-	this->currentWeapon->move(dt);
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0,0.5,-0.8));
+	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
+
+	this->currentWeapon->update(dt, this->aimVec);
 
 
+	Moveable::move(dt);
 
 
 }
@@ -168,7 +189,7 @@ void Character::setControllerPort(const unsigned int port) {
 		this->controllerPort = port;
 	
 #ifdef _DEBUG
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(int(port * 10)+50, 50, 0));
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 2.0f + 3.0f, 3.0f, 0.0f));
 #endif
 }
 
@@ -197,32 +218,32 @@ void Character::setWeapon(Weapon * weapon)
 {
 	this->currentWeapon = weapon;
 	this->currentWeapon->setHeld(true);
-	this->currentWeapon->setPosition(this->getTransform().getTranslation());
-	this->currentWeapon->getTransform().setScale(0.7);
+	//this->currentWeapon->setPosition(this->getTransform().getTranslation()+Vector3(0,0.5,0.5f));
+	this->currentWeapon->getTransform().setScale(1.0f);
 	
 }
 
 void Character::jump()
 {
 	this->jumping = true;
-	this->getTransform().translate(Vector3(0,10,0));
+
+	//this->getTransform().translate(Vector3(0,10,0));
 }
 
 void Character::stopJump()
 {
 	this->jumping = false;
-	this->getTransform().translate(Vector3(0, -10, 0));
+	//this->getTransform().translate(Vector3(0, -10, 0));
 }
 
 void Character::fire()
 {
-	this->getTransform().scaleUniformly(1.001);
-	
+	currentWeapon->fire(aimVec);
 }
 
 void Character::hook()
 {
-	this->getTransform().scaleUniformly(0.999);
+	this->getTransform().scaleUniformly(0.999f);
 }
 
 bool Character::updateVibration(float dt) {

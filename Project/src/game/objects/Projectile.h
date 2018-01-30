@@ -8,7 +8,7 @@ private:
 	int m_team;
 
 public:
-	Projectile(const DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3 velocity, float damage, int team, float mass);
+	Projectile(const DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3 velocity, float damage, int team);
 	virtual ~Projectile();
 
 	int getTeam() const;

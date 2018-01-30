@@ -5,7 +5,9 @@ Object::Object() {
 }
 
 Object::~Object() {
-	delete this->boundingBox;
+	if (boundingBox) {
+		delete this->boundingBox;
+	}
 }
 
 void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
