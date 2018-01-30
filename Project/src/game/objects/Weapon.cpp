@@ -25,7 +25,7 @@ void Weapon::setHeld(bool held) {
 
 void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
 	//Create projectile with inputs; startPos, direction, speed/force etc.
-	Projectile temp(getTransform().getTranslation(), direction * 5.0f, 10.0f, 1, 200);
+	Projectile temp(getTransform().getTranslation(), direction * 5.0f, 10.0f, 1);
 }
 
 void Weapon::update(float dt) {
