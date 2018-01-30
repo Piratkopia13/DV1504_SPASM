@@ -7,8 +7,8 @@
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
 	// The size in x- and y-axis of a block
-	static const float DEFAULT_BLOCKSIZE = 15.f;
-	static const float DEFAULT_SCALING = 0.15f;
+	static const float DEFAULT_BLOCKSIZE = 1.0f;
+	static const float DEFAULT_SCALING = 1.0f;
 }
 
 /**

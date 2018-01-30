@@ -42,7 +42,7 @@ private:
 	DirectX::SimpleMath::Vector3 inputVec;
 
 	bool jumping;
-	float jumpTimer();
+	float jumpTimer;
 
 	float speed;
 	float padVibration[2];
