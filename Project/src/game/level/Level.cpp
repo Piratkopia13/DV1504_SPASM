@@ -102,7 +102,7 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 
 		AABB tempBB(*moveable.getBoundingBox());
 
-		float EPS = 0.2f;
+		float EPS = 0.01f;
 		DirectX::SimpleMath::Vector3 mMin = tempBB.getMinPos();
 		DirectX::SimpleMath::Vector3 mMax = tempBB.getMaxPos();
 		// TESTING
@@ -111,10 +111,6 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 		mMin.x += tempFix;
 		tempBB.setMinPos(mMin);
 		tempBB.setMaxPos(mMax);
-		mMax.x += EPS;
-		mMax.y += EPS;
-		mMin.x -= EPS;
-		mMin.y -= EPS;
 		// TESTING
 		DirectX::SimpleMath::Vector3 mVel = moveable.getVelocity() * dt;
 

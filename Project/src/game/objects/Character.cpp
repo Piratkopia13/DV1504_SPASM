@@ -139,6 +139,7 @@ void Character::update(float dt) {
 			this->padVibration[3]);
 	
 	
+	Moveable::move(dt);
 
 	this->setVelocity(this->inputVec * this->speed);
 	this->currentWeapon->setVelocity(this->inputVec * this->speed);
@@ -146,7 +147,6 @@ void Character::update(float dt) {
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6, -1.6, this->sinDegFromVec(this->aimVec) - 1.6));
 	this->currentWeapon->move(dt);
 
-	Moveable::move(dt);
 
 
 
