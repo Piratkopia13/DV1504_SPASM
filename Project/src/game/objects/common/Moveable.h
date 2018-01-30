@@ -12,7 +12,8 @@ public:
 
 	const DirectX::SimpleMath::Vector3& getVelocity();
  	void setAcceleration(const DirectX::SimpleMath::Vector3 &newAcceleration);
-	void addAcceleration(const DirectX::SimpleMath::Vector3& accel );	virtual void draw() = 0;
+	void addAcceleration(const DirectX::SimpleMath::Vector3& accel );	
+	virtual void draw() = 0;
 
 private:
 

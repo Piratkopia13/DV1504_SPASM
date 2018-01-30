@@ -106,6 +106,7 @@ void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMa
 		m_pointLightVolume->getModel()->draw(false);
 
 	}
+
 	dxm->enableDepthBuffer();
 	dxm->disableAlphaBlending();
 

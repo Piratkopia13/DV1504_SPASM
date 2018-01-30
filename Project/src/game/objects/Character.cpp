@@ -13,7 +13,7 @@ Character::Character()
 	this->jumping = 0;
 	this->jumpTimer = 0;
 	for (int i = 0; i < 2; i++) {
-		this->padVibration[i] = 1;
+		//this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
 	this->getTransform().setScale(0.01f);
