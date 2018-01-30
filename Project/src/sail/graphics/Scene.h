@@ -66,9 +66,9 @@ private:
 	DeferredRenderer m_deferredRenderer;
 	Timer m_timer;
 
-	Model m_postProcessfullScreenPlane;
+	/*Model m_postProcessfullScreenPlane;
 	PostProcessFlushShader m_postProcessFlushShader;
-	GaussianBlurCShader m_gaussianBlurShader;
+	GaussianBlurCShader m_gaussianBlurShader;*/
 
 	float m_blurTexScale;
 

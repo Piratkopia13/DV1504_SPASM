@@ -23,11 +23,16 @@ public:
 
 	virtual void draw(bool bindFirst = true);
 
-	void setOutputTexture(ID3D11Texture2D* tex);
+	void setOutputTexture(RenderableTexture* tex);
  	void setInputSRV(ID3D11ShaderResourceView** srv);
 	void setTextureSize(UINT width, UINT height);
 
+	void setFullScreenQuadModel(Model* model);
 	void resize(int width, int height);
+
+	struct Vertex {
+		DirectX::SimpleMath::Vector3 position;
+	};
 
 private:
 	void updateConstantBuffer() const;
@@ -44,6 +49,12 @@ private:
 	ID3D11ShaderResourceView** m_vertInputSRV;
 
 	std::unique_ptr<RenderableTexture> m_middleTex;
+
+	Model* m_fullScreenQuadModel;
+
+	RenderableTexture* m_outputTex;
+
+	std::unique_ptr<PixelShader> m_vertPS;
 
 	struct CBuffer {
 		float pixelSize;

@@ -247,6 +247,7 @@
     <ClInclude Include="src\sail\graphics\shader\GeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\HullShader.h" />
     <ClInclude Include="src\sail\graphics\shader\material\MaterialShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessStage.h" />
     <ClInclude Include="src\sail\graphics\shadows\DirLightShadowMap.h" />
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
     <ClInclude Include="src\sail\graphics\Skybox.h" />
@@ -350,11 +351,11 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\GaussianBlurPS.hlsl">
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl">

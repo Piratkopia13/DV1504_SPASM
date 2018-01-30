@@ -23,14 +23,17 @@ Scene::Scene(const AABB& worldSize)
 	UINT height = window->getWindowHeight();
 
 	m_prePostTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
-	m_postProcOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width / m_blurTexScale, height / m_blurTexScale, false, false, D3D11_BIND_UNORDERED_ACCESS));
+	m_postProcOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width / m_blurTexScale, height / m_blurTexScale, true, false, D3D11_BIND_UNORDERED_ACCESS));
 
 	m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
-	m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
-	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex->getTexture2D());
+	//m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
+	m_gaussianBlurShader.setInputSRV(m_deferredRenderer.getGBufferSRV(DeferredRenderer::GBuffers::DIFFUSE_GBUFFER));
+	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
 
 	createFullscreenQuad();
-	m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
+	m_gaussianBlurShader.setFullScreenQuadModel(&m_postProcessfullScreenPlane);
+	//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
+	m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
 
 }
 Scene::~Scene() {}
@@ -57,7 +60,7 @@ void Scene::resize(int width, int height) {
 
 	// Reset resource views to map to the new textures created by the resize
 	m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
-	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex->getTexture2D());
+	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
 	m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
 
 }
@@ -125,19 +128,30 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	m_deferredRenderer.doLightPass(m_lights, cam, m_dirLightShadowMap);
 
 	// Change active depth buffer to the one used in the deferred geometry pass
-	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
+	dxm->clear({0,0,0,0});
+	//dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 
 	if (m_doPostProcessing) {
 		// Do post processing
 		m_postProcOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
+
+		//m_postProcOutputTex->begin();
+
+		dxm->disableDepthBuffer();
 		m_gaussianBlurShader.draw();
+		dxm->enableDepthBuffer();
+
+		dxm->renderToBackBuffer();
+		dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
+
 
 		// Draw base scene
 // 		dxm->clear({ 0.f, 0.f, 0.f, 0.0f });
 		dxm->enableAdditiveBlending();
 		dxm->disableDepthBuffer();
-  		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
-  		m_postProcessfullScreenPlane.draw();
+ /* 		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
+  		m_postProcessfullScreenPlane.draw();*/
 
 		// Draw bloom using additive blending
    		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
@@ -146,7 +160,8 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 		dxm->enableDepthBuffer();
 
 		// Flush post processing effects to back buffer
-// 		m_postProcessfullScreenPlane.draw();
+		/*m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
+ 		m_postProcessfullScreenPlane.draw();*/
 	}
 
 // 	dxm->renderToBackBuffer();

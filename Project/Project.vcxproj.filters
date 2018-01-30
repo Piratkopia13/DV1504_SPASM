@@ -152,6 +152,7 @@
     <ClInclude Include="src\game\objects\Projectile.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\BloomShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessStage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />
