@@ -2,7 +2,7 @@
 
 Moveable::Moveable() {
 	m_velocity = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
-	m_gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
+	m_gravity = DirectX::SimpleMath::Vector3(0.f, 0.0f, 0.f);
 	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 }
 
