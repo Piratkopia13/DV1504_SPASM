@@ -6,7 +6,7 @@ using namespace DirectX::SimpleMath;
 PlayerCameraController::PlayerCameraController(Camera* cam)
 	: CameraController(cam)
 {
-	this->m_cameraZOffset = 5.0f;
+	this->m_cameraZOffset = 8.0f;
 	this->m_cameraYOffset = 1.0f;
 	this->extraZ = 0.0f;
 
@@ -66,9 +66,15 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 	
+	static float r = 0.08f;
+	static float z = -1.9f;
+	static float t = 15.0f;
+
+	//Calculate extra length if closer than 15 units
+	if (maxL < 40.8f && maxL >= 4.115f)
+		this->extraZ = (sin(r*maxL + z) + 1) * t;
 
 
-	this->extraZ = maxL * 0.02f + maxL;
 	if (nr > 0) {
 		newTarget /= float(nr); 
 		Vector3 moveVec = newTarget - this->target;
