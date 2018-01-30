@@ -8,7 +8,7 @@ Weapon::Weapon() {
 	this->automatic = true;
 	this->triggerHeld = false;
 	this->timeSinceFire = 0;
-	this->cooldownTime = 0.1;
+	this->cooldownTime = 0.1f;
 }
 
 Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) : Weapon() {
@@ -47,6 +47,7 @@ void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
 		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 10.0f, 10.0f, 1);
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
 		m_projectileHandler->addProjectile(temp);
+		//test
 	}
 }
 
