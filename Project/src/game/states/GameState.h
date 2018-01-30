@@ -5,6 +5,7 @@
 #include "../objects/Character.h"
 #include "../level/Level.h"
 #include "../ProjectileHandler.h"
+#include "../objects/Hook.h"
 
 class GameState : public State {
 public:
@@ -55,6 +56,7 @@ private:
 	std::unique_ptr<FbxModel> m_fbxModel;
 	std::unique_ptr<FbxModel> m_characterModel;
 	std::unique_ptr<FbxModel> m_WeaponModel1;
+	std::unique_ptr<FbxModel> m_hookModel;
 
 	// TEST REMOVE THIS
 	std::vector<std::unique_ptr<Model>> models;
@@ -62,6 +64,7 @@ private:
 	// Currently used level
 	std::unique_ptr<Level> m_currLevel;
 
+	Hook* m_hooks[4];
 	Weapon* m_weapons[4];
 	Character* m_player[4];
 	ProjectileHandler* m_projHandler;

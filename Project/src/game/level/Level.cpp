@@ -54,7 +54,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 					switch (c) {
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
-						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x * DEFAULT_BLOCKSIZE, (y - 1) * DEFAULT_BLOCKSIZE, 0.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;

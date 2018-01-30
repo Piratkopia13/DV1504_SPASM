@@ -30,10 +30,11 @@ public:
 	void setWeapon(Weapon* weapon);
 	DirectX::SimpleMath::Vector3 aimVec;
 
+	Weapon* currentWeapon;
 
 private:
 	
-	Weapon* currentWeapon;
+
 
 	unsigned int currentTeam;
 	bool usingController;

@@ -62,7 +62,7 @@ Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const 
 
 	bool intersection = false;
 
-	while (!intersection) {
+	while (!intersection && currentIndex.x > -1 && currentIndex.x < (m_gridWidth - 1)) {
 		if (deltaX > 0)
 			nextIntersectX = float(deltaX + currentIndex.x) * m_cellSize;
 		else
@@ -95,10 +95,18 @@ Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const 
 
 	time += dt;
 	
-	if (time > 3.0f) {
+	if (time > 1.0f) {
+		std::cout << "-------------------" << std::endl;
+		std::cout << "Index" << std::endl;
 		std::cout << "x: " << currentIndex.x << " y: " << currentIndex.y << std::endl;
-		std::cout << "xPos: " << playerPos.x << " yPos: " << playerPos.y << std::endl;
-		std::cout << "xCurrent: " << currentPos.x << " yCurrent: " << currentPos.y << std::endl;
+		std::cout << "Player position" << std::endl;
+		std::cout << "x: " << playerPos.x << " y: " << playerPos.y << std::endl;
+		std::cout << "Hit position" << std::endl;
+		std::cout << "x: " << currentPos.x << " y: " << currentPos.y << std::endl;
+		std::cout << "Aim vector\n";
+		std::cout << "x: " << aimVec.x << " y: " << aimVec.y << std::endl;
+		std::cout << "Direction\n";
+		std::cout << "x: " << direction.x << " y: " << direction.y << std::endl;
 		time = 0.0f;
 	}
 

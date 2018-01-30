@@ -160,8 +160,8 @@ void Character::update(float dt) {
 	//}
 	
 
-	this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
-
+	//this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
+	this->setVelocity(this->inputVec);
 	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0,0.5,-0.8));
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
