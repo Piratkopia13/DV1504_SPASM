@@ -91,6 +91,7 @@ struct GBuffers {
 	float4 diffuse : SV_Target0;
 	float4 normal : SV_Target1;
 	float4 specular : SV_Target2;
+	//float4 bloom : SV_Target3;
 	float4 ambient : SV_Target3;
 };
 
@@ -105,6 +106,9 @@ GBuffers PSMain(PSIn input) {
 		gbuffers.diffuse *= tex[0].Sample(ss, input.texCoords);
 	gbuffers.diffuse.rgb *= material.kd;
 	
+	// Write the bloom cutoff
+	//gbuffers.bloom = gbuffers.diffuse * dot(gbuffers.diffuse.rgb, float3(0.2126, 0.7152, 0.0722));
+
 	// bind light pass target and render ambient to it
 	gbuffers.ambient = float4(gbuffers.diffuse.rgb * ambientCoefficient * material.ka, 1.0f);
 

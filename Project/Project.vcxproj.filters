@@ -14,6 +14,7 @@
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl" />
     <FxCompile Include="res\shaders\postprocess\GaussianBlurPS.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
@@ -76,6 +77,11 @@
     <ClCompile Include="src\game\objects\Weapon.cpp" />
     <ClCompile Include="src\game\objects\Projectile.cpp" />
     <ClCompile Include="src\game\ProjectileHandler.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -152,7 +158,11 @@
     <ClInclude Include="src\game\objects\Projectile.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\BloomShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\PostProcessStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

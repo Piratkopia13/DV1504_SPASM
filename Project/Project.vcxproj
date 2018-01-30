@@ -156,6 +156,11 @@
     <ClCompile Include="src\sail\graphics\geometry\spatial\Quadtree.cpp" />
     <ClCompile Include="src\sail\graphics\Lights.cpp" />
     <ClCompile Include="src\sail\graphics\models\FbxModel.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
@@ -231,6 +236,10 @@
     <ClInclude Include="src\sail\graphics\models\FbxModel.h" />
     <ClInclude Include="src\sail\graphics\camera\OrthographicCamera.h" />
     <ClInclude Include="src\sail\graphics\camera\PerspectiveCamera.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\RenderableTexture.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
@@ -247,7 +256,7 @@
     <ClInclude Include="src\sail\graphics\shader\GeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\HullShader.h" />
     <ClInclude Include="src\sail\graphics\shader\material\MaterialShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\PostProcessStage.h" />
     <ClInclude Include="src\sail\graphics\shadows\DirLightShadowMap.h" />
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
     <ClInclude Include="src\sail\graphics\Skybox.h" />
@@ -341,6 +350,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CSHorizontal</EntryPointName>

@@ -25,15 +25,15 @@ Scene::Scene(const AABB& worldSize)
 	m_prePostTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
 	m_postProcOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width / m_blurTexScale, height / m_blurTexScale, true, false, D3D11_BIND_UNORDERED_ACCESS));
 
-	m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
+	//m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
 	//m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
-	m_gaussianBlurShader.setInputSRV(m_deferredRenderer.getGBufferSRV(DeferredRenderer::GBuffers::DIFFUSE_GBUFFER));
-	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
+	//m_gaussianBlurShader.setInputSRV(m_deferredRenderer.getGBufferSRV(DeferredRenderer::GBuffers::DIFFUSE_GBUFFER));
+	//m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
 
-	createFullscreenQuad();
-	m_gaussianBlurShader.setFullScreenQuadModel(&m_postProcessfullScreenPlane);
+	//createFullscreenQuad();
+	//m_gaussianBlurShader.setFullScreenQuadModel(&m_postProcessfullScreenPlane);
 	//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
-	m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
+	//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
 
 }
 Scene::~Scene() {}
@@ -55,13 +55,13 @@ void Scene::resize(int width, int height) {
 	// Resize textures
 	m_deferredRenderer.resize(width, height);
 	m_prePostTex->resize(width, height);
- 	m_gaussianBlurShader.resize(width, height);
+ 	//m_gaussianBlurShader.resize(width, height);
 	m_postProcOutputTex->resize(width / m_blurTexScale, height / m_blurTexScale);
 
 	// Reset resource views to map to the new textures created by the resize
-	m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
-	m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
-	m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
+	//m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
+	//m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
+	//m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
 
 }
 
@@ -134,30 +134,34 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	if (m_doPostProcessing) {
 		// Do post processing
 		m_postProcOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
-		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
+
+		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
+		m_postProcessPass.run(*m_prePostTex);
+
+		//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
 
 		//m_postProcOutputTex->begin();
 
-		dxm->disableDepthBuffer();
-		m_gaussianBlurShader.draw();
-		dxm->enableDepthBuffer();
+		//dxm->disableDepthBuffer();
+		//m_gaussianBlurShader.draw();
+		//dxm->enableDepthBuffer();
 
-		dxm->renderToBackBuffer();
-		dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
+		/*dxm->renderToBackBuffer();
+		dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());*/
 
 
 		// Draw base scene
 // 		dxm->clear({ 0.f, 0.f, 0.f, 0.0f });
-		dxm->enableAdditiveBlending();
-		dxm->disableDepthBuffer();
+		/*dxm->enableAdditiveBlending();
+		dxm->disableDepthBuffer();*/
  /* 		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
   		m_postProcessfullScreenPlane.draw();*/
 
 		// Draw bloom using additive blending
-   		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
+   		/*m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
 		m_postProcessfullScreenPlane.draw();
 		dxm->disableAlphaBlending();
-		dxm->enableDepthBuffer();
+		dxm->enableDepthBuffer();*/
 
 		// Flush post processing effects to back buffer
 		/*m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
@@ -223,41 +227,41 @@ void Scene::setShadowLight() {
 	m_depthShader.updateCamera(dlCam);
 }
 
-void Scene::createFullscreenQuad() {
-
-	DirectX::SimpleMath::Vector2 halfSizes(1.f, 1.f);
-
-	const int numVerts = 4;
-	DirectX::SimpleMath::Vector3* positions = new DirectX::SimpleMath::Vector3[numVerts]{
-		DirectX::SimpleMath::Vector3(-halfSizes.x, -halfSizes.y, 0.f),
-		DirectX::SimpleMath::Vector3(-halfSizes.x, halfSizes.y, 0.f),
-		DirectX::SimpleMath::Vector3(halfSizes.x, -halfSizes.y, 0.f),
-		DirectX::SimpleMath::Vector3(halfSizes.x, halfSizes.y, 0.f),
-	};
-
-	const int numIndices = 6;
-	ULONG* indices = new ULONG[numIndices]{
-		0, 1, 2, 2, 1, 3
-	};
-
-	// Tex coords not used in shader, only set to get rid of warning
-	DirectX::SimpleMath::Vector2* texCoords = new DirectX::SimpleMath::Vector2[numVerts]{
-		DirectX::SimpleMath::Vector2(0.f, 1.f),
-		DirectX::SimpleMath::Vector2(0.f, 0.f),
-		DirectX::SimpleMath::Vector2(1.f, 1.f),
-		DirectX::SimpleMath::Vector2(1.f, 0.f)
-	};
-
-	Model::Data data;
-	data.numVertices = numVerts;
-	data.numIndices = numIndices;
-	data.positions = positions;
-	data.indices = indices;
-	data.texCoords = texCoords;
-
-	m_postProcessfullScreenPlane.setBuildData(data);
-	m_postProcessfullScreenPlane.buildBufferForShader(&m_postProcessFlushShader);
-}
+//void Scene::createFullscreenQuad() {
+//
+//	DirectX::SimpleMath::Vector2 halfSizes(1.f, 1.f);
+//
+//	const int numVerts = 4;
+//	DirectX::SimpleMath::Vector3* positions = new DirectX::SimpleMath::Vector3[numVerts]{
+//		DirectX::SimpleMath::Vector3(-halfSizes.x, -halfSizes.y, 0.f),
+//		DirectX::SimpleMath::Vector3(-halfSizes.x, halfSizes.y, 0.f),
+//		DirectX::SimpleMath::Vector3(halfSizes.x, -halfSizes.y, 0.f),
+//		DirectX::SimpleMath::Vector3(halfSizes.x, halfSizes.y, 0.f),
+//	};
+//
+//	const int numIndices = 6;
+//	ULONG* indices = new ULONG[numIndices]{
+//		0, 1, 2, 2, 1, 3
+//	};
+//
+//	// Tex coords not used in shader, only set to get rid of warning
+//	DirectX::SimpleMath::Vector2* texCoords = new DirectX::SimpleMath::Vector2[numVerts]{
+//		DirectX::SimpleMath::Vector2(0.f, 1.f),
+//		DirectX::SimpleMath::Vector2(0.f, 0.f),
+//		DirectX::SimpleMath::Vector2(1.f, 1.f),
+//		DirectX::SimpleMath::Vector2(1.f, 0.f)
+//	};
+//
+//	Model::Data data;
+//	data.numVertices = numVerts;
+//	data.numIndices = numIndices;
+//	data.positions = positions;
+//	data.indices = indices;
+//	data.texCoords = texCoords;
+//
+//	m_postProcessfullScreenPlane.setBuildData(data);
+//	m_postProcessfullScreenPlane.buildBufferForShader(&m_postProcessFlushShader);
+//}
 
 Lights& Scene::getLights() {
 	return m_lights;

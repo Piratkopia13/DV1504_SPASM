@@ -16,6 +16,7 @@
 #include "shader/postprocess/PostProcessFlushShader.h"
 #include "shader/postprocess/GaussianBlurCShader.h"
 #include "../../game/level/Level.h"
+#include "postprocessing/PostProcessPass.h"
 //#include "../../game/objects/common/Object.h"
 
 class Object;
@@ -60,7 +61,7 @@ public:
 
 private:
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
-	void createFullscreenQuad();
+	//void createFullscreenQuad();
 
 private:
 	DeferredRenderer m_deferredRenderer;
@@ -96,6 +97,7 @@ private:
 	std::unique_ptr<RenderableTexture> m_postProcOutputTex;
 
 	bool m_doPostProcessing;
+	PostProcessPass m_postProcessPass;
 
 	// Camera rotation
 	float m_rotation;

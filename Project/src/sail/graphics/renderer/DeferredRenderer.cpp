@@ -146,6 +146,12 @@ ID3D11ShaderResourceView** DeferredRenderer::getGBufferSRV(UINT index) {
 	return &m_srvs[index];
 }
 
+RenderableTexture* DeferredRenderer::getGBufferRenderableTexture(UINT index)
+{
+	if (index > NUM_GBUFFERS) return nullptr;
+	return m_gBuffers[index].get();
+}
+
 void DeferredRenderer::createFullscreenQuad() {
 
 	Vector2 halfSizes(1.f, 1.f);

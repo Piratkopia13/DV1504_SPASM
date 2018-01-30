@@ -21,6 +21,11 @@ struct PSIn
     float2 texCoord : TEXCOORD0;
 };
 
+cbuffer CBuffer : register(b0) {
+  float windowWidth;
+  float windowHeight;
+}
+
 PSIn VSMain(VSIn input)
 {
     PSIn output;
@@ -46,12 +51,9 @@ float4 PSHorizontal(PSIn input) : SV_Target0
 
   float4 color;
 
-  float width, height;
-  tex.GetDimensions(width, height);
-
   for (int x = 0; x < 13; x++) {
     //float2 index = float2(input.texCoord.x + (x - 6.f) / width, input.texCoord.y);
-    color += tex.Sample(ss, input.texCoord + float2((x - 6.f) / 160.f, 0.f)) * filter[x];
+    color += tex.Sample(ss, input.texCoord + float2((x - 6.f) / windowWidth, 0.f)) * filter[x];
   }
 
   return color/* * getBrightness(tex.Sample(ss, input.texCoord).rgb)*/;
@@ -66,11 +68,8 @@ float4 PSVertical(PSIn input) : SV_Target0
 
   float4 color;
 
-  float width, height;
-  tex.GetDimensions(width, height);
-
   for (int y = 0; y < 13; y++) {
-    color += tex.Sample(ss, input.texCoord + float2(0.f, (y - 6.f) / height)) * filter[y];
+    color += tex.Sample(ss, input.texCoord + float2(0.f, (y - 6.f) / windowHeight)) * filter[y];
   }
 
   return color;
