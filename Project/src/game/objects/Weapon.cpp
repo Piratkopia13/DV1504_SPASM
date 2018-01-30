@@ -62,7 +62,6 @@ void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 			this->timeSinceFire = 0.0;
 		}
 		this->timeSinceFire += dt;
-		Logger::log("timeSinceFire :" + std::to_string(this->timeSinceFire));
 	}
 
 
