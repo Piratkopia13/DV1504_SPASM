@@ -26,3 +26,6 @@ void Moveable::setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity) {
 	m_velocity = newVelocity;
 }
 
+const DirectX::SimpleMath::Vector3& Moveable::getVelocity() {
+	return m_velocity;
+}

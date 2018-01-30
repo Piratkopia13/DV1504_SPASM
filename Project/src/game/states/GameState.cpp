@@ -86,10 +86,10 @@ GameState::GameState(StateStack& stack)
 	m_debugText.setPosition(Vector2(0.f, 40.f));
 
 	// Add texts to the scene
-	m_scene.addText(&m_fpsText);
-	m_scene.addText(&m_debugText);
-	m_scene.addText(&m_debugCamText);
-	m_scene.addText(&m_debugParticleText);
+	//m_scene.addText(&m_fpsText);
+	//m_scene.addText(&m_debugText);
+	//m_scene.addText(&m_debugCamText);
+	//m_scene.addText(&m_debugParticleText);
 
 	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
@@ -217,6 +217,12 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
+	DirectX::SimpleMath::Vector3 temp = m_currLevel->collisionTest(*player[0], dt);
+
+	if (temp.Length()) {
+		std::cout << "To move x: " << temp.x << " to move y: " << temp.y << std::endl;
+	}
+
 	for (int i = 0; i < 4; i++)
 		this->player[i]->update(dt);
 	if (m_flyCam)
@@ -224,6 +230,12 @@ bool GameState::update(float dt) {
 	else
 		m_playerCamController.update(dt);
 
+	if (player[0]->getVelocity().Length()) {
+		std::cout << "P1 Moveable MinX: " << player[0]->getBoundingBox()->getMinPos().x <<
+			" Moveable MinY: " << player[0]->getBoundingBox()->getMinPos().y <<
+			" Moveable MaxX: " << player[0]->getBoundingBox()->getMaxPos().x <<
+			" Moveable MaxY: " << player[0]->getBoundingBox()->getMaxPos().y << std::endl;
+	}
 
 	return true;
 }

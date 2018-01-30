@@ -14,16 +14,20 @@ void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
 
 void Object::updateBoundingBox()
 {
-	if(this->boundingBox)
+	if (this->boundingBox) {
+		//this->boundingBox->updateTranslation(this->getTransform().getTranslation());
 		this->boundingBox->updateTransform(this->getTransform().getMatrix());
+	}
 }
 
 void Object::setModel(Model * model)
 {
 	if (model) {
 		this->m_Model = model;
-		if(&model->getAABB())
+		if (&model->getAABB()) {
 			this->boundingBox = new AABB(model->getAABB());
+			//this->boundingBox->updateTransform(this->getTransform().getMatrix());
+		}
 		else {
 			
 			Logger::Error("BoundingBox not loaded");
@@ -38,4 +42,8 @@ Model* Object::getModel()
 
 Transform& Object::getTransform() {
 	return m_transform;
+}
+
+AABB* Object::getBoundingBox() {
+	return boundingBox;
 }

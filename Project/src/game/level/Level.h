@@ -7,15 +7,16 @@
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
 	// The size in x- and y-axis of a block
-	static const float DEFAULT_SCALING = 0.5f;
 	static const float DEFAULT_BLOCKSIZE = 15.f;
-	static const float DEFAULT_SCALING = 0.15f;}
+	static const float DEFAULT_SCALING = 0.15f;
+}
 
 /**
 	Handles all objects of a level
 */
 class Block;
 class Grid;
+class Moveable;
 class Level {
 
 public:
@@ -25,6 +26,7 @@ public:
 	void update(const float delta);
 	void draw();
 
+	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
 	DirectX::SimpleMath::Vector3 tempCollisionTest(DirectX::SimpleMath::Vector3& pos, DirectX::SimpleMath::Vector3& vel, DirectX::SimpleMath::Vector2& boundaries);
 
 private:

@@ -19,6 +19,7 @@ public:
 	void setModel(Model* model);
 	Model* getModel();
 	Transform& getTransform();
+	AABB* getBoundingBox();
 
 	virtual void draw() = 0;
 };

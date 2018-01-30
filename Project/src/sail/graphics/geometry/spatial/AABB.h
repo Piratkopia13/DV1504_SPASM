@@ -15,6 +15,7 @@ public:
 	DirectX::SimpleMath::Vector3 getHalfSizes() const;
 	DirectX::SimpleMath::Vector3 getCenterPos() const;
 	void updateTransform(const DirectX::SimpleMath::Matrix& transform);
+	void updateTranslation(const DirectX::SimpleMath::Vector3& translation);
 
 	bool containsOrIntersects(const AABB& other);
 	bool contains(const AABB& other);

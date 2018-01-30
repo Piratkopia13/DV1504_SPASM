@@ -50,8 +50,8 @@ void AABB::updateTransform(const DirectX::SimpleMath::Matrix& transform) {
 	Vector3 AMin, AMax;
 
 	// Copy box A into min and max array.
-	AMin = m_minPos;
-	AMax = m_maxPos;
+	AMin = m_originalMinPos;
+	AMax = m_originalMaxPos;
 
 	// Begin at T.
 	m_minPos = transform.Translation();
@@ -73,8 +73,13 @@ void AABB::updateTransform(const DirectX::SimpleMath::Matrix& transform) {
 		}
 	}
 
-	/*m_minPos = Vector3::Transform(m_minPos, transform);
-	m_maxPos = Vector3::Transform(m_maxPos, transform);*/
+	//m_minPos = Vector3::Transform(m_minPos, transform);
+	//m_maxPos = Vector3::Transform(m_maxPos, transform);
+}
+
+void AABB::updateTranslation(const DirectX::SimpleMath::Vector3& translation) {
+	m_minPos = m_originalMinPos + translation;
+	m_maxPos = m_originalMaxPos + translation;
 }
 
 void AABB::setMinPos(const DirectX::SimpleMath::Vector3& minPos) {

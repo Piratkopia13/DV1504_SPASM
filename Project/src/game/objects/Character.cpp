@@ -14,13 +14,12 @@ Character::Character()
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
-	//this->getTransform().setScale(0.1);
+	this->getTransform().setScale(0.1);
 	this->getTransform().setRotations(Vector3(0, 1.55, 0));
 }
 
 Character::Character(Model * model) : Character() {
 	this->setModel(model);
-
 }
 Character::Character(Model * model, unsigned int usingController, unsigned int port) 
 	: Character(model) {

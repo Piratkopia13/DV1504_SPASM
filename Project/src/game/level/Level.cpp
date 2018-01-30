@@ -1,6 +1,7 @@
 #include "Level.h"
 #include "../objects/Block.h"
 #include "Grid.h"
+#include "../objects/common/Moveable.h"
 
 #include <string>
 #include <fstream>
@@ -90,6 +91,86 @@ void Level::update(const float delta) {
 void Level::draw() {
 	for (const auto& block : m_blocks) 
 		block->draw();
+}
+
+DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const float dt) {
+	DirectX::SimpleMath::Vector3 toMove(0.f, 0.f, 0.f);
+
+	if (moveable.getVelocity().Length()) {
+		int indexX = 0;
+		int indexY = 0;
+
+		AABB tempBB(*moveable.getBoundingBox());
+
+		float EPS = 0.2f;
+		DirectX::SimpleMath::Vector3 mMin = tempBB.getMinPos();
+		DirectX::SimpleMath::Vector3 mMax = tempBB.getMaxPos();
+		// TESTING
+		float tempFix = mMax.x - mMin.x;
+		mMax.x += tempFix;
+		mMin.x += tempFix;
+		tempBB.setMinPos(mMin);
+		tempBB.setMaxPos(mMax);
+		mMax.x += EPS;
+		mMax.y += EPS;
+		mMin.x -= EPS;
+		mMin.y -= EPS;
+		// TESTING
+		DirectX::SimpleMath::Vector3 mVel = moveable.getVelocity() * dt;
+
+		std::cout << "P2 Moveable MinX: " << mMin.x <<
+			" Moveable MinY: " << mMin.y <<
+			" Moveable MaxX: " << mMax.x <<
+			" Moveable MaxY: " << mMax.y << std::endl;
+
+		std::vector<Grid::Index> indices = m_grid->getCollisionIndices(tempBB, DEFAULT_BLOCKSIZE);
+
+		if (indices.size() > 0) {
+			for (Grid::Index index : indices) {
+				float bMinX = index.x * DEFAULT_BLOCKSIZE;
+				float bMaxX = (index.x + 1) * DEFAULT_BLOCKSIZE;
+				float bMinY = index.y * DEFAULT_BLOCKSIZE;
+				float bMaxY = (index.y + 1) * DEFAULT_BLOCKSIZE;
+
+
+				if (mMax.x + mVel.x > bMinX && mMin.x + mVel.x < bMaxX &&
+					mMax.y > bMinY && mMin.y < bMaxY) {
+					if (mVel.x < 0)
+						toMove.x = bMaxX - (mMin.x + mVel.x) + EPS;
+					else if (mVel.x > 0)
+						toMove.x = bMinX - (mMax.x + mVel.x) - EPS;
+				}
+
+				if (mMax.y + mVel.y > bMinY && mMin.y + mVel.y < bMaxY &&
+					mMax.x > bMinX && mMin.x < bMaxX) {
+					if (mVel.y < 0)
+						toMove.y = bMaxY - (mMin.y + mVel.y) + EPS;
+					else if (mVel.y > 0)
+						toMove.y = bMinY - (mMax.y + mVel.y) - EPS;
+				}
+
+				if (toMove.x) {
+					if (abs(toMove.x) <= EPS) toMove.x = 0.f;
+					DirectX::SimpleMath::Vector3 tempVelocity = moveable.getVelocity();
+					moveable.setVelocity(DirectX::SimpleMath::Vector3(toMove.x, 0.f, 0.f));
+					moveable.move(1.0f);
+					tempVelocity.x = 0.f;
+					moveable.setVelocity(tempVelocity);
+				}
+
+				if (toMove.y) {
+					if (abs(toMove.y) <= EPS) toMove.y = 0.f;
+					DirectX::SimpleMath::Vector3 tempVelocity = moveable.getVelocity();
+					moveable.setVelocity(DirectX::SimpleMath::Vector3(0.f, toMove.y, 0.f));
+					moveable.move(1.0f);
+					tempVelocity.y = 0.f;
+					moveable.setVelocity(tempVelocity);
+				}
+			}
+		}
+	}
+
+	return toMove;
 }
 
 DirectX::SimpleMath::Vector3 Level::tempCollisionTest(DirectX::SimpleMath::Vector3& pos, DirectX::SimpleMath::Vector3& vel, DirectX::SimpleMath::Vector2& boundaries) {

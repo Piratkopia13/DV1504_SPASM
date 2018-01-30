@@ -11,6 +11,7 @@ public:
 
 	void move(const float dt);
 	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
+	const DirectX::SimpleMath::Vector3& getVelocity();
 	virtual void draw() = 0;
 
 private:
