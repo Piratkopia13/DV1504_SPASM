@@ -44,7 +44,7 @@ void Weapon::triggerRelease()
 void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
 	if (m_projectileHandler != nullptr) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
-		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 200.0f, 10.0f, 1);
+		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 10.0f, 10.0f, 1);
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
 		m_projectileHandler->addProjectile(temp);
 	}

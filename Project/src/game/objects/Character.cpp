@@ -162,7 +162,7 @@ void Character::update(float dt) {
 
 	this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
 
-	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation());
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0,0.5,-0.8));
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
 	this->currentWeapon->update(dt, this->aimVec);
@@ -190,7 +190,7 @@ void Character::setControllerPort(const unsigned int port) {
 		this->controllerPort = port;
 	
 #ifdef _DEBUG
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 10.0f + 50.0f, 50.0f, 0.0f));
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 2.0f + 3.0f, 3.0f, 0.0f));
 #endif
 }
 
@@ -219,8 +219,8 @@ void Character::setWeapon(Weapon * weapon)
 {
 	this->currentWeapon = weapon;
 	this->currentWeapon->setHeld(true);
-	this->currentWeapon->setPosition(this->getTransform().getTranslation());
-	this->currentWeapon->getTransform().setScale(0.7f);
+	//this->currentWeapon->setPosition(this->getTransform().getTranslation()+Vector3(0,0.5,0.5f));
+	this->currentWeapon->getTransform().setScale(1.0f);
 	
 }
 

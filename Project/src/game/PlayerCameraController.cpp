@@ -6,8 +6,8 @@ using namespace DirectX::SimpleMath;
 PlayerCameraController::PlayerCameraController(Camera* cam)
 	: CameraController(cam)
 {
-	this->m_cameraZOffset = 60.0f;
-	this->m_cameraYOffset = 10.0f;
+	this->m_cameraZOffset = 5.0f;
+	this->m_cameraYOffset = 1.0f;
 	this->extraZ = 0.0f;
 
 	
@@ -68,7 +68,7 @@ void PlayerCameraController::updatePosition(float dt)
 	
 
 
-	this->extraZ = maxL * 0.87f;
+	this->extraZ = maxL * 0.37f;
 	if (nr > 0) {
 		newTarget /= float(nr); 
 		Vector3 moveVec = newTarget - this->target;
