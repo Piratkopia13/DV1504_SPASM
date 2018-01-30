@@ -68,7 +68,7 @@ void PlayerCameraController::updatePosition(float dt)
 	
 
 
-	this->extraZ = maxL * 0.37f;
+	this->extraZ = maxL * 0.02f + maxL;
 	if (nr > 0) {
 		newTarget /= float(nr); 
 		Vector3 moveVec = newTarget - this->target;
@@ -84,9 +84,8 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 	Vector3 diff = this->target - this->position;
-	if (diff.LengthSquared() > 10.0f)
-		diff.Normalize();
-	this->position += diff * dt * moveSpeed;
+	
+	this->position += diff * dt;
 }
 
 
