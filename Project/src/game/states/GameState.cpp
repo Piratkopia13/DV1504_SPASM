@@ -243,7 +243,7 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	//m_app->getDXManager()->enableAlphaBlending();
-	/*m_colorShader.updateCamera(m_cam);
+	m_colorShader.updateCamera(m_cam);
 	for(int i = 0; i < 4; i++)
 		m_player[i]->draw();
 
@@ -255,12 +255,12 @@ bool GameState::render(float dt) {
 	m_scene.drawHUD();
 
 	///* Debug Stuff */
- 	m_app->getDXManager()->disableDepthBuffer();
+ 	/*m_app->getDXManager()->disableDepthBuffer();
  	m_app->getDXManager()->disableAlphaBlending();
-	m_texturePlane->draw();
+	m_texturePlane->draw();*/
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
-	m_app->getDXManager()->enableDepthBuffer();
+	//m_app->getDXManager()->enableDepthBuffer();
 	/* Debug Stuff */
 
 	// Swap backbuffers
