@@ -5,12 +5,11 @@ Game::Game(HINSTANCE hInstance)
 	: Application(1280, 720, "3D Project", hInstance)
 	, m_stateStack()
 {
-
 	// Register states
 	registerStates();
 	// Set starting state
 	m_stateStack.pushState(States::Game);
-	
+
 }
 
 Game::~Game() {	}
@@ -19,7 +18,6 @@ int Game::run() {
 	
 	// Start the game loop and return when game exits
 	return startGameLoop();
-
 }
 
 void Game::registerStates() {
