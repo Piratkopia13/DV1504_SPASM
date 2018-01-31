@@ -1,4 +1,5 @@
 #include "DeferredDirectionalLightShader.h"
+#include "../../renderer/DeferredRenderer.h"
 
 using namespace DirectX;
 using namespace SimpleMath;
@@ -41,6 +42,8 @@ DeferredDirectionalLightShader::DeferredDirectionalLightShader() {
 }
 DeferredDirectionalLightShader::~DeferredDirectionalLightShader() {
 	Memory::safeRelease(m_inputLayout);
+	/*Memory::safeRelease(m_texArraySRV);
+	Memory::safeRelease(m_texArray);*/
 }
 
 void DeferredDirectionalLightShader::updateCamera(Camera& cam) {
@@ -56,6 +59,62 @@ void DeferredDirectionalLightShader::updateModelDataBuffer(const Matrix& invP) c
 
 	m_modelDataBuffer->updateData(&data, sizeof(data));
 }
+
+//void DeferredDirectionalLightShader::createTextureArray(UINT width, UINT height, ID3D11Texture2D** depthTextures) {
+//
+//	m_depthTextures = depthTextures;
+//
+//	D3D11_TEXTURE2D_DESC texElementDesc;
+//	depthTextures[0]->GetDesc(&texElementDesc);
+//
+//	auto devCon = Application::getInstance()->getDXManager()->getDeviceContext();
+//
+//	// Create a texture2d object for the array
+//	D3D11_TEXTURE2D_DESC texArrayDesc;
+//	ZeroMemory(&texArrayDesc, sizeof(texArrayDesc));
+//	texArrayDesc.Width = texElementDesc.Width;
+//	texArrayDesc.Height = texElementDesc.Height;
+//	texArrayDesc.MipLevels = texElementDesc.MipLevels;
+//	texArrayDesc.ArraySize = 2;
+//	texArrayDesc.Format = texElementDesc.Format;
+//	texArrayDesc.SampleDesc.Count = 1;
+//	texArrayDesc.Usage = D3D11_USAGE_DEFAULT;
+//	texArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+//	texArrayDesc.CPUAccessFlags = 0;
+//
+//	// Create the texture2D
+//	//ID3D11Texture2D* tex;
+//	Application::getInstance()->getDXManager()->getDevice()->CreateTexture2D(&texArrayDesc, nullptr, &m_texArray);
+//
+//	// Copy individial texture elements into the texture array
+//
+//	for (UINT i = 0; i < DeferredRenderer::NUM_GBUFFERS - 1; i++) {
+//		//D3D11_MAPPED_SUBRESOURCE mappedTex2D;
+//		//devCon->Map(gbufferTextures[i], 0, D3D11_MAP_READ, 0, &mappedTex2D);
+//		//devCon->UpdateSubresource(tex, D3D11CalcSubresource(0, i, 0), nullptr, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+//		devCon->CopySubresourceRegion(m_texArray, D3D11CalcSubresource(0, i, 1), 0, 0, 0, depthTextures[i], D3D11CalcSubresource(0, 0, 1), nullptr);
+//		//devCon->Unmap(gbufferTextures[i], 0);
+//	}
+//
+//	// Create the shader resource view for the texture array
+//	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+//	ZeroMemory(&srvDesc, sizeof(srvDesc));
+//	srvDesc.Format = texArrayDesc.Format;
+//	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+//	srvDesc.Texture2DArray.MostDetailedMip = 0;
+//	srvDesc.Texture2DArray.MipLevels = 1;
+//	srvDesc.Texture2DArray.FirstArraySlice = 0;
+//	srvDesc.Texture2DArray.ArraySize = DeferredRenderer::NUM_GBUFFERS - 1;
+//
+//	// Release the old SRV
+//	//Memory::safeRelease(m_texArraySRV);
+//	// Create the ShaderResourceView
+//	Application::getInstance()->getDXManager()->getDevice()->CreateShaderResourceView(m_texArray, &srvDesc, &m_texArraySRV);
+//
+//	// Release the texture - since the SRV is bound to it it will keep in memory until the SRV is released
+//	//Memory::safeRelease(tex);
+//
+//}
 
 void DeferredDirectionalLightShader::setLight(const Lights::DirectionalLight& dl) {
 	LightDataBuffer data;
@@ -174,8 +233,9 @@ void DeferredDirectionalLightShader::draw(Model& model, bool bindFirst) {
 	// Bind the texture if it exists
 	UINT numTextures;
 	auto tex = model.getMaterial()->getTextures(numTextures);
+
 	if (tex)
-		devCon->PSSetShaderResources(0, numTextures, tex);
+		devCon->PSSetShaderResources(0, 4, tex);
 
 	// Bind vertex buffer
 	UINT stride = sizeof(DeferredDirectionalLightShader::Vertex);

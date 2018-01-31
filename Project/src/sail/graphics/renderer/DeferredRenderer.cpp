@@ -36,6 +36,12 @@ DeferredRenderer::DeferredRenderer(){
 	m_fullScreenPlane.getMaterial()->setTextures(m_srvs, NUM_GBUFFERS);
 	m_pointLightVolume->getModel()->getMaterial()->setTextures(m_srvs, NUM_GBUFFERS);
 
+	/*ID3D11Texture2D* depthTextures[2];
+	depthTextures[0] = m_gBuffers[0]->getDepthTexture2D();
+	depthTextures[1] = ;
+
+	m_dirLightShader.createTextureArray(width, height, depthTextures);*/
+
 }
 DeferredRenderer::~DeferredRenderer() {
 
@@ -78,6 +84,16 @@ void DeferredRenderer::beginLightDepthPass(ID3D11DepthStencilView* const dsv) {
 void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMap& dlShadowMap) {
 
 	auto devCon = Application::getInstance()->getDXManager()->getDeviceContext();
+
+	/*ID3D11Texture2D* depthTextures[2];
+	depthTextures[0] = m_gBuffers[0]->getDepthTexture2D();
+	depthTextures[1] = dlShadowMap.getTexture2D();
+	auto window = Application::getInstance()->getWindow();
+	UINT width = window->getWindowWidth();
+	UINT height = window->getWindowHeight();
+	m_dirLightShader.createTextureArray(width, height, depthTextures);*/
+
+	//devCon->PSSetShaderResources(9, 1, &m_dsvSrv);
 	devCon->PSSetShaderResources(10, 1, dlShadowMap.getSRV());
 	m_dirLightShader.updateCameraBuffer(cam, lights.getDirectionalLightCamera());
 
@@ -128,6 +144,13 @@ void DeferredRenderer::resize(int width, int height) {
 	m_srvs[DEPTH_GBUFFER] = *m_gBuffers[0]->getDepthSRV();
 	m_dsv = *m_gBuffers[0]->getDepthStencilView();
 	m_dsvSrv = *m_gBuffers[0]->getDepthSRV();
+
+	// Update the texture array in the directional light shader
+	/*ID3D11Texture2D* gbufferTextures[NUM_GBUFFERS];
+	for (int i = 0; i < NUM_GBUFFERS - 1; i++) {
+		gbufferTextures[i] = m_gBuffers[i]->getTexture2D();
+	}
+	m_dirLightShader.createTextureArray(width, height, gbufferTextures);*/
 
 }
 

@@ -8,6 +8,7 @@
 #include "../../../Application.h"
 #include "../../Lights.h"
 #include "../../geometry/Material.h"
+#include "../../RenderableTexture.h"
 
 class DeferredDirectionalLightShader : public ShaderSet {
 public:

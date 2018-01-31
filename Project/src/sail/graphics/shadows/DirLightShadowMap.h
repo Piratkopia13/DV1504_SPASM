@@ -16,6 +16,7 @@ public:
 	ID3D11DepthStencilView* const * getDSV();
 	ID3D11ShaderResourceView** getSRV();
 	D3D11_VIEWPORT* getViewPort();
+	ID3D11Texture2D* getTexture2D();
 	//DeferredDirectionalLightShader* getDLShader();
 
 private:

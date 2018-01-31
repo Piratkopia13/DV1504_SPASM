@@ -16,22 +16,22 @@ PostProcessPass::PostProcessPass()
 	m_gaussPass2Scale = 1.f / 8;
 	m_brightnessCutoffScale = 1.f / 2;
 
-	m_hGaussStage = std::make_unique<HGaussianBlurStage>(windowWidth * m_gaussPass1Scale, windowHeight * m_gaussPass1Scale, &m_fullscreenQuad);
-	m_vGaussStage = std::make_unique<VGaussianBlurStage>(windowWidth * m_gaussPass1Scale, windowHeight * m_gaussPass1Scale, &m_fullscreenQuad);
+	m_hGaussStage = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
+	m_vGaussStage = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
 
-	m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(windowWidth * m_gaussPass2Scale, windowHeight * m_gaussPass2Scale, &m_fullscreenQuad);
-	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(windowWidth * m_gaussPass2Scale, windowHeight * m_gaussPass2Scale, &m_fullscreenQuad);
+	m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
+	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
 
-	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(windowWidth * m_brightnessCutoffScale, windowHeight * m_brightnessCutoffScale, &m_fullscreenQuad);
+	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(UINT(windowWidth * m_brightnessCutoffScale), UINT(windowHeight * m_brightnessCutoffScale), &m_fullscreenQuad);
 
 }
 
 void PostProcessPass::resize(UINT width, UINT height) {
-	m_hGaussStage->resize(width * m_gaussPass1Scale, height * m_gaussPass1Scale);
-	m_vGaussStage->resize(width * m_gaussPass1Scale, height * m_gaussPass1Scale);
-	m_hGaussStage2->resize(width * m_gaussPass2Scale, height * m_gaussPass2Scale);
-	m_vGaussStage2->resize(width * m_gaussPass2Scale, height * m_gaussPass2Scale);
-	m_brightnessCutoffStage->resize(width * m_brightnessCutoffScale, height * m_brightnessCutoffScale);
+	m_hGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
+	m_vGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
+	m_hGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
+	m_vGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
+	m_brightnessCutoffStage->resize(UINT(width * m_brightnessCutoffScale), UINT(height * m_brightnessCutoffScale));
 }
 
 PostProcessPass::~PostProcessPass() {

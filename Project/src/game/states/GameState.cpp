@@ -43,8 +43,8 @@ GameState::GameState(StateStack& stack)
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
-// 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	dl.direction = Vector3(0.4f, -0.5f, 1.f);
+ 	//dl.direction = Vector3(0.4f, -0.6f, 1.0f);
+	dl.direction = Vector3(0.46f, -0.87f, 0.12f);
 	dl.direction.Normalize();
 	l.setDirectionalLight(dl);
 
@@ -108,6 +108,7 @@ GameState::GameState(StateStack& stack)
 		this->m_player[i]->setController(1);
 		this->m_player[i]->setControllerPort(i);
 		this->m_player[i]->setWeapon(this->m_weapons[i]);
+		m_scene.addObject(m_player[i]);
 	}
 
 	m_playerCamController.setTargets(
@@ -243,9 +244,9 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	//m_app->getDXManager()->enableAlphaBlending();
-	m_colorShader.updateCamera(m_cam);
-	for(int i = 0; i < 4; i++)
-		m_player[i]->draw();
+	//m_colorShader.updateCamera(m_cam);
+	//for(int i = 0; i < 4; i++)
+	//	m_player[i]->draw();
 
 	m_projHandler->draw();
 
@@ -255,12 +256,12 @@ bool GameState::render(float dt) {
 	m_scene.drawHUD();
 
 	///* Debug Stuff */
- 	/*m_app->getDXManager()->disableDepthBuffer();
+ 	m_app->getDXManager()->disableDepthBuffer();
  	m_app->getDXManager()->disableAlphaBlending();
-	m_texturePlane->draw();*/
+	m_texturePlane->draw();
 	//m_texturePlane2->draw();
 	//m_quadtreeCamtexPlane->draw();
-	//m_app->getDXManager()->enableDepthBuffer();
+	m_app->getDXManager()->enableDepthBuffer();
 	/* Debug Stuff */
 
 	// Swap backbuffers

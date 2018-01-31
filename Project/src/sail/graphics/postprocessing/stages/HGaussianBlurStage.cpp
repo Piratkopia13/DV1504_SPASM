@@ -4,7 +4,7 @@ HGaussianBlurStage::HGaussianBlurStage(UINT width, UINT height, Model* fullscree
 	: PostProcessStage(width, height, fullscreenQuad)
 {
 	// Set up constant buffer
-	CBuffer pixelSize = { width, height };
+	CBuffer pixelSize = { (float)width, (float)height };
 	m_cBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&pixelSize, sizeof(pixelSize)));
 
 	// Set up sampler

@@ -57,8 +57,6 @@ public:
 
 	DirLightShadowMap& getDLShadowMap();
 
-	RenderableTexture& getPreProcessRenderableTexture();
-
 private:
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
 	//void createFullscreenQuad();
@@ -66,12 +64,6 @@ private:
 private:
 	DeferredRenderer m_deferredRenderer;
 	Timer m_timer;
-
-	/*Model m_postProcessfullScreenPlane;
-	PostProcessFlushShader m_postProcessFlushShader;
-	GaussianBlurCShader m_gaussianBlurShader;*/
-
-	float m_blurTexScale;
 
 	//std::map<ShaderSet*, std::vector<Model*>> m_mappedModels;
 	std::vector<Object*> m_objects;
@@ -92,9 +84,7 @@ private:
 	DirLightShadowMap m_dirLightShadowMap;
 
 	// This is what the deferred renderer will render to
-	std::unique_ptr<RenderableTexture> m_prePostTex;
-	// This is what the post process pass will render to
-	std::unique_ptr<RenderableTexture> m_postProcOutputTex;
+	std::unique_ptr<RenderableTexture> m_deferredOutputTex;
 
 	bool m_doPostProcessing;
 	PostProcessPass m_postProcessPass;

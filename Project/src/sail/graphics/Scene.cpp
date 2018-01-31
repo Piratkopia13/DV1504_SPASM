@@ -7,10 +7,9 @@ using namespace std;
 Scene::Scene(const AABB& worldSize)
 	:
 	//m_dirLightShadowMap(16384, 8640),
-	m_dirLightShadowMap(8192, 4320)
+	m_dirLightShadowMap(8192 / 2, 4320 / 2)
 	//, m_dirLightShadowMap(4096, 2160)
 	, m_doPostProcessing(true)
-	, m_blurTexScale(8.f)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
 	m_timer.startTimer();
@@ -22,19 +21,7 @@ Scene::Scene(const AABB& worldSize)
 	UINT width = window->getWindowWidth();
 	UINT height = window->getWindowHeight();
 
-	m_prePostTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
-	m_postProcOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width / m_blurTexScale, height / m_blurTexScale, true, false, D3D11_BIND_UNORDERED_ACCESS));
-
-	//m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
-	//m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
-	//m_gaussianBlurShader.setInputSRV(m_deferredRenderer.getGBufferSRV(DeferredRenderer::GBuffers::DIFFUSE_GBUFFER));
-	//m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
-
-	//createFullscreenQuad();
-	//m_gaussianBlurShader.setFullScreenQuadModel(&m_postProcessfullScreenPlane);
-	//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
-	//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
-
+	m_deferredOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
 }
 Scene::~Scene() {}
 
@@ -54,15 +41,7 @@ void Scene::addSkybox(const std::wstring& filename) {
 void Scene::resize(int width, int height) {
 	// Resize textures
 	m_deferredRenderer.resize(width, height);
-	m_prePostTex->resize(width, height);
- 	//m_gaussianBlurShader.resize(width, height);
-	m_postProcOutputTex->resize(width / m_blurTexScale, height / m_blurTexScale);
-
-	// Reset resource views to map to the new textures created by the resize
-	//m_gaussianBlurShader.setInputSRV(m_prePostTex->getColorSRV());
-	//m_gaussianBlurShader.setOutputTexture(m_postProcOutputTex.get());
-	//m_gaussianBlurShader.setTextureSize(width / m_blurTexScale, height / m_blurTexScale);
-
+	m_deferredOutputTex->resize(width, height);
 }
 
 // Draws the scene
@@ -74,8 +53,8 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	if (m_doPostProcessing) {
 		// Render skybox to the prePostTex
-		m_prePostTex->clear({ 0.f, 0.f, 0.f, 0.0f });
-		dxm->getDeviceContext()->OMSetRenderTargets(1, m_prePostTex->getRenderTargetView(), dxm->getDepthStencilView());
+		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
 	}
 
 	// Update and render skybox if one is set
@@ -101,7 +80,7 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	// Begin geometry pass - store depth in the correct texture
 	if (m_doPostProcessing) {
-		m_deferredRenderer.beginGeometryPass(cam, *m_prePostTex->getRenderTargetView());
+		m_deferredRenderer.beginGeometryPass(cam, *m_deferredOutputTex->getRenderTargetView());
 	}
 	else {
 		m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
@@ -118,7 +97,7 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	// Switch render target to where the deferred output should be
 	if (m_doPostProcessing) {
 		//m_prePostTex->clear({ 0.f, 0.f, 0.f, 0.0f });
-		dxm->getDeviceContext()->OMSetRenderTargets(1, m_prePostTex->getRenderTargetView(), dxm->getDepthStencilView());
+		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
 	}
 	else {
 		dxm->renderToBackBuffer();
@@ -127,19 +106,16 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	// Do the light pass (using additive blending)
 	m_deferredRenderer.doLightPass(m_lights, cam, m_dirLightShadowMap);
 
-	// Change active depth buffer to the one used in the deferred geometry pass
-	dxm->clear({0,0,0,0});
-	//dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 
 	if (m_doPostProcessing) {
 		// Do post processing
-		m_postProcOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+		//m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
 
 		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
-		m_postProcessPass.run(*m_prePostTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
-
-		dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
+		m_postProcessPass.run(*m_deferredOutputTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 	}
+	// Change active depth buffer to the one used in the deferred geometry pass
+	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 
 }
 
@@ -182,7 +158,8 @@ std::map<ShaderSet*, std::vector<Model*>> Scene::mapModelsToShaders(std::vector<
 
 void Scene::setShadowLight() {
 	//4096, 2160
-	OrthographicCamera dlCam(270.f, 270.f / 1.9f, -105.f, 110.f);
+	float w = 100.f;
+	OrthographicCamera dlCam(w, w / 1.9f, -105.f, 110.f);
 	//OrthographicCamera dlCam(25.f, 25.f / 1.9f, -25.f, 25.f);
 	dlCam.setPosition(-m_lights.getDL().direction * 5.f);
 	//dlCam.setPosition(DirectX::SimpleMath::Vector3(-110.f, 78.f, -131));
@@ -198,42 +175,6 @@ void Scene::setShadowLight() {
 	m_depthShader.updateCamera(dlCam);
 }
 
-//void Scene::createFullscreenQuad() {
-//
-//	DirectX::SimpleMath::Vector2 halfSizes(1.f, 1.f);
-//
-//	const int numVerts = 4;
-//	DirectX::SimpleMath::Vector3* positions = new DirectX::SimpleMath::Vector3[numVerts]{
-//		DirectX::SimpleMath::Vector3(-halfSizes.x, -halfSizes.y, 0.f),
-//		DirectX::SimpleMath::Vector3(-halfSizes.x, halfSizes.y, 0.f),
-//		DirectX::SimpleMath::Vector3(halfSizes.x, -halfSizes.y, 0.f),
-//		DirectX::SimpleMath::Vector3(halfSizes.x, halfSizes.y, 0.f),
-//	};
-//
-//	const int numIndices = 6;
-//	ULONG* indices = new ULONG[numIndices]{
-//		0, 1, 2, 2, 1, 3
-//	};
-//
-//	// Tex coords not used in shader, only set to get rid of warning
-//	DirectX::SimpleMath::Vector2* texCoords = new DirectX::SimpleMath::Vector2[numVerts]{
-//		DirectX::SimpleMath::Vector2(0.f, 1.f),
-//		DirectX::SimpleMath::Vector2(0.f, 0.f),
-//		DirectX::SimpleMath::Vector2(1.f, 1.f),
-//		DirectX::SimpleMath::Vector2(1.f, 0.f)
-//	};
-//
-//	Model::Data data;
-//	data.numVertices = numVerts;
-//	data.numIndices = numIndices;
-//	data.positions = positions;
-//	data.indices = indices;
-//	data.texCoords = texCoords;
-//
-//	m_postProcessfullScreenPlane.setBuildData(data);
-//	m_postProcessfullScreenPlane.buildBufferForShader(&m_postProcessFlushShader);
-//}
-
 Lights& Scene::getLights() {
 	return m_lights;
 }
@@ -244,8 +185,4 @@ DeferredRenderer& Scene::getDeferredRenderer() {
 
 DirLightShadowMap& Scene::getDLShadowMap() {
 	return m_dirLightShadowMap;
-}
-
-RenderableTexture& Scene::getPreProcessRenderableTexture() {
-	return *m_prePostTex.get();
 }
