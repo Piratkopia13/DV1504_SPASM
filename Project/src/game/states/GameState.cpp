@@ -83,7 +83,7 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
-	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
 	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
