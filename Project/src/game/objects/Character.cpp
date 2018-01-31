@@ -11,7 +11,7 @@ Character::Character()
 	this->inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	this->aimVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
 	this->speed = 10;
-	this->jumping = 0;
+	m_grounded = false;
 	this->jumpTimer = 0;
 	for (int i = 0; i < 2; i++) {
 		//this->padVibration[i] = 1;
@@ -163,7 +163,8 @@ void Character::update(float dt) {
 	//	this->jumpTimer += dt;
 	//}
 	
-	this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, inputVec.y * this->speed, 0.f));
+	this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, this->getVelocity().y, 0.f));
+
 
 	Moveable::move(dt);
 
@@ -230,14 +231,14 @@ void Character::setHook(Hook* hook) {
 
 void Character::jump()
 {
-	this->jumping = true;
-
+	//this->jumping = true;
+	this->setVelocity(this->getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }
 
 void Character::stopJump()
 {
-	this->jumping = false;
+	//this->jumping = false;
 	//this->getTransform().translate(Vector3(0, -10, 0));
 }
 
