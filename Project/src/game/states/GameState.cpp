@@ -101,18 +101,19 @@ GameState::GameState(StateStack& stack)
 	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
 	for (int i = 0; i < 4; i++) {
-		this->m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
-		this->m_player[i] = new Character(m_characterModel->getModel());
-		this->m_player[i]->setController(1);
-		this->m_player[i]->setControllerPort(i);
-		this->m_player[i]->setWeapon(this->m_weapons[i]);
+		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
+		m_player[i] = new Character(m_characterModel->getModel());
+		m_player[i]->setController(1);
+		m_player[i]->setControllerPort(i);
+		m_player[i]->setWeapon(this->m_weapons[i]);
+		m_player[i]->setCurrentLevel(m_currLevel.get());
 	}
 
 	m_playerCamController.setTargets(
-		this->m_player[0],
-		this->m_player[1],
-		this->m_player[2],
-		this->m_player[3]
+		m_player[0],
+		m_player[1],
+		m_player[2],
+		m_player[3]
 	);
 	//m_playerCamController.setTargets(
 	//	this->player[0],
@@ -234,12 +235,6 @@ bool GameState::update(float dt) {
 	
 	m_projHandler->update(dt);
 	
-	if (m_player[0]->getVelocity().Length()) {
-		std::cout << "P1 Moveable MinX: " << m_player[0]->getBoundingBox()->getMinPos().x <<
-			" Moveable MinY: " << m_player[0]->getBoundingBox()->getMinPos().y <<
-			" Moveable MaxX: " << m_player[0]->getBoundingBox()->getMaxPos().x <<
-			" Moveable MaxY: " << m_player[0]->getBoundingBox()->getMaxPos().y << std::endl;
-	}
 	return true;
 }
 // Renders the state

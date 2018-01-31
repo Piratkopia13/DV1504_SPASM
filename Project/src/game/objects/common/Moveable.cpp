@@ -1,6 +1,7 @@
 #include "Moveable.h"
 
-Moveable::Moveable() {
+Moveable::Moveable()
+	: m_currLevel(nullptr) {
 	m_velocity = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 	m_gravity = DirectX::SimpleMath::Vector3(0.f, 0.0f, 0.f);
 	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
@@ -8,12 +9,13 @@ Moveable::Moveable() {
 }
 
 Moveable::~Moveable() {
-
 }
 
 void Moveable::move(const float dt) {
 
-
+	// Is only run if the object actually contains a pointer to the level
+	if(m_currLevel)
+		m_currLevel->collisionTest(*this, dt);
 
 	this->getTransform().translate(m_velocity * dt);
 	this->updateBoundingBox();
@@ -33,4 +35,8 @@ void Moveable::setAcceleration(const DirectX::SimpleMath::Vector3 &newAccelerati
 void Moveable::addAcceleration(const DirectX::SimpleMath::Vector3& accel)
 {
 	this->m_acceleration += accel;
+}
+
+void Moveable::setCurrentLevel(Level* level) {
+	m_currLevel = level;
 }

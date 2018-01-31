@@ -3,6 +3,7 @@
 #pragma once
 
 Character::Character()
+	: Moveable()
 {
 
 	this->usingController = 0;
@@ -23,7 +24,7 @@ Character::Character()
 Character::Character(Model * model) : Character() {
 	this->setModel(model);
 }
-Character::Character(Model * model, unsigned int usingController, unsigned int port) 
+Character::Character(Model * model, unsigned int usingController, unsigned int port)
 	: Character(model) {
 	this->setController(usingController);
 	this->setControllerPort(port);
@@ -158,19 +159,15 @@ void Character::update(float dt) {
 	//	this->jumpTimer += dt;
 	//}
 	
-	Moveable::move(dt);
 
-	this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
+	this->setVelocity(Vector3(this->inputVec.x * this->speed, this->inputVec.y * this->speed, 0));
+
+	Moveable::move(dt);
 
 	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0,0.5,-0.8));
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
 	this->currentWeapon->update(dt, this->aimVec);
-
-
-	Moveable::move(dt);
-
-
 }
 
 void Character::draw() {

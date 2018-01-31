@@ -27,8 +27,7 @@ public:
 	void draw();
 
 	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
-	DirectX::SimpleMath::Vector3 tempCollisionTest(DirectX::SimpleMath::Vector3& pos, DirectX::SimpleMath::Vector3& vel, DirectX::SimpleMath::Vector2& boundaries);
-
+	
 private:
 	// Number of blocks in the x-axis
 	int m_width;
