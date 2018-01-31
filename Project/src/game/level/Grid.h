@@ -19,7 +19,6 @@ public:
 	DirectX::SimpleMath::Vector3 raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec);
 	void addBlock(Block* block, const int x, const int y);
 	bool atGrid(const int x, const int y);
-	Grid* getGrid();
 	std::vector<Index> getCollisionIndices(const AABB& boundingBox, const float cellSize);
 private:
 	std::vector<std::vector<Block*>> m_cells;

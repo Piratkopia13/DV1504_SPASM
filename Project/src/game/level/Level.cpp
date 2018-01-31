@@ -55,10 +55,10 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 					switch (c) {
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
-						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3((x + 0.5f) * DEFAULT_BLOCKSIZE, (y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3((x + 0.5f) * DEFAULT_BLOCKSIZE, (y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						std::cout << "Block position X: " << x * DEFAULT_BLOCKSIZE << " Y: " << y * DEFAULT_BLOCKSIZE << std::endl;
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
-						m_grid->addBlock(m_blocks.back().get(), x, y);
+						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
 					default:
 						break;
@@ -177,6 +177,7 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 					moveable.setVelocity(DirectX::SimpleMath::Vector3(toMove.x, 0.f, 0.f));
 					moveable.move(1.0f);
 					tempVelocity.x = 0.f;
+					tempVelocity.y = 0.f;
 					moveable.setVelocity(tempVelocity);
 				}
 
@@ -185,6 +186,7 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 					DirectX::SimpleMath::Vector3 tempVelocity = moveable.getVelocity();
 					moveable.setVelocity(DirectX::SimpleMath::Vector3(0.f, toMove.y, 0.f));
 					moveable.move(1.0f);
+					tempVelocity.x = 0.f;
 					tempVelocity.y = 0.f;
 					moveable.setVelocity(tempVelocity);
 				}
@@ -193,4 +195,8 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 	}
 
 	return toMove;
+}
+
+Grid* Level::getGrid() {
+	return m_grid.get();
 }

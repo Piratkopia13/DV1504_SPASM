@@ -82,10 +82,9 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox, cons
 		}
 	}
 
-<<<<<<< HEAD
 	return indices;
 }
-Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec) {
+
 
 DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec) {
 	DirectX::SimpleMath::Vector2 currentPos = DirectX::SimpleMath::Vector2(playerPos.x, playerPos.y);
@@ -100,7 +99,6 @@ DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vect
 		deltaX = 1;
 	else if (aimVec.x < 0.f)
 		deltaX = -1;
-	else
 	else {
 		deltaX = 0;
 		direction.x = 0.000001f;
@@ -110,7 +108,6 @@ DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vect
 		deltaY = 1;
 	else if (aimVec.y < 0.f)
 		deltaY = -1;
-	else
 	else {
 		deltaY = 0;
 		direction.y = 0.000001f;
@@ -121,50 +118,38 @@ DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vect
 
 	bool intersection = false;
 
-	while (!intersection) {
-		 nextIntersectX = float(deltaX + currentIndex.x) * m_cellSize;
 	while (!intersection && currentIndex.x > -1 && currentIndex.x < (m_gridWidth - 1)) {
 		if (deltaX > 0)
 			nextIntersectX = float(deltaX + currentIndex.x) * m_cellSize;
 		else
 			nextIntersectX = float(currentIndex.x) * m_cellSize;
-		 tX = DirectX::XMMax(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
-		 
-		 tX = (nextIntersectX - currentPos.x) / aimVec.x;
+		tX = DirectX::XMMax(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
+
 		if (deltaY > 0)
 			nextIntersectY = float(deltaY + currentIndex.y) * m_cellSize;
 		else
 			nextIntersectY = float(currentIndex.y) * m_cellSize;
 
-		 tY = DirectX::XMMax(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
-		 
-		 nextIntersectY = float(deltaY + currentIndex.y) * m_cellSize;
-		 tX = fabs(tX);
-		 tY = fabs(tY);
+		tY = DirectX::XMMax(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
 
-		 tY = (nextIntersectY - currentPos.y) / aimVec.y;
+		tX = fabs(tX);
+		tY = fabs(tY);
 
-		 if (tX > tY) {
-			 t = tY;
-			 currentIndex.y += deltaY;
-		 }
-		 else {
-			 t = tX;
-			 currentIndex.x += deltaX;
-		 }
+		if (tX > tY) {
+			t = tY;
+			currentIndex.y += deltaY;
+		}
+		else {
+			t = tX;
+			currentIndex.x += deltaX;
+		}
 
-		 intersection = atGrid(currentIndex.x, currentIndex.y);
+		intersection = atGrid(currentIndex.x, currentIndex.y);
 
-		 if (!intersection) {
-			 currentPos = currentPos + aimVec * t;
-		 }
+		currentPos = currentPos + direction * t;
 	}
-	
-	return m_cells[currentIndex.x][currentIndex.y];
-		 currentPos = currentPos + direction * t;
-	}	
 
 	hitPos = DirectX::SimpleMath::Vector3(currentPos.x, currentPos.y, 0.0f);
 
 	return hitPos;
-}}
+}

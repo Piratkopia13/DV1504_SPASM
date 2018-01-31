@@ -163,10 +163,11 @@ void Character::update(float dt) {
 	//	this->jumpTimer += dt;
 	//}
 	
+	this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, inputVec.y * this->speed, 0.f));
 
 	Moveable::move(dt);
 
-	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0,0.5,-0.8));
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f,-0.8f));
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
 	this->currentWeapon->update(dt, this->aimVec);

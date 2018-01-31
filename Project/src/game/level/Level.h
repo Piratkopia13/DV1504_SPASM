@@ -23,7 +23,7 @@ public:
 	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
 	~Level();
 
-	void update(const float delta, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 dir);
+	void update(const float delta);
 	void draw();
 	Grid* getGrid();
 
