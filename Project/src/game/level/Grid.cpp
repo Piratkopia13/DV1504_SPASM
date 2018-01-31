@@ -30,10 +30,15 @@ bool Grid::atGrid(const int x, const int y) {
 	return false;
 }
 
+Grid* Grid::getGrid() {
+	return this;
+}
 
-Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec, float dt) {
+
+DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec) {
 	DirectX::SimpleMath::Vector2 currentPos = DirectX::SimpleMath::Vector2(playerPos.x, playerPos.y);
 	DirectX::SimpleMath::Vector2 direction = DirectX::SimpleMath::Vector2(aimVec.x, aimVec.y);
+	DirectX::SimpleMath::Vector3 hitPos;
 	int deltaX, deltaY;
 	Grid::Index currentIndex;
 	float nextIntersectY, nextIntersectX;
@@ -93,22 +98,7 @@ Block* Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const 
 		 currentPos = currentPos + direction * t;
 	}	
 
-	time += dt;
-	
-	if (time > 1.0f) {
-		std::cout << "-------------------" << std::endl;
-		std::cout << "Index" << std::endl;
-		std::cout << "x: " << currentIndex.x << " y: " << currentIndex.y << std::endl;
-		std::cout << "Player position" << std::endl;
-		std::cout << "x: " << playerPos.x << " y: " << playerPos.y << std::endl;
-		std::cout << "Hit position" << std::endl;
-		std::cout << "x: " << currentPos.x << " y: " << currentPos.y << std::endl;
-		std::cout << "Aim vector\n";
-		std::cout << "x: " << aimVec.x << " y: " << aimVec.y << std::endl;
-		std::cout << "Direction\n";
-		std::cout << "x: " << direction.x << " y: " << direction.y << std::endl;
-		time = 0.0f;
-	}
+	hitPos = DirectX::SimpleMath::Vector3(currentPos.x, currentPos.y, 0.0f);
 
-	return m_cells[1][1];
+	return hitPos;
 }

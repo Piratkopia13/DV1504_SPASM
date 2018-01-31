@@ -82,12 +82,12 @@ Level::~Level() {
 
 }
 
+Grid* Level::getGrid() {
+	return m_grid->getGrid();
+}
+
 void Level::update(const float delta, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 dir) {
 
-	DirectX::SimpleMath::Vector3 tempVec = DirectX::SimpleMath::Vector3(0.0f, -2.0f, 0.0f);
-	tempVec.Normalize();
-
-	m_grid->raytraceBlock(pos, dir, delta);
 }
 
 void Level::draw() {

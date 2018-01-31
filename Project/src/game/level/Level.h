@@ -24,6 +24,7 @@ public:
 
 	void update(const float delta, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 dir);
 	void draw();
+	Grid* getGrid();
 
 private:
 	// Number of blocks in the x-axis

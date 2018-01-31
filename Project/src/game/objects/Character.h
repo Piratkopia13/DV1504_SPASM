@@ -3,6 +3,8 @@
 #include "common/Moveable.h"
 #include "../../sail/graphics/geometry/Model.h"
 #include "Weapon.h"
+#include "Hook.h"
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -31,6 +33,8 @@ public:
 	DirectX::SimpleMath::Vector3 aimVec;
 
 	Weapon* currentWeapon;
+	Hook* m_hook;
+	void setHook(Hook* hook);
 
 private:
 	

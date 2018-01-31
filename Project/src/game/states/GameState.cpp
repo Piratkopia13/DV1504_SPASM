@@ -105,10 +105,11 @@ GameState::GameState(StateStack& stack)
 	for (int i = 0; i < 4; i++) {
 		this->m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
 		this->m_player[i] = new Character(m_characterModel->getModel());
-		this->m_hooks[i] = new Hook(m_hookModel->getModel());
+		this->m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
 		this->m_player[i]->setController(1);
 		this->m_player[i]->setControllerPort(i);
 		this->m_player[i]->setWeapon(this->m_weapons[i]);
+		this->m_player[i]->setHook(this->m_hooks[i]);
 	}
 
 	m_playerCamController.setTargets(
@@ -231,9 +232,6 @@ bool GameState::update(float dt) {
 		m_playerCamController.update(dt);
 
 	m_projHandler->update(dt);
-
-	//TEST REMOVE THIS
-	m_currLevel->update(dt, m_player[0]->currentWeapon->getTransform().getTranslation(), m_player[0]->aimVec);
 
 	return true;
 }
