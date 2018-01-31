@@ -3,6 +3,7 @@
 #pragma once
 
 Character::Character()
+	: Moveable()
 {
 
 	this->usingController = 0;
@@ -13,7 +14,7 @@ Character::Character()
 	this->jumping = 0;
 	this->jumpTimer = 0;
 	for (int i = 0; i < 2; i++) {
-		this->padVibration[i] = 1;
+		//this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
 	this->getTransform().setScale(0.01f);
@@ -22,9 +23,8 @@ Character::Character()
 
 Character::Character(Model * model) : Character() {
 	this->setModel(model);
-
 }
-Character::Character(Model * model, unsigned int usingController, unsigned int port) 
+Character::Character(Model * model, unsigned int usingController, unsigned int port)
 	: Character(model) {
 	this->setController(usingController);
 	this->setControllerPort(port);
@@ -108,7 +108,11 @@ void Character::input(
 				this->currentWeapon->triggerRelease();
 
 			}
-			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::HELD) {
+			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::PRESSED) {
+				m_hook->triggerPull(currentWeapon->getTransform().getTranslation(), this->aimVec);
+			}
+			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::RELEASED) {
+				m_hook->triggerRelease();
 			}
 
 
@@ -159,28 +163,22 @@ void Character::update(float dt) {
 	//	this->jumpTimer += dt;
 	//}
 	
-
-	//this->setVelocity(Vector3(this->inputVec.x * this->speed, 0, 0));
-
-	this->setVelocity(this->inputVec * this->speed);
-
-	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0,0.5,-0.8));
-	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
-
-	this->currentWeapon->update(dt, this->aimVec);
-
+	this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, inputVec.y * this->speed, 0.f));
 
 	Moveable::move(dt);
 
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f,-0.8f));
+	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
-
+	this->currentWeapon->update(dt, this->aimVec);
+	m_hook->update(dt, currentWeapon->getTransform().getTranslation());
 }
 
 void Character::draw() {
 	this->m_Model->setTransform(&this->getTransform());
 	this->m_Model->draw();
 	this->currentWeapon->draw();
-
+	m_hook->draw();
 }
 
 void Character::setController(const bool usingController) {
@@ -224,6 +222,10 @@ void Character::setWeapon(Weapon * weapon)
 	//this->currentWeapon->setPosition(this->getTransform().getTranslation()+Vector3(0,0.5,0.5f));
 	this->currentWeapon->getTransform().setScale(1.0f);
 	
+}
+
+void Character::setHook(Hook* hook) {
+	this->m_hook = hook;
 }
 
 void Character::jump()

@@ -4,7 +4,6 @@
 
 class Block : public Object {
 private:
-	Model *m_drawModel;
 
 public:
 	Block();

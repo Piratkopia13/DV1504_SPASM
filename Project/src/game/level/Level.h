@@ -16,6 +16,7 @@ namespace {
 */
 class Block;
 class Grid;
+class Moveable;
 class Level {
 
 public:
@@ -24,7 +25,10 @@ public:
 
 	void update(const float delta);
 	void draw();
+	Grid* getGrid();
 
+	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
+	
 private:
 	// Number of blocks in the x-axis
 	int m_width;

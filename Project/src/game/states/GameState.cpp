@@ -89,22 +89,27 @@ GameState::GameState(StateStack& stack)
 	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
 	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
+	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
+	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	
 	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
 	for (int i = 0; i < 4; i++) {
-		this->m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
-		this->m_player[i] = new Character(m_characterModel->getModel());
-		this->m_player[i]->setController(1);
-		this->m_player[i]->setControllerPort(i);
-		this->m_player[i]->setWeapon(this->m_weapons[i]);
+		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
+		m_player[i] = new Character(m_characterModel->getModel());
+		m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
+		m_player[i]->setController(1);
+		m_player[i]->setControllerPort(i);
+		m_player[i]->setWeapon(m_weapons[i]);
+		m_player[i]->setCurrentLevel(m_currLevel.get());		
+		m_player[i]->setHook(m_hooks[i]);
 	}
 
 	m_playerCamController.setTargets(
-		this->m_player[0],
-		this->m_player[1],
-		this->m_player[2],
-		this->m_player[3]
+		m_player[0],
+		m_player[1],
+		m_player[2],
+		m_player[3]
 	);
 	//m_playerCamController.setTargets(
 	//	this->player[0],
@@ -121,6 +126,7 @@ GameState::~GameState() {
 	{
 		delete m_weapons[i];
 		delete m_player[i];
+		delete m_hooks[i];
 	}
 	delete m_projHandler;
 }
@@ -212,14 +218,20 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
+
+	DirectX::SimpleMath::Vector3 temp = m_currLevel->collisionTest(*m_player[0], dt);
+	if (temp.Length()) {
+		std::cout << "To move x: " << temp.x << " to move y: " << temp.y << std::endl;
+	}
+
 	for (int i = 0; i < 4; i++)
 		this->m_player[i]->update(dt);
 
 	if(!m_flyCam)
 		m_playerCamController.update(dt);
-
+	
 	m_projHandler->update(dt);
-
+	
 	return true;
 }
 // Renders the state
@@ -236,10 +248,10 @@ bool GameState::render(float dt) {
 	m_colorShader.updateCamera(m_cam);
 	for(int i = 0; i < 4; i++)
 		m_player[i]->draw();
+	
 
 	m_projHandler->draw();
 
-	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
 
 	// Draw HUD
 	m_scene.drawHUD();
