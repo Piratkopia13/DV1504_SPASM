@@ -40,7 +40,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 				if (!line.compare(0, 6, "height")) {
 					int find = line.find('=');
 					m_height = std::stoi(line.substr(find + 1, line.length() - find));
-					y = m_height - 1;
+					y = m_height;
 				}
 				if (!line.compare(0, 5, "width")) {
 					int find = line.find('=');

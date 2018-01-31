@@ -23,8 +23,9 @@ public:
 	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
 	~Level();
 
-	void update(const float delta);
+	void update(const float delta, DirectX::SimpleMath::Vector3 pos, DirectX::SimpleMath::Vector3 dir);
 	void draw();
+	Grid* getGrid();
 
 	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
 	

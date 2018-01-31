@@ -97,16 +97,13 @@ GameState::GameState(StateStack& stack)
 	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
 	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
+	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
+	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	
 	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
 	for (int i = 0; i < 4; i++) {
-		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
-		m_player[i] = new Character(m_characterModel->getModel());
-		m_player[i]->setController(1);
-		m_player[i]->setControllerPort(i);
-		m_player[i]->setWeapon(this->m_weapons[i]);
-		m_player[i]->setCurrentLevel(m_currLevel.get());
+		m_player[i]->setCurrentLevel(m_currLevel.get());		this->m_player[i]->setHook(this->m_hooks[i]);
 	}
 
 	m_playerCamController.setTargets(
@@ -130,6 +127,7 @@ GameState::~GameState() {
 	{
 		delete m_weapons[i];
 		delete m_player[i];
+		delete m_hooks[i];
 	}
 	delete m_projHandler;
 }
