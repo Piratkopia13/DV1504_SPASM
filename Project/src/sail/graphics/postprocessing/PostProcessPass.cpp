@@ -3,7 +3,8 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-PostProcessPass::PostProcessPass() {
+PostProcessPass::PostProcessPass()
+{
 
 	createFullscreenQuad();
 
@@ -11,20 +12,32 @@ PostProcessPass::PostProcessPass() {
 	UINT windowWidth = app->getWindow()->getWindowWidth();
 	UINT windowHeight = app->getWindow()->getWindowHeight();
 
-	m_hGaussStage = std::make_unique<HGaussianBlurStage>(windowWidth / 4U, windowHeight / 4U, &m_fullscreenQuad);
-	m_vGaussStage = std::make_unique<VGaussianBlurStage>(windowWidth / 4U, windowHeight / 4U, &m_fullscreenQuad);
+	m_gaussPass1Scale = 1.f / 4;
+	m_gaussPass2Scale = 1.f / 8;
+	m_brightnessCutoffScale = 1.f / 2;
 
-	m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(windowWidth / 8U, windowHeight / 8U, &m_fullscreenQuad);
-	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(windowWidth / 8U, windowHeight / 8U, &m_fullscreenQuad);
+	m_hGaussStage = std::make_unique<HGaussianBlurStage>(windowWidth * m_gaussPass1Scale, windowHeight * m_gaussPass1Scale, &m_fullscreenQuad);
+	m_vGaussStage = std::make_unique<VGaussianBlurStage>(windowWidth * m_gaussPass1Scale, windowHeight * m_gaussPass1Scale, &m_fullscreenQuad);
 
-	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(windowWidth / 2U, windowHeight / 2U, &m_fullscreenQuad);
+	m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(windowWidth * m_gaussPass2Scale, windowHeight * m_gaussPass2Scale, &m_fullscreenQuad);
+	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(windowWidth * m_gaussPass2Scale, windowHeight * m_gaussPass2Scale, &m_fullscreenQuad);
 
+	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(windowWidth * m_brightnessCutoffScale, windowHeight * m_brightnessCutoffScale, &m_fullscreenQuad);
+
+}
+
+void PostProcessPass::resize(UINT width, UINT height) {
+	m_hGaussStage->resize(width * m_gaussPass1Scale, height * m_gaussPass1Scale);
+	m_vGaussStage->resize(width * m_gaussPass1Scale, height * m_gaussPass1Scale);
+	m_hGaussStage2->resize(width * m_gaussPass2Scale, height * m_gaussPass2Scale);
+	m_vGaussStage2->resize(width * m_gaussPass2Scale, height * m_gaussPass2Scale);
+	m_brightnessCutoffStage->resize(width * m_brightnessCutoffScale, height * m_brightnessCutoffScale);
 }
 
 PostProcessPass::~PostProcessPass() {
 }
 
-void PostProcessPass::run(RenderableTexture & inputTexture) {
+void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inputTexture) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -37,18 +50,16 @@ void PostProcessPass::run(RenderableTexture & inputTexture) {
 	m_hGaussStage2->run(m_vGaussStage->getOutput());
 	m_vGaussStage2->run(m_hGaussStage2->getOutput());
 
-
-
-	//m_flushStage.run();
-
+	// Blend last output together with the baseTexture to produce the final image
 	dxm->renderToBackBuffer();
 
 	dxm->enableAdditiveBlending();
-	m_fullscreenQuad.getMaterial()->setTextures(inputTexture.getColorSRV(), 1);
+	m_fullscreenQuad.getMaterial()->setTextures(baseTexture.getColorSRV(), 1);
 	m_fullscreenQuad.draw();
 
 	// Draw bloom using additive blending
 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage2->getOutput().getColorSRV(), 1);
+	m_fullscreenQuad.draw();
 	m_fullscreenQuad.draw();
 	dxm->disableAlphaBlending();
 

@@ -15,7 +15,8 @@ public:
 	PostProcessPass();
 	~PostProcessPass();
 
-	void run(RenderableTexture& inputTexture);
+	void run(RenderableTexture& baseTexture, RenderableTexture& inputTexture);
+	void resize(UINT width, UINT height);
 
 private:
 	void createFullscreenQuad();
@@ -30,7 +31,9 @@ private:
 
 	PostProcessFlushShader m_flushShader;
 
-
+	float m_gaussPass1Scale;
+	float m_gaussPass2Scale;
+	float m_brightnessCutoffScale;
 
 	// TODO make enableEffect(enum) and disableEffect(enum) and a map that binds the enums to enabled/disabled bool
 

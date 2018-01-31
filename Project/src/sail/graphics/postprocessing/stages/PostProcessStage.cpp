@@ -11,6 +11,10 @@ PostProcessStage::~PostProcessStage() {
 
 }
 
+void PostProcessStage::resize(UINT width, UINT height) {
+	OutputTexture.resize(width, height);
+}
+
 RenderableTexture& PostProcessStage::getOutput() {
 	return OutputTexture;
 }

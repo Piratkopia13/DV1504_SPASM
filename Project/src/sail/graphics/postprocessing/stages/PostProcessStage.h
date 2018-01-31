@@ -10,6 +10,7 @@ public:
 	virtual ~PostProcessStage();
 
 	virtual void run(RenderableTexture& inputTexture) = 0;
+	void resize(UINT width, UINT height);
 	RenderableTexture& getOutput();
 
 protected:

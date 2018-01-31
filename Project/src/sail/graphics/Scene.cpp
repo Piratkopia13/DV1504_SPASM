@@ -136,39 +136,10 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 		m_postProcOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
 
 		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
-		m_postProcessPass.run(*m_prePostTex);
+		m_postProcessPass.run(*m_prePostTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 
-		//m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
-
-		//m_postProcOutputTex->begin();
-
-		//dxm->disableDepthBuffer();
-		//m_gaussianBlurShader.draw();
-		//dxm->enableDepthBuffer();
-
-		/*dxm->renderToBackBuffer();
-		dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());*/
-
-
-		// Draw base scene
-// 		dxm->clear({ 0.f, 0.f, 0.f, 0.0f });
-		/*dxm->enableAdditiveBlending();
-		dxm->disableDepthBuffer();*/
- /* 		m_postProcessfullScreenPlane.getMaterial()->setTextures(m_prePostTex->getColorSRV(), 1);
-  		m_postProcessfullScreenPlane.draw();*/
-
-		// Draw bloom using additive blending
-   		/*m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
-		m_postProcessfullScreenPlane.draw();
-		dxm->disableAlphaBlending();
-		dxm->enableDepthBuffer();*/
-
-		// Flush post processing effects to back buffer
-		/*m_postProcessfullScreenPlane.getMaterial()->setTextures(m_postProcOutputTex->getColorSRV(), 1);
- 		m_postProcessfullScreenPlane.draw();*/
+		dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 	}
-
-// 	dxm->renderToBackBuffer();
 
 }
 
