@@ -20,15 +20,7 @@ GameState::GameState(StateStack& stack)
 	m_app = Application::getInstance();
 
 	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());	// Load in textures from file
-	m_app->getResourceManager().LoadDXTexture("sand/diffuse.tga");
-	m_app->getResourceManager().LoadDXTexture("sand/normal.tga");
-	m_app->getResourceManager().LoadDXTexture("sand/specular.tga");
-	m_app->getResourceManager().LoadDXTexture("ped_m_sold_aa_hr_diffuse.tga");
-	m_app->getResourceManager().LoadDXTexture("ped_m_sold_aa_hr_normal.tga");
-	m_app->getResourceManager().LoadDXTexture("ped_m_sold_aa_hr_specular.tga");
-	m_app->getResourceManager().LoadDXTexture("grass.tga");
-	m_app->getResourceManager().LoadDXTexture("shrine/diffuse.tga");
-	m_app->getResourceManager().LoadDXTexture("shrine/normal.tga");
+
 	
 
 	// Update the hud shader
