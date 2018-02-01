@@ -25,7 +25,7 @@ MenuState::MenuState(StateStack& stack)
 	m_timer.startTimer();
 
 	// Add skybox to the scene
-	m_scene.addSkybox(L"skybox2_512.dds");
+	m_scene.addSkybox(L"skybox_space_512.dds");
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
@@ -35,13 +35,6 @@ MenuState::MenuState(StateStack& stack)
 	l.setDirectionalLight(dl);
 
 	m_scene.setShadowLight();
-
-	Lights::PointLight pl;
-	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
-	pl.setPosition(Vector3(0.f, 4.f, -2.f));
-	pl.setAttenuation(1.f, 1.f, 1.f);
-	l.addPointLight(pl);
-
 
 	m_matShader.updateLights(m_scene.getLights());
 
@@ -460,7 +453,7 @@ bool MenuState::update(float dt) {
 // Renders the state
 bool MenuState::render(float dt) {
 	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear(DirectX::Colors::Teal);
+	m_app->getDXManager()->clear(DirectX::Colors::Black);
 	// Clear back buffer
 
 	// Draw the scene
@@ -468,7 +461,7 @@ bool MenuState::render(float dt) {
 	m_scene.draw(dt, m_cam, nullptr, nullptr);
 
 	//m_app->getDXManager()->enableAlphaBlending();
-	m_colorShader.updateCamera(m_cam);
+	//m_colorShader.updateCamera(m_cam);
 	
 
 	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);

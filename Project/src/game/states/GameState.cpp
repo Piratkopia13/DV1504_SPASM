@@ -113,15 +113,15 @@ GameState::GameState(StateStack& stack)
 		m_scene.addObject(m_player[i]);
 	}
 
-	m_playerCamController.setTargets(
+	m_playerCamController->setTargets(
 		this->m_player[0],
 		this->m_player[1],
 		this->m_player[2],
 		this->m_player[3]
 	);
-	m_playerCamController.setPosition(this->m_player[0]->getTransform().getTranslation());
+	m_playerCamController->setPosition(this->m_player[0]->getTransform().getTranslation());
 
-	m_playerCamController.setMoveSpeed(5);
+	m_playerCamController->setMoveSpeed(5);
 
 
 	//m_playerCamController.setTargets(
@@ -188,8 +188,8 @@ bool GameState::processInput(float dt) {
 		if (padState.IsConnected()) {
 			if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
 				//requestStackPop();
-				gameCamera.pos = this->m_playerCamController.getPosition();
-				gameCamera.target = this->m_playerCamController.getTarget();
+				gameCamera.pos = this->m_playerCamController->getPosition();
+				gameCamera.target = this->m_playerCamController->getTarget();
 
 				auto& pad = m_app->getInput().gamepad;
 				for(int u = 0; u < 4; u++)

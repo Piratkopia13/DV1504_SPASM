@@ -77,12 +77,14 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 	// Render all blocks to the shadow map
 	// TODO: only render the blocks that the camera can see
-	auto& blocks = level.getGrid()->getAllBlocks();
-	for (auto& row : blocks) {
-		for (auto* block : row) {
-			if (block) {
-				block->getModel()->setTransform(&block->getTransform());
-				m_depthShader.draw(*block->getModel(), false);
+	if (level) {
+		auto& blocks = level->getGrid()->getAllBlocks();
+		for (auto& row : blocks) {
+			for (auto* block : row) {
+				if (block) {
+					block->getModel()->setTransform(&block->getTransform());
+					m_depthShader.draw(*block->getModel(), false);
+				}
 			}
 		}
 	}

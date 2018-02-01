@@ -160,10 +160,7 @@ void PlayerCameraController::updatePosition(float dt)
 
 	}
 
-	Vector3 diff = this->target - this->position;
-	
-	this->position += diff * dt;
-	
+
 	
 	if (this->moving) {
 		Vector3 diff = this->target - this->position;
