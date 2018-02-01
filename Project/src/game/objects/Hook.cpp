@@ -12,6 +12,7 @@ Hook::~Hook() {
 void Hook::update(float dt, DirectX::SimpleMath::Vector3 position) {
 	if (m_triggerHeld) {
 		m_direction = (m_position - position);
+		m_direction.z = 0.f;
 		m_distance = m_direction.Length();
 		this->setPosition(position + (m_direction * 0.5f));
 		m_direction.Normalize();
@@ -34,4 +35,8 @@ void Hook::draw() {
 		m_Model->setTransform(&getTransform());
 		m_Model->draw();
 	}
+}
+
+DirectX::SimpleMath::Vector3 Hook::getDirection() {
+	return m_direction;
 }

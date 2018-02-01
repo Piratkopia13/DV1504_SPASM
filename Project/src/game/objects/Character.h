@@ -46,7 +46,7 @@ private:
 
 	DirectX::SimpleMath::Vector3 inputVec;
 
-	bool m_grounded;
+	bool m_hooked;
 	float jumpTimer;
 
 	float speed;

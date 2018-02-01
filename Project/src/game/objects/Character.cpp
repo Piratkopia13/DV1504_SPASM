@@ -11,7 +11,6 @@ Character::Character()
 	this->inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	this->aimVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
 	this->speed = 10;
-	m_grounded = false;
 	this->jumpTimer = 0;
 	for (int i = 0; i < 2; i++) {
 		//this->padVibration[i] = 1;
@@ -109,10 +108,12 @@ void Character::input(
 
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::PRESSED) {
-				m_hook->triggerPull(currentWeapon->getTransform().getTranslation(), this->aimVec);
+				hook();
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::RELEASED) {
 				m_hook->triggerRelease();
+				setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+				m_hooked = false;
 			}
 
 
@@ -162,9 +163,14 @@ void Character::update(float dt) {
 	//	this->addAcceleration(Vector3(0, jumpStr, 0));
 	//	this->jumpTimer += dt;
 	//}
-	
-	this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, this->getVelocity().y, 0.f));
 
+	if(grounded())
+		this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, this->getVelocity().y, 0.f));
+
+	if (m_hooked) {
+		this->setGrounded(false);
+		this->setAcceleration(m_hook->getDirection() * 40.0f);
+	}
 
 	Moveable::move(dt);
 
@@ -231,7 +237,6 @@ void Character::setHook(Hook* hook) {
 
 void Character::jump()
 {
-	//this->jumping = true;
 	this->setVelocity(this->getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }
@@ -249,7 +254,8 @@ void Character::fire()
 
 void Character::hook()
 {
-	this->getTransform().scaleUniformly(0.999f);
+	m_hook->triggerPull(currentWeapon->getTransform().getTranslation(), this->aimVec);
+	m_hooked = true;
 }
 
 bool Character::updateVibration(float dt) {

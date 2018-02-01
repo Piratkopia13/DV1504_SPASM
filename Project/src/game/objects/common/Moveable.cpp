@@ -6,6 +6,7 @@ Moveable::Moveable()
 	m_gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
 	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 	this->grav = 0;
+	m_grounded = false;
 }
 
 Moveable::~Moveable() {
@@ -13,12 +14,10 @@ Moveable::~Moveable() {
 
 void Moveable::move(const float dt, bool checkColl) {
 	if(!m_grounded && checkColl)
-		m_velocity += m_gravity * dt;
+		m_velocity += (m_gravity + m_acceleration) * dt;
 	// Is only run if the object actually contains a pointer to the level
 	if (m_currLevel)
 		m_currLevel->collisionTest(*this, dt);
-
-
 
 	this->getTransform().translate(m_velocity * dt);
 	this->updateBoundingBox();
