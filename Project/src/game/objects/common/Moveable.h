@@ -8,7 +8,8 @@ public:
 	Moveable();
 	virtual ~Moveable();
 
-	void move(const float dt, bool checkColl = true);
+	void move(const float dt);
+	void move(DirectX::SimpleMath::Vector3& toMove);
 	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
 
 	const DirectX::SimpleMath::Vector3& getVelocity();

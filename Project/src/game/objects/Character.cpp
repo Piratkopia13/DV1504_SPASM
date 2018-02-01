@@ -8,7 +8,7 @@ Character::Character()
 
 	this->usingController = 0;
 	this->controllerPort = 0;
-	this->inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	m_inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
 	this->aimVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
 	this->speed = 10;
 	m_grounded = false;
@@ -23,6 +23,7 @@ Character::Character()
 
 Character::Character(Model * model) : Character() {
 	this->setModel(model);
+	this->updateBoundingBox();
 }
 Character::Character(Model * model, unsigned int usingController, unsigned int port)
 	: Character(model) {
@@ -118,7 +119,7 @@ void Character::input(
 
 
 			//update inputVector
-			this->inputVec = Vector3(
+			m_inputVec = Vector3(
 				padState.thumbSticks.leftX,
 				padState.thumbSticks.leftY, 
 				0);
@@ -162,9 +163,14 @@ void Character::update(float dt) {
 	//	this->addAcceleration(Vector3(0, jumpStr, 0));
 	//	this->jumpTimer += dt;
 	//}
-	
-	this->setVelocity(DirectX::SimpleMath::Vector3(this->inputVec.x * this->speed, this->getVelocity().y, 0.f));
 
+	if (grounded())
+		this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
+	else {
+		float velX = m_inputVec.x * this->speed * 0.1 + getVelocity().x;
+		velX = max(min(velX, this->speed), -this->speed);
+		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+	}
 
 	Moveable::move(dt);
 
@@ -232,6 +238,7 @@ void Character::setHook(Hook* hook) {
 void Character::jump()
 {
 	//this->jumping = true;
+	m_velAtJump = getVelocity();
 	this->setVelocity(this->getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }

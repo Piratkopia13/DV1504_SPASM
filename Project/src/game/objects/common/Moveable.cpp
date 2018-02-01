@@ -11,8 +11,8 @@ Moveable::Moveable()
 Moveable::~Moveable() {
 }
 
-void Moveable::move(const float dt, bool checkColl) {
-	if(!m_grounded && checkColl)
+void Moveable::move(const float dt) {
+	if(!m_grounded)
 		m_velocity += m_gravity * dt;
 	// Is only run if the object actually contains a pointer to the level
 	if (m_currLevel)
@@ -21,6 +21,11 @@ void Moveable::move(const float dt, bool checkColl) {
 
 
 	this->getTransform().translate(m_velocity * dt);
+	this->updateBoundingBox();
+}
+
+void Moveable::move(DirectX::SimpleMath::Vector3& toMove) {
+	this->getTransform().translate(toMove);
 	this->updateBoundingBox();
 }
 
