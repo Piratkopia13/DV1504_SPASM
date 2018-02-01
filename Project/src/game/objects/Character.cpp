@@ -158,8 +158,8 @@ void Character::update(float dt) {
 	if (grounded())
 		this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
 	else {
-		float velX = m_inputVec.x * this->speed * 0.1 + getVelocity().x;
-		velX = max(min(velX, this->speed * 0.8), -this->speed * 0.8);
+		float velX = m_inputVec.x * this->speed * 0.1f + getVelocity().x;
+		velX = max(min(velX, this->speed * 0.8f), -this->speed * 0.8f);
 		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
 	}
 

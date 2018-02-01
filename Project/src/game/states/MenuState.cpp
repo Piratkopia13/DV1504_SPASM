@@ -76,34 +76,34 @@ MenuState::MenuState(StateStack& stack)
 
 	this->menu = -1;
 	
-	this->background = new MenuItem(m_backGround->getModel(), Vector3(0, -2.3, 0.5));
+	this->background = new MenuItem(m_backGround->getModel(), Vector3(0.f, -2.3f, 0.5f));
 	this->background->useColor = 1;
-	this->background->setLightColor(Vector4(0.5,0.5,0.5,0.5));
+	this->background->setLightColor(Vector4(0.5f,0.5f,0.5f,0.5f));
 	m_scene.addObject(background);
 
 
-	MenuItem* start = new MenuItem(m_menuStart->getModel(), Vector3(0, 2, 7));
-	MenuItem* options = new MenuItem(m_menuOptions->getModel(), Vector3(0, 0, 7));
-	MenuItem* exit = new MenuItem(m_menuExit->getModel(), Vector3(0, -2, 7));
+	MenuItem* start = new MenuItem(m_menuStart->getModel(), Vector3(0.f, 2.f, 7.f));
+	MenuItem* options = new MenuItem(m_menuOptions->getModel(), Vector3(0.f, 0.f, 7.f));
+	MenuItem* exit = new MenuItem(m_menuExit->getModel(), Vector3(0.f, -2.f, 7.f));
 
-	MenuItem* player1 = new MenuItem(m_player->getModel(), Vector3(4, 0, 2.25));
-	MenuItem* player2 = new MenuItem(m_player->getModel(), Vector3(4, 0, 0.75));
-	MenuItem* player3 = new MenuItem(m_player->getModel(), Vector3(4, 0, -0.75));
-	MenuItem* player4 = new MenuItem(m_player->getModel(), Vector3(4, 0, -2.25));
+	MenuItem* player1 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, 2.25f));
+	MenuItem* player2 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, 0.75f));
+	MenuItem* player3 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, -0.75f));
+	MenuItem* player4 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, -2.25f));
 
-	MenuItem* option1 = new MenuItem(m_menuOptions->getModel(), Vector3(-7, 1.5, 0));
-	MenuItem* option2 = new MenuItem(m_menuOptions->getModel(), Vector3(-7, 0, 0));
-	MenuItem* option3 = new MenuItem(m_menuOptions->getModel(), Vector3(-7, -1.5, 0));
+	MenuItem* option1 = new MenuItem(m_menuOptions->getModel(), Vector3(-7.0f, 1.5f, 0.f));
+	MenuItem* option2 = new MenuItem(m_menuOptions->getModel(), Vector3(-7.0f, 0.f, 0.f));
+	MenuItem* option3 = new MenuItem(m_menuOptions->getModel(), Vector3(-7.0f, -1.5f, 0.f));
 
-	this->onColor = Vector4(1, 1, 1, 1);
-	this->offColor = Vector4(0.2, 0.2, 0.2, 1);
+	this->onColor = Vector4(1.f, 1.f, 1.f, 1.f);
+	this->offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 
 
 	MenuItem* maps[5];
 	int extraY = 0;
 	for (size_t i = 0; i < 5; i++) {
 
-		maps[i] = new MenuItem(m_menuBlock->getModel(), Vector3(3 - i * 1.5f, 0, -7));
+		maps[i] = new MenuItem(m_menuBlock->getModel(), Vector3(3.f - float(i) * 1.5f, 0.f, -7.f));
 		maps[i]->setLightColor(this->offColor);
 		
 		this->mapMenu.push_back(maps[i]);
@@ -134,7 +134,7 @@ MenuState::MenuState(StateStack& stack)
 	}
 	for (size_t i = 0; i < this->playerMenu.size(); i++) {
 		this->playerMenu[i]->setLightColor(this->offColor);
-		this->playerMenu[i]->getTransform().setRotations(Vector3(0, -1.62, 0));
+		this->playerMenu[i]->getTransform().setRotations(Vector3(0.0f, -1.62f, 0.0f));
 		m_scene.addObject(playerMenu[i]);
 	}
 	for (size_t i = 0; i < this->mapMenu.size(); i++) {
@@ -143,7 +143,7 @@ MenuState::MenuState(StateStack& stack)
 	}
 
 	for (size_t i = 0; i < 3; i++) {
-		this->optionsMenuList[i]->getTransform().setRotations(Vector3(0, -1.62, 0));
+		this->optionsMenuList[i]->getTransform().setRotations(Vector3(0.0f, -1.62f, 0.0f));
 		this->optionsMenuList[i]->setLightColor(this->offColor);
 		m_scene.addObject(this->optionsMenuList[i]);
 	}
