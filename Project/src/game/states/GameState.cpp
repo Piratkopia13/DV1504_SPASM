@@ -19,7 +19,7 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
-	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());	// Load in textures from file
+	m_currLevel = std::make_unique<Level>("sprint_demo.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
 	
 
