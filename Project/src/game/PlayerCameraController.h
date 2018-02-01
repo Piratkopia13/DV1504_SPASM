@@ -6,7 +6,7 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 class PlayerCameraController : public CameraController {
 public:
-	PlayerCameraController(Camera* cam);
+	PlayerCameraController(Camera* cam, const DirectX::SimpleMath::Vector2* mapSize = nullptr);
 
 	void update(float dt);
 	void setTargets(Object* focusObject1, Object* focusObject2 = nullptr, Object* focusObject3 = nullptr, Object* focusObject4 = nullptr);
@@ -33,6 +33,9 @@ private:
 
 	Vector3 back;
 	Vector3 up;
+
+	bool m_lockToMap;
+	DirectX::SimpleMath::Vector2 m_mapSize;
 
 
 	bool moving;

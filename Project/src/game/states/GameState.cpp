@@ -13,14 +13,19 @@ GameState::GameState(StateStack& stack)
 , m_debugText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
 , m_debugParticleText(&m_font, L"")
-, m_playerCamController(&m_cam)
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
 
 	m_app = Application::getInstance();
 
+	m_currLevel = std::make_unique<Level>("sprint_demo.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
+	auto& blocks = m_currLevel->getGrid()->getAllBlocks();
+	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
+	float mapHeight = blocks.at(0).size() * Level::DEFAULT_BLOCKSIZE;
+	Vector2 mapSize = Vector2(mapWidth, mapHeight);
+	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam/*, &mapSize*/);
 	
 
 	// Update the hud shader
@@ -31,22 +36,22 @@ GameState::GameState(StateStack& stack)
 	m_timer.startTimer();
 
 	// Add skybox to the scene
-	m_scene.addSkybox(L"skybox2_512.dds");
+	m_scene.addSkybox(L"skybox_space_512.dds");
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
-	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	//dl.direction = Vector3(0.f, -1.f, 0.f);
+ 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
+	//dl.direction = Vector3(0.46f, -0.87f, 0.12f);
 	dl.direction.Normalize();
 	l.setDirectionalLight(dl);
 
 	m_scene.setShadowLight();
 
-	Lights::PointLight pl;
-	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
-	pl.setPosition(Vector3(0.f, 4.f, -2.f));
-	pl.setAttenuation(1.f, 1.f, 1.f);
-	l.addPointLight(pl);
+// 	Lights::PointLight pl;
+// 	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
+// 	pl.setPosition(Vector3(0.f, 4.f, -2.f));
+// 	pl.setAttenuation(1.f, 1.f, 1.f);
+// 	l.addPointLight(pl);
 
 
 	m_matShader.updateLights(m_scene.getLights());
@@ -79,30 +84,33 @@ GameState::GameState(StateStack& stack)
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
+#ifdef _DEBUG
 	m_scene.addText(&m_debugText);
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
+#endif
 
-
-	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());	// Load in textures from file
-
-	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
 	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
 	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
+	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
+	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	
 	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
 	for (int i = 0; i < 4; i++) {
-		this->m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
-		this->m_player[i] = new Character(m_characterModel->getModel());
-		this->m_player[i]->setController(1);
-		this->m_player[i]->setControllerPort(i);
-		this->m_player[i]->setWeapon(this->m_weapons[i]);
-		this->m_scene.addObject(m_player[i]);
-		
+		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
+		m_player[i] = new Character(m_characterModel->getModel());
+		m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
+		m_player[i]->setController(1);
+		m_player[i]->setControllerPort(i);
+		m_player[i]->setWeapon(m_weapons[i]);
+		m_player[i]->setCurrentLevel(m_currLevel.get());		
+		m_player[i]->setHook(m_hooks[i]);
+		m_scene.addObject(m_player[i]);
 	}
 
 	m_playerCamController.setTargets(
@@ -131,6 +139,7 @@ GameState::~GameState() {
 	{
 		delete m_weapons[i];
 		delete m_player[i];
+		delete m_hooks[i];
 	}
 	delete m_projHandler;
 }
@@ -242,9 +251,6 @@ bool GameState::update(float dt) {
 
 	auto& cPos = m_cam.getPosition();
 
-	std::wstring flying(L"Flying (shift for boost, rmouse to toggle cursor)");
-	std::wstring Walking(L"Walking (rmouse to toggle cursor)");
-	m_debugText.setText(std::wstring(L"Cam controller (F to toggle): ") + ((m_flyCam) ? flying : Walking));
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
 
@@ -253,17 +259,18 @@ bool GameState::update(float dt) {
 	for (int i = 0; i < 4; i++)
 		this->m_player[i]->update(dt);
 
+
 	if(!m_flyCam)
-		m_playerCamController.update(dt);
-
+		m_playerCamController->update(dt);
+	
 	m_projHandler->update(dt);
-
+	
 	return true;
 }
 // Renders the state
 bool GameState::render(float dt) {
 	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear(DirectX::Colors::Teal);
+	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 	// Clear back buffer
 
 	// Draw the scene
@@ -271,9 +278,12 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam, m_currLevel.get(), m_projHandler);
 
 	//m_app->getDXManager()->enableAlphaBlending();
-	m_colorShader.updateCamera(m_cam);
+	//m_colorShader.updateCamera(m_cam);
+	//for(int i = 0; i < 4; i++)
+	//	m_player[i]->draw();
 
-	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
+	//m_projHandler->draw();
+
 
 	// Draw HUD
 	m_scene.drawHUD();

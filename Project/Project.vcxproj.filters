@@ -11,6 +11,10 @@
     <FxCompile Include="res\shaders\deferred\GeometryShader.hlsl" />
     <FxCompile Include="res\shaders\deferred\PointLightShader.hlsl" />
     <FxCompile Include="res\shaders\DepthShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurPS.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp" />
@@ -66,6 +70,9 @@
     <ClCompile Include="src\game\objects\Block.cpp" />
     <ClCompile Include="src\game\level\Level.cpp" />
     <ClCompile Include="src\game\objects\common\Moveable.cpp" />
+    <ClCompile Include="src\game\objects\Block.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
     <ClCompile Include="src\game\level\Grid.cpp" />
     <ClCompile Include="src\game\objects\Weapon.cpp" />
     <ClCompile Include="src\game\objects\Projectile.cpp" />
@@ -73,6 +80,12 @@
     <ClCompile Include="src\game\states\MenuState.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
+    <ClCompile Include="src\game\objects\Hook.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -140,11 +153,21 @@
     <ClInclude Include="src\game\objects\common\Moveable.h" />
     <ClInclude Include="src\game\objects\Character.h" />
     <ClInclude Include="src\game\objects\Block.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
+    <ClInclude Include="src\game\objects\Block.h" />
     <ClInclude Include="src\game\level\Level.h" />
     <ClInclude Include="src\game\level\Grid.h" />
     <ClInclude Include="src\game\objects\Weapon.h" />
     <ClInclude Include="src\game\objects\Projectile.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\BloomShader.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\PostProcessStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
+    <ClInclude Include="src\game\objects\Hook.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\states\Settings.h" />

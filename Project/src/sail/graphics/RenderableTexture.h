@@ -5,7 +5,7 @@
 class RenderableTexture {
 
 public:
-	RenderableTexture(UINT aaSamples = 1, UINT width = 320, UINT height = 180, bool createDepthStencilView = true, bool createOnlyDSV = false);
+	RenderableTexture(UINT aaSamples = 1, UINT width = 320, UINT height = 180, bool createDepthStencilView = true, bool createOnlyDSV = false, UINT bindFlags = 0, UINT cpuAccessFlags = 0);
 	~RenderableTexture();
 	
 	void begin();
@@ -17,6 +17,8 @@ public:
 	ID3D11RenderTargetView** getRenderTargetView();
 	ID3D11DepthStencilView** getDepthStencilView();
 	D3D11_VIEWPORT* getViewPort();
+	ID3D11Texture2D* getTexture2D();
+	ID3D11Texture2D* getDepthTexture2D();
 
 private:
 	void createTextures();
@@ -31,6 +33,8 @@ private:
 	ID3D11DepthStencilView* m_depthStencilView;
 	bool m_hasDepthStencilView;
 	bool m_onlyDSV;
+	UINT m_bindFlags;
+	UINT m_cpuAccessFlags;
 
 	ID3D11Texture2D* m_nonMSAAColorTexture2D;
 	ID3D11ShaderResourceView* m_nonMSAAColorSRV;

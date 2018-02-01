@@ -46,7 +46,7 @@ void ShaderSet::bind() {
 		Application::getInstance()->getDXManager()->getDeviceContext()->HSSetShader(nullptr, 0, 0);
 
 	// Set this shader as bound
-	currentlyBoundShader = this;
+	//currentlyBoundShader = this;
 
 }
 

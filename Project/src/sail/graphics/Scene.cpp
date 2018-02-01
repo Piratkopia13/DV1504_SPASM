@@ -3,14 +3,17 @@
 #include "../../game/objects/common/Object.h"
 #include "../../game/ProjectileHandler.h"
 #include "../../game/level/Level.h"
+#include "../../game/objects/Block.h"
+#include "../../game/level/Grid.h"
 
 using namespace std;
 
 Scene::Scene(const AABB& worldSize)
 	:
 	//m_dirLightShadowMap(16384, 8640),
-	m_dirLightShadowMap(8192, 4320)
+	m_dirLightShadowMap(8192 / 2, 4320 / 2)
 	//, m_dirLightShadowMap(4096, 2160)
+	, m_doPostProcessing(true)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
 	m_timer.startTimer();
@@ -18,6 +21,11 @@ Scene::Scene(const AABB& worldSize)
 	// Camera rotation
 	m_rotation = 0.f;
 
+	auto window = Application::getInstance()->getWindow();
+	UINT width = window->getWindowWidth();
+	UINT height = window->getWindowHeight();
+
+	m_deferredOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
 }
 Scene::~Scene() {}
 
@@ -35,13 +43,23 @@ void Scene::addSkybox(const std::wstring& filename) {
 }
 
 void Scene::resize(int width, int height) {
+	// Resize textures
 	m_deferredRenderer.resize(width, height);
+	m_deferredOutputTex->resize(width, height);
 }
 
 // Draws the scene
 void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
+
+	//dxm->getDeviceContext()->ClearState();
+
+	if (m_doPostProcessing) {
+		// Render skybox to the prePostTex
+		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
+	}
 
 	// Update and render skybox if one is set
 	// The skybox needs to be rendered first in the scene since it should be behind all models
@@ -52,30 +70,31 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	// Renders the depth of the scene out of the directional lights position
 
 	//To-do: Fix shadow pass to work with draw call from object
-	/*m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
+	m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
 	dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
 	m_depthShader.bind();
 	dxm->enableFrontFaceCulling();
-	for (Object* m : m_objects)
-		m->draw();
-	dxm->enableBackFaceCulling();*/
 
-	//OrthographicCamera dl = m_lights.getDirectionalLightCamera();
-	//DirectX::SimpleMath::Vector3 temp = dl.getPosition();
-	////m_rotation += 0.00000005f * dt;
-	//temp = DirectX::SimpleMath::Vector3::Transform(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	//dl.setPosition(temp);
-	//temp = dl.getDirection();
-	//temp = DirectX::SimpleMath::Vector3::TransformNormal(temp, DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation));
-	//dl.setDirection(temp);
-	//m_lights.setDirectionalLightCamera(dl);
-	//Lights::DirectionalLight _dl;
-	//_dl.direction = dl.getDirection();
-	////_dl.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
-	//m_lights.setDirectionalLight(_dl);
-	//m_depthShader.updateCamera(dl);
+	// Render all blocks to the shadow map
+	// TODO: only render the blocks that the camera can see
+	auto& blocks = level.getGrid()->getAllBlocks();
+	for (auto& row : blocks) {
+		for (auto* block : row) {
+			if (block) {
+				block->getModel()->setTransform(&block->getTransform());
+				m_depthShader.draw(*block->getModel(), false);
+			}
+		}
+	}
+	dxm->enableBackFaceCulling();
 
-	m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
+	// Begin geometry pass - store depth in the correct texture
+	if (m_doPostProcessing) {
+		m_deferredRenderer.beginGeometryPass(cam, *m_deferredOutputTex->getRenderTargetView());
+	}
+	else {
+		m_deferredRenderer.beginGeometryPass(cam, *dxm->getBackBufferRTV());
+	}
 
 	m_timer.getFrameTime();
 	/* draw level here */
@@ -91,11 +110,25 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
 	// Switch render target to where the deferred output should be
-	dxm->renderToBackBuffer();
+	if (m_doPostProcessing) {
+		//m_prePostTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
+	}
+	else {
+		dxm->renderToBackBuffer();
+	}
 
-	// Do the light pass
+	// Do the light pass (using additive blending)
 	m_deferredRenderer.doLightPass(m_lights, cam, m_dirLightShadowMap);
 
+
+	if (m_doPostProcessing) {
+		// Do post processing
+		//m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+
+		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
+		m_postProcessPass.run(*m_deferredOutputTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
+	}
 	// Change active depth buffer to the one used in the deferred geometry pass
 	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 
@@ -140,7 +173,8 @@ std::map<ShaderSet*, std::vector<Model*>> Scene::mapModelsToShaders(std::vector<
 
 void Scene::setShadowLight() {
 	//4096, 2160
-	OrthographicCamera dlCam(270.f, 270.f / 1.9f, -105.f, 110.f);
+	float w = 100.f;
+	OrthographicCamera dlCam(w, w / 1.9f, -105.f, 110.f);
 	//OrthographicCamera dlCam(25.f, 25.f / 1.9f, -25.f, 25.f);
 	dlCam.setPosition(-m_lights.getDL().direction * 5.f);
 	//dlCam.setPosition(DirectX::SimpleMath::Vector3(-110.f, 78.f, -131));

@@ -19,6 +19,10 @@ D3D11_VIEWPORT* DirLightShadowMap::getViewPort() {
 	return m_depthTexture.getViewPort();
 }
 
+ID3D11Texture2D * DirLightShadowMap::getTexture2D() {
+	return m_depthTexture.getDepthTexture2D();
+}
+
 //DeferredDirectionalLightShader* DirLightShadowMap::getDLShader() {
 //	return m_shader;
 //}

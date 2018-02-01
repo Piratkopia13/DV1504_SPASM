@@ -21,6 +21,7 @@ public:
 	void setLightColor(DirectX::SimpleMath::Vector4 color);
 	Model* getModel();
 	Transform& getTransform();
+	AABB* getBoundingBox();
 
 	virtual void draw() = 0;
 };

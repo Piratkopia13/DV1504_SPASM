@@ -91,6 +91,7 @@ struct GBuffers {
 	float4 diffuse : SV_Target0;
 	float4 normal : SV_Target1;
 	float4 specular : SV_Target2;
+	//float4 bloom : SV_Target3;
 	float4 ambient : SV_Target3;
 };
 
@@ -100,23 +101,29 @@ GBuffers PSMain(PSIn input) {
 
 	float3 ambientCoefficient = float3(0.5f, 0.5f, 0.5f);
 
-	gbuffers.diffuse = float4(material.modelColor.rgb, 1.0f);
+	gbuffers.diffuse = float4(1.f, 1.f, 1.f, 1.f);
 	if (material.hasDiffuseTexture)
 		gbuffers.diffuse *= tex[0].Sample(ss, input.texCoords);
-	gbuffers.diffuse.rgb *= material.kd;
+	if (gbuffers.diffuse.r == 1.0f && gbuffers.diffuse.g == 1.0f && gbuffers.diffuse.b == 1.0f) {
+	  gbuffers.diffuse *= float4(material.modelColor.rgb, 1.0f);
+	}
+    gbuffers.diffuse.rgb *= material.kd;
 	
+	// Write the bloom cutoff
+	//gbuffers.bloom = gbuffers.diffuse * dot(gbuffers.diffuse.rgb, float3(0.2126, 0.7152, 0.0722));
+
 	// bind light pass target and render ambient to it
-	gbuffers.ambient = float4(gbuffers.diffuse.rgb * ambientCoefficient * material.ka, 1.0f);
+    gbuffers.ambient = float4(gbuffers.diffuse.rgb * ambientCoefficient * material.ka, 1.0f);
 
-	gbuffers.normal = float4(normalize(input.normal) / 2.f + .5f, 1.f);
-	if (material.hasNormalTexture)
-		gbuffers.normal = float4(mul(normalize(tex[1].Sample(ss, input.texCoords).rgb * 2.f - 1.f), input.tbn) / 2.f + .5f, 1.0f);
+    gbuffers.normal = float4(normalize(input.normal) / 2.f + .5f, 1.f);
+    if (material.hasNormalTexture)
+      gbuffers.normal = float4(mul(normalize(tex[1].Sample(ss, input.texCoords).rgb * 2.f - 1.f), input.tbn) / 2.f + .5f, 1.0f);
 
-	gbuffers.specular = float4(1.f, material.shininess, 1.f, 1.f);
-	if (material.hasSpecularTexture)
-		gbuffers.specular.x = tex[2].Sample(ss, input.texCoords).r * material.ks;
+    gbuffers.specular = float4(1.f, material.shininess, 1.f, 1.f);
+    if (material.hasSpecularTexture)
+      gbuffers.specular.x = tex[2].Sample(ss, input.texCoords).r * material.ks;
 
-	return gbuffers;
+    return gbuffers;
 
-}
+  }
 
