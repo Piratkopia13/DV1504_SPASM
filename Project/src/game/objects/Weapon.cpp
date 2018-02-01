@@ -72,5 +72,6 @@ void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 
 void Weapon::draw() {
 	m_Model->setTransform(&getTransform());
+	m_Model->getMaterial()->setColor(this->lightColor);
 	m_Model->draw();
 }

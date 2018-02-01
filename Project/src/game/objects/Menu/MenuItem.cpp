@@ -5,7 +5,7 @@ using namespace DirectX::SimpleMath;
 
 MenuItem::MenuItem()
 {
-	
+	this->useColor = 1;
 }
 
 MenuItem::MenuItem(Model * model, Vector3 pos) : MenuItem()
@@ -18,6 +18,8 @@ MenuItem::MenuItem(Model * model, Vector3 pos) : MenuItem()
 void MenuItem::draw()
 {
 	this->getModel()->setTransform(&this->getTransform());
+	if(this->useColor)
+		this->getModel()->getMaterial()->setColor(this->lightColor);
 	this->getModel()->draw();
 }
 

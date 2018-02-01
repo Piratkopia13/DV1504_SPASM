@@ -56,60 +56,110 @@ MenuState::MenuState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
-	m_menuOn = std::make_unique<FbxModel>("block.fbx");
-	m_menuOn->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuBlock = std::make_unique<FbxModel>("block.fbx");
+	m_menuBlock->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
-	m_menuOff = std::make_unique<FbxModel>("block2.fbx");
-	m_menuOff->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuStart = std::make_unique<FbxModel>("startButton.fbx");
+	m_menuStart->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
-	//m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
-	//m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuOptions = std::make_unique<FbxModel>("optionsButton.fbx");
+	m_menuOptions->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+	m_menuExit = std::make_unique<FbxModel>("exitButton.fbx");
+	m_menuExit->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+	m_player = std::make_unique<FbxModel>("fisk.fbx");
+	m_player->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+
+	m_backGround = std::make_unique<FbxModel>("menu_screen.fbx");
+	m_backGround->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	
-	
+
+	this->activeMenu = 0;
+	this->activeSubMenu = 0;
 	this->selector = 0;
-	this->menu = -1;
-	for(int i = 0; i < 4; i++)
-		this->players[i] = 0;
-
-	MenuItem* start = new MenuItem(m_menuOn->getModel(), Vector3(0, 1, 7));
-	MenuItem* something = new MenuItem(m_menuOff->getModel(), Vector3(0, 0, 7));
-	MenuItem* exit = new MenuItem(m_menuOff->getModel(), Vector3(0, -1, 7));
-
-	MenuItem* player1 = new MenuItem(m_menuOff->getModel(), Vector3(7, 1, -2.25));
-	MenuItem* player2 = new MenuItem(m_menuOff->getModel(), Vector3(7, 1, -0.75));
-	MenuItem* player3 = new MenuItem(m_menuOff->getModel(), Vector3(7, 1, 0.75));
-	MenuItem* player4 = new MenuItem(m_menuOff->getModel(), Vector3(7, 1, 2.25));
-
-	//MenuItem* start = new MenuItem(m_menuOff->getModel(), Vector3(1, 3, 1));
-	//MenuItem* something = new MenuItem(m_menuOff->getModel(), Vector3(1, 2, 1));
-	//MenuItem* exit = new MenuItem(m_menuOff->getModel(), Vector3(1, 1, 1));
-
 	
+
+	this->menu = -1;
+	
+	this->background = new MenuItem(m_backGround->getModel(), Vector3(0, -2.3, 0.5));
+	this->background->useColor = 1;
+	this->background->setLightColor(Vector4(0.5,0.5,0.5,0.5));
+	m_scene.addObject(background);
+
+
+	MenuItem* start = new MenuItem(m_menuStart->getModel(), Vector3(0, 2, 7));
+	MenuItem* options = new MenuItem(m_menuOptions->getModel(), Vector3(0, 0, 7));
+	MenuItem* exit = new MenuItem(m_menuExit->getModel(), Vector3(0, -2, 7));
+
+	MenuItem* player1 = new MenuItem(m_player->getModel(), Vector3(4, 0, 2.25));
+	MenuItem* player2 = new MenuItem(m_player->getModel(), Vector3(4, 0, 0.75));
+	MenuItem* player3 = new MenuItem(m_player->getModel(), Vector3(4, 0, -0.75));
+	MenuItem* player4 = new MenuItem(m_player->getModel(), Vector3(4, 0, -2.25));
+
+	MenuItem* option1 = new MenuItem(m_menuOptions->getModel(), Vector3(-7, 1.5, 0));
+	MenuItem* option2 = new MenuItem(m_menuOptions->getModel(), Vector3(-7, 0, 0));
+	MenuItem* option3 = new MenuItem(m_menuOptions->getModel(), Vector3(-7, -1.5, 0));
+
+	this->onColor = Vector4(1, 1, 1, 1);
+	this->offColor = Vector4(0.2, 0.2, 0.2, 1);
+
+
+	MenuItem* maps[5];
+	int extraY = 0;
+	for (size_t i = 0; i < 5; i++) {
+
+		maps[i] = new MenuItem(m_menuBlock->getModel(), Vector3(3 - i * 1.5f, 0, -7));
+		maps[i]->setLightColor(this->offColor);
+		
+		this->mapMenu.push_back(maps[i]);
+	}
 
 
 	this->menuList.push_back(start);
-	this->menuList.push_back(something);
+	this->menuList.push_back(options);
 	this->menuList.push_back(exit);
 
-	this->startMenuList1.push_back(player1);
-	this->startMenuList1.push_back(player2);
-	this->startMenuList1.push_back(player3);
-	this->startMenuList1.push_back(player4);
+	this->playerMenu.push_back(player1);
+	this->playerMenu.push_back(player2);
+	this->playerMenu.push_back(player3);
+	this->playerMenu.push_back(player4);
+
+	this->optionsMenuList.push_back(option1);
+	this->optionsMenuList.push_back(option2);
+	this->optionsMenuList.push_back(option3);
+
+	for (int i = 0; i < 4; i++) {
+		this->players[i] = OFFLINE;
+		this->setColor(i, this->offColor);
+	}
 
 	for (size_t i = 0; i < this->menuList.size(); i++) {
+		menuList[i]->setLightColor(this->offColor);
 		m_scene.addObject(menuList[i]);
 	}
-	for (size_t i = 0; i < this->startMenuList1.size(); i++) {
-		m_scene.addObject(startMenuList1[i]);
+	for (size_t i = 0; i < this->playerMenu.size(); i++) {
+		this->playerMenu[i]->setLightColor(this->offColor);
+		this->playerMenu[i]->getTransform().setRotations(Vector3(0, -1.62, 0));
+		m_scene.addObject(playerMenu[i]);
+	}
+	for (size_t i = 0; i < this->mapMenu.size(); i++) {
+		
+		m_scene.addObject(mapMenu[i]);
+	}
+
+	for (size_t i = 0; i < 3; i++) {
+		this->optionsMenuList[i]->getTransform().setRotations(Vector3(0, -1.62, 0));
+		this->optionsMenuList[i]->setLightColor(this->offColor);
+		m_scene.addObject(this->optionsMenuList[i]);
 	}
 
 
-	m_playerCamController.setTargets(
-		this->menuList[0],
-		nullptr,
-		nullptr,
-		nullptr
-	);
+	this->changeMenu(0, MAINMENU);
+
+	m_playerCamController.useExtra = 0;
+	m_playerCamController.setTargets(this->menuList[0]);
 	m_playerCamController.setOffset(Vector3(0,0,0));
 	m_playerCamController.setMoving(false);
 	m_playerCamController.setPosition(Vector3(0,0,0));
@@ -119,14 +169,15 @@ MenuState::MenuState(StateStack& stack)
 
 MenuState::~MenuState()
 {
+	delete this->background;
 	for (size_t i = 0; i < this->menuList.size(); i++) {
 		delete this->menuList[i];
 	}
-	for (size_t i = 0; i < this->startMenuList1.size(); i++) {
-		delete this->startMenuList1[i];
+	for (size_t i = 0; i < this->playerMenu.size(); i++) {
+		delete this->playerMenu[i];
 	}
-	for (size_t i = 0; i < this->startMenuList2.size(); i++) {
-		delete this->startMenuList2[i];
+	for (size_t i = 0; i < this->mapMenu.size(); i++) {
+		delete this->mapMenu[i];
 	}
 	for (size_t i = 0; i < this->optionsMenuList.size(); i++) {
 		delete this->optionsMenuList[i];
@@ -147,158 +198,217 @@ bool MenuState::processInput(float dt) {
 	//DirectX::Keyboard::State& keyState;
 	//Keyboard::KeyboardStateTracker& keyTracker;
 
-
+	
 
 	for (int i = 0; i < 4; i++) {
+		
+		int a = 0;
+		int b = 0;
+		int down = 0;
+		int up = 0;
+		int left = 0;
+		int right = 0;
+		int menu = 0;
+		int back = 0;
+		int pressed = 0;
+
+		if (i == 0) {
+
+
+
+		}
 
 		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[i];
 		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
 		if (padState.IsConnected()) {
 
-			// ON BUTTON CLICK
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
-				switch (this->selector) {
-				case START: {
-					switch (this->menu) {
-					case NOTHING: {
-						this->menu = START;
-						m_playerCamController.setTargets(
-							this->startMenuList1[0],
-							this->startMenuList1[1],
-							this->startMenuList1[2],
-							this->startMenuList1[3]
-						);
-
-					}break;
-
-
-					case START: {
-				
-						switch (this->players[i]) {
-						case 0: {
-							this->players[i] = 1;
-							this->startMenuList1[i]->setModel(m_menuOn->getModel());
-						}break;
-						case 1: {
-
-
-
-
-							requestStackPop();
-							requestStackPush(States::Game);
-						}
-
-
-
-						}
-
-
-
-
-					}break;
-
-
-
-
-
-
-					}
-				}break;
-				case OPTIONS: {
-					
-					
-
-
-
-				}break;
-				case EXIT: {
-					PostQuitMessage(0);
-				}break;
-				default:
-					break;
-				}
-				
+				a = 1;
+				pressed = 1;
 			}
-			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-				switch (this->menu) {
-				case NOTHING: {
-					
-				}break;
-
-
-				case START: {
-					switch (this->players[i]) {
-					case 0: {
-						for (int u = 0; u < 4; u++) {
-							if (this->players[u] == 1)
-							{
-								this->players[u] = 0;
-								this->startMenuList1[u]->setModel(m_menuOff->getModel());
-
-							}
-							m_playerCamController.setTargets(
-								this->menuList[0],
-								nullptr,
-								nullptr,
-								nullptr
-							);
-							this->menu = NOTHING;
-						}
-					}break;
-					case 1: {
-						this->players[i] = 0;
-						this->startMenuList1[i]->setModel(m_menuOff->getModel());
-					}
-
-
-
-					}
-
-
-
-
-				}break;
-
-
-
-
-
-
-				}
-
+			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED || padTracker.back == GamePad::ButtonStateTracker::PRESSED) {
+				b = 1;
+				pressed = 1;
+			}
+			if (padTracker.dpadUp == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickUp == GamePad::ButtonStateTracker::PRESSED) {
+				up = 1;
+				pressed = 1;
+			}
+			if (padTracker.dpadDown == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickDown == GamePad::ButtonStateTracker::PRESSED) {
+				down = 1;
+				pressed = 1;
+			}
+			if (padTracker.dpadRight == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickRight == GamePad::ButtonStateTracker::PRESSED) {
+				right = 1;
+				pressed = 1;
+			}
+			if (padTracker.dpadLeft == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickLeft == GamePad::ButtonStateTracker::PRESSED) {
+				left = 1;
+				pressed = 1;
 			}
 			
-			if (padTracker.dpadDown == GamePad::ButtonStateTracker::PRESSED) {
-				switch (this->menu) {
-				case NOTHING: {
-					this->changeMenu(1);
+			if(pressed)
+				switch (this->activeMenu) {
+					case MAINMENU:
+						if (down)
+							this->changeMenu(1, MAINMENU);
+						if (up)
+							this->changeMenu(-1, MAINMENU);
+						if (a) {
+							switch (this->selector) {
+								case START:
+									this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1], 
+										this->playerMenu[2], this->playerMenu[3]);
+									this->menuList[selector]->setLightColor(this->offColor);
+									this->selector = 0;
 
-				}break;
-					
+									this->activeMenu = STARTMENU;
+									break;
+								case OPTIONS:
+									this->activeMenu = OPTIONSMENU;
+									this->menuList[selector]->setLightColor(this->offColor);
+									this->selector = 0;
+									this->changeMenu(0, OPTIONSMENU);
+
+									break;
+
+								case EXIT:
+									PostQuitMessage(0);
+									break;
+							}
+						}
+
+
+						break;
+					case STARTMENU:
+						switch (this->activeSubMenu) {
+							case PLAYERSELECT:
+								switch (this->players[i]) {
+									case OFFLINE:
+										if (a) {
+											this->players[i] = ONLINE;
+											this->setColor(i, this->onColor);
+										}
+										if (b) {
+											for (size_t u = 0; u < 4; u++) {
+												this->players[u] = OFFLINE;
+												this->setColor(u, Vector4(0, 0, 0, 1));
+												this->m_playerCamController.setTargets(this->menuList[0]);
+
+												this->activeMenu = MAINMENU;
+												this->selector = 0;
+												this->changeMenu(0, MAINMENU);
+											}
+										}
+
+
+
+										break;
+									case ONLINE:
+										switch (this->playersReady[i]) {
+											case NOTREADY:
+												if(a) {
+													this->playersReady[i] = READY;
+													int nrOnline = 0;
+													int nrReady = 0;
+													for (size_t u = 0; u < 4; u++) {
+														if (this->players[u] == ONLINE) 
+															nrOnline++;
+														if (this->playersReady[u] == READY) 
+															nrReady++;
+													}
+													if (nrReady == nrOnline) {
+														this->activeSubMenu = MAPSELECT;
+														this->selector = 0;
+														this->changeMenu(0, STARTMENU);
+														this->m_playerCamController.setTargets(this->mapMenu[0]);
+														gameVariables.players = nrReady;
+														break;
+													}
+												}
+												if (b) {
+												this->players[i] = OFFLINE;
+												this->setColor(i, this->offColor);
+
+												}
+
+												if (right) {
+													this->setColor(i, this->getRandomColor());
+												}
+												if (left) {
+													this->setColor(i, this->getRandomColor());
+												}
+
+
+
+												break;
+											case READY:
+												if (b) {
+													this->players[i] = OFFLINE;
+													this->setColor(i, this->offColor);
+
+												}
+												
+
+											
+												break;
+
+										}
+
+										break;
+								}
+								break;
+							case MAPSELECT:
+								if (right) {
+									this->changeMenu(1, STARTMENU);
+								}
+								if (left) {
+									this->changeMenu(-1, STARTMENU);
+								}
+								if (a) {								
+									gameVariables.level = this->selector;
+									for (size_t u = 0; u < 4; u++) {
+										gameVariables.color[u] = this->playerColor[u];
+										gameVariables.ports[u] = u;
+										gameVariables.teams[u] = 0;
+										gameVariables.used = 1;
+									}
+									requestStackPop();
+									requestStackPush(States::Game);
+								}
+								if (b) {
+									this->activeSubMenu = PLAYERSELECT;
+									this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1],
+										this->playerMenu[2], this->playerMenu[3]);
+									for (size_t u = 0; u < 4; u++) {
+										this->playersReady[u] = NOTREADY;
+									}
+									this->mapMenu[selector]->setLightColor(this->offColor);
+									this->selector = 0;
+								}
+								break;			
+						}
+
+						break;
+					case OPTIONSMENU:
+						if (b) {
+							this->activeMenu = MAINMENU;
+							this->optionsMenuList[this->selector]->setLightColor(this->offColor);
+							this->selector = 0;
+							this->changeMenu(0, MAINMENU);
+
+						}
+						if (down) {
+							this->changeMenu(1, OPTIONSMENU);
+						}
+						if (up) {
+							this->changeMenu(-1, OPTIONSMENU);
+						}
+
+
+						break;
 				}
-
-			}
-			if (padTracker.dpadUp == GamePad::ButtonStateTracker::PRESSED) {
-				switch (this->menu) {
-				case NOTHING: {
-					this->changeMenu(-1);
-				}break;
-				default:
-					break;
-				}
-			}
-
-
-			if (padTracker.menu == 3) {
-			}
-			if (padTracker.back == 3) {
-
-				// show scoreboard ? 
-			}
 		}
-
-
-
 	}
 
 
@@ -381,20 +491,59 @@ bool MenuState::render(float dt) {
 	return true;
 }
 
-void MenuState::changeMenu(int change)
+
+
+
+void MenuState::changeMenu(int change, int active)
 {
-	this->menuList[this->selector]->setModel(m_menuOff->getModel());
+	int max = 0;
+	if (active == MAINMENU) {
+		this->menuList[this->selector]->setLightColor(this->offColor);
+		max = (int)this->menuList.size()-1;
+	}
+	if (active == OPTIONSMENU) {
+		this->optionsMenuList[this->selector]->setLightColor(this->offColor);
+		max = (int)this->menuList.size() - 1;
+	}
+	if (active == STARTMENU && this->activeSubMenu == MAPSELECT) {
+
+		this->mapMenu[this->selector]->setLightColor(this->offColor);
+		max = (int)this->mapMenu.size() - 1;
+	}
+
+
 	this->selector += change;
 	if (this->selector < 0)
-		this->selector = 2;
-	if (this->selector > 2)
+		this->selector = max;
+	if (this->selector > max)
 		this->selector = 0;
+	if (active == MAINMENU) {
+		this->menuList[this->selector]->setLightColor(this->onColor);
+		m_playerCamController.setTargets(
+			this->menuList[this->selector],
+			nullptr,
+			nullptr,
+			nullptr
+		);
+	}
+	if (active == OPTIONSMENU) {
+		this->optionsMenuList[this->selector]->setLightColor(this->onColor);
+		m_playerCamController.setTargets(
+			this->optionsMenuList[this->selector],
+			nullptr,
+			nullptr,
+			nullptr
+		);
+	}
+	if (active == STARTMENU && this->activeSubMenu == MAPSELECT) {
 
-	this->menuList[this->selector]->setModel(m_menuOn->getModel());
-	m_playerCamController.setTargets(
-		this->menuList[this->selector],
-		nullptr,
-		nullptr,
-		nullptr
-	);
+		this->mapMenu[this->selector]->setLightColor(this->onColor);
+		m_playerCamController.setTargets(
+			this->mapMenu[this->selector],
+			nullptr,
+			nullptr,
+			nullptr
+		);
+	}
+	
 }

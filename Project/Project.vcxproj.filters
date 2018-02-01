@@ -71,8 +71,8 @@
     <ClCompile Include="src\game\objects\Projectile.cpp" />
     <ClCompile Include="src\game\ProjectileHandler.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
-    <ClCompile Include="src\game\objects\Menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
+    <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -146,10 +146,10 @@
     <ClInclude Include="src\game\objects\Projectile.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
-    <ClInclude Include="src\game\objects\Menu\MenuItem.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\states\Settings.h" />
     <ClInclude Include="src\game\states\Variables.h" />
+    <ClInclude Include="src\game\objects\menu\MenuItem.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />

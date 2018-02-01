@@ -9,7 +9,7 @@ public:
 	PlayerCameraController(Camera* cam);
 
 	void update(float dt);
-	void setTargets(Object* focusObject1, Object* focusObject2, Object* focusObject3, Object* focusObject4);
+	void setTargets(Object* focusObject1, Object* focusObject2 = nullptr, Object* focusObject3 = nullptr, Object* focusObject4 = nullptr);
 	void setPosition(Vector3 pos);
 	void setTarget(Vector3 pos);
 	void setOffset(Vector3 offset);
@@ -21,6 +21,7 @@ public:
 	Vector3 getTarget();
 
 	void setMoving(bool stat);
+	bool useExtra;
 
 private:
 	Object * targets[4];

@@ -1,7 +1,7 @@
 #pragma once
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/Menu/MenuItem.h"
+#include "../objects/menu/MenuItem.h"
 #include "Variables.h"
 
 class PauseState :

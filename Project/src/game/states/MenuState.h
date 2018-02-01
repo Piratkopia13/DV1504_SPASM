@@ -1,7 +1,7 @@
 #pragma once
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/Menu/MenuItem.h"
+#include "../objects/menu/MenuItem.h"
 #include "Variables.h"
 
 class MenuState : public State {
@@ -42,11 +42,29 @@ private:
 	Text m_debugParticleText;
 
 
-	std::unique_ptr<FbxModel> m_fbxModel;
-	std::unique_ptr<FbxModel> m_menuOn;
-	std::unique_ptr<FbxModel> m_menuOff;
+	std::unique_ptr<FbxModel> m_player;
+	std::unique_ptr<FbxModel> m_menuStart;
+
+	std::unique_ptr<FbxModel> m_menuOptions;
+	std::unique_ptr<FbxModel> m_menuExit;
+
+	std::unique_ptr<FbxModel> m_menuBlock;
+	std::unique_ptr<FbxModel> m_backGround;
 
 
+	DirectX::SimpleMath::Vector4 onColor;
+	DirectX::SimpleMath::Vector4 offColor;
+
+	DirectX::SimpleMath::Vector4 playerColor[4];
+
+
+	// MENU 0
+
+	enum ActiveMenu {
+		MAINMENU,
+		STARTMENU,
+		OPTIONSMENU
+	};
 
 	enum MainMenu {
 		NOTHING = -1,
@@ -54,24 +72,51 @@ private:
 		OPTIONS,
 		EXIT
 	};
+
 	enum StartMenu {
 		PLAYERSELECT,
 		MAPSELECT
 	};
 
+	enum OptionsMenu {
+		CHOICE0,
+		CHOICE1,
+		CHOICE2
+	};
 
+	enum PlayerSelect {
+		OFFLINE,
+		ONLINE,
+		NOTREADY = 0,
+		READY
+	};
+
+
+	int activeMenu;
+	int activeSubMenu;
 	int selector;
 	int menu;
 	int startMenu;
+	int maxChoices;
 
 	int players[4];
+	int playersReady[4];
 
+	MenuItem* background;
 	std::vector<MenuItem*> menuList;
-	std::vector<MenuItem*> startMenuList1;
-	std::vector<MenuItem*> startMenuList2;
+	std::vector<MenuItem*> playerMenu;
+	std::vector<MenuItem*> mapMenu;
+
 	std::vector<MenuItem*> optionsMenuList;
 
 
-	void changeMenu(int change);
+	void changeMenu(int change, int active);
+	void setColor(int player, DirectX::SimpleMath::Vector4 color) {
+		this->playerColor[player] = color;
+		this->playerMenu[player]->setLightColor(this->playerColor[player]);
+	}
+	DirectX::SimpleMath::Vector4 getRandomColor() {
+		return DirectX::SimpleMath::Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 1);
+	}
 };
 

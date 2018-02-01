@@ -181,6 +181,16 @@ bool GameState::processInput(float dt) {
 				//requestStackPop();
 				gameCamera.pos = this->m_playerCamController.getPosition();
 				gameCamera.target = this->m_playerCamController.getTarget();
+
+				auto& pad = m_app->getInput().gamepad;
+				for(int u = 0; u < 4; u++)
+					pad->SetVibration(u,
+						0,
+						0,
+						0,
+						0);
+
+
 				requestStackPush(States::Pause);
 			}
 

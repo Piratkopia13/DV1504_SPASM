@@ -24,6 +24,7 @@ PlayerCameraController::PlayerCameraController(Camera* cam)
 
 	for (int i = 0; i < 4; i++)
 		this->targets[i] = nullptr;
+	this->useExtra = 1;
 }
 
 void PlayerCameraController::update(float dt) {
@@ -113,7 +114,7 @@ void PlayerCameraController::updatePosition(float dt)
 	static float t = 15.0f;
 
 	//Calculate extra length if further than 4 units
-	if (maxL < 40.8f && maxL >= 4.115f)
+	if (maxL < 40.8f && maxL >= 4.115f && this->useExtra)
 		this->extraZ = (sin(r*maxL + z) + 1) * t;
 
 

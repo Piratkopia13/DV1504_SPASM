@@ -135,7 +135,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\game\states\PauseState.cpp" />
-    <ClCompile Include="src\game\objects\Menu\MenuItem.cpp" />
+    <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\objects\Character.cpp" />
@@ -204,7 +204,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\states\PauseState.h" />
-    <ClInclude Include="src\game\objects\Menu\MenuItem.h" />
+    <ClInclude Include="src\game\objects\menu\MenuItem.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
     <ClInclude Include="src\game\Game.h" />
     <ClInclude Include="src\game\objects\Character.h" />

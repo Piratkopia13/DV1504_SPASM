@@ -22,6 +22,10 @@ struct StartGameStuff{
 
 };
 
+struct Vibration {
+	float players[4];
+};
+
 
 
 static CameraStuff gameCamera = { DirectX::SimpleMath::Vector3(0,0,0), DirectX::SimpleMath::Vector3(0,0,0) };
