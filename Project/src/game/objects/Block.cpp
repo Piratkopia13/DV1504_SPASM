@@ -11,7 +11,6 @@ Block::~Block() {
 
 }
 
-
 void Block::draw() {
 	getModel()->setTransform(&getTransform());
 	getModel()->draw();

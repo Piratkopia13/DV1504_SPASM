@@ -39,8 +39,8 @@ public:
 	virtual void updateCamera(Camera& cam) {};
 	virtual void setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {};
 
+	static ID3D10Blob* compileShader(LPCWSTR filename, LPCSTR entryPoint, LPCSTR shaderVersion);
 protected:
-	ID3D10Blob* compileShader(LPCWSTR filename, LPCSTR entryPoint, LPCSTR shaderVersion);
 
 	void setVertexShader(ID3D10Blob* blob);
 	void setGeometryShader(ID3D10Blob* blob);

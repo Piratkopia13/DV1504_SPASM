@@ -157,10 +157,17 @@
     <ClCompile Include="src\sail\graphics\geometry\spatial\Quadtree.cpp" />
     <ClCompile Include="src\sail\graphics\Lights.cpp" />
     <ClCompile Include="src\sail\graphics\models\FbxModel.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\ComputeShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredDirectionalLightShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredGeometryShader.cpp" />
@@ -231,10 +238,17 @@
     <ClInclude Include="src\sail\graphics\models\FbxModel.h" />
     <ClInclude Include="src\sail\graphics\camera\OrthographicCamera.h" />
     <ClInclude Include="src\sail\graphics\camera\PerspectiveCamera.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\RenderableTexture.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\BloomShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
     <ClInclude Include="src\sail\graphics\shader\ComputeShader.h" />
     <ClInclude Include="src\sail\graphics\shader\component\BindShader.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredDirectionalLightShader.h" />
@@ -244,6 +258,7 @@
     <ClInclude Include="src\sail\graphics\shader\GeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\HullShader.h" />
     <ClInclude Include="src\sail\graphics\shader\material\MaterialShader.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\PostProcessStage.h" />
     <ClInclude Include="src\sail\graphics\shadows\DirLightShadowMap.h" />
     <ClInclude Include="src\sail\graphics\shadows\ShadowMap.h" />
     <ClInclude Include="src\sail\graphics\Skybox.h" />
@@ -337,6 +352,34 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CSHorizontal</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CSHorizontal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurPS.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
     </FxCompile>
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>

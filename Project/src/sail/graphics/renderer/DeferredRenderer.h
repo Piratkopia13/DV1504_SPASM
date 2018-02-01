@@ -37,6 +37,7 @@ public:
 	DeferredDirectionalLightShader& getDirLightShader();
 	DeferredPointLightShader& getPointLightShader();
 	ID3D11ShaderResourceView** getGBufferSRV(UINT index);
+	RenderableTexture* getGBufferRenderableTexture(UINT index);
 	ID3D11DepthStencilView* const getDSV() const;
 
 private:
