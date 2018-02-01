@@ -66,7 +66,7 @@ void Model::draw(bool bindShader) {
 
 
 	if (!m_shader) {
-		Logger::Error("Buffer was not build for this model, can not draw!");
+		Logger::Error("Buffer was not built for this model, can not draw!");
 		return;
 	}
 

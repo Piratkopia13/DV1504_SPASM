@@ -2,7 +2,7 @@
 
 Lights::Lights()
 	: m_numPls(0)
-	, m_dlCam(4096.f, 2160.f, 0.1f, 1000.f)
+	, m_dlCam(512.f, 270.f, 0.1f, 1000.f)
 {}
 Lights::~Lights() {}
 

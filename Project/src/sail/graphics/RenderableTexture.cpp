@@ -1,7 +1,7 @@
 #include "RenderableTexture.h"
 #include "../Application.h"
 
-RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bool createDepthStencilView, bool createOnlyDSV)
+RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bool createDepthStencilView, bool createOnlyDSV, UINT bindFlags, UINT cpuAccessFlags)
 	: m_width(width)
 	, m_height(height)
 	, m_hasDepthStencilView(createDepthStencilView)
@@ -12,6 +12,8 @@ RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bo
 	, m_nonMSAAColorSRV(nullptr)
 	, m_nonMSAADepthSRV(nullptr)
 	, m_onlyDSV(createOnlyDSV)
+	, m_bindFlags(bindFlags)
+	, m_cpuAccessFlags(cpuAccessFlags)
 {
 	createTextures();
 }
@@ -43,7 +45,7 @@ void RenderableTexture::createTextures() {
 	// Color
 	if (!m_onlyDSV) {
 		Memory::safeDelete(m_dxColorTexture);
-		m_dxColorTexture = new DXTexture(m_width, m_height, m_aaSamples);
+		m_dxColorTexture = new DXTexture(m_width, m_height, m_aaSamples, m_bindFlags, m_cpuAccessFlags);
 
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 		ZeroMemory(&rtvDesc, sizeof(rtvDesc));
@@ -60,7 +62,7 @@ void RenderableTexture::createTextures() {
 	// Depth
 	if (m_hasDepthStencilView) {
 		Memory::safeDelete(m_dxDepthTexture);
-		m_dxDepthTexture = new DXTexture(DXGI_FORMAT_R24G8_TYPELESS, m_width, m_height, m_aaSamples);
+		m_dxDepthTexture = new DXTexture(DXGI_FORMAT_R24G8_TYPELESS, m_width, m_height, m_aaSamples, m_cpuAccessFlags);
 
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 		ZeroMemory(&dsvDesc, sizeof(dsvDesc));
@@ -81,9 +83,10 @@ void RenderableTexture::createTextures() {
 		// Create a non MSAA'd copy of the color texture for use in shaders
 		D3D11_TEXTURE2D_DESC texDesc;
 		m_dxColorTexture->getTexture2D()->GetDesc(&texDesc);
-		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | m_bindFlags;
 		texDesc.SampleDesc.Count = 1;
 		texDesc.SampleDesc.Quality = 0;
+		texDesc.CPUAccessFlags = m_cpuAccessFlags;
 
 		// Release the old Texture2D
 		Memory::safeRelease(m_nonMSAAColorTexture2D);
@@ -137,6 +140,14 @@ ID3D11DepthStencilView** RenderableTexture::getDepthStencilView() {
 
 D3D11_VIEWPORT* RenderableTexture::getViewPort() {
 	return &m_viewport;
+}
+
+ID3D11Texture2D* RenderableTexture::getTexture2D() {
+	return m_dxColorTexture->getTexture2D();
+}
+
+ID3D11Texture2D* RenderableTexture::getDepthTexture2D() {
+	return m_dxDepthTexture->getTexture2D();
 }
 
 void RenderableTexture::begin() {

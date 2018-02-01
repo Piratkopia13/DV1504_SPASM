@@ -100,6 +100,10 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox, cons
 	return indices;
 }
 
+std::vector<std::vector<Block*>>& Grid::getAllBlocks() {
+	return m_cells;
+}
+
 
 DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec) {
 	DirectX::SimpleMath::Vector2 currentPos = DirectX::SimpleMath::Vector2(playerPos.x, playerPos.y);

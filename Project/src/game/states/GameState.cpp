@@ -31,22 +31,22 @@ GameState::GameState(StateStack& stack)
 	m_timer.startTimer();
 
 	// Add skybox to the scene
-	m_scene.addSkybox(L"skybox2_512.dds");
+	m_scene.addSkybox(L"skybox_space_512.dds");
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
-	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	//dl.direction = Vector3(0.f, -1.f, 0.f);
+ 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
+	//dl.direction = Vector3(0.46f, -0.87f, 0.12f);
 	dl.direction.Normalize();
 	l.setDirectionalLight(dl);
 
 	m_scene.setShadowLight();
 
-	Lights::PointLight pl;
-	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
-	pl.setPosition(Vector3(0.f, 4.f, -2.f));
-	pl.setAttenuation(1.f, 1.f, 1.f);
-	l.addPointLight(pl);
+// 	Lights::PointLight pl;
+// 	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
+// 	pl.setPosition(Vector3(0.f, 4.f, -2.f));
+// 	pl.setAttenuation(1.f, 1.f, 1.f);
+// 	l.addPointLight(pl);
 
 
 	m_matShader.updateLights(m_scene.getLights());
@@ -83,7 +83,7 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
-	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
 	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
@@ -103,6 +103,7 @@ GameState::GameState(StateStack& stack)
 		m_player[i]->setWeapon(m_weapons[i]);
 		m_player[i]->setCurrentLevel(m_currLevel.get());		
 		m_player[i]->setHook(m_hooks[i]);
+		m_scene.addObject(m_player[i]);
 	}
 
 	m_playerCamController.setTargets(
@@ -234,7 +235,7 @@ bool GameState::update(float dt) {
 // Renders the state
 bool GameState::render(float dt) {
 	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear(DirectX::Colors::Teal);
+	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 	// Clear back buffer
 
 	// Draw the scene
@@ -242,10 +243,9 @@ bool GameState::render(float dt) {
 	m_scene.draw(dt, m_cam, *m_currLevel.get());
 
 	//m_app->getDXManager()->enableAlphaBlending();
-	m_colorShader.updateCamera(m_cam);
-	for(int i = 0; i < 4; i++)
-		m_player[i]->draw();
-	
+	//m_colorShader.updateCamera(m_cam);
+	//for(int i = 0; i < 4; i++)
+	//	m_player[i]->draw();
 
 	m_projHandler->draw();
 

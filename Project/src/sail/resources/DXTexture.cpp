@@ -17,7 +17,7 @@ DXTexture::DXTexture(const std::string& filename) {
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.Width = data.getWidth();
 	texDesc.Height = data.getHeight();
-	texDesc.MipLevels = 0;
+	texDesc.MipLevels = 1;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -43,13 +43,13 @@ DXTexture::DXTexture(const std::string& filename) {
 
 }
 
-DXTexture::DXTexture(UINT width, UINT height, UINT aaSamples) {
+DXTexture::DXTexture(UINT width, UINT height, UINT aaSamples, UINT bindFlags, UINT cpuAccessFlags) {
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
 	texDesc.ArraySize = 1;
-	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	texDesc.CPUAccessFlags = 0;
+	texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | bindFlags;
+	texDesc.CPUAccessFlags = cpuAccessFlags;
 	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	texDesc.Height = height;
 	texDesc.Width = width;
@@ -72,20 +72,20 @@ DXTexture::DXTexture(UINT width, UINT height, UINT aaSamples) {
 
 }
 
-DXTexture::DXTexture(DXGI_FORMAT format, UINT width, UINT height, UINT samples) {
+DXTexture::DXTexture(DXGI_FORMAT format, UINT width, UINT height, UINT samples, UINT cpuAccessFlags) {
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	ZeroMemory(&texDesc, sizeof(texDesc));
 	texDesc.ArraySize = 1;
 	texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	texDesc.CPUAccessFlags = 0;
+	texDesc.CPUAccessFlags = cpuAccessFlags;
 	texDesc.Format = format;
 	texDesc.Width = width;
 	texDesc.Height = height;
 	texDesc.MipLevels = 1;
 	texDesc.SampleDesc.Count = samples;
 	texDesc.SampleDesc.Quality = 0;
-	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.Usage = (cpuAccessFlags == D3D11_CPU_ACCESS_READ) ? D3D11_USAGE_STAGING : D3D11_USAGE_DEFAULT;
 
 	// Create the texture2D
 	Application::getInstance()->getDXManager()->getDevice()->CreateTexture2D(&texDesc, nullptr, &m_texture);

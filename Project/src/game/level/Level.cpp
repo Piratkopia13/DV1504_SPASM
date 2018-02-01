@@ -24,7 +24,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 			if (!line.compare("map")) {
 				currTask = 2;
 				infile >> line;
-				m_grid = std::make_unique<Grid>(m_width, m_height, DEFAULT_BLOCKSIZE);
+				m_grid = std::make_unique<Grid>(m_width, m_height, (int) DEFAULT_BLOCKSIZE);
 			}
 
 
