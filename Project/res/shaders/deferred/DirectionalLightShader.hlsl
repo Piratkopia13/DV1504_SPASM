@@ -224,8 +224,10 @@ float4 PSMain(PSIn input) : SV_Target0
   float shadow = calcLightValue(positionVS);
 
   float3 diffuseColor = tex[0].Sample(ss, texCoords).rgb;
-  if (diffuseColor.r == 1.0f && diffuseColor.g == 1.0f && diffuseColor.b == 1.0f)
-    return float4(1,1,1,1);
+
+  // Dont perform lighting on bright pixels to get the "tron" glow
+  if (dot(diffuseColor.rgb, float3(0.2126, 0.7152, 0.0722)) > 0.5f)
+    return float4(diffuseColor, 1.0);
 
   if (shadow > 0.f)
   {

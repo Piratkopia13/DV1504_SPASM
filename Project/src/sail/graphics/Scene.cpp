@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "../../game/objects/common/Object.h"
 #include "../../game/objects/Block.h"
+#include "../../game/level/Grid.h"
 
 using namespace std;
 
@@ -71,10 +72,16 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 	m_depthShader.bind();
 	dxm->enableFrontFaceCulling();
 
-	auto& blocks = level.getBlockList();
-	for (auto& b : blocks) {
-		b->getModel()->setTransform( &b->getTransform() );
-		m_depthShader.draw(*b->getModel(), false);
+	// Render all blocks to the shadow map
+	// TODO: only render the blocks that the camera can see
+	auto& blocks = level.getGrid()->getAllBlocks();
+	for (auto& row : blocks) {
+		for (auto* block : row) {
+			if (block) {
+				block->getModel()->setTransform(&block->getTransform());
+				m_depthShader.draw(*block->getModel(), false);
+			}
+		}
 	}
 	dxm->enableBackFaceCulling();
 
