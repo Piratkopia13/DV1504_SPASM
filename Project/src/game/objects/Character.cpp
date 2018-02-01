@@ -242,8 +242,8 @@ void Character::setHook(Hook* hook) {
 void Character::jump()
 {
 	//this->jumping = true;
-	m_velAtJump = getVelocity();
-	this->setVelocity(m_velAtJump + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
+	if(grounded())
+		this->setVelocity(getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }
 
