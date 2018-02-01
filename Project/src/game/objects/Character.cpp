@@ -51,12 +51,12 @@ void Character::input(
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(1, 1);
 				this->jump();
-				this->currentWeapon->cooldownTime += 0.02f;
+				//this->currentWeapon->cooldownTime += 0.02f;
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(0, 1);
-				if(this->currentWeapon->cooldownTime > 0.02f)
-					this->currentWeapon->cooldownTime -= 0.02f;
+				/*if(this->currentWeapon->cooldownTime > 0.02f)
+					this->currentWeapon->cooldownTime -= 0.02f;*/
 
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {

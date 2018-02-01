@@ -2,7 +2,7 @@
 #include "states/GameState.h"
 
 Game::Game(HINSTANCE hInstance)
-	: Application(1280, 720, "3D Project", hInstance)
+	: Application(1280, 720, "SPASM v0.25", hInstance)
 	, m_stateStack()
 {
 	// Register states
