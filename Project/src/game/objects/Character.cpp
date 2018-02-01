@@ -17,7 +17,7 @@ Character::Character()
 		this->vibrationReduction[i] = 1;
 	}
 	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
-	this->setLightColor(Vector4(1, 0, 0, 1));
+	this->setLightColor(Vector4(1, 1, 1, 1));
 }
 
 Character::Character(Model * model) : Character() {
