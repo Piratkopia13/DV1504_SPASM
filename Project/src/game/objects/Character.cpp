@@ -169,7 +169,7 @@ void Character::update(float dt) {
 		this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
 	else {
 		float velX = m_inputVec.x * this->speed * 0.1 + getVelocity().x;
-		velX = max(min(velX, this->speed), -this->speed);
+		velX = max(min(velX, this->speed * 0.8), -this->speed * 0.8);
 		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
 	}
 	if (m_hooked) {
@@ -244,7 +244,7 @@ void Character::jump()
 {
 	//this->jumping = true;
 	m_velAtJump = getVelocity();
-	this->setVelocity(this->getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
+	this->setVelocity(m_velAtJump + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }
 

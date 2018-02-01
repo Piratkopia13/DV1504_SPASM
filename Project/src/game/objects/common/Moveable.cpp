@@ -14,7 +14,7 @@ Moveable::~Moveable() {
 
 void Moveable::move(const float dt) {
 	if(!m_grounded)
-		m_velocity += m_gravity * dt;
+		m_velocity += (m_gravity + m_acceleration) * dt;
 	// Is only run if the object actually contains a pointer to the level
 	if (m_currLevel)
 		m_currLevel->collisionTest(*this, dt);
