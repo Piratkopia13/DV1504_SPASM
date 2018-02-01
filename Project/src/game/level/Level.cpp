@@ -129,10 +129,8 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 				if (mMax.y + mVel.y > bMinY && mMin.y + mVel.y < bMaxY &&
 					mMax.x > bMinX && mMin.x < bMaxX) {
 					colY = true;
-					if (mVel.y < 0.f) {
+					if (mVel.y < 0.f) 
 						toMove.y = bMaxY - mMin.y + EPS;
-						moveable.setGrounded(true);
-					}
 					else if (mVel.y > 0.f)
 						toMove.y = bMinY - mMax.y - EPS;
 				}
@@ -171,13 +169,12 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 
 					if (mVel.y < 0.f) {
 						toMove.y = bMaxY - mMin.y + EPS;
-						moveable.setGrounded(true);
 					}
 					else if (mVel.y > 0.f)
 						toMove.y = bMinY - mMax.y - EPS;
 				}
 
-				if (toMove.x < toMove.y) {
+				if (abs(toMove.x) < abs(toMove.y)) {
 					if (abs(toMove.x) <= EPS) toMove.x = 0.f;
 					DirectX::SimpleMath::Vector3 tempVelocity = moveable.getVelocity();
 					moveable.setVelocity(DirectX::SimpleMath::Vector3(toMove.x, 0.f, 0.f));
@@ -187,7 +184,7 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 					moveable.setVelocity(tempVelocity);
 				}
 
-				if (toMove.y < toMove.x) {
+				if (abs(toMove.y) < abs(toMove.x) && abs(toMove.y) > EPS * 2.0) {
 					if (abs(toMove.y) <= EPS) toMove.y = 0.f;
 					DirectX::SimpleMath::Vector3 tempVelocity = moveable.getVelocity();
 					moveable.setVelocity(DirectX::SimpleMath::Vector3(0.f, toMove.y, 0.f));
@@ -196,6 +193,17 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 					tempVelocity.y = 0.f;
 					moveable.setVelocity(tempVelocity);
 				}
+			}
+
+			for (Grid::Index index : indices) {
+				float bMinX = index.x * DEFAULT_BLOCKSIZE;
+				float bMaxX = (index.x + 1) * DEFAULT_BLOCKSIZE;
+				float bMinY = index.y * DEFAULT_BLOCKSIZE;
+				float bMaxY = (index.y + 1) * DEFAULT_BLOCKSIZE;
+
+				if (mMax.y + mVel.y > bMinY && mMin.y + mVel.y < bMaxY &&
+					mMax.x > bMinX && mMin.x < bMaxX) 
+						moveable.setGrounded(true);
 			}
 		}
 	}

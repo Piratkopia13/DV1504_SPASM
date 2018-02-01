@@ -224,8 +224,10 @@ bool GameState::update(float dt) {
 		std::cout << "To move x: " << temp.x << " to move y: " << temp.y << std::endl;
 	}
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 1; i++)
 		this->m_player[i]->update(dt);
+
+	std::cout << m_player[0]->grounded() << std::endl;
 
 	if(!m_flyCam)
 		m_playerCamController.update(dt);
