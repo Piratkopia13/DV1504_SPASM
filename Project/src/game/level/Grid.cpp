@@ -46,6 +46,21 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox, cons
 	int maxX = static_cast<int>(floor(topRight.x));
 	int maxY = static_cast<int>(floor(topRight.y));
 
+	/*minX = max(minX, 1);
+	minY = max(minY, 1);
+	maxX = min(m_gridWidth - 1, maxX);
+	maxY = min(m_gridHeight - 1, maxY);
+
+	for (int i = minX - 1; i < maxX + 1; i++) {
+		for (int j = minY - 1; j < maxY + 1; j++) {
+			if (m_cells[i][j] != nullptr) {
+				Grid::Index index;
+				index.x = i;
+				index.y = j;
+				indices.push_back(index);
+			}
+		}
+	}*/
 	//Getting all the boxes surrounding the bounding box
 	int top = maxY + 1;
 	int bottom = minY - 1;
@@ -64,7 +79,7 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox, cons
 				indices.push_back(index);
 			}
 		}
-		top = maxX + 1;
+		top = maxX + 1; 
 		bottom = minX - 1;
 		for (int i = minY; i < maxY + 1; i++) {
 			if (m_cells[bottom][i] != nullptr) {

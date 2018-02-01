@@ -220,13 +220,10 @@ bool GameState::update(float dt) {
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
 
-	DirectX::SimpleMath::Vector3 temp = m_currLevel->collisionTest(*m_player[0], dt);
-	if (temp.Length()) {
-		std::cout << "To move x: " << temp.x << " to move y: " << temp.y << std::endl;
-	}
-
 	for (int i = 0; i < 4; i++)
 		this->m_player[i]->update(dt);
+
+	//std::cout << m_player[0]->grounded() << std::endl;
 
 	if(!m_flyCam)
 		m_playerCamController.update(dt);

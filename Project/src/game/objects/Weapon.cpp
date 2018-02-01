@@ -67,7 +67,7 @@ void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 
 
 
-	this->move(dt);
+	//this->move(dt);
 }
 
 void Weapon::draw() {

@@ -23,4 +23,6 @@ public:
 	void triggerRelease();
 	void draw();
 
+	DirectX::SimpleMath::Vector3 getDirection();
+
 };

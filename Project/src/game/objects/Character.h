@@ -44,9 +44,10 @@ private:
 	bool usingController;
 	unsigned int controllerPort;
 
-	DirectX::SimpleMath::Vector3 inputVec;
+	DirectX::SimpleMath::Vector3 m_inputVec;
+	DirectX::SimpleMath::Vector3 m_velAtJump;
 
-	bool jumping;
+	bool m_hooked;
 	float jumpTimer;
 
 	float speed;
