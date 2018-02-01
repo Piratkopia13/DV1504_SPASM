@@ -16,7 +16,7 @@ Character::Character()
 		this->padVibration[i] = 1;
 		this->vibrationReduction[i] = 1;
 	}
-	this->getTransform().setScale(0.01f);
+	//this->getTransform().setScale(0.01f);
 	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
 }
 

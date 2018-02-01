@@ -223,9 +223,12 @@ float4 PSMain(PSIn input) : SV_Target0
 
   float shadow = calcLightValue(positionVS);
 
+  float3 diffuseColor = tex[0].Sample(ss, texCoords).rgb;
+  if (diffuseColor.r == 1.0f && diffuseColor.g == 1.0f && diffuseColor.b == 1.0f)
+    return float4(1,1,1,1);
+
   if (shadow > 0.f)
   {
-    float3 diffuseColor = tex[0].Sample(ss, texCoords).rgb;
 
     float3 normal = (tex[1].Sample(ss, texCoords).rgb * 2.f - 1.f);
 

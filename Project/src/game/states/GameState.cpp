@@ -43,8 +43,8 @@ GameState::GameState(StateStack& stack)
 	auto& l = m_scene.getLights();
 	auto dl = l.getDL();
 	dl.color = Vector3(0.9f, 0.9f, 0.9f);
- 	//dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	dl.direction = Vector3(0.46f, -0.87f, 0.12f);
+ 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
+	//dl.direction = Vector3(0.46f, -0.87f, 0.12f);
 	dl.direction.Normalize();
 	l.setDirectionalLight(dl);
 
@@ -93,7 +93,7 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
-	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
+	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
 	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");

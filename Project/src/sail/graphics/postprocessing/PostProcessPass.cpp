@@ -12,8 +12,8 @@ PostProcessPass::PostProcessPass()
 	UINT windowWidth = app->getWindow()->getWindowWidth();
 	UINT windowHeight = app->getWindow()->getWindowHeight();
 
-	m_gaussPass1Scale = 1.f / 4;
-	m_gaussPass2Scale = 1.f / 8;
+	m_gaussPass1Scale = 1.f / 1;
+	m_gaussPass2Scale = 1.f / 2;
 	m_brightnessCutoffScale = 1.f / 2;
 
 	m_hGaussStage = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
