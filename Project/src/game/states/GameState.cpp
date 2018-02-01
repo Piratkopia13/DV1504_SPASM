@@ -110,6 +110,7 @@ GameState::GameState(StateStack& stack)
 		m_player[i]->setWeapon(m_weapons[i]);
 		m_player[i]->setCurrentLevel(m_currLevel.get());		
 		m_player[i]->setHook(m_hooks[i]);
+		m_player[i]->setLightColor(Vector4(0.0f, 0.9f, 1.0f, 1.0f));
 		m_scene.addObject(m_player[i]);
 	}
 
