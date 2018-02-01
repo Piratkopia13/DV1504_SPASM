@@ -6,6 +6,8 @@
 #include <string>
 #include <fstream>
 
+const float Level::DEFAULT_BLOCKSIZE = 1.0f;
+
 Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
 	

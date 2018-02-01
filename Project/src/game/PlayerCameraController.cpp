@@ -1,16 +1,20 @@
 #include "PlayerCameraController.h"
+#include <algorithm>
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-PlayerCameraController::PlayerCameraController(Camera* cam)
+PlayerCameraController::PlayerCameraController(Camera* cam, const DirectX::SimpleMath::Vector2* mapSize)
 	: CameraController(cam)
+	, m_lockToMap(mapSize != nullptr)
 {
 	this->m_cameraZOffset = 8.0f;
 	this->m_cameraYOffset = 1.0f;
 	this->extraZ = 0.0f;
 
-	
+	if (m_lockToMap)
+		m_mapSize = Vector2(*mapSize);
+
 	this->followSpeed = 40;
 	this->moveSpeed = 36;
 
@@ -25,10 +29,10 @@ PlayerCameraController::PlayerCameraController(Camera* cam)
 }
 
 void PlayerCameraController::update(float dt) {
-	
+
 	this->updatePosition(dt);
 
-	setCameraPosition(this->position + this->back * (m_cameraZOffset+this->extraZ) + this->up * m_cameraYOffset);
+	setCameraPosition(this->position + this->back * (m_cameraZOffset + this->extraZ) + this->up * m_cameraYOffset);
 	setCameralookAt(this->target);
 }
 
@@ -65,7 +69,7 @@ void PlayerCameraController::updatePosition(float dt)
 	}
 
 
-	
+
 	static float r = 0.08f;
 	static float z = -1.9f;
 	static float t = 15.0f;
@@ -76,18 +80,40 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 	if (nr > 0) {
-		newTarget /= float(nr); 
+		newTarget /= float(nr);
 		Vector3 moveVec = newTarget - this->target;
-		
+
 		if (moveVec.LengthSquared() > 0.1f)
 		{
 			moveVec.Normalize();
 		}
 		this->target += moveVec * dt * followSpeed;
 	}
-	
-	
 
+
+	if (m_lockToMap) {
+		const PerspectiveCamera* cam = dynamic_cast<const PerspectiveCamera*>(getCamera());
+		if (!cam) {
+			Logger::Error("CAMERA IS NOT PERSPECTIVE, MAYDAY");
+		}
+		else {
+
+			float halfFOVRad = cam->getFOV() / 2.f;
+			float aspectRatio = cam->getAspectRatio();
+
+			// Clamp to map borders
+			float maxZ = (m_mapSize.x / 2.f) / tan(halfFOVRad) - 10;
+			if ((extraZ + m_cameraZOffset) > maxZ) {
+				extraZ = maxZ - m_cameraZOffset;
+			}
+			Vector3 min = Vector3(-getCameraPosition().z * tan(halfFOVRad), -getCameraPosition().z * tan( halfFOVRad / aspectRatio ), -100000000000.f);
+			Vector3 max = Vector3(m_mapSize.x - min.x, m_mapSize.y - min.y, 1000000000.f);
+
+			this->target.Clamp(min, max);
+
+		}
+
+	}
 
 	Vector3 diff = this->target - this->position;
 	

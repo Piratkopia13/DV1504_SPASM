@@ -48,7 +48,7 @@ private:
 	Text m_debugCamText;
 	Text m_debugParticleText;
 
-	PlayerCameraController m_playerCamController;
+	std::unique_ptr<PlayerCameraController> m_playerCamController;
 	bool m_flyCam;
 
 	std::vector<Model*> m_modelCopies;

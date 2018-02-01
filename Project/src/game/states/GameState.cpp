@@ -12,7 +12,6 @@ GameState::GameState(StateStack& stack)
 , m_debugText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
 , m_debugParticleText(&m_font, L"")
-, m_playerCamController(&m_cam)
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
@@ -21,6 +20,11 @@ GameState::GameState(StateStack& stack)
 
 	m_currLevel = std::make_unique<Level>("sprint_demo.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
+	auto& blocks = m_currLevel->getGrid()->getAllBlocks();
+	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
+	float mapHeight = blocks.at(0).size() * Level::DEFAULT_BLOCKSIZE;
+	Vector2 mapSize = Vector2(mapWidth, mapHeight);
+	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam/*, &mapSize*/);
 	
 
 	// Update the hud shader
@@ -106,11 +110,11 @@ GameState::GameState(StateStack& stack)
 		m_scene.addObject(m_player[i]);
 	}
 
-	m_playerCamController.setTargets(
+	m_playerCamController->setTargets(
 		m_player[0],
-		m_player[1],
-		m_player[2],
-		m_player[3]
+		m_player[1]
+		//m_player[2],
+		//m_player[3]
 	);
 	//m_playerCamController.setTargets(
 	//	this->player[0],
@@ -226,7 +230,7 @@ bool GameState::update(float dt) {
 	//std::cout << m_player[0]->grounded() << std::endl;
 
 	if(!m_flyCam)
-		m_playerCamController.update(dt);
+		m_playerCamController->update(dt);
 	
 	m_projHandler->update(dt);
 	

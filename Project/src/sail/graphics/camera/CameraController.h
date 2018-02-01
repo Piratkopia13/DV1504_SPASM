@@ -32,6 +32,9 @@ protected:
 	const DirectX::SimpleMath::Vector3& getCameraUp() {
 		return m_cam->getUp();
 	}
+	const Camera* getCamera() {
+		return m_cam;
+	}
 
 private:
 	Camera* m_cam;
