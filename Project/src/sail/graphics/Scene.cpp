@@ -1,5 +1,8 @@
+#pragma once
 #include "Scene.h"
 #include "../../game/objects/common/Object.h"
+#include "../../game/ProjectileHandler.h"
+#include "../../game/level/Level.h"
 
 using namespace std;
 
@@ -36,7 +39,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam, Level& level) {
+void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -76,10 +79,15 @@ void Scene::draw(float dt, Camera& cam, Level& level) {
 
 	m_timer.getFrameTime();
 	/* draw level here */
-	level.draw();
+	if (level) {
+		level->draw();
+	}
+	if (projectiles) {
+		projectiles->draw();
+	}
 	for (Object* m : m_objects)
 		m->draw();
-	double time = m_timer.getFrameTime();
+	//double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
 	// Switch render target to where the deferred output should be

@@ -3,6 +3,7 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
+
 GameState::GameState(StateStack& stack)
 : State(stack)
 , m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
@@ -19,7 +20,6 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
-	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
 	
 
@@ -83,6 +83,9 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
 
+
+	m_currLevel = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());	// Load in textures from file
+
 	m_characterModel = std::make_unique<FbxModel>("spasm.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
@@ -98,6 +101,8 @@ GameState::GameState(StateStack& stack)
 		this->m_player[i]->setController(1);
 		this->m_player[i]->setControllerPort(i);
 		this->m_player[i]->setWeapon(this->m_weapons[i]);
+		this->m_scene.addObject(m_player[i]);
+		
 	}
 
 	m_playerCamController.setTargets(
@@ -106,6 +111,11 @@ GameState::GameState(StateStack& stack)
 		this->m_player[2],
 		this->m_player[3]
 	);
+	m_playerCamController.setPosition(this->m_player[0]->getTransform().getTranslation());
+
+	m_playerCamController.setMoveSpeed(5);
+
+
 	//m_playerCamController.setTargets(
 	//	this->player[0],
 	//	this->player[1],
@@ -162,13 +172,31 @@ bool GameState::processInput(float dt) {
 		}
 	
 
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 4; i++) {
+		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[this->m_player[i]->getPort()];
+		GamePad::ButtonStateTracker& padTracker = gpTracker[this->m_player[i]->getPort()];
+
+		if (padState.IsConnected()) {
+			if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
+				//requestStackPop();
+				gameCamera.pos = this->m_playerCamController.getPosition();
+				gameCamera.target = this->m_playerCamController.getTarget();
+				requestStackPush(States::Pause);
+			}
+
+		}
+
+
+
 		this->m_player[i]->input(
-			m_app->getInput().gamepadState[this->m_player[i]->getPort()],
+			padState,
 			gpTracker[this->m_player[i]->getPort()],
 			m_app->getInput().keyboardState, 
 			kbTracker);
 
+
+
+	}
 
 	// Update the camera controller from input devices
 
@@ -230,14 +258,10 @@ bool GameState::render(float dt) {
 
 	// Draw the scene
 	// before rendering the final output to the back buffer
-	m_scene.draw(dt, m_cam, *m_currLevel.get());
+	m_scene.draw(dt, m_cam, m_currLevel.get(), m_projHandler);
 
 	//m_app->getDXManager()->enableAlphaBlending();
 	m_colorShader.updateCamera(m_cam);
-	for(int i = 0; i < 4; i++)
-		m_player[i]->draw();
-
-	m_projHandler->draw();
 
 	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
 
@@ -254,7 +278,7 @@ bool GameState::render(float dt) {
 	/* Debug Stuff */
 
 	// Swap backbuffers
-	m_app->getDXManager()->present(false);
+	//m_app->getDXManager()->present(false);
 
 	return true;
 }

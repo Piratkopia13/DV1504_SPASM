@@ -18,6 +18,7 @@ Character::Character()
 	}
 	this->getTransform().setScale(0.01f);
 	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
+	this->setLightColor(Vector4(1, 0, 0, 1));
 }
 
 Character::Character(Model * model) : Character() {
@@ -127,16 +128,6 @@ void Character::input(
 				this->aimVec = tempVec;
 				this->aimVec.Normalize();
 			}
-
-			if (padTracker.menu == 3) {
-
-				//change to pause
-				PostQuitMessage(this->controllerPort);
-			}
-			if (padTracker.back == 3) {
-
-				// show scoreboard ? 
-			}
 		}
 	}
 }
@@ -178,6 +169,7 @@ void Character::update(float dt) {
 
 void Character::draw() {
 	this->m_Model->setTransform(&this->getTransform());
+	this->m_Model->getMaterial()->setColor(this->lightColor);
 	this->m_Model->draw();
 	this->currentWeapon->draw();
 
