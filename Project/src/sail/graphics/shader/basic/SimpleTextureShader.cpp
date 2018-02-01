@@ -35,7 +35,7 @@ SimpleTextureShader::~SimpleTextureShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void SimpleTextureShader::updateCamera(Camera& cam, bool waterReflection) {
+void SimpleTextureShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
 }
 
@@ -171,7 +171,7 @@ void SimpleTextureShader::draw(Model& model, bool bindFirst) {
 	else
 		Application::getInstance()->getDXManager()->getDeviceContext()->Draw(model.getNumVertices(), 0);
 
-	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 1, nullSRV);
+	ID3D11ShaderResourceView* nullSRV[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 5, nullSRV);
 
 }

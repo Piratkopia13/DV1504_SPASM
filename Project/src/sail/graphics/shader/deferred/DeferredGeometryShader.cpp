@@ -51,7 +51,7 @@ DeferredGeometryShader::~DeferredGeometryShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DeferredGeometryShader::updateCamera(Camera& cam, bool waterReflection) {
+void DeferredGeometryShader::updateCamera(Camera& cam) {
 	m_mView = cam.getViewMatrix();
 	m_mProjection = cam.getProjMatrix();
 }
@@ -229,5 +229,9 @@ void DeferredGeometryShader::draw(Model& model, bool bindFirst) {
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 1, nullSRV);
+
+	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
+	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShader(nullptr, 0, 0);
+	Application::getInstance()->getDXManager()->getDeviceContext()->VSSetShader(nullptr, 0, 0);
 
 }

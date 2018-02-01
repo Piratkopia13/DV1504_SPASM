@@ -6,7 +6,7 @@ class Transform {
 
 public:
 	Transform() {
-		m_scale = 1.f;
+		m_scale = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
 		m_transformMatrix = DirectX::SimpleMath::Matrix::Identity;
 		m_matNeedsUpdate = false;
 	};
@@ -42,28 +42,34 @@ public:
 		m_matNeedsUpdate = true;
 	}
 	void setScale(float scale) {
-		m_scale = scale;
+		m_scale = DirectX::SimpleMath::Vector3(scale, scale, scale);
 		m_matNeedsUpdate = true;
 	}
+
+	void setNonUniScale(float scalex, float scaley, float scalez) {
+		m_scale = DirectX::SimpleMath::Vector3(scalex, scaley, scalez);
+		m_matNeedsUpdate = true;
+	}
+
 	const DirectX::SimpleMath::Vector3& getTranslation() const {
 		return m_translation;
 	}
 	const DirectX::SimpleMath::Vector3& getRotations() const {
 		return m_rotation;
 	}
-	const float getScale() const {
+	const DirectX::SimpleMath::Vector3 getScale() const {
 		return m_scale;
 	}
 
 	DirectX::SimpleMath::Matrix getMatrix() {
 		if (m_matNeedsUpdate) {
-			m_transformMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(m_translation)
+			m_transformMatrix = DirectX::SimpleMath::Matrix::CreateScale(m_scale)
 				* DirectX::SimpleMath::Matrix::CreateRotationX(m_rotation.x)
 				* DirectX::SimpleMath::Matrix::CreateRotationY(m_rotation.y)
 				* DirectX::SimpleMath::Matrix::CreateRotationZ(m_rotation.z)
-				* DirectX::SimpleMath::Matrix::CreateScale(m_scale);
+				* DirectX::SimpleMath::Matrix::CreateTranslation(m_translation);
 
-			m_matNeedsUpdate = false;
+				m_matNeedsUpdate = false;
 		}
 		return m_transformMatrix;
 	}
@@ -72,7 +78,7 @@ private:
 
 	DirectX::SimpleMath::Vector3 m_translation;
 	DirectX::SimpleMath::Vector3 m_rotation;
-	float m_scale;
+	DirectX::SimpleMath::Vector3 m_scale;
 
 	bool m_matNeedsUpdate;
 	DirectX::SimpleMath::Matrix m_transformMatrix;

@@ -11,7 +11,7 @@ public:
 
 	CameraController(Camera* cam) : m_cam(cam) {};
 
-	virtual void update(float dt) = 0;
+	virtual void update(float dt) {};
 
 protected:
 	void setCameralookAt(const DirectX::SimpleMath::Vector3& pos) {
@@ -31,6 +31,9 @@ protected:
 	}
 	const DirectX::SimpleMath::Vector3& getCameraUp() {
 		return m_cam->getUp();
+	}
+	const Camera* getCamera() {
+		return m_cam;
 	}
 
 private:

@@ -20,7 +20,7 @@ public:
 		std::unique_ptr<DirectX::Keyboard> keyboard;
 		std::unique_ptr<DirectX::GamePad> gamepad;
 		DirectX::Keyboard::State keyboardState;
-		DirectX::GamePad::State gamepadState;
+		DirectX::GamePad::State gamepadState[4];
 
 		void showCursor(bool show) {
 			ShowCursor(show);

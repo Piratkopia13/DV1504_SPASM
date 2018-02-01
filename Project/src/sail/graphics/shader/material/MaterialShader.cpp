@@ -49,12 +49,8 @@ MaterialShader::~MaterialShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void MaterialShader::updateCamera(Camera& cam, bool waterReflection) {
+void MaterialShader::updateCamera(Camera& cam) {
 	m_vpMatrix = cam.getViewProjection();
-	if (!waterReflection) {
-		m_cameraPos = cam.getPosition();
-		m_cameraPosHasChanged = true;
-	}
 }
 
 void MaterialShader::setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {

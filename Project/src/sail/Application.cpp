@@ -52,13 +52,19 @@ int Application::startGameLoop() {
 
 	// Start delta timer
 	m_timer.startTimer();
-
+	
 	MSG msg = {0};
 
 	m_fps = 0;
 
 	float secCounter = 0.f;
+	float elapsedTime = 0.f;
 	UINT frameCounter = 0;
+
+	float updateTimer = 0.f;
+	float timeBetweenUpdates = 1.f / 60.f;
+
+	static_cast<float>(m_timer.getFrameTime());
 
 	// Main message loop
 	while (msg.message != WM_QUIT) {
@@ -83,32 +89,59 @@ int Application::startGameLoop() {
 			// Update fps counter
 			secCounter += delta;
 			frameCounter++;
+
 			if (secCounter >= 1) {
 				m_fps = frameCounter;
 				frameCounter = 0;
 				secCounter = 0.f;
-				//std::cout << "FPS: " << m_fps << std::endl;
 			}
 
-			// Update input states
-			m_input.gamepadState = GamePad::Get().GetState(0);
+			// Update input states for keyboard and X controllers
+			for(int i = 0 ; i < 4 ; i++)
+				m_input.gamepadState[i] = GamePad::Get().GetState(i);
 			m_input.keyboardState = Keyboard::Get().GetState();
+
 
 			// Update mouse deltas
 			m_input.newFrame();
 
 			// Quit on escape or alt-f4
-			if (m_input.keyboardState.Escape || m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
+			
+
+
+			if (m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
 				PostQuitMessage(0);
 
-			// Update and render
 			processInput(delta);
-			update(delta);
+
+			// Update
+#ifdef _DEBUG
+
+			if (m_input.keyboardState.Escape)
+				PostQuitMessage(0);
+
+
+			if(delta > 0.0166)
+				Logger::Warning(std::to_string(elapsedTime) + " delta over 0.0166: " + std::to_string(delta));
+#endif
+			updateTimer += delta;
+
+			int maxCounter = 0;
+		
+
+			while (updateTimer >= timeBetweenUpdates) {
+				if (maxCounter >= 2)
+					break;
+				update(timeBetweenUpdates);
+				updateTimer -= timeBetweenUpdates;
+				maxCounter++;
+			}
+
+			// Render
 			render(delta);
 
 			// Update wasJustPressed bools
 			m_input.endOfFrame();
-
 		}
 
 	}

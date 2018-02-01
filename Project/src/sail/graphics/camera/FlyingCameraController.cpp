@@ -18,7 +18,6 @@ void FlyingCameraController::update(float dt) {
 
 	auto& keyboard = app->getInput().keyboard;
 	auto kbState = app->getInput().keyboardState;
-	auto gpState = app->getInput().gamepadState;
 
 	float movementSpeed = dt * 5.f;
 	float lookSensitivityMouse = 0.1f;
@@ -27,14 +26,10 @@ void FlyingCameraController::update(float dt) {
 	// Increase speed if shift or right trigger is pressed
 	if (kbState.LeftShift)
 		movementSpeed *= 5.f;
-	if (gpState.triggers.right > 0)
-		movementSpeed *= gpState.triggers.right * 5.f;
 
 	// Increase controller sensitivity with the left trigger
-	if (gpState.triggers.left > 0)
-		lookSensitivityController *= gpState.triggers.left * 5.0f;
 
-	app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
+	//app->getInput().gamepad->SetVibration(0, gpState.triggers.left, gpState.triggers.right);
 
 
 	//
@@ -42,7 +37,7 @@ void FlyingCameraController::update(float dt) {
 	//
 
 	// Gamepad
-	setCameraPosition(getCameraPosition() + getCameraDirection() * gpState.thumbSticks.leftY * movementSpeed);
+	//setCameraPosition(getCameraPosition() + getCameraDirection() * gpState.thumbSticks.leftY * movementSpeed);
 
 	// Keyboard
 	if (kbState.W)
@@ -57,7 +52,7 @@ void FlyingCameraController::update(float dt) {
 	Vector3 right = getCameraDirection().Cross(Vector3::Up);
 	right.Normalize();
 	// Gamepad
-	setCameraPosition(getCameraPosition() - right * gpState.thumbSticks.leftX * movementSpeed);
+	//setCameraPosition(getCameraPosition() - right * gpState.thumbSticks.leftX * movementSpeed);
 
 	// Keyboard
 	if (kbState.A)
@@ -70,8 +65,8 @@ void FlyingCameraController::update(float dt) {
 	//
 
 	// Gamepad
-	setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Up * gpState.buttons.a * movementSpeed);
-	setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Down * gpState.buttons.x * movementSpeed);
+	//setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Up * gpState.buttons.a * movementSpeed);
+	//setCameraPosition(getCameraPosition() + DirectX::SimpleMath::Vector3::Down * gpState.buttons.x * movementSpeed);
 
 	// Keyboard
 	if (kbState.Space)
@@ -84,8 +79,8 @@ void FlyingCameraController::update(float dt) {
 	//
 
 	// Gamepad
-	m_pitch += gpState.thumbSticks.rightY * lookSensitivityController;
-	m_yaw -= gpState.thumbSticks.rightX * lookSensitivityController;
+	//m_pitch += gpState.thumbSticks.rightY * lookSensitivityController;
+	//m_yaw -= gpState.thumbSticks.rightX * lookSensitivityController;
 
 	// Mouse input
 
