@@ -13,12 +13,15 @@
 #include "renderer/DeferredRenderer.h"
 #include "../utils/Timer.h"
 #include "shader/basic/DepthShader.h"
+//#include "../../game/level/Level.h"
+//#include "../../game/ProjectileHandler.h"
 #include "shader/postprocess/PostProcessFlushShader.h"
 #include "shader/postprocess/GaussianBlurCShader.h"
 #include "../../game/level/Level.h"
 #include "postprocessing/PostProcessPass.h"
 //#include "../../game/objects/common/Object.h"
 
+class ProjectileHandler;
 class Object;
 class Level;
 class Scene {
@@ -39,7 +42,7 @@ public:
 	void addSkybox(const std::wstring& filename);
 
 	// Draws the scene
-	void draw(float dt, Camera& cam, Level& level);
+	void draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles);
 	// Draws the HUD
 	void drawHUD();
 

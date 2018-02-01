@@ -102,9 +102,10 @@ GBuffers PSMain(PSIn input) {
 	float3 ambientCoefficient = float3(0.5f, 0.5f, 0.5f);
 
 	gbuffers.diffuse = float4(1.f, 1.f, 1.f, 1.f);
+	//gbuffers.diffuse = float4(material.modelColor.rgb, 1.0f);
 	if (material.hasDiffuseTexture)
 		gbuffers.diffuse *= tex[0].Sample(ss, input.texCoords);
-	if (gbuffers.diffuse.r == 1.0f && gbuffers.diffuse.g == 1.0f && gbuffers.diffuse.b == 1.0f) {
+	if (gbuffers.diffuse.r > 0.9f && gbuffers.diffuse.g > 0.9f && gbuffers.diffuse.b > 0.9f) {
 	  gbuffers.diffuse *= float4(material.modelColor.rgb, 1.0f);
 	}
     gbuffers.diffuse.rgb *= material.kd;

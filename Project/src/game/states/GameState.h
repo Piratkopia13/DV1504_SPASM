@@ -6,6 +6,7 @@
 #include "../level/Level.h"
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
+#include "Variables.h"
 
 class GameState : public State {
 public:

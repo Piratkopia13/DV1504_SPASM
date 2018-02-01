@@ -134,6 +134,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\states\PauseState.cpp" />
+    <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
+    <ClCompile Include="src\game\states\MenuState.cpp" />
     <ClCompile Include="src\game\Game.cpp" />
     <ClCompile Include="src\game\objects\Character.cpp" />
     <ClCompile Include="src\game\level\Grid.cpp" />
@@ -203,11 +206,15 @@
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
+    <None Include="res\levels\sprint_demo.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\states\PauseState.h" />
+    <ClInclude Include="src\game\objects\menu\MenuItem.h" />
+    <ClInclude Include="src\game\states\MenuState.h" />
     <ClInclude Include="src\game\Game.h" />
     <ClInclude Include="src\game\objects\Character.h" />
     <ClInclude Include="src\game\level\Grid.h" />
@@ -221,6 +228,7 @@
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
     <ClInclude Include="src\game\states\GameState.h" />
+    <ClInclude Include="src\game\states\Variables.h" />
     <ClInclude Include="src\sail\Application.h" />
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\camera\Camera.h" />
@@ -287,6 +295,7 @@
     <ClInclude Include="src\sail\utils\Timer.h" />
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
+    <ClInclude Include="src\game\states\Settings.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="res\shaders\CubeMapShader.hlsl">
