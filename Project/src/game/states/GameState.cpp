@@ -79,9 +79,11 @@ GameState::GameState(StateStack& stack)
 
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
+#ifdef _DEBUG
 	m_scene.addText(&m_debugText);
 	m_scene.addText(&m_debugCamText);
 	m_scene.addText(&m_debugParticleText);
+#endif
 
 	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
@@ -211,19 +213,14 @@ bool GameState::update(float dt) {
 
 	auto& cPos = m_cam.getPosition();
 
-	std::wstring flying(L"Flying (shift for boost, rmouse to toggle cursor)");
-	std::wstring Walking(L"Walking (rmouse to toggle cursor)");
-	m_debugText.setText(std::wstring(L"Cam controller (F to toggle): ") + ((m_flyCam) ? flying : Walking));
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
-
 	for (int i = 0; i < 4; i++)
 		this->m_player[i]->update(dt);
 
-	//std::cout << m_player[0]->grounded() << std::endl;
 
 	if(!m_flyCam)
 		m_playerCamController.update(dt);

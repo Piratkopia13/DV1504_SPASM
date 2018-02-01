@@ -171,6 +171,7 @@ void Character::update(float dt) {
 		velX = max(min(velX, this->speed * 0.8), -this->speed * 0.8);
 		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
 	}
+
 	if (m_hooked) {
 		this->setGrounded(false);
 		this->setAcceleration(m_hook->getDirection() * 40.0f);
@@ -200,9 +201,9 @@ void Character::setControllerPort(const unsigned int port) {
 	if (port < 4)
 		this->controllerPort = port;
 	
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 2.0f + 3.0f, 3.0f, 0.0f));
-#endif
+//#endif
 }
 
 void Character::addVibration(unsigned int index, float addition) {
