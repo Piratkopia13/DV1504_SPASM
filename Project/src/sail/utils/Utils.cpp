@@ -10,6 +10,20 @@ std::wstring Utils::vec3ToWStr(const DirectX::SimpleMath::Vector3& vec) {
 	return ss.str();
 }
 
+std::string Utils::vec3ToStr(const DirectX::SimpleMath::Vector3& vec) {
+	std::stringstream ss;
+	ss << "[X: " << vec.x << ", Y: " << vec.y << ", Z: " << vec.z << "]";
+	return ss.str();
+}
+
 float Utils::rnd() {
 	return dis(gen);
+}
+
+float Utils::clamp(float val, float min, float max) {
+
+	if (val > max) return max;
+	if (val < min) return min;
+	return val;
+
 }

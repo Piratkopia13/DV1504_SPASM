@@ -25,7 +25,7 @@ GameState::GameState(StateStack& stack)
 	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
 	float mapHeight = blocks.at(0).size() * Level::DEFAULT_BLOCKSIZE;
 	Vector2 mapSize = Vector2(mapWidth, mapHeight);
-	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam/*, &mapSize*/);
+	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
 
 	// Update the hud shader
