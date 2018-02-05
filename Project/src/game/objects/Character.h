@@ -43,7 +43,6 @@ private:
 	unsigned int currentTeam;
 	bool usingController;
 	unsigned int controllerPort;
-	std::vector<Projectile*> m_projectiles;
 
 	DirectX::SimpleMath::Vector3 m_inputVec;
 	DirectX::SimpleMath::Vector3 m_velAtJump;

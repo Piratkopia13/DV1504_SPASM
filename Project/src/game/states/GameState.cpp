@@ -173,15 +173,12 @@ bool GameState::processInput(float dt) {
 	}
 
 
-	
-	if(kbTracker.pressed.Q)
-		for (int i = 0; i < 4; i++) {
-			this->m_player[i]->addVibration(0, 1);
-			this->m_player[i]->addVibration(1, 1);
-			this->m_player[i]->addVibration(2, 1);
-			this->m_player[i]->addVibration(3, 1);
-		}
-	
+	static int currPort = 0;
+	if (kbTracker.pressed.Q) {
+		m_player[currPort]->setControllerPort(0);
+		currPort = (currPort + 1) % 2;
+		m_player[currPort]->setControllerPort(1);
+	}
 
 	for(int i = 0; i < 4; i++) {
 		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[this->m_player[i]->getPort()];
