@@ -23,15 +23,14 @@ public:
 private:
 	void updatePosition(float dt);
 
+	Object* m_targets[4];
 	
-	DirectX::SimpleMath::Vector3 position;
-	DirectX::SimpleMath::Vector3 target;
+	DirectX::SimpleMath::Vector3 m_position;
+	DirectX::SimpleMath::Vector3 m_target;
 
-	Vector3 m_back;
-	Vector3 m_up;
+	DirectX::SimpleMath::Vector3 m_back;
+	DirectX::SimpleMath::Vector3 m_up;
 
-	DirectX::SimpleMath::Vector3 back;
-	DirectX::SimpleMath::Vector3 up;
 
 	bool m_lockToMap;
 	DirectX::SimpleMath::Vector2 m_mapSize;

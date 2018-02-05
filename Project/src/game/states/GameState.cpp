@@ -25,7 +25,7 @@ GameState::GameState(StateStack& stack)
 	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
 	float mapHeight = blocks.at(0).size() * Level::DEFAULT_BLOCKSIZE;
 	Vector2 mapSize = Vector2(mapWidth, mapHeight);
-	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
+	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam/*, &mapSize*/);
 	
 
 	// Update the hud shader
@@ -143,10 +143,10 @@ GameState::GameState(StateStack& stack)
 		m_players->useableTarget(2) ? m_players->getCharacter(2) : nullptr,
 		m_players->useableTarget(3) ? m_players->getCharacter(3) : nullptr
 	);
-	m_playerCamController->setMoveSpeed(5);
-	m_playerCamController->update(0);
-	m_playerCamController->setPosition(m_playerCamController->getTarget());
-
+	//m_playerCamController->setMoveSpeed(5);
+	//m_playerCamController->update(0);
+	//m_playerCamController->setPosition(m_playerCamController->getTarget());
+	m_playerCamController->setPosition(Vector3(10, 10, 0));
 
 }
 
