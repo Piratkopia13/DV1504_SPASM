@@ -83,6 +83,7 @@
     <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
     <ClCompile Include="src\game\objects\Hook.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sail\Application.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
     <ClInclude Include="src\game\objects\Hook.h" />
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\models\box.fbx" />
