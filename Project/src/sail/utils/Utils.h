@@ -112,7 +112,9 @@ public:
 class Utils {
 public:
 	static std::wstring vec3ToWStr(const DirectX::SimpleMath::Vector3& vec);
+	static std::string vec3ToStr(const DirectX::SimpleMath::Vector3& vec);
 	static float rnd();
+	static float clamp(float val, float min, float max);
 
 	static std::random_device rd;
 	static std::mt19937 gen;
