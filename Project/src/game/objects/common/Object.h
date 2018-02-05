@@ -9,6 +9,7 @@ private:
 protected:
 	Model * m_Model; //Pointer to be able to detect if a bounding box has been made
 	AABB * boundingBox;
+	DirectX::SimpleMath::Vector4 lightColor;
 
 public:
 	Object();
@@ -17,6 +18,7 @@ public:
 	void setPosition(const DirectX::SimpleMath::Vector3 &newPosition);
 	void updateBoundingBox();
 	void setModel(Model* model);
+	void setLightColor(DirectX::SimpleMath::Vector4 color);
 	Model* getModel();
 	Transform& getTransform();
 	AABB* getBoundingBox();

@@ -106,13 +106,21 @@ int Application::startGameLoop() {
 			m_input.newFrame();
 
 			// Quit on escape or alt-f4
-			if (m_input.keyboardState.Escape || m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
+			
+
+
+			if (m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
 				PostQuitMessage(0);
 
 			processInput(delta);
 
 			// Update
 #ifdef _DEBUG
+
+			if (m_input.keyboardState.Escape)
+				PostQuitMessage(0);
+
+
 			if(delta > 0.0166)
 				Logger::Warning(std::to_string(elapsedTime) + " delta over 0.0166: " + std::to_string(delta));
 #endif
@@ -164,3 +172,9 @@ const UINT Application::getFPS() const {
 Application::Input& Application::getInput() {
 	return m_input;
 }
+
+Application::GameSettings & Application::getGameSettings()
+{
+	return m_gameVariables;
+}
+

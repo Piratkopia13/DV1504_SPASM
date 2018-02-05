@@ -17,6 +17,7 @@ Character::Character()
 		this->vibrationReduction[i] = 1;
 	}
 	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
+	this->setLightColor(Vector4(1, 1, 1, 1));
 }
 
 Character::Character(Model * model) : Character() {
@@ -132,16 +133,6 @@ void Character::input(
 				this->aimVec = tempVec;
 				this->aimVec.Normalize();
 			}
-
-			if (padTracker.menu == 3) {
-
-				//change to pause
-				PostQuitMessage(this->controllerPort);
-			}
-			if (padTracker.back == 3) {
-
-				// show scoreboard ? 
-			}
 		}
 	}
 }
@@ -167,8 +158,8 @@ void Character::update(float dt) {
 	if (grounded())
 		this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
 	else {
-		float velX = m_inputVec.x * this->speed * 0.1 + getVelocity().x;
-		velX = max(min(velX, this->speed * 0.8), -this->speed * 0.8);
+		float velX = m_inputVec.x * this->speed * 0.1f + getVelocity().x;
+		velX = max(min(velX, this->speed * 0.8f), -this->speed * 0.8f);
 		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
 	}
 
@@ -188,6 +179,7 @@ void Character::update(float dt) {
 
 void Character::draw() {
 	this->m_Model->setTransform(&this->getTransform());
+	this->m_Model->getMaterial()->setColor(this->lightColor);
 	this->m_Model->draw();
 	this->currentWeapon->draw();
 	m_hook->draw();

@@ -17,6 +17,8 @@ public:
 			RIGHT
 		};
 
+
+
 		std::unique_ptr<DirectX::Keyboard> keyboard;
 		std::unique_ptr<DirectX::GamePad> gamepad;
 		DirectX::Keyboard::State keyboardState;
@@ -80,6 +82,8 @@ public:
 			delete[] lpb;
 		}
 
+	
+
 	private:
 		void registerRawDevices(HWND hwnd) {
 			// Register mouse for raw input
@@ -124,8 +128,21 @@ public:
 		static LONG m_mouseDXSinceLastFrame;
 		static LONG m_mouseDYSinceLastFrame;
 
-	};
 
+
+	};
+	struct GameSettings {
+		int used;
+		int players;
+		int ports[4];
+		int teams[4];
+		int model[4];
+		DirectX::SimpleMath::Vector4 color[4];
+		int level;
+		int gamemode;
+
+
+	};
 public:
 	Application(int windowWidth, int windowHeight, char* windowTitle, HINSTANCE hInstance);
 	virtual ~Application();
@@ -149,10 +166,10 @@ public:
 	const UINT getFPS() const;
 
 	Input& getInput();
+	GameSettings& getGameSettings();
 
 private:
 	static Application* m_instance;
-	
 	Win32Window m_window;
 	DXManager m_dxManager;
 	ResourceManager m_resourceManager;
@@ -161,4 +178,20 @@ private:
 	UINT m_fps;
 
 	Input m_input;
+	GameSettings m_gameVariables =
+	{
+		0,
+		0,
+		{ -1, -1, -1, -1 },
+		{ -1, -1, -1, -1 },
+		{ -1, -1, -1, -1 },
+		{
+			DirectX::SimpleMath::Vector4(1,1,1,1),
+			DirectX::SimpleMath::Vector4(1,1,1,1),
+			DirectX::SimpleMath::Vector4(1,1,1,1),
+			DirectX::SimpleMath::Vector4(1,1,1,1)
+		},
+		0,
+		0
+	};
 };

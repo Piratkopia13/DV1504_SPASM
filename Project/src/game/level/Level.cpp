@@ -8,7 +8,9 @@
 
 const float Level::DEFAULT_BLOCKSIZE = 1.0f;
 
-Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) {
+Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) 
+	: m_grid(nullptr)
+{
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
 	
 	if (infile) {
