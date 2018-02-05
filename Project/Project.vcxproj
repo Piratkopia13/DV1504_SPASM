@@ -134,11 +134,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
     <ClCompile Include="src\game\Game.cpp" />
-    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\objects\Character.cpp" />
     <ClCompile Include="src\game\level\Grid.cpp" />
     <ClCompile Include="src\game\level\Level.cpp" />
@@ -214,11 +214,11 @@
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\objects\menu\MenuItem.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
     <ClInclude Include="src\game\Game.h" />
-    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\objects\Character.h" />
     <ClInclude Include="src\game\level\Grid.h" />
     <ClInclude Include="src\game\level\Level.h" />

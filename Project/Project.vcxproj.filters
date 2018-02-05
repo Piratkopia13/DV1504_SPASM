@@ -85,6 +85,7 @@
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\states\PauseState.h" />
@@ -171,14 +172,15 @@
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\states\Settings.h" />
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
+    <None Include="res\levels\speedrun.level" />
+    <None Include="res\levels\sprint_demo.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
-    <None Include="res\levels\sprint_demo.level" />
-    <None Include="res\levels\speedrun.level" />
   </ItemGroup>
 </Project>
