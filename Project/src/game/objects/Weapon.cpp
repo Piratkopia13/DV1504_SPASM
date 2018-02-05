@@ -51,6 +51,10 @@ void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
 	}
 }
 
+ProjectileHandler& Weapon::getProjectileHandler() {
+	return *m_projectileHandler;
+}
+
 void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 
 	if (this->triggerHeld) {

@@ -170,11 +170,20 @@ void Character::update(float dt) {
 
 	Moveable::move(dt);
 
-	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f,-0.8f));
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation());// +Vector3(0.f, 0.5f, -0.8f));
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
 	this->currentWeapon->update(dt, this->aimVec);
 	m_hook->update(dt, currentWeapon->getTransform().getTranslation());
+
+	m_projectiles = currentWeapon->getProjectileHandler().getProjectiles();
+
+	for (unsigned int i = 0; i < m_projectiles.size(); i++) {
+		if (m_projectiles.at(i)->getTeam() == currentTeam && this->getBoundingBox()->containsOrIntersects(*m_projectiles.at(i)->getBoundingBox())) {
+			currentWeapon->getProjectileHandler().removeAt(i);
+			std::cout << "\nHit";
+		}
+	}
 }
 
 void Character::draw() {

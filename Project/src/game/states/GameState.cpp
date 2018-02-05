@@ -105,6 +105,7 @@ GameState::GameState(StateStack& stack)
 		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
 		m_player[i] = new Character(m_characterModel->getModel());
 		m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
+		m_player[i]->setTeam(i % 2);
 		m_player[i]->setController(1);
 		m_player[i]->setControllerPort(i);
 		m_player[i]->setWeapon(m_weapons[i]);
