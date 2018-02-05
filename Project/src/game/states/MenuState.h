@@ -2,7 +2,6 @@
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuItem.h"
-#include "Variables.h"
 
 class MenuState : public State {
 public:

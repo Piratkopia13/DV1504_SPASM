@@ -179,5 +179,6 @@
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="res\levels\sprint_demo.level" />
+    <None Include="res\levels\speedrun.level" />
   </ItemGroup>
 </Project>

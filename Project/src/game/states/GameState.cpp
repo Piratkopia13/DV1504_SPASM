@@ -189,8 +189,7 @@ bool GameState::processInput(float dt) {
 		if (padState.IsConnected()) {
 			if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
 				//requestStackPop();
-				gameCamera.pos = this->m_playerCamController->getPosition();
-				gameCamera.target = this->m_playerCamController->getTarget();
+
 
 				auto& pad = m_app->getInput().gamepad;
 				for(int u = 0; u < 4; u++)
