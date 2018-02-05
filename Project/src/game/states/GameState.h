@@ -2,7 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/Character.h"
+#include "../CharacterHandler.h"
 #include "../level/Level.h"
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
@@ -65,7 +65,9 @@ private:
 	// Currently used level
 	std::unique_ptr<Level> m_currLevel;
 
-	Hook* m_hooks[4];
+
+	CharacterHandler* m_players;
+
 	Weapon* m_weapons[4];
 	Character* m_player[4];
 	ProjectileHandler* m_projHandler;

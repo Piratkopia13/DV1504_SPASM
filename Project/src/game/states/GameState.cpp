@@ -16,8 +16,8 @@ GameState::GameState(StateStack& stack)
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
-
 	m_app = Application::getInstance();
+	Application::GameSettings* settings = &m_app->getGameSettings();
 
 	m_currLevel = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
@@ -46,13 +46,6 @@ GameState::GameState(StateStack& stack)
 	l.setDirectionalLight(dl);
 
 	m_scene.setShadowLight();
-
-// 	Lights::PointLight pl;
-// 	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
-// 	pl.setPosition(Vector3(0.f, 4.f, -2.f));
-// 	pl.setAttenuation(1.f, 1.f, 1.f);
-// 	l.addPointLight(pl);
-
 
 	m_matShader.updateLights(m_scene.getLights());
 
@@ -101,48 +94,68 @@ GameState::GameState(StateStack& stack)
 	
 	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
-	for (int i = 0; i < 4; i++) {
-		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
-		m_player[i] = new Character(m_characterModel->getModel());
-		m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
-		m_player[i]->setController(1);
-		m_player[i]->setControllerPort(i);
-		m_player[i]->setWeapon(m_weapons[i]);
-		m_player[i]->setCurrentLevel(m_currLevel.get());		
-		m_player[i]->setHook(m_hooks[i]);
-		m_player[i]->setLightColor(Vector4(0.0f, 0.9f, 1.0f, 1.0f));
-		m_scene.addObject(m_player[i]);
+	m_players = new CharacterHandler();
+
+
+	m_players->addSpawnPoint(0, Vector3(2, 2, 0));
+	m_players->addSpawnPoint(0, Vector3(3, 2, 0));
+	m_players->addSpawnPoint(1, Vector3(10, 2, 0));
+	m_players->addSpawnPoint(1, Vector3(11, 2, 0));
+
+
+	for (size_t i = 0; i < m_app->getGameSettings().players.size(); i++) {
+		
+		Weapon* tempWeapon = new Weapon(m_WeaponModel1->getModel(), m_projHandler, settings->players[i].team);
+		Hook* tempHook = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
+		
+		Character* tempPlayer = new Character();
+		if (settings->players[i].port >= 0) {
+			tempPlayer->setController(1);	 
+			tempPlayer->setControllerPort(settings->players[i].port);
+		}
+		else 
+			tempPlayer->setController(0);
+		
+		tempPlayer->setHook(tempHook);
+		tempPlayer->setWeapon(tempWeapon);
+
+		tempPlayer->setLightColor(settings->players[i].color);
+		tempPlayer->setTeam(settings->players[i].team+1);
+		tempPlayer->setCurrentLevel(m_currLevel.get());
+
+
+		// ADD MODEL LIST
+		if(settings->players[i].model == 0)
+			tempPlayer->setModel(m_characterModel->getModel());
+		else
+			tempPlayer->setModel(m_WeaponModel1->getModel());
+
+
+
+		m_players->addPlayer(tempPlayer);
+		m_players->respawnPlayer(i);
+		m_scene.addObject(tempPlayer);
 	}
 
 	m_playerCamController->setTargets(
-		this->m_player[0],
-		this->m_player[1],
-		this->m_player[2],
-		this->m_player[3]
+		m_players->useableTarget(0) ? m_players->getCharacter(0) : nullptr,
+		m_players->useableTarget(1) ? m_players->getCharacter(1) : nullptr,
+		m_players->useableTarget(2) ? m_players->getCharacter(2) : nullptr,
+		m_players->useableTarget(3) ? m_players->getCharacter(3) : nullptr
 	);
-	m_playerCamController->setPosition(this->m_player[0]->getTransform().getTranslation());
-
 	m_playerCamController->setMoveSpeed(5);
-
-
-	//m_playerCamController.setTargets(
-	//	this->player[0],
-	//	this->player[1],
-	//	nullptr,
-	//	nullptr
-	//);
+	m_playerCamController->update(0);
+	m_playerCamController->setPosition(m_playerCamController->getTarget());
 
 
 }
 
 GameState::~GameState() {
-	for (int i = 0; i < 4; i++)
-	{
-		delete m_weapons[i];
-		delete m_player[i];
-		delete m_hooks[i];
-	}
-	delete m_projHandler;
+
+	if(m_players)
+		delete m_players;
+	if(m_projHandler)
+		delete m_projHandler;
 }
 
 // Process input for the state
@@ -172,49 +185,34 @@ bool GameState::processInput(float dt) {
 	}
 
 
-	
-	if(kbTracker.pressed.Q)
-		for (int i = 0; i < 4; i++) {
-			this->m_player[i]->addVibration(0, 1);
-			this->m_player[i]->addVibration(1, 1);
-			this->m_player[i]->addVibration(2, 1);
-			this->m_player[i]->addVibration(3, 1);
-		}
-	
+	if (kbTracker.pressed.T) {
+		m_players->killPlayer(0);
+	}
 
-	for(int i = 0; i < 4; i++) {
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[this->m_player[i]->getPort()];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[this->m_player[i]->getPort()];
+
+	for(int i = 0; i < m_players->getNrOfPlayers(); i++) {
+		int port = m_players->getCharacter(i)->getPort();
+
+
+		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[port];
+		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
 
 		if (padState.IsConnected()) {
 			if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
-				//requestStackPop();
-
-
 				auto& pad = m_app->getInput().gamepad;
 				for(int u = 0; u < 4; u++)
-					pad->SetVibration(u,
-						0,
-						0,
-						0,
-						0);
-
-
+					pad->SetVibration(u, 0,	0);
 				requestStackPush(States::Pause);
 			}
-
 		}
 
 
 
-		this->m_player[i]->input(
+		this->m_players->getCharacter(i)->input(
 			padState,
-			gpTracker[this->m_player[i]->getPort()],
+			gpTracker[port],
 			m_app->getInput().keyboardState, 
 			kbTracker);
-
-
-
 	}
 
 	// Update the camera controller from input devices
@@ -242,10 +240,6 @@ bool GameState::update(float dt) {
 	static float counter = 0.f;
 	counter += dt;
 
-	//m_cube->getModel()->getTransform().rotateAroundY(0.005f);
-
-	//m_plane->getTransform().rotateAroundY(0.005f);
-
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
@@ -256,8 +250,7 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
-	for (int i = 0; i < 4; i++)
-		this->m_player[i]->update(dt);
+	m_players->update(dt);
 
 
 	if(!m_flyCam)
@@ -265,6 +258,16 @@ bool GameState::update(float dt) {
 	
 	m_projHandler->update(dt);
 	
+
+	m_playerCamController->setTargets(
+		m_players->useableTarget(0) ? m_players->getCharacter(0) : nullptr,
+		m_players->useableTarget(1) ? m_players->getCharacter(1) : nullptr,
+		m_players->useableTarget(2) ? m_players->getCharacter(2) : nullptr,
+		m_players->useableTarget(3) ? m_players->getCharacter(3) : nullptr
+	);
+
+
+
 	return true;
 }
 // Renders the state

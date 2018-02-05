@@ -5,8 +5,7 @@
 #include "Weapon.h"
 #include "Hook.h"
 
-using namespace DirectX;
-using namespace DirectX::SimpleMath;
+
 
 class Character : public Moveable {
 public:
@@ -17,49 +16,76 @@ public:
 
 	void input(
 		DirectX::GamePad::State& padState,
-		GamePad::ButtonStateTracker& padTracker, 
+		DirectX::GamePad::ButtonStateTracker& padTracker,
 		DirectX::Keyboard::State& keyState,
-		Keyboard::KeyboardStateTracker& keyTracker);
+		DirectX::Keyboard::KeyboardStateTracker& keyTracker);
 	void update(float dt);
 	void draw();
 
 	void setController(bool usingController);
 	void setControllerPort(unsigned int port);
-	void addVibration(unsigned int index, float addition);
-	unsigned int getPort();
-
 	void setTeam(unsigned int team);
-	void setWeapon(Weapon* weapon);
-	DirectX::SimpleMath::Vector3 aimVec;
+	bool isUsingController();
+	unsigned int getPort();
+	unsigned int getTeam();
+	float getHealth();
+	float getMaxHealth();
+	bool isAlive();
 
-	Weapon* currentWeapon;
-	Hook* m_hook;
+	void setVibration(unsigned int index, float strength = 1, float time = 1);
+	void addVibration(unsigned int index, float strength = 1, float time = 1);
+
+	void setWeapon(Weapon* weapon);
 	void setHook(Hook* hook);
 
+	void living();
+	void dead();
+
+
 private:
+	Weapon* m_weapon;
+	Hook* m_hook;
+
+	struct InputDevice {
+		bool controller;
+		unsigned int controllerPort;
+	};
+	struct InputVectors {
+		DirectX::SimpleMath::Vector3 movement;
+		DirectX::SimpleMath::Vector3 aim;
+	};	
+	struct Movement {
+		bool hooked;
+		float speed;
+	};
+	struct Health {
+		float current;
+		float max;
+		float regen;
+		bool alive;
+	};
+	struct ControllerVibration {
+		float currentStrength;
+		float timeLeft;
+	};
+
+
+	InputDevice m_inputDevice;
+	InputVectors m_input;
+	Movement m_movement;
+	Health m_playerHealth;
+	ControllerVibration m_vibration[2];
 	
-
-
-	unsigned int currentTeam;
-	bool usingController;
-	unsigned int controllerPort;
-
-	DirectX::SimpleMath::Vector3 m_inputVec;
-	DirectX::SimpleMath::Vector3 m_velAtJump;
-
-	bool m_hooked;
-	float jumpTimer;
-
-	float speed;
-	float padVibration[2];
-	float vibrationReduction[2];
+	unsigned int m_currentTeam;
+	
 	void jump();
 	void stopJump();
 	void fire();
 	void hook();
+	void stopHook();
 
 	bool updateVibration(float dt);
-	float sinDegFromVec(Vector3 vec) {
+	float sinDegFromVec(DirectX::SimpleMath:: Vector3 vec) {
 
 		return atan2(vec.y, vec.x);
 	}
