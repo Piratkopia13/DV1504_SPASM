@@ -149,7 +149,7 @@ MenuState::MenuState(StateStack& stack)
 
 	this->changeMenu(0, MAINMENU);
 
-	m_playerCamController.useExtra = 0;
+	m_playerCamController.setUseExtraZ(false);
 	m_playerCamController.setTargets(this->menuList[0]);
 	m_playerCamController.setOffset(Vector3(0,0,0));
 	m_playerCamController.setMoving(false);
