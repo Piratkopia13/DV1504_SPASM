@@ -315,7 +315,7 @@ bool MenuState::processInput(float dt) {
 														this->selector = 0;
 														this->changeMenu(0, STARTMENU);
 														this->m_playerCamController.setTargets(this->mapMenu[0]);
-														gameVariables.players = nrReady;
+														m_app->getGameSettings().players = nrReady;
 														break;
 													}
 												}
@@ -359,12 +359,12 @@ bool MenuState::processInput(float dt) {
 									this->changeMenu(-1, STARTMENU);
 								}
 								if (a) {								
-									gameVariables.level = this->selector;
+									m_app->getGameSettings().level = this->selector;
 									for (size_t u = 0; u < 4; u++) {
-										gameVariables.color[u] = this->playerColor[u];
-										gameVariables.ports[u] = u;
-										gameVariables.teams[u] = 0;
-										gameVariables.used = 1;
+										m_app->getGameSettings().color[u] = this->playerColor[u];
+										m_app->getGameSettings().ports[u] = u;
+										m_app->getGameSettings().teams[u] = 0;
+										m_app->getGameSettings().used = 1;
 									}
 									requestStackPop();
 									requestStackPush(States::Game);

@@ -172,3 +172,9 @@ const UINT Application::getFPS() const {
 Application::Input& Application::getInput() {
 	return m_input;
 }
+
+Application::GameSettings & Application::getGameSettings()
+{
+	return m_gameVariables;
+}
+
