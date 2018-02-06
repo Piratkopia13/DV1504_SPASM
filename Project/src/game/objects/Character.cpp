@@ -177,6 +177,7 @@ void Character::update(float dt) {
 	this->currentWeapon->update(dt, this->aimVec);
 	m_hook->update(dt, currentWeapon->getTransform().getTranslation());
 
+	//Collision detection for projectiles
 	for (unsigned int i = 0; i < currentWeapon->getProjectileHandler().getProjectiles().size(); i++) {
 		if (currentWeapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != currentTeam) {
 			if (this->getBoundingBox()->containsOrIntersects(*currentWeapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
