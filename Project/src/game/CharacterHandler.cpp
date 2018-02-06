@@ -54,7 +54,7 @@ void CharacterHandler::killPlayer(unsigned int index) {
 	if (index < m_characters.size()) {
 		m_characters[index]->dead();
 		m_characters[index]->setPosition(Vector3(0, 0, -100));
-		m_respawnTimers[index] = 0.01;
+		m_respawnTimers[index] = 0.01f;
 	}
 }
 
@@ -89,7 +89,7 @@ void CharacterHandler::update(float dt) {
 		}
 		else {
 			m_characters[i]->update(dt);
-			if (m_characters[i]->getHealth() <= 0) {
+			if (m_characters[i]->getHealth() <= 0.0f) {
 				killPlayer(i);
 			}
 		}
