@@ -63,6 +63,28 @@ private:
 		float max;
 		float regen;
 		bool alive;
+		float healthPercent;
+		float div;
+		void setHealth(float hp) {
+			if (hp > max)
+				hp = max;
+			current = hp;
+			updatePercent();
+		}
+		void addHealth(float hp) {
+			current += hp;
+			if (current > max)
+				current = max;
+			updatePercent();
+		}
+		void setMax(float hp) {
+			max = hp;
+			div = 1 / max;
+		}
+		void updatePercent() {
+			healthPercent = current * div;
+		}
+
 	};
 	struct ControllerVibration {
 		float currentStrength;

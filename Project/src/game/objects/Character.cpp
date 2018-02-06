@@ -11,7 +11,9 @@ Character::Character()
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0,0,0), Vector3(1,0,0)};
 	m_movement = { 0, 10 };
-	m_playerHealth = { 100, 120, 1 };
+	m_playerHealth.setMax(100);
+	m_playerHealth.setHealth(100);
+	m_playerHealth.regen = 5;
 	m_vibration[0] = { 0, 0};
 
 	getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
@@ -60,10 +62,11 @@ void Character::input(
 				
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
-				
+				m_playerHealth.addHealth(-10);
+				this->addVibration(0, 1);
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
-				this->addVibration(0, 1);
+				m_playerHealth.addHealth(10);
 			}
 
 			// ON BUTTON RELEASE
@@ -144,9 +147,12 @@ void Character::update(float dt) {
 	if (!m_playerHealth.alive)
 		return;
 
-	if(m_playerHealth.current < m_playerHealth.max)
-		m_playerHealth.current += m_playerHealth.current;
+	if (m_playerHealth.current < m_playerHealth.max) {
+		m_playerHealth.current += m_playerHealth.regen * dt;
+	}
 
+	m_playerHealth.updatePercent();
+	
 
 	if (grounded())
 		this->setVelocity(DirectX::SimpleMath::Vector3(m_input.movement.x * m_movement.speed, this->getVelocity().y, 0.f));
@@ -175,7 +181,7 @@ void Character::update(float dt) {
 
 void Character::draw() {
 	this->m_Model->setTransform(&getTransform());
-	this->m_Model->getMaterial()->setColor(lightColor);
+	this->m_Model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	this->m_Model->draw();
 	if(m_weapon)
 	m_weapon->draw();
@@ -259,8 +265,11 @@ void Character::living() {
 	m_playerHealth.current = m_playerHealth.max;
 	m_playerHealth.alive = true;
 	m_weapon->setHeld(true);
+	
 }
 void Character::dead() {
+	m_playerHealth.current = 0;
+	m_playerHealth.updatePercent();
 	m_playerHealth.alive = false;
 	m_weapon->setHeld(false);
 }
