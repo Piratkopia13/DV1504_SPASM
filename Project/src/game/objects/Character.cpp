@@ -18,6 +18,7 @@ Character::Character()
 	}
 	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
 	this->setLightColor(Vector4(1, 1, 1, 1));
+	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(2.0f + 3.0f, 3.0f, 0.0f));
 }
 
 Character::Character(Model * model) : Character() {
@@ -170,11 +171,21 @@ void Character::update(float dt) {
 
 	Moveable::move(dt);
 
-	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f,-0.8f));
+	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, 0.f));
 	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
 	this->currentWeapon->update(dt, this->aimVec);
 	m_hook->update(dt, currentWeapon->getTransform().getTranslation());
+
+	//Collision detection for projectiles
+	for (unsigned int i = 0; i < currentWeapon->getProjectileHandler().getProjectiles().size(); i++) {
+		if (currentWeapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != currentTeam) {
+			if (this->getBoundingBox()->containsOrIntersects(*currentWeapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
+				currentWeapon->getProjectileHandler().removeAt(i);
+				std::cout << "\nHit";
+			}
+		}
+	}
 }
 
 void Character::draw() {
@@ -194,7 +205,7 @@ void Character::setControllerPort(const unsigned int port) {
 		this->controllerPort = port;
 	
 //#ifdef _DEBUG
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 2.0f + 3.0f, 3.0f, 0.0f));
+	//this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 2.0f + 3.0f, 3.0f, 0.0f));
 //#endif
 }
 

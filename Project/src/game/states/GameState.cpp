@@ -105,6 +105,7 @@ GameState::GameState(StateStack& stack)
 		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
 		m_player[i] = new Character(m_characterModel->getModel());
 		m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
+		m_player[i]->setTeam(i % 2);
 		m_player[i]->setController(1);
 		m_player[i]->setControllerPort(i);
 		m_player[i]->setWeapon(m_weapons[i]);
@@ -172,15 +173,12 @@ bool GameState::processInput(float dt) {
 	}
 
 
-	
-	if(kbTracker.pressed.Q)
-		for (int i = 0; i < 4; i++) {
-			this->m_player[i]->addVibration(0, 1);
-			this->m_player[i]->addVibration(1, 1);
-			this->m_player[i]->addVibration(2, 1);
-			this->m_player[i]->addVibration(3, 1);
-		}
-	
+	static int currPort = 0;
+	if (kbTracker.pressed.Q) {
+		m_player[currPort]->setControllerPort(0);
+		currPort = (currPort + 1) % 2;
+		m_player[currPort]->setControllerPort(1);
+	}
 
 	for(int i = 0; i < 4; i++) {
 		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[this->m_player[i]->getPort()];
