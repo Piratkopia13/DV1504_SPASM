@@ -139,12 +139,12 @@ MenuState::MenuState(StateStack& stack)
 
 	this->changeMenu(0, MAINMENU);
 
-	m_playerCamController.setUseExtraZ(false);
-	m_playerCamController.setTargets(this->menuList[0]);
-	m_playerCamController.setOffset(Vector3(0,0,0));
-	m_playerCamController.setMoving(false);
-	m_playerCamController.setPosition(Vector3(0,0,0));
-	m_playerCamController.setFollowSpeed(8);
+	m_playerCamController->setUseExtraZ(false);
+	m_playerCamController->setTargets(this->menuList[0]);
+	m_playerCamController->setOffset(Vector3(0,0,0));
+	m_playerCamController->setMoving(false);
+	m_playerCamController->setPosition(Vector3(0,0,0));
+	m_playerCamController->setFollowSpeed(8);
 
 	m_app->getGameSettings().reset();
 }
@@ -266,7 +266,7 @@ bool MenuState::processInput(float dt) {
 					if (a) {
 						switch (m_selector) {
 							case START:
-								this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1], 
+								this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1], 
 									this->playerMenu[2], this->playerMenu[3]);
 								this->menuList[m_selector]->setLightColor(this->offColor);
 								m_selector = 0;
@@ -302,7 +302,7 @@ bool MenuState::processInput(float dt) {
 										for (size_t u = 0; u < 4; u++) {
 											this->players[u] = OFFLINE;
 											this->setColor(u, Vector4(0, 0, 0, 1));
-											this->m_playerCamController.setTargets(this->menuList[0]);
+											this->m_playerCamController->setTargets(this->menuList[0]);
 
 											m_activeMenu = MAINMENU;
 											m_selector = 0;
@@ -330,7 +330,7 @@ bool MenuState::processInput(float dt) {
 													m_activeSubMenu = MAPSELECT;
 													m_selector = 0;
 													this->changeMenu(0, STARTMENU);
-													this->m_playerCamController.setTargets(this->mapMenu[0]);				
+													this->m_playerCamController->setTargets(this->mapMenu[0]);				
 													break;
 												}
 											}
@@ -341,10 +341,10 @@ bool MenuState::processInput(float dt) {
 											}
 
 											if (right) {
-												this->setColor(i, this->getRandomColor());
+												this->setColor(i, Utils::getRandomColor());
 											}
 											if (left) {
-												this->setColor(i, this->getRandomColor());
+												this->setColor(i, Utils::getRandomColor());
 											}
 
 
@@ -397,7 +397,7 @@ bool MenuState::processInput(float dt) {
 							}
 							if (b) {
 								m_activeSubMenu = PLAYERSELECT;
-								this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1],
+								this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1],
 									this->playerMenu[2], this->playerMenu[3]);
 								for (size_t u = 0; u < 4; u++) {
 									this->playersReady[u] = NOTREADY;
@@ -496,7 +496,7 @@ void MenuState::changeMenu(int change, int active)
 		m_selector = 0;
 	if (active == MAINMENU) {
 		this->menuList[m_selector]->setLightColor(this->onColor);
-		m_playerCamController.setTargets(
+		m_playerCamController->setTargets(
 			this->menuList[m_selector],
 			nullptr,
 			nullptr,
@@ -505,7 +505,7 @@ void MenuState::changeMenu(int change, int active)
 	}
 	if (active == OPTIONSMENU) {
 		this->optionsMenuList[m_selector]->setLightColor(this->onColor);
-		m_playerCamController.setTargets(
+		m_playerCamController->setTargets(
 			this->optionsMenuList[m_selector],
 			nullptr,
 			nullptr,
@@ -515,7 +515,7 @@ void MenuState::changeMenu(int change, int active)
 	if (active == STARTMENU && m_activeSubMenu == MAPSELECT) {
 
 		this->mapMenu[m_selector]->setLightColor(this->onColor);
-		m_playerCamController.setTargets(
+		m_playerCamController->setTargets(
 			this->mapMenu[m_selector],
 			nullptr,
 			nullptr,

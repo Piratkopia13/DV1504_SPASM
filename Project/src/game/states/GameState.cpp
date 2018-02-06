@@ -17,9 +17,21 @@ GameState::GameState(StateStack& stack)
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
+	// TODO: move all model loading to a ModelManager
+	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
+	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
+	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
+	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+
+
 	// Set up handlers
 	m_level = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());
 	m_projHandler = std::make_unique<ProjectileHandler>(m_scene.getDeferredRenderer());
+	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get(), m_level.get(), m_characterModel->getModel(), m_WeaponModel1->getModel(), m_hookModel->getModel());
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
@@ -42,31 +54,19 @@ GameState::GameState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 #endif
 
-	// TODO: move all model loading to a ModelManager
-	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
-	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
-	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
-	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-	
-
-	m_characterHandler = new CharacterHandler(m_projHandler, m_currLevel.get(), m_characterModel->getModel(), m_WeaponModel1->getModel(), m_hookModel->getModel());
-
-
+	// Set character spawn points
 	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
 	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
 	m_characterHandler->addSpawnPoint(1, Vector3(10, 2, 0));
 	m_characterHandler->addSpawnPoint(1, Vector3(11, 2, 0));
 
-
+	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		m_scene.addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
 	}
 
+	// Give the cam controller targets to follow
 	m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
 		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
@@ -79,8 +79,6 @@ GameState::GameState(StateStack& stack)
 
 GameState::~GameState() {
 
-	if(m_characterHandler)
-		delete m_characterHandler;
 }
 
 // Process input for the state
@@ -107,20 +105,13 @@ bool GameState::processInput(float dt) {
 		m_scene.getLights().addPointLight(pl);
 	}
 
-	// Pause menu
-	for(int i = 0; i < 4; i++) {
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[this->m_player[i]->getPort()];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[this->m_player[i]->getPort()];
-
-	}
-
-
 	if (kbTracker.pressed.T) {
 		m_characterHandler->killPlayer(0);
 	}
 
 
-	for(int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+	// Pause menu
+	for(size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		int port = m_characterHandler->getCharacter(i)->getPort();
 
 

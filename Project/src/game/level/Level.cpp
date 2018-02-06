@@ -214,5 +214,5 @@ Grid* Level::getGrid() {
 
 DirectX::SimpleMath::Vector2 Level::getGridWorldSize() {
 	auto& blocks = getGrid()->getAllBlocks();
-	return DirectX::SimpleMath::Vector2(blocks.size(), blocks.at(0).size()) * Level::DEFAULT_BLOCKSIZE;
+	return DirectX::SimpleMath::Vector2((float)blocks.size(), (float)blocks.at(0).size()) * Level::DEFAULT_BLOCKSIZE;
 }
