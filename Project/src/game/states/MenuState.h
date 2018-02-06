@@ -54,12 +54,11 @@ private:
 	DirectX::SimpleMath::Vector4 onColor;
 	DirectX::SimpleMath::Vector4 offColor;
 
-	DirectX::SimpleMath::Vector4 playerColor[4];
 
 
 	// MENU 0
 
-	enum ActiveMenu {
+	enum m_activeMenu {
 		MAINMENU,
 		STARTMENU,
 		OPTIONSMENU
@@ -91,15 +90,22 @@ private:
 	};
 
 
-	int activeMenu;
-	int activeSubMenu;
-	int selector;
-	int menu;
-	int startMenu;
-	int maxChoices;
+	int m_activeMenu;
+	int m_activeSubMenu;
+	int m_selector;
+	int m_menu;
+	int m_startMenu;
+	int m_maxChoices;
 
+
+	int m_gamemode;
+	int m_map;
 	int players[4];
 	int playersReady[4];
+	int m_playerModel[4];
+	int m_playerTeam[4];
+
+	DirectX::SimpleMath::Vector4 playerColor[4];
 
 	MenuItem* background;
 	std::vector<MenuItem*> menuList;
