@@ -7,7 +7,6 @@ using namespace DirectX::SimpleMath;
 GameState::GameState(StateStack& stack)
 : State(stack)
 , m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
-, m_hudCam(1280.f, 720.f, -1.f, 1.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
@@ -26,11 +25,6 @@ GameState::GameState(StateStack& stack)
 	Vector2 mapSize = m_level->getGridWorldSize();
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
-
-	// Update the hud shader
-	//m_hudShader.updateCamera(m_hudCam);
-
-
 	// Set up the scene
 	m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
@@ -59,13 +53,13 @@ GameState::GameState(StateStack& stack)
 	
 
 	for (int i = 0; i < 4; i++) {
-		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);
+		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler.get(), i % 2);
 		m_player[i] = new Character(m_characterModel->getModel());
-		m_hooks[i] = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
+		m_hooks[i] = new Hook(m_hookModel->getModel(), m_level->getGrid());
 		m_player[i]->setController(1);
 		m_player[i]->setControllerPort(i);
 		m_player[i]->setWeapon(m_weapons[i]);
-		m_player[i]->setCurrentLevel(m_currLevel.get());		
+		m_player[i]->setCurrentLevel(m_level.get());		
 		m_player[i]->setHook(m_hooks[i]);
 		m_player[i]->setLightColor(Vector4(0.0f, 0.9f, 1.0f, 1.0f));
 		m_scene.addObject(m_player[i]);
@@ -93,13 +87,13 @@ GameState::GameState(StateStack& stack)
 }
 
 GameState::~GameState() {
+	// TODO: remove, these should be handled in CharacterHandler
 	for (int i = 0; i < 4; i++)
 	{
 		delete m_weapons[i];
 		delete m_player[i];
 		delete m_hooks[i];
 	}
-	delete m_projHandler;
 }
 
 // Process input for the state
@@ -124,21 +118,9 @@ bool GameState::processInput(float dt) {
 		pl.setPosition(m_cam.getPosition());
 		pl.setAttenuation(.0f, 0.1f, 0.02f);
 		m_scene.getLights().addPointLight(pl);
-
-		m_matShader.updateLights(m_scene.getLights());
 	}
 
-
-	
-	if(kbTracker.pressed.Q)
-		for (int i = 0; i < 4; i++) {
-			this->m_player[i]->addVibration(0, 1);
-			this->m_player[i]->addVibration(1, 1);
-			this->m_player[i]->addVibration(2, 1);
-			this->m_player[i]->addVibration(3, 1);
-		}
-	
-
+	// Pause menu
 	for(int i = 0; i < 4; i++) {
 		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[this->m_player[i]->getPort()];
 		GamePad::ButtonStateTracker& padTracker = gpTracker[this->m_player[i]->getPort()];
@@ -164,6 +146,7 @@ bool GameState::processInput(float dt) {
 
 
 
+		// Process additional input in each player
 		this->m_player[i]->input(
 			padState,
 			gpTracker[this->m_player[i]->getPort()],
@@ -175,7 +158,6 @@ bool GameState::processInput(float dt) {
 	}
 
 	// Update the camera controller from input devices
-
 	if (m_flyCam)
 		m_camController.update(dt);
 
@@ -195,27 +177,14 @@ bool GameState::resize(int width, int height) {
 // Updates the state
 bool GameState::update(float dt) {
 
-
-	static float counter = 0.f;
-	counter += dt;
-
-	//m_cube->getModel()->getTransform().rotateAroundY(0.005f);
-
-	//m_plane->getTransform().rotateAroundY(0.005f);
-
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
-	auto& cPos = m_cam.getPosition();
-
 	auto& camPos = m_cam.getPosition();
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
-
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
 	for (int i = 0; i < 4; i++)
 		this->m_player[i]->update(dt);
-
 
 	if(!m_flyCam)
 		m_playerCamController->update(dt);
@@ -226,36 +195,15 @@ bool GameState::update(float dt) {
 }
 // Renders the state
 bool GameState::render(float dt) {
-	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
+
 	// Clear back buffer
+	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 
-	// Draw the scene
-	// before rendering the final output to the back buffer
-	m_scene.draw(dt, m_cam, m_currLevel.get(), m_projHandler);
-
-	//m_app->getDXManager()->enableAlphaBlending();
-	//m_colorShader.updateCamera(m_cam);
-	//for(int i = 0; i < 4; i++)
-	//	m_player[i]->draw();
-
-	//m_projHandler->draw();
-
+	// Draw the scene using deferred rendering
+	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get());
 
 	// Draw HUD
 	m_scene.drawHUD();
-
-	///* Debug Stuff */
-	//m_app->getDXManager()->disableDepthBuffer();
-	//m_app->getDXManager()->disableAlphaBlending();
-	//m_texturePlane->draw();
-	//m_texturePlane2->draw();
-	//m_quadtreeCamtexPlane->draw();
-	//m_app->getDXManager()->enableDepthBuffer();
-	/* Debug Stuff */
-
-	// Swap backbuffers
-	//m_app->getDXManager()->present(false);
 
 	return true;
 }

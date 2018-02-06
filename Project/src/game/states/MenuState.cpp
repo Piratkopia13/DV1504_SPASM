@@ -6,48 +6,38 @@ using namespace DirectX::SimpleMath;
 MenuState::MenuState(StateStack& stack) 
 	: State(stack)
 	, m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
-	, m_hudCam(1280.f, 720.f, -1.f, 1.f)
 	, m_fpsText(&m_font, L"")
-	, m_debugText(&m_font, L"")
 	, m_debugCamText(&m_font, L"")
-	, m_debugParticleText(&m_font, L"")
-	, m_playerCamController(&m_cam)
 	, m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
+	// Get the Application instance
 	m_app = Application::getInstance();
 
-	
-	//Update the hud shader
-	m_hudShader.updateCamera(m_hudCam);
+	// Set up camera with controllers
+	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
 
-	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
 
-	m_timer.startTimer();
+	// Update the hud shader
+	//m_hudShader.updateCamera(m_hudCam);
 
-	// Add skybox to the scene
+
+	// Set up the scene
 	m_scene.addSkybox(L"skybox_space_512.dds");
-	auto& l = m_scene.getLights();
-	auto dl = l.getDL();
-	dl.color = Vector3(0.9f, 0.9f, 0.9f);
-	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	//dl.direction = Vector3(0.f, -1.f, 0.f);
-	dl.direction.Normalize();
-	l.setDirectionalLight(dl);
+	// Add a directional light
+	Vector3 color(0.9f, 0.9f, 0.9f);
+	Vector3 direction(0.4f, -0.6f, 1.0f);
+	direction.Normalize();
+	m_scene.setUpDirectionalLight(Lights::DirectionalLight(color, direction));
 
-	m_scene.setShadowLight();
-
-	m_matShader.updateLights(m_scene.getLights());
-
-
-	
+	// Set up HUD texts
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
-	m_debugText.setPosition(Vector2(0.f, 40.f));
-
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
-	m_scene.addText(&m_debugText);
+#ifdef _DEBUG
 	m_scene.addText(&m_debugCamText);
-	m_scene.addText(&m_debugParticleText);
+#endif
+
+
 
 	m_menuBlock = std::make_unique<FbxModel>("block.fbx");
 	m_menuBlock->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
@@ -151,12 +141,12 @@ MenuState::MenuState(StateStack& stack)
 
 	this->changeMenu(0, MAINMENU);
 
-	m_playerCamController.setUseExtraZ(false);
-	m_playerCamController.setTargets(this->menuList[0]);
-	m_playerCamController.setOffset(Vector3(0,0,0));
-	m_playerCamController.setMoving(false);
-	m_playerCamController.setPosition(Vector3(0,0,0));
-	m_playerCamController.setFollowSpeed(8);
+	m_playerCamController->setUseExtraZ(false);
+	m_playerCamController->setTargets(this->menuList[0]);
+	m_playerCamController->setOffset(Vector3(0,0,0));
+	m_playerCamController->setMoving(false);
+	m_playerCamController->setPosition(Vector3(0,0,0));
+	m_playerCamController->setFollowSpeed(8);
 }
 
 
@@ -250,7 +240,7 @@ bool MenuState::processInput(float dt) {
 						if (a) {
 							switch (this->selector) {
 								case START:
-									this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1], 
+									this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1], 
 										this->playerMenu[2], this->playerMenu[3]);
 									this->menuList[selector]->setLightColor(this->offColor);
 									this->selector = 0;
@@ -286,7 +276,7 @@ bool MenuState::processInput(float dt) {
 											for (size_t u = 0; u < 4; u++) {
 												this->players[u] = OFFLINE;
 												this->setColor(u, Vector4(0, 0, 0, 1));
-												this->m_playerCamController.setTargets(this->menuList[0]);
+												this->m_playerCamController->setTargets(this->menuList[0]);
 
 												this->activeMenu = MAINMENU;
 												this->selector = 0;
@@ -314,7 +304,7 @@ bool MenuState::processInput(float dt) {
 														this->activeSubMenu = MAPSELECT;
 														this->selector = 0;
 														this->changeMenu(0, STARTMENU);
-														this->m_playerCamController.setTargets(this->mapMenu[0]);
+														this->m_playerCamController->setTargets(this->mapMenu[0]);
 														m_app->getGameSettings().players = nrReady;
 														break;
 													}
@@ -326,10 +316,10 @@ bool MenuState::processInput(float dt) {
 												}
 
 												if (right) {
-													this->setColor(i, this->getRandomColor());
+													this->setColor(i, Utils::getRandomColor());
 												}
 												if (left) {
-													this->setColor(i, this->getRandomColor());
+													this->setColor(i, Utils::getRandomColor());
 												}
 
 
@@ -371,7 +361,7 @@ bool MenuState::processInput(float dt) {
 								}
 								if (b) {
 									this->activeSubMenu = PLAYERSELECT;
-									this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1],
+									this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1],
 										this->playerMenu[2], this->playerMenu[3]);
 									for (size_t u = 0; u < 4; u++) {
 										this->playersReady[u] = NOTREADY;
@@ -429,57 +419,26 @@ bool MenuState::resize(int width, int height) {
 // Updates the state
 bool MenuState::update(float dt) {
 
-
-	static float counter = 0.f;
-	counter += dt;
-
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
-	auto& cPos = m_cam.getPosition();
-
-	std::wstring flying(L"Flying (shift for boost, rmouse to toggle cursor)");
-	std::wstring Walking(L"Walking (rmouse to toggle cursor)");
-
 	auto& camPos = m_cam.getPosition();
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
-
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
-		m_playerCamController.update(dt);
+	m_playerCamController->update(dt);
 
 	return true;
 }
 // Renders the state
 bool MenuState::render(float dt) {
-	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear(DirectX::Colors::Black);
 	// Clear back buffer
+	m_app->getDXManager()->clear(DirectX::Colors::Black);
 
 	// Draw the scene
-	// before rendering the final output to the back buffer
 	m_scene.draw(dt, m_cam, nullptr, nullptr);
-
-	//m_app->getDXManager()->enableAlphaBlending();
-	//m_colorShader.updateCamera(m_cam);
-	
-
-	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
 
 	// Draw HUD
 	m_scene.drawHUD();
-
-	///* Debug Stuff */
-	//m_app->getDXManager()->disableDepthBuffer();
-	//m_app->getDXManager()->disableAlphaBlending();
-	//m_texturePlane->draw();
-	//m_texturePlane2->draw();
-	//m_quadtreeCamtexPlane->draw();
-	//m_app->getDXManager()->enableDepthBuffer();
-	/* Debug Stuff */
-
-	// Swap backbuffers
-	//m_app->getDXManager()->present(false);
 
 	return true;
 }
@@ -512,7 +471,7 @@ void MenuState::changeMenu(int change, int active)
 		this->selector = 0;
 	if (active == MAINMENU) {
 		this->menuList[this->selector]->setLightColor(this->onColor);
-		m_playerCamController.setTargets(
+		m_playerCamController->setTargets(
 			this->menuList[this->selector],
 			nullptr,
 			nullptr,
@@ -521,7 +480,7 @@ void MenuState::changeMenu(int change, int active)
 	}
 	if (active == OPTIONSMENU) {
 		this->optionsMenuList[this->selector]->setLightColor(this->onColor);
-		m_playerCamController.setTargets(
+		m_playerCamController->setTargets(
 			this->optionsMenuList[this->selector],
 			nullptr,
 			nullptr,
@@ -531,7 +490,7 @@ void MenuState::changeMenu(int change, int active)
 	if (active == STARTMENU && this->activeSubMenu == MAPSELECT) {
 
 		this->mapMenu[this->selector]->setLightColor(this->onColor);
-		m_playerCamController.setTargets(
+		m_playerCamController->setTargets(
 			this->mapMenu[this->selector],
 			nullptr,
 			nullptr,

@@ -2,7 +2,6 @@
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuItem.h"
-#include "Variables.h"
 
 class PauseState :
 	public State
@@ -24,44 +23,42 @@ public:
 private:
 	Application * m_app;
 
+	// Camera
 	PerspectiveCamera m_cam;
-	OrthographicCamera m_hudCam;
-	PlayerCameraController m_playerCamController;
+	std::unique_ptr<PlayerCameraController> m_playerCamController;
+	bool m_flyCam;
+
+	// Scene
 	Scene m_scene;
 
+	// Models
+	std::unique_ptr<FbxModel> m_sphere;
+	std::unique_ptr<Model> m_plane;
+	std::unique_ptr<Model> m_texturePlane;
+	std::unique_ptr<Model> m_texturePlane2;
 
-	SimpleColorShader m_colorShader;
-	SimpleTextureShader m_texShader;
-	SimpleTextureShader m_hudShader;
-	DirectionalLightShader m_dirLightShader;
-	MaterialShader m_matShader;
+	// Texts
 	SailFont m_font;
-
-	Timer m_timer;
-
 	Text m_fpsText;
-	Text m_debugText;
 	Text m_debugCamText;
-	Text m_debugParticleText;
+	//Text m_startText;
 
-	Text m_startText;
+	// Shaders
+	SimpleColorShader m_colorShader;
 
+	// Models
 	std::unique_ptr<FbxModel> m_fbxModel;
 	std::unique_ptr<FbxModel> m_menuOn;
 	std::unique_ptr<FbxModel> m_menuOff;
-
-
 	std::unique_ptr<Model> m_background;
 
-	int selector;
-	std::vector<MenuItem*> menuList;
+	int m_selector;
+	std::vector<MenuItem*> m_menuList;
+
+private:
 	float startTimer;
 	void beginStartTimer();
-
 	void changeMenu(int change);
-
-
-
 
 };
 
