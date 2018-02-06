@@ -85,6 +85,7 @@
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
+    <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\CharacterHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -132,16 +132,22 @@ public:
 
 	};
 	struct GameSettings {
+		struct player {
+			int port;
+			int team;
+			DirectX::SimpleMath::Vector4 color;
+			int model;
+		};
 		int used;
-		int players;
-		int ports[4];
-		int teams[4];
-		int model[4];
-		DirectX::SimpleMath::Vector4 color[4];
 		int level;
 		int gamemode;
-
-
+		std::vector<player> players;
+		void reset() {
+			used = 0;
+			level = 0;
+			gamemode = 0;
+			players.clear();
+		};
 	};
 public:
 	Application(int windowWidth, int windowHeight, char* windowTitle, HINSTANCE hInstance);
@@ -178,20 +184,5 @@ private:
 	UINT m_fps;
 
 	Input m_input;
-	GameSettings m_gameVariables =
-	{
-		0,
-		0,
-		{ -1, -1, -1, -1 },
-		{ -1, -1, -1, -1 },
-		{ -1, -1, -1, -1 },
-		{
-			DirectX::SimpleMath::Vector4(1,1,1,1),
-			DirectX::SimpleMath::Vector4(1,1,1,1),
-			DirectX::SimpleMath::Vector4(1,1,1,1),
-			DirectX::SimpleMath::Vector4(1,1,1,1)
-		},
-		0,
-		0
-	};
+	GameSettings m_gameVariables;
 };

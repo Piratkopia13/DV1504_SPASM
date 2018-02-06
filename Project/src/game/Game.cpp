@@ -10,8 +10,11 @@ Game::Game(HINSTANCE hInstance)
 	// Register states
 	registerStates();
 	// Set starting state
-	//m_stateStack.pushState(States::Game);
+#ifdef _DEBUG
 	m_stateStack.pushState(States::MainMenu);
+#else
+	m_stateStack.pushState(States::Game);
+#endif
 
 }
 
