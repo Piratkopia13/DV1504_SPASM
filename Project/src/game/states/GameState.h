@@ -66,10 +66,8 @@ private:
 	std::unique_ptr<Level> m_currLevel;
 
 
-	CharacterHandler* m_players;
+	CharacterHandler* m_characterHandler;
 
-	Weapon* m_weapons[4];
-	Character* m_player[4];
 	ProjectileHandler* m_projHandler;
 
 };

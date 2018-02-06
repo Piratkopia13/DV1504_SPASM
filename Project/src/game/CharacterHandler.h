@@ -4,10 +4,9 @@
 class CharacterHandler
 {
 public:
-	CharacterHandler();
+	CharacterHandler(ProjectileHandler* projHandler = nullptr, Level* currentLevel = nullptr, Model* cModel1 = nullptr, Model* cModel2 = nullptr, Model* cModel3 = nullptr);
 	~CharacterHandler();
 
-	void addPlayer(Character* player);
 	void addSpawnPoint(unsigned int team, DirectX::SimpleMath::Vector3 position);
 	void killPlayer(unsigned int index);
 	void respawnPlayer(unsigned int id);
@@ -19,6 +18,7 @@ public:
 
 	void update(float dt);
 private:
+	void addPlayer(Character* player);
 
 	float m_respawnTime;
 

@@ -2,7 +2,32 @@
 
 using namespace DirectX::SimpleMath;
 
-CharacterHandler::CharacterHandler(): m_respawnTime(1){
+CharacterHandler::CharacterHandler(ProjectileHandler* projHandler, Level* currentLevel, Model* cModel1, Model* wModel, Model* hModel): m_respawnTime(1){
+
+	Application* app = Application::getInstance();
+	Application::GameSettings* settings = &app->getGameSettings();
+
+	for (size_t i = 0; i < settings->players.size(); i++) {
+		Weapon* tempWeapon = new Weapon(wModel, projHandler, settings->players[i].team);
+		Hook* tempHook = new Hook(hModel, currentLevel->getGrid());
+		Character* tempChar = new Character(cModel1);
+		tempChar->setHook(tempHook);
+		tempChar->setWeapon(tempWeapon);
+		tempChar->setCurrentLevel(currentLevel);
+		tempChar->setLightColor(settings->players[i].color);
+		tempChar->setTeam(settings->players[i].team);
+
+
+		if (settings->players[i].port >= 0) {
+			tempChar->setController(1);
+			tempChar->setControllerPort(settings->players[i].port);
+		}
+		else
+			tempChar->setController(0);
+
+
+		addPlayer(tempChar);
+	}
 
 }
 
@@ -31,8 +56,6 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		m_characters[index]->setPosition(Vector3(0, 0, -100));
 		m_respawnTimers[index] = 0.01;
 	}
-
-
 }
 
 void CharacterHandler::respawnPlayer(unsigned int id) {
@@ -40,8 +63,10 @@ void CharacterHandler::respawnPlayer(unsigned int id) {
 		m_respawnTimers[id] = 0;
 		Vector3 respawnPos(0, 0, 0);
 		unsigned int team = m_characters[id]->getTeam();
-		unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
-		respawnPos = m_spawns[team][spawn];
+		if (m_spawns[team].size() > 0) {
+			unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
+			respawnPos = m_spawns[team][spawn];
+		}
 		m_characters[id]->setPosition(respawnPos);
 		m_characters[id]->living();
 	}

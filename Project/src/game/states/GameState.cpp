@@ -94,66 +94,34 @@ GameState::GameState(StateStack& stack)
 	
 	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
-	m_players = new CharacterHandler();
+	m_characterHandler = new CharacterHandler(m_projHandler, m_currLevel.get(), m_characterModel->getModel(), m_WeaponModel1->getModel(), m_hookModel->getModel());
 
 
-	m_players->addSpawnPoint(0, Vector3(2, 2, 0));
-	m_players->addSpawnPoint(0, Vector3(3, 2, 0));
-	m_players->addSpawnPoint(1, Vector3(10, 2, 0));
-	m_players->addSpawnPoint(1, Vector3(11, 2, 0));
+	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
+	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(10, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(11, 2, 0));
 
 
-	for (size_t i = 0; i < m_app->getGameSettings().players.size(); i++) {
-		
-		Weapon* tempWeapon = new Weapon(m_WeaponModel1->getModel(), m_projHandler, settings->players[i].team);
-		Hook* tempHook = new Hook(m_hookModel->getModel(), m_currLevel->getGrid());
-		
-		Character* tempPlayer = new Character();
-		if (settings->players[i].port >= 0) {
-			tempPlayer->setController(1);	 
-			tempPlayer->setControllerPort(settings->players[i].port);
-		}
-		else 
-			tempPlayer->setController(0);
-		
-		tempPlayer->setHook(tempHook);
-		tempPlayer->setWeapon(tempWeapon);
-
-		tempPlayer->setLightColor(settings->players[i].color);
-		tempPlayer->setTeam(settings->players[i].team+1);
-		tempPlayer->setCurrentLevel(m_currLevel.get());
-
-
-		// ADD MODEL LIST
-		if(settings->players[i].model == 0)
-			tempPlayer->setModel(m_characterModel->getModel());
-		else
-			tempPlayer->setModel(m_WeaponModel1->getModel());
-
-
-
-		m_players->addPlayer(tempPlayer);
-		m_players->respawnPlayer(i);
-		m_scene.addObject(tempPlayer);
+	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+		m_scene.addObject(m_characterHandler->getCharacter(i));
+		m_characterHandler->respawnPlayer(i);
 	}
 
 	m_playerCamController->setTargets(
-		m_players->useableTarget(0) ? m_players->getCharacter(0) : nullptr,
-		m_players->useableTarget(1) ? m_players->getCharacter(1) : nullptr,
-		m_players->useableTarget(2) ? m_players->getCharacter(2) : nullptr,
-		m_players->useableTarget(3) ? m_players->getCharacter(3) : nullptr
+		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
+		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
+		m_characterHandler->useableTarget(2) ? m_characterHandler->getCharacter(2) : nullptr,
+		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
 	);
-	//m_playerCamController->setMoveSpeed(5);
-	//m_playerCamController->update(0);
-	//m_playerCamController->setPosition(m_playerCamController->getTarget());
-	m_playerCamController->setPosition(Vector3(10, 10, 0));
 
+	m_playerCamController->setPosition(Vector3(10, 10, 0));
 }
 
 GameState::~GameState() {
 
-	if(m_players)
-		delete m_players;
+	if(m_characterHandler)
+		delete m_characterHandler;
 	if(m_projHandler)
 		delete m_projHandler;
 }
@@ -186,12 +154,12 @@ bool GameState::processInput(float dt) {
 
 
 	if (kbTracker.pressed.T) {
-		m_players->killPlayer(0);
+		m_characterHandler->killPlayer(0);
 	}
 
 
-	for(int i = 0; i < m_players->getNrOfPlayers(); i++) {
-		int port = m_players->getCharacter(i)->getPort();
+	for(int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+		int port = m_characterHandler->getCharacter(i)->getPort();
 
 
 		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[port];
@@ -208,7 +176,7 @@ bool GameState::processInput(float dt) {
 
 
 
-		this->m_players->getCharacter(i)->input(
+		this->m_characterHandler->getCharacter(i)->input(
 			padState,
 			gpTracker[port],
 			m_app->getInput().keyboardState, 
@@ -250,7 +218,7 @@ bool GameState::update(float dt) {
 
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
-	m_players->update(dt);
+	m_characterHandler->update(dt);
 
 
 	if(!m_flyCam)
@@ -260,10 +228,10 @@ bool GameState::update(float dt) {
 	
 
 	m_playerCamController->setTargets(
-		m_players->useableTarget(0) ? m_players->getCharacter(0) : nullptr,
-		m_players->useableTarget(1) ? m_players->getCharacter(1) : nullptr,
-		m_players->useableTarget(2) ? m_players->getCharacter(2) : nullptr,
-		m_players->useableTarget(3) ? m_players->getCharacter(3) : nullptr
+		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
+		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
+		m_characterHandler->useableTarget(2) ? m_characterHandler->getCharacter(2) : nullptr,
+		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
 	);
 
 
