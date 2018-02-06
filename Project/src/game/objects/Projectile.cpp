@@ -20,7 +20,7 @@ float Projectile::getDamage() const {
 }
 
 void Projectile::draw() {
-	m_Model->setTransform(&getTransform());
+	model->setTransform(&getTransform());
 	this->getModel()->getMaterial()->setColor(this->lightColor);
-	m_Model->draw();
+	model->draw();
 }

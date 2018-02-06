@@ -11,8 +11,10 @@ Weapon::Weapon() {
 	this->cooldownTime = 0.1f;
 }
 
-Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) : Weapon() {
-	m_Model = drawModel;
+Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) 
+	: Weapon()
+{
+	model = drawModel;
 	m_projectileHandler = projHandler;
 	m_team = team;
 	m_held = true;
@@ -75,7 +77,7 @@ void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 }
 
 void Weapon::draw() {
-	m_Model->setTransform(&getTransform());
-	m_Model->getMaterial()->setColor(this->lightColor);
-	m_Model->draw();
+	model->setTransform(&getTransform());
+	model->getMaterial()->setColor(this->lightColor);
+	model->draw();
 }

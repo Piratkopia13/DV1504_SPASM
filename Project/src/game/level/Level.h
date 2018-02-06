@@ -28,9 +28,9 @@ public:
 	void draw();
 	Grid* getGrid();
 	DirectX::SimpleMath::Vector2 getGridWorldSize();
+	const int& getGridWidth() const;
+	const int& getGridHeight() const;
 
-	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
-	
 private:
 	// Number of blocks in the x-axis
 	int m_width;
