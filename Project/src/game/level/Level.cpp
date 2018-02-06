@@ -29,6 +29,16 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 				infile >> line;
 				m_grid = std::make_unique<Grid>(m_width, m_height, (int) DEFAULT_BLOCKSIZE);
 			}
+			if (!line.compare("depth1")) {
+				currTask = 3;
+				infile >> line;
+				y = m_height;
+			}
+			if (!line.compare("depth2")) {
+				currTask = 4;
+				infile >> line;
+				y = m_height;
+			}
 
 
 			switch (currTask) {
@@ -59,6 +69,46 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
+						break;
+					default:
+						break;
+					}
+					x++;
+				}
+
+				y--;
+				break;
+
+			case 3:
+				x = 0;
+
+				for (auto c : line) {
+					switch (c) {
+					case '1':
+						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
+						m_models.at(1)->getModel()->getMaterial()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE));
+						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
+						break;
+					default:
+						break;
+					}
+					x++;
+				}
+
+				y--;
+				break;
+
+			case 4:
+				x = 0;
+
+				for (auto c : line) {
+					switch (c) {
+					case '1':
+						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
+						m_models.at(1)->getModel()->getMaterial()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE));
+						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						break;
 					default:
 						break;

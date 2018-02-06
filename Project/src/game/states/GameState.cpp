@@ -19,7 +19,7 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
-	m_currLevel = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());	// Load in textures from file
+	m_currLevel = std::make_unique<Level>("depthtest.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
 	auto& blocks = m_currLevel->getGrid()->getAllBlocks();
 	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
