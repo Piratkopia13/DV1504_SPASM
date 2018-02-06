@@ -140,8 +140,15 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 		float addedDst = maxXDst + maxYDst;
-		float xFac = maxXDst / addedDst;
-		float yFac = maxYDst / addedDst;
+		float xFac, yFac;
+		if (addedDst != 0.f) {
+			xFac = maxXDst / addedDst;
+			yFac = maxYDst / addedDst;
+		}
+		else {
+			xFac = 0.5f;
+			yFac = 0.5f;
+		}
 		m_extraZTarget = (sin(r*Utils::clamp(maxXDst, 0.f, 78.f) + z) + 1) * t * xFac + (sin(r2*Utils::clamp(maxYDst, 0.f, 41.f) + z) + 1) * t2 * yFac;
 	}
 
