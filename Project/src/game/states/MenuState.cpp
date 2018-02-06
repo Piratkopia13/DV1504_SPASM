@@ -54,17 +54,15 @@ MenuState::MenuState(StateStack& stack)
 	m_player = std::make_unique<FbxModel>("fisk.fbx");
 	m_player->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
-
 	m_backGround = std::make_unique<FbxModel>("menu_screen.fbx");
 	m_backGround->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	
 
-	this->activeMenu = 0;
-	this->activeSubMenu = 0;
-	this->selector = 0;
-	
+	m_activeMenu = 0;
+	m_activeSubMenu = 0;
+	m_selector = 0;
 
-	this->menu = -1;
+	m_menu = -1;
 	
 	this->background = new MenuItem(m_backGround->getModel(), Vector3(0.f, -2.3f, 0.5f));
 	this->background->useColor = 1;
@@ -141,12 +139,14 @@ MenuState::MenuState(StateStack& stack)
 
 	this->changeMenu(0, MAINMENU);
 
-	m_playerCamController->setUseExtraZ(false);
-	m_playerCamController->setTargets(this->menuList[0]);
-	m_playerCamController->setOffset(Vector3(0,0,0));
-	m_playerCamController->setMoving(false);
-	m_playerCamController->setPosition(Vector3(0,0,0));
-	m_playerCamController->setFollowSpeed(8);
+	m_playerCamController.setUseExtraZ(false);
+	m_playerCamController.setTargets(this->menuList[0]);
+	m_playerCamController.setOffset(Vector3(0,0,0));
+	m_playerCamController.setMoving(false);
+	m_playerCamController.setPosition(Vector3(0,0,0));
+	m_playerCamController.setFollowSpeed(8);
+
+	m_app->getGameSettings().reset();
 }
 
 
@@ -179,11 +179,12 @@ bool MenuState::processInput(float dt) {
 	kbTracker.Update(m_app->getInput().keyboardState);
 
 	//DirectX::Keyboard::State& keyState;
-	//Keyboard::KeyboardStateTracker& keyTracker;
-
+	
 	
 
 	for (int i = 0; i < 4; i++) {
+		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[i];
+		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
 		
 		int a = 0;
 		int b = 0;
@@ -197,12 +198,37 @@ bool MenuState::processInput(float dt) {
 
 		if (i == 0) {
 
-
-
+			if (kbTracker.pressed.W) {
+				up = 1;
+				pressed = 1;
+			}
+			if (kbTracker.pressed.S) {
+				down = 1;
+				pressed = 1;
+			} 
+			if (kbTracker.pressed.D) {
+				right = 1;
+				pressed = 1;
+			}
+			if (kbTracker.pressed.A) {
+				left = 1;
+				pressed = 1;
+			}
+			if (kbTracker.pressed.Space) {
+				a = 1;
+				pressed = 1;
+			}
+			if (kbTracker.pressed.Tab) {
+				b = 1;
+				pressed = 1;
+			}
 		}
 
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[i];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
+
+		
+
+
+
 		if (padState.IsConnected()) {
 
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
@@ -229,181 +255,180 @@ bool MenuState::processInput(float dt) {
 				left = 1;
 				pressed = 1;
 			}
-			
-			if(pressed)
-				switch (this->activeMenu) {
-					case MAINMENU:
-						if (down)
-							this->changeMenu(1, MAINMENU);
-						if (up)
-							this->changeMenu(-1, MAINMENU);
-						if (a) {
-							switch (this->selector) {
-								case START:
-									this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1], 
-										this->playerMenu[2], this->playerMenu[3]);
-									this->menuList[selector]->setLightColor(this->offColor);
-									this->selector = 0;
+		}
+		if(pressed)
+			switch (m_activeMenu) {
+				case MAINMENU:
+					if (down)
+						this->changeMenu(1, MAINMENU);
+					if (up)
+						this->changeMenu(-1, MAINMENU);
+					if (a) {
+						switch (m_selector) {
+							case START:
+								this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1], 
+									this->playerMenu[2], this->playerMenu[3]);
+								this->menuList[m_selector]->setLightColor(this->offColor);
+								m_selector = 0;
 
-									this->activeMenu = STARTMENU;
-									break;
-								case OPTIONS:
-									this->activeMenu = OPTIONSMENU;
-									this->menuList[selector]->setLightColor(this->offColor);
-									this->selector = 0;
-									this->changeMenu(0, OPTIONSMENU);
+								m_activeMenu = STARTMENU;
+								break;
+							case OPTIONS:
+								m_activeMenu = OPTIONSMENU;
+								this->menuList[m_selector]->setLightColor(this->offColor);
+								m_selector = 0;
+								this->changeMenu(0, OPTIONSMENU);
 
-									break;
+								break;
 
-								case EXIT:
-									PostQuitMessage(0);
-									break;
-							}
+							case EXIT:
+								PostQuitMessage(0);
+								break;
 						}
+					}
 
 
-						break;
-					case STARTMENU:
-						switch (this->activeSubMenu) {
-							case PLAYERSELECT:
-								switch (this->players[i]) {
-									case OFFLINE:
-										if (a) {
-											this->players[i] = ONLINE;
-											this->setColor(i, this->onColor);
+					break;
+				case STARTMENU:
+					switch (m_activeSubMenu) {
+						case PLAYERSELECT:
+							switch (this->players[i]) {
+								case OFFLINE:
+									if (a) {
+										this->players[i] = ONLINE;
+										this->setColor(i, this->onColor);
+									}
+									if (b) {
+										for (size_t u = 0; u < 4; u++) {
+											this->players[u] = OFFLINE;
+											this->setColor(u, Vector4(0, 0, 0, 1));
+											this->m_playerCamController.setTargets(this->menuList[0]);
+
+											m_activeMenu = MAINMENU;
+											m_selector = 0;
+											this->changeMenu(0, MAINMENU);
 										}
-										if (b) {
-											for (size_t u = 0; u < 4; u++) {
-												this->players[u] = OFFLINE;
-												this->setColor(u, Vector4(0, 0, 0, 1));
-												this->m_playerCamController->setTargets(this->menuList[0]);
-
-												this->activeMenu = MAINMENU;
-												this->selector = 0;
-												this->changeMenu(0, MAINMENU);
-											}
-										}
+									}
 
 
 
-										break;
-									case ONLINE:
-										switch (this->playersReady[i]) {
-											case NOTREADY:
-												if(a) {
-													this->playersReady[i] = READY;
-													int nrOnline = 0;
-													int nrReady = 0;
-													for (size_t u = 0; u < 4; u++) {
-														if (this->players[u] == ONLINE) 
-															nrOnline++;
-														if (this->playersReady[u] == READY) 
-															nrReady++;
-													}
-													if (nrReady == nrOnline) {
-														this->activeSubMenu = MAPSELECT;
-														this->selector = 0;
-														this->changeMenu(0, STARTMENU);
-														this->m_playerCamController->setTargets(this->mapMenu[0]);
-														m_app->getGameSettings().players = nrReady;
-														break;
-													}
+									break;
+								case ONLINE:
+									switch (this->playersReady[i]) {
+										case NOTREADY:
+											if(a) {
+												this->playersReady[i] = READY;
+												int nrOnline = 0;
+												int nrReady = 0;
+												for (size_t u = 0; u < 4; u++) {
+													if (this->players[u] == ONLINE) 
+														nrOnline++;
+													if (this->playersReady[u] == READY) 
+														nrReady++;
 												}
-												if (b) {
+												if (nrReady == nrOnline) {
+													m_activeSubMenu = MAPSELECT;
+													m_selector = 0;
+													this->changeMenu(0, STARTMENU);
+													this->m_playerCamController.setTargets(this->mapMenu[0]);				
+													break;
+												}
+											}
+											if (b) {
+											this->players[i] = OFFLINE;
+											this->setColor(i, this->offColor);
+
+											}
+
+											if (right) {
+												this->setColor(i, this->getRandomColor());
+											}
+											if (left) {
+												this->setColor(i, this->getRandomColor());
+											}
+
+
+
+											break;
+										case READY:
+											if (b) {
 												this->players[i] = OFFLINE;
 												this->setColor(i, this->offColor);
 
-												}
-
-												if (right) {
-													this->setColor(i, Utils::getRandomColor());
-												}
-												if (left) {
-													this->setColor(i, Utils::getRandomColor());
-												}
-
-
-
-												break;
-											case READY:
-												if (b) {
-													this->players[i] = OFFLINE;
-													this->setColor(i, this->offColor);
-
-												}
+											}
 												
 
 											
-												break;
+											break;
 
-										}
-
-										break;
-								}
-								break;
-							case MAPSELECT:
-								if (right) {
-									this->changeMenu(1, STARTMENU);
-								}
-								if (left) {
-									this->changeMenu(-1, STARTMENU);
-								}
-								if (a) {								
-									m_app->getGameSettings().level = this->selector;
-									for (size_t u = 0; u < 4; u++) {
-										m_app->getGameSettings().color[u] = this->playerColor[u];
-										m_app->getGameSettings().ports[u] = u;
-										m_app->getGameSettings().teams[u] = 0;
-										m_app->getGameSettings().used = 1;
 									}
-									requestStackPop();
-									requestStackPush(States::Game);
-								}
-								if (b) {
-									this->activeSubMenu = PLAYERSELECT;
-									this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1],
-										this->playerMenu[2], this->playerMenu[3]);
-									for (size_t u = 0; u < 4; u++) {
-										this->playersReady[u] = NOTREADY;
+
+									break;
+							}
+							break;
+						case MAPSELECT:
+							if (right) {
+								this->changeMenu(1, STARTMENU);
+							}
+							if (left) {
+								this->changeMenu(-1, STARTMENU);
+							}
+							if (a) {	
+								// START GAME
+
+								m_app->getGameSettings().level = m_selector;
+								m_app->getGameSettings().gamemode = m_gamemode;
+								m_app->getGameSettings().level = m_map;
+								for (size_t u = 0; u < 4; u++) {
+									if (playersReady[u]) {
+										Application::GameSettings::player player;
+										player.port = u;
+										player.color = this->playerColor[u];
+										player.model = m_playerModel[u];
+										player.team = m_playerTeam[u];
+										m_app->getGameSettings().players.push_back(player);
+
 									}
-									this->mapMenu[selector]->setLightColor(this->offColor);
-									this->selector = 0;
 								}
-								break;			
-						}
 
-						break;
-					case OPTIONSMENU:
-						if (b) {
-							this->activeMenu = MAINMENU;
-							this->optionsMenuList[this->selector]->setLightColor(this->offColor);
-							this->selector = 0;
-							this->changeMenu(0, MAINMENU);
+									
+								requestStackPop();
+								requestStackPush(States::Game);
+							}
+							if (b) {
+								m_activeSubMenu = PLAYERSELECT;
+								this->m_playerCamController.setTargets(this->playerMenu[0], this->playerMenu[1],
+									this->playerMenu[2], this->playerMenu[3]);
+								for (size_t u = 0; u < 4; u++) {
+									this->playersReady[u] = NOTREADY;
+								}
+								this->mapMenu[m_selector]->setLightColor(this->offColor);
+								m_selector = 0;
+							}
+							break;			
+					}
 
-						}
-						if (down) {
-							this->changeMenu(1, OPTIONSMENU);
-						}
-						if (up) {
-							this->changeMenu(-1, OPTIONSMENU);
-						}
+					break;
+				case OPTIONSMENU:
+					if (b) {
+						this->m_activeMenu= MAINMENU;
+						this->optionsMenuList[m_selector]->setLightColor(this->offColor);
+						m_selector = 0;
+						this->changeMenu(0, MAINMENU);
+
+					}
+					if (down) {
+						this->changeMenu(1, OPTIONSMENU);
+					}
+					if (up) {
+						this->changeMenu(-1, OPTIONSMENU);
+					}
 
 
-						break;
-				}
+					break;
+			}
 		}
-	}
-
-
-
-
-
-	if (kbTracker.pressed.Q) {
-		requestStackPop();
-		requestStackPush(States::Game);
-	}
-
-
+	
 	return true;
 }
 
@@ -450,48 +475,48 @@ void MenuState::changeMenu(int change, int active)
 {
 	int max = 0;
 	if (active == MAINMENU) {
-		this->menuList[this->selector]->setLightColor(this->offColor);
+		this->menuList[m_selector]->setLightColor(this->offColor);
 		max = (int)this->menuList.size()-1;
 	}
 	if (active == OPTIONSMENU) {
-		this->optionsMenuList[this->selector]->setLightColor(this->offColor);
+		this->optionsMenuList[m_selector]->setLightColor(this->offColor);
 		max = (int)this->menuList.size() - 1;
 	}
-	if (active == STARTMENU && this->activeSubMenu == MAPSELECT) {
+	if (active == STARTMENU && m_activeSubMenu == MAPSELECT) {
 
-		this->mapMenu[this->selector]->setLightColor(this->offColor);
+		this->mapMenu[m_selector]->setLightColor(this->offColor);
 		max = (int)this->mapMenu.size() - 1;
 	}
 
 
-	this->selector += change;
-	if (this->selector < 0)
-		this->selector = max;
-	if (this->selector > max)
-		this->selector = 0;
+	m_selector += change;
+	if (m_selector < 0)
+		m_selector = max;
+	if (m_selector > max)
+		m_selector = 0;
 	if (active == MAINMENU) {
-		this->menuList[this->selector]->setLightColor(this->onColor);
-		m_playerCamController->setTargets(
-			this->menuList[this->selector],
+		this->menuList[m_selector]->setLightColor(this->onColor);
+		m_playerCamController.setTargets(
+			this->menuList[m_selector],
 			nullptr,
 			nullptr,
 			nullptr
 		);
 	}
 	if (active == OPTIONSMENU) {
-		this->optionsMenuList[this->selector]->setLightColor(this->onColor);
-		m_playerCamController->setTargets(
-			this->optionsMenuList[this->selector],
+		this->optionsMenuList[m_selector]->setLightColor(this->onColor);
+		m_playerCamController.setTargets(
+			this->optionsMenuList[m_selector],
 			nullptr,
 			nullptr,
 			nullptr
 		);
 	}
-	if (active == STARTMENU && this->activeSubMenu == MAPSELECT) {
+	if (active == STARTMENU && m_activeSubMenu == MAPSELECT) {
 
-		this->mapMenu[this->selector]->setLightColor(this->onColor);
-		m_playerCamController->setTargets(
-			this->mapMenu[this->selector],
+		this->mapMenu[m_selector]->setLightColor(this->onColor);
+		m_playerCamController.setTargets(
+			this->mapMenu[m_selector],
 			nullptr,
 			nullptr,
 			nullptr

@@ -85,6 +85,7 @@
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
+    <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +172,8 @@
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
+    <ClInclude Include="src\game\states\Settings.h" />
+    <ClInclude Include="src\game\CharacterHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

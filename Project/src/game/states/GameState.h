@@ -2,7 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/Character.h"
+#include "../CharacterHandler.h"
 #include "../level/Level.h"
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
@@ -56,9 +56,9 @@ private:
 	std::unique_ptr<CollisionHandler> m_collisionHandler;
 
 
-	// TODO: replace all these with characterHandler
-	Hook* m_hooks[4];
-	Weapon* m_weapons[4];
-	Character* m_player[4];
+
+	CharacterHandler* m_characterHandler;
+
+	ProjectileHandler* m_projHandler;
 
 };

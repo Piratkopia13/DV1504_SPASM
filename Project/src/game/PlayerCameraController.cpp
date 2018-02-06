@@ -13,8 +13,8 @@ PlayerCameraController::PlayerCameraController(Camera* cam, const DirectX::Simpl
 	, m_cameraZOffset(8.0f)
 	, m_followSpeed(2.f)
 	, m_moveSpeed(2)
-	, m_position(Vector3(0, 0, 0))
-	, m_target(Vector3(0, 0, 0))
+	, m_position(DirectX::SimpleMath::Vector3(0, 0, 0))
+	, m_target(DirectX::SimpleMath::Vector3(0, 0, 0))
 	, m_back(Vector3(0, 0, -1))
 	, m_up(Vector3(0, 1, 0))
 	, m_moving(true)
@@ -140,8 +140,15 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 		float addedDst = maxXDst + maxYDst;
-		float xFac = maxXDst / addedDst;
-		float yFac = maxYDst / addedDst;
+		float xFac, yFac;
+		if (addedDst != 0.f) {
+			xFac = maxXDst / addedDst;
+			yFac = maxYDst / addedDst;
+		}
+		else {
+			xFac = 0.5f;
+			yFac = 0.5f;
+		}
 		m_extraZTarget = (sin(r*Utils::clamp(maxXDst, 0.f, 78.f) + z) + 1) * t * xFac + (sin(r2*Utils::clamp(maxYDst, 0.f, 41.f) + z) + 1) * t2 * yFac;
 	}
 
