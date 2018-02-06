@@ -16,6 +16,8 @@ namespace {
 class Block;
 class Grid;
 class Moveable;
+class Character;
+class Gamemode;
 class Level {
 
 public:
@@ -24,7 +26,7 @@ public:
 	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
 	~Level();
 
-	void update(const float delta);
+	void update(const float delta, Character* player);
 	void draw();
 	Grid* getGrid();
 
@@ -36,9 +38,17 @@ private:
 	// Number of blocks in the y-axis
 	int m_height;
 	
+	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;
+	// Blocks placed in the level
 	std::vector<std::unique_ptr<Block>> m_blocks;
 
+	// Grid of the level
 	std::unique_ptr<Grid> m_grid;
 
+	// int for the current gamemode
+	int m_currentGamemode = 0;
+
+	// The gamemode to be played on the level
+	std::unique_ptr<Gamemode> m_gamemode;
 };

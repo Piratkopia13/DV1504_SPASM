@@ -1,8 +1,22 @@
 #pragma once
 
+#include "../../sail/Sail.h"
+#include "../objects/Character.h"
+#include "../objects/Block.h"
+
 class Gamemode {
 public:
-	void update();
+	Gamemode();
+	~Gamemode();
+
+	virtual void update(Character* player, float delta);
+	virtual void draw();
+
+	int getScore(const int team);
+	
+protected:
+	void addScore(const int toAdd, const int team);
+
 private:
-	int m_currentScore;
+	int m_scoreTeamOne, m_scoreTeamTwo;
 };

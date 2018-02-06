@@ -19,7 +19,7 @@ GameState::GameState(StateStack& stack)
 
 	m_app = Application::getInstance();
 
-	m_currLevel = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());	// Load in textures from file
+	m_currLevel = std::make_unique<Level>("sprint_demo.level", m_scene.getDeferredRenderer());	// Load in textures from file
 
 	auto& blocks = m_currLevel->getGrid()->getAllBlocks();
 	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
@@ -254,11 +254,12 @@ bool GameState::update(float dt) {
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
 
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
+	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(m_player[0]->getBoundingBox()->getMinPos()) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
 	for (int i = 0; i < 4; i++)
 		this->m_player[i]->update(dt);
 
+	m_currLevel->update(dt, m_player[0]);
 
 	if(!m_flyCam)
 		m_playerCamController->update(dt);

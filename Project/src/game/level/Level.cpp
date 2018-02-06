@@ -2,6 +2,7 @@
 #include "../objects/Block.h"
 #include "Grid.h"
 #include "../objects/common/Moveable.h"
+#include "../gamemodes/payload/PayloadGamemode.h"
 
 #include <string>
 #include <fstream>
@@ -14,6 +15,11 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
 	
 	if (infile) {
+
+		// ONLY FOR PAYLOADGAMEMODE - Controlnode Indices
+		std::vector<Grid::Index> cnIndices;
+		
+
 		std::string line;
 		unsigned int currTask = 0;
 		unsigned int x = 0;
@@ -54,14 +60,22 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 				x = 0;
 				for (auto c : line) {
 					switch (c) {
+
+					// Normal blocks
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
+					
+					// Controlnodes
+					case 'c':
+						cnIndices.push_back(Grid::Index{ static_cast<int>(x), static_cast<int>(y) });
+					
 					default:
 						break;
+					
 					}
 					x++;
 				}
@@ -74,8 +88,14 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 
 			}
 		}
+
+		// SWITCH TO ENUM WHEN AVAILABLE
+		if (m_currentGamemode == 0)
+			m_gamemode = std::make_unique<PayloadGamemode>(cnIndices, deferredRenderer);
+
 	}
 	else {
+		Logger::Error("Could not load the file '" + filename + "'.");
 	}
 }
 
@@ -83,13 +103,15 @@ Level::~Level() {
 
 }
 
-void Level::update(const float delta) {
-
+void Level::update(const float delta, Character* player) {
+	m_gamemode->update(player, delta);
 }
 
 void Level::draw() {
 	for (const auto& block : m_blocks) 
 		block->draw();
+
+	m_gamemode->draw();
 }
 
 DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const float dt) {

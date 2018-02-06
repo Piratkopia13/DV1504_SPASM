@@ -135,6 +135,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
@@ -215,6 +217,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\objects\menu\MenuItem.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
