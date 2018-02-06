@@ -193,7 +193,7 @@ void PlayerCameraController::updatePosition(float dt)
 			//m_target.Clamp(min, max);
 
 			//Logger::log(std::to_string(m_extraZ));
-			Logger::log(Utils::vec3ToStr(m_target));
+			//Logger::log(Utils::vec3ToStr(m_target));
 
 		}
 
