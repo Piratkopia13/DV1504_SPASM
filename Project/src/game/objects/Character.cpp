@@ -180,10 +180,10 @@ void Character::update(float dt) {
 
 
 	//Collision detection for projectiles
-	for (unsigned int i = 0; i < currentWeapon->getProjectileHandler().getProjectiles().size(); i++) {
-		if (currentWeapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != currentTeam) {
-			if (this->getBoundingBox()->containsOrIntersects(*currentWeapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
-				currentWeapon->getProjectileHandler().removeAt(i);
+	for (unsigned int i = 0; i < m_weapon->getProjectileHandler().getProjectiles().size(); i++) {
+		if (m_weapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != m_currentTeam) {
+			if (this->getBoundingBox()->containsOrIntersects(*m_weapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
+				m_weapon->getProjectileHandler().removeAt(i);
 				std::cout << "\nHit";
 			}
 		}
