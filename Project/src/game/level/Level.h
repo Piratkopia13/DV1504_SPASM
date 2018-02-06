@@ -27,6 +27,7 @@ public:
 	void update(const float delta);
 	void draw();
 	Grid* getGrid();
+	DirectX::SimpleMath::Vector2 getGridWorldSize();
 
 	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
 	

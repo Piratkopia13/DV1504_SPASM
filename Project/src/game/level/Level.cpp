@@ -211,3 +211,8 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 Grid* Level::getGrid() {
 	return m_grid.get();
 }
+
+DirectX::SimpleMath::Vector2 Level::getGridWorldSize() {
+	auto& blocks = getGrid()->getAllBlocks();
+	return DirectX::SimpleMath::Vector2(blocks.size(), blocks.at(0).size()) * Level::DEFAULT_BLOCKSIZE;
+}

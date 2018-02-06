@@ -6,7 +6,7 @@
 #include "../level/Level.h"
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
-#include "Variables.h"
+#include "../collision/CollisionHandler.h"
 
 class GameState : public State {
 public:
@@ -42,12 +42,10 @@ private:
 	MaterialShader m_matShader;
 	SailFont m_font;
 
-	Timer m_timer;
+	//Timer m_timer;
 
 	Text m_fpsText;
-	Text m_debugText;
 	Text m_debugCamText;
-	Text m_debugParticleText;
 
 	std::unique_ptr<PlayerCameraController> m_playerCamController;
 	bool m_flyCam;
@@ -59,15 +57,13 @@ private:
 	std::unique_ptr<FbxModel> m_WeaponModel1;
 	std::unique_ptr<FbxModel> m_hookModel;
 
-	// TEST REMOVE THIS
-	std::vector<std::unique_ptr<Model>> models;
+	// Handlers
+	std::unique_ptr<Level> m_level;
+	std::unique_ptr<ProjectileHandler> m_projHandler;
+	std::unique_ptr<CollisionHandler> m_collisionHandler;
 
-	// Currently used level
-	std::unique_ptr<Level> m_currLevel;
-
-	Hook* m_hooks[4];
-	Weapon* m_weapons[4];
-	Character* m_player[4];
-	ProjectileHandler* m_projHandler;
+	//Hook* m_hooks[4];
+	//Weapon* m_weapons[4];
+	//Character* m_player[4];
 
 };

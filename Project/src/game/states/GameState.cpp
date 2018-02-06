@@ -10,86 +10,44 @@ GameState::GameState(StateStack& stack)
 , m_hudCam(1280.f, 720.f, -1.f, 1.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
-, m_debugText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
-, m_debugParticleText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
-
+	// Get the Application instance
 	m_app = Application::getInstance();
 
-	m_currLevel = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());	// Load in textures from file
+	// Set up handlers
+	m_level = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());
+	m_projHandler = std::make_unique<ProjectileHandler>(m_scene.getDeferredRenderer());
 
-	auto& blocks = m_currLevel->getGrid()->getAllBlocks();
-	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
-	float mapHeight = blocks.at(0).size() * Level::DEFAULT_BLOCKSIZE;
-	Vector2 mapSize = Vector2(mapWidth, mapHeight);
+	// Set up camera with controllers
+	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
+	Vector2 mapSize = m_level->getGridWorldSize();
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
 
 	// Update the hud shader
-	m_hudShader.updateCamera(m_hudCam);
+	//m_hudShader.updateCamera(m_hudCam);
 
-	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
 
-	m_timer.startTimer();
-
-	// Add skybox to the scene
+	// Set up the scene
 	m_scene.addSkybox(L"skybox_space_512.dds");
-	auto& l = m_scene.getLights();
-	auto dl = l.getDL();
-	dl.color = Vector3(0.9f, 0.9f, 0.9f);
- 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	//dl.direction = Vector3(0.46f, -0.87f, 0.12f);
-	dl.direction.Normalize();
-	l.setDirectionalLight(dl);
+	// Add a directional light
+	Vector3 color(0.9f, 0.9f, 0.9f);
+ 	Vector3 direction(0.4f, -0.6f, 1.0f);
+	direction.Normalize();
+	m_scene.setUpDirectionalLight(Lights::DirectionalLight(color, direction));
 
-	m_scene.setShadowLight();
-
-// 	Lights::PointLight pl;
-// 	pl.setColor(Vector3(0.1f, 0.9f, 0.1f));
-// 	pl.setPosition(Vector3(0.f, 4.f, -2.f));
-// 	pl.setAttenuation(1.f, 1.f, 1.f);
-// 	l.addPointLight(pl);
-
-
-	m_matShader.updateLights(m_scene.getLights());
-
-
-	Vector3 halfSizes(0.5f, 0.5f, 0.5f);
-
-	/* Planes for debugging */
-	float windowWidth = (float)m_app->getWindow()->getWindowWidth();
-	float windowHeight = (float)m_app->getWindow()->getWindowHeight();
-	float texPlaneHeight = windowHeight / 2.5f;
-	Vector2 texPlaneHalfSize(texPlaneHeight / 2.f * (windowWidth / windowHeight), texPlaneHeight / 2.f);
-	m_texturePlane = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_texturePlane->buildBufferForShader(&m_colorShader);
-	m_texturePlane->getMaterial()->setTextures(m_scene.getDLShadowMap().getSRV(), 1);
-	//m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
-	//m_texturePlane->getTransform().rotateAroundY(XM_PI);
-	//m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
-
-	m_texturePlane2 = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_texturePlane2->buildBufferForShader(&m_hudShader);
-	m_texturePlane2->getMaterial()->setTextures(m_scene.getDeferredRenderer().getGBufferSRV(DeferredRenderer::DEPTH_GBUFFER), 1);
-	m_texturePlane2->getTransform().rotateAroundX(-XM_PIDIV2);
-	m_texturePlane2->getTransform().rotateAroundY(XM_PI);
-	m_texturePlane2->getTransform().translate(Vector3(windowWidth / 2.f - texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
-	/* Planes for debugging */
-
+	// Set up HUD texts
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
-	m_debugText.setPosition(Vector2(0.f, 40.f));
-
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
 #ifdef _DEBUG
-	m_scene.addText(&m_debugText);
 	m_scene.addText(&m_debugCamText);
-	m_scene.addText(&m_debugParticleText);
 #endif
 
+	// TODO: move all model loading to a ModelManager
 	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
 	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 
@@ -99,7 +57,6 @@ GameState::GameState(StateStack& stack)
 	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
 	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
 	
-	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
 
 	for (int i = 0; i < 4; i++) {
 		m_weapons[i] = new Weapon(m_WeaponModel1->getModel(), m_projHandler, i % 2);

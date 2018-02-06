@@ -13,13 +13,10 @@
 #include "renderer/DeferredRenderer.h"
 #include "../utils/Timer.h"
 #include "shader/basic/DepthShader.h"
-//#include "../../game/level/Level.h"
-//#include "../../game/ProjectileHandler.h"
 #include "shader/postprocess/PostProcessFlushShader.h"
 #include "shader/postprocess/GaussianBlurCShader.h"
 #include "../../game/level/Level.h"
 #include "postprocessing/PostProcessPass.h"
-//#include "../../game/objects/common/Object.h"
 
 class ProjectileHandler;
 class Object;
@@ -50,9 +47,6 @@ public:
 	// This has to be called on window  
 	void resize(int width, int height);
 
-	// Setup the DL for shadows
-	void setShadowLight();
-
 	// Return the lights
 	Lights& getLights();
 	// Return the deferred renderer
@@ -60,7 +54,11 @@ public:
 
 	DirLightShadowMap& getDLShadowMap();
 
+	// Setup the DL for shadows
+	void setUpDirectionalLight(const Lights::DirectionalLight& dl);
+
 private:
+
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
 	//void createFullscreenQuad();
 

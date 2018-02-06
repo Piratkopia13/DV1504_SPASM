@@ -173,21 +173,16 @@ std::map<ShaderSet*, std::vector<Model*>> Scene::mapModelsToShaders(std::vector<
 
 }
 
-void Scene::setShadowLight() {
-	//4096, 2160
+void Scene::setUpDirectionalLight(const Lights::DirectionalLight& dl) {
+
+	m_lights.setDirectionalLight(dl);
+
+	// Set up shadow map camera
 	float w = 100.f;
 	OrthographicCamera dlCam(w, w / 1.9f, -105.f, 110.f);
-	//OrthographicCamera dlCam(25.f, 25.f / 1.9f, -25.f, 25.f);
 	dlCam.setPosition(-m_lights.getDL().direction * 5.f);
-	//dlCam.setPosition(DirectX::SimpleMath::Vector3(-110.f, 78.f, -131));
 	dlCam.setDirection(m_lights.getDL().direction);
-	//dlCam.setDirection(DirectX::SimpleMath::Vector3(0.703f, -0.3f, 0.65f));
-	//dlCam.setDirection(DirectX::SimpleMath::Vector3(1.f, 0, 0));
 	m_lights.setDirectionalLightCamera(dlCam);
-
-	//Lights::DirectionalLight temp = m_lights.getDL();
-	//temp.color = DirectX::SimpleMath::Vector3(0.99f, 0.36f, 0.21f);
-	//m_lights.setDirectionalLight(temp);
 
 	m_depthShader.updateCamera(dlCam);
 }

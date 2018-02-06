@@ -21,6 +21,7 @@ public:
 	bool atGrid(const int x, const int y);
 	std::vector<Index> getCollisionIndices(const AABB& boundingBox, const float cellSize);
 	std::vector<std::vector<Block*>>& getAllBlocks();
+
 private:
 	std::vector<std::vector<Block*>> m_cells;
 	
