@@ -216,11 +216,11 @@ bool GameState::update(float dt) {
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
 
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(m_player[0]->getBoundingBox()->getMinPos()) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
+	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(m_characterHandler->getCharacter(0)->getBoundingBox()->getMinPos()) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
 	m_characterHandler->update(dt);
 
-	m_currLevel->update(dt, m_player[0]);
+	m_currLevel->update(dt, m_characterHandler);
 
 	if(!m_flyCam)
 		m_playerCamController->update(dt);

@@ -13,10 +13,10 @@ namespace {
 /**
 	Handles all objects of a level
 */
+class CharacterHandler;
 class Block;
 class Grid;
 class Moveable;
-class Character;
 class Gamemode;
 class Level {
 
@@ -26,7 +26,7 @@ public:
 	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
 	~Level();
 
-	void update(const float delta, Character* player);
+	void update(const float delta, CharacterHandler* charHandler);
 	void draw();
 	Grid* getGrid();
 

@@ -9,7 +9,7 @@ Gamemode::~Gamemode() {
 
 }
 
-void Gamemode::update(Character* player, float delta) {
+void Gamemode::update(CharacterHandler* charHandler, float delta) {
 
 }
 

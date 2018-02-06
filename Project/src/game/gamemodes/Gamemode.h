@@ -1,15 +1,14 @@
 #pragma once
 
 #include "../../sail/Sail.h"
-#include "../objects/Character.h"
-#include "../objects/Block.h"
 
+class CharacterHandler;
 class Gamemode {
 public:
 	Gamemode();
 	~Gamemode();
 
-	virtual void update(Character* player, float delta);
+	virtual void update(CharacterHandler* charHandler, float delta);
 	virtual void draw();
 
 	int getScore(const int team);

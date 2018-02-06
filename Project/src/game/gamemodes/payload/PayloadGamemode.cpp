@@ -1,5 +1,6 @@
 #include "PayloadGamemode.h"
 
+#include "../../CharacterHandler.h"
 
 PayloadGamemode::PayloadGamemode(std::vector<Grid::Index> indices, DeferredRenderer& deferredRenderer)
 : Gamemode(){
@@ -18,7 +19,7 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index> indices, DeferredRende
 
 PayloadGamemode::~PayloadGamemode() {}
 
-void PayloadGamemode::update(Character* player, float dt) {
+void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	int index = 0;
 	
 	std::vector<Grid::Index> numOfTeam;
@@ -30,17 +31,24 @@ void PayloadGamemode::update(Character* player, float dt) {
 	}
 
 	for (Grid::Index cn_index : m_indices) {
-		bool playerColliding = false;
-		std::vector<Grid::Index> indices = Grid::convertToIndexed(player->getBoundingBox());
-		for (Grid::Index p_index : indices) {
-			if (p_index.x == cn_index.x && p_index.y == cn_index.y) {
-				playerColliding = true;
+		for (int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+			bool playerColliding = false;
+			std::vector<Grid::Index> indices = Grid::convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
+			for (Grid::Index p_index : indices) {
+				if (p_index.x == cn_index.x && p_index.y == cn_index.y) {
+					playerColliding = true;
+				}
 			}
-		}
-		// REPLACE WITH TEAM OF PLAYER LATER
-		if (playerColliding) {
-			//player.getTeam()
-			numOfTeam[index].x += 1;
+
+			if (playerColliding) {
+				/* UNCOMMENT WHEN SUPPORT FOR TEAMS HAS BEEN ADDED */
+				//if (charHandler->getCharacter(i)->getTeam() + 1 == 1)
+				//	numOfTeam[index].x += 1;
+				//else
+				//	numOfTeam[index].y += 1;
+				numOfTeam[index].x += (i + 1) % 2;
+				numOfTeam[index].y += i % 2;
+			}
 		}
 
 		m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);

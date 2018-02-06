@@ -86,7 +86,12 @@ bool ControlNode::updateNodeTimer(float dt) {
 	}
 
 	if (m_timeBeingCaptured && m_teamCapturing) {
-		m_nodeColor = m_teamOneColor * pow((m_timeBeingCaptured / m_timeTillCapture), 2.0);
+		if(m_teamCapturing == 1) 
+			m_nodeColor = m_teamOneColor * (m_timeBeingCaptured / m_timeTillCapture) +
+			((float(m_team)/2.f) * m_teamTwoColor * (1.f - (m_timeBeingCaptured / m_timeTillCapture)));
+		else
+			m_nodeColor = m_teamTwoColor * (m_timeBeingCaptured / m_timeTillCapture) +
+			((float(m_team)) * m_teamOneColor * (1.f - (m_timeBeingCaptured / m_timeTillCapture)));;
 	}
 	else {
 		switch (m_team) {
@@ -101,8 +106,6 @@ bool ControlNode::updateNodeTimer(float dt) {
 			break;
 		}
 	}
-
-	std::cout << m_teamCapturing << std::endl;
 	
 	return false;
 }

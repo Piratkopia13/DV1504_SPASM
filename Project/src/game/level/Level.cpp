@@ -103,8 +103,8 @@ Level::~Level() {
 
 }
 
-void Level::update(const float delta, Character* player) {
-	m_gamemode->update(player, delta);
+void Level::update(const float delta, CharacterHandler* charHandler) {
+	m_gamemode->update(charHandler, delta);
 }
 
 void Level::draw() {
