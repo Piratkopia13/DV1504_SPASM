@@ -177,6 +177,17 @@ void Character::update(float dt) {
 	if (m_hook) {
 		m_hook->update(dt, m_weapon->getTransform().getTranslation());
 	}
+
+
+	//Collision detection for projectiles
+	for (unsigned int i = 0; i < currentWeapon->getProjectileHandler().getProjectiles().size(); i++) {
+		if (currentWeapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != currentTeam) {
+			if (this->getBoundingBox()->containsOrIntersects(*currentWeapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
+				currentWeapon->getProjectileHandler().removeAt(i);
+				std::cout << "\nHit";
+			}
+		}
+	}
 }
 
 void Character::draw() {

@@ -14,6 +14,7 @@ private:
 	float timeSinceFire;
 
 public:
+
 	bool automatic;
 	float cooldownTime;
 	Weapon();
@@ -27,6 +28,8 @@ public:
 	void triggerPull();
 	void triggerRelease();
 	void fire(DirectX::SimpleMath::Vector3 direction);
+
+	ProjectileHandler& getProjectileHandler();
 
 
 
