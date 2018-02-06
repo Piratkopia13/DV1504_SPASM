@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
@@ -204,7 +205,6 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />
@@ -213,6 +213,7 @@
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\collision\CollisionHandler.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\objects\menu\MenuItem.h" />
     <ClInclude Include="src\game\states\MenuState.h" />

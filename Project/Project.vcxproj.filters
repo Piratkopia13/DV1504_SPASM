@@ -85,6 +85,7 @@
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\states\PauseState.h" />
@@ -171,9 +172,9 @@
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\states\Settings.h" />
+    <ClInclude Include="src\game\collision\CollisionHandler.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
