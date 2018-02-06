@@ -1,6 +1,6 @@
 #pragma once
 #include "../sail/Sail.h"
-#include "objects\Character.h"
+#include "objects/Character.h"
 
 class PlayerCameraController : public CameraController {
 public:
