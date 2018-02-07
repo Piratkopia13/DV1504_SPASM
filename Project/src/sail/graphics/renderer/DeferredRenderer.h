@@ -33,9 +33,9 @@ public:
 	void beginLightDepthPass(ID3D11DepthStencilView* const dsv);
 	void doLightPass(Lights& lights, Camera& cam, DirLightShadowMap& dlShadowMap);
 	void resize(int width, int height);
-	DeferredGeometryShader& getGeometryShader();
+	/*DeferredGeometryShader& getGeometryShader();
 	DeferredDirectionalLightShader& getDirLightShader();
-	DeferredPointLightShader& getPointLightShader();
+	DeferredPointLightShader& getPointLightShader();*/
 	ID3D11ShaderResourceView** getGBufferSRV(UINT index);
 	RenderableTexture* getGBufferRenderableTexture(UINT index);
 	ID3D11DepthStencilView* const getDSV() const;
@@ -51,9 +51,9 @@ private:
 	ID3D11ShaderResourceView* m_dsvSrv;
 	ID3D11DepthStencilView* m_dsv;
 	Model m_fullScreenPlane;
-	DeferredDirectionalLightShader m_dirLightShader;
+	/*DeferredDirectionalLightShader m_dirLightShader;
 	DeferredPointLightShader m_pointLightShader;
-	DeferredGeometryShader m_geometryShader;
+	DeferredGeometryShader m_geometryShader;*/
 
 	// Light volumes
 	std::unique_ptr<FbxModel> m_pointLightVolume;

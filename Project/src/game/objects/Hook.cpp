@@ -1,15 +1,15 @@
 #include "Hook.h"
+#include "../collision/CollisionHandler.h"
 
-Hook::Hook(Model *drawModel, Grid *levelGrid) {
-	m_Model = drawModel;
-	m_levelGrid = levelGrid;
+Hook::Hook(Model *drawModel) {
+	model = drawModel;
 }
 
 Hook::~Hook() {
 
 }
 
-void Hook::update(float dt, DirectX::SimpleMath::Vector3 position) {
+void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 	if (m_triggerHeld) {
 		m_direction = (m_position - position);
 		m_direction.z = 0.f;
@@ -21,9 +21,9 @@ void Hook::update(float dt, DirectX::SimpleMath::Vector3 position) {
 	}
 }
 
-void Hook::triggerPull(DirectX::SimpleMath::Vector3 position, DirectX::SimpleMath::Vector3 direction) {
+void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
 	m_triggerHeld = true;
-	m_position = m_levelGrid->raytraceBlock(position, direction);
+	m_position = CollisionHandler::getInstance()->rayTraceLevel(position, direction);
 }
 
 void Hook::triggerRelease() {
@@ -32,8 +32,8 @@ void Hook::triggerRelease() {
 
 void Hook::draw() {
 	if (m_triggerHeld) {
-		m_Model->setTransform(&getTransform());
-		m_Model->draw();
+		model->setTransform(&getTransform());
+		model->draw();
 	}
 }
 

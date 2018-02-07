@@ -114,6 +114,7 @@ public:
 	static std::wstring vec3ToWStr(const DirectX::SimpleMath::Vector3& vec);
 	static std::string vec3ToStr(const DirectX::SimpleMath::Vector3& vec);
 	static float rnd();
+	static DirectX::SimpleMath::Vector4 getRandomColor();
 	static float clamp(float val, float min, float max);
 
 	static std::random_device rd;

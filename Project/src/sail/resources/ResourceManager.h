@@ -1,63 +1,72 @@
 #pragma once
 
 #include <Map>
+#include <memory>
 #include "TextureData.h"
 #include "DXTexture.h"
 #include "parsers/FBXParser.h"
 
+class DeferredGeometryShader;
+class FbxModel;
+class ShaderSet;
+
 class ResourceManager {
 public:
-	ResourceManager() {}
-	~ResourceManager() {}
+	ResourceManager();
+	~ResourceManager();
 
-	//
 	// TextureData
-	//
+	void LoadTextureData(const std::string& filename);
+	TextureData& getTextureData(const std::string& filename);
+	bool hasTextureData(const std::string& filename);
 
-	void LoadTextureData(const std::string& filename) {
-		m_textureDatas.insert({filename, std::make_unique<TextureData>(filename)});
-	}
-	TextureData& getTextureData(const std::string& filename) {
-		auto pos = m_textureDatas.find(filename);
-		if (pos == m_textureDatas.end())
-			Logger::Error("Tried to access a resource that was not loaded. (" + filename + ") \n Use Application::getInstance()->getResourceManager().LoadTextureData(\"filename\") before accessing it.");
-		
-		return *pos->second;
-	}
-	bool hasTextureData(const std::string& filename) {
-		return m_textureDatas.find(filename) != m_textureDatas.end();
-	}
-
-	//
 	// DXTexture
-	//
+	void LoadDXTexture(const std::string& filename);
+	DXTexture& getDXTexture(const std::string& filename);
+	bool hasDXTexture(const std::string& filename);
 
-	void LoadDXTexture(const std::string& filename) {
-		m_dxTextures.insert({ filename, std::make_unique<DXTexture>(filename) });
-	}
-	DXTexture& getDXTexture(const std::string& filename) {
-		auto pos = m_dxTextures.find(filename);
-		if (pos == m_dxTextures.end())
-			Logger::Error("Tried to access a resource that was not loaded. (" + filename + ") \n Use Application::getInstance()->getResourceManager().LoadDXTexture(" + filename + ") before accessing it.");
-
-		return *pos->second;
-	}
-	bool hasDXTexture(const std::string& filename) {
-		return m_dxTextures.find(filename) != m_dxTextures.end();
-	}
-
-
-	// 
 	// FBXParser
-	//
+	FBXParser& getFBXParser();
 
-	FBXParser& getFBXParser() {
-		return m_fbxParser;
+	// FBXModels
+	void LoadFBXModel(const std::string& filename);
+	FbxModel& getFBXModel(const std::string& filename);
+	bool hasFBXModel(const std::string& filename);
+
+	// ShaderSets
+
+	template <typename T>
+	void LoadShaderSet() {
+		// Insert and get the new ShaderSet
+		m_shaderSets.insert({ typeid(T).name(), std::make_unique<T>() });
+	}
+
+	template <typename T>
+	T& getShaderSet() {
+		auto pos = m_shaderSets.find(typeid(T).name());
+		if (pos == m_shaderSets.end()) {
+			// ShaderSet was not yet loaded, load it and return
+			LoadShaderSet<T>();
+			return dynamic_cast<T&>(*m_shaderSets.find(typeid(T).name())->second);
+		}
+
+		return dynamic_cast<T&>(*pos->second);
+	}
+	template <typename T>
+	bool hasShaderSet() {
+		return m_shaderSets.find(typeid(T).name()) != m_shaderSets.end();
 	}
 
 private:
+	// DONT MOVE THE NEXT LINE, WILL CAUSE CRASHES
+	FBXParser m_fbxParser;
+
+	// Textures mapped to their filenames
 	std::map<std::string, std::unique_ptr<TextureData>> m_textureDatas;
 	std::map<std::string, std::unique_ptr<DXTexture>> m_dxTextures;
+	// Models mapped to their filenames
+	std::map<std::string, std::unique_ptr<FbxModel>> m_fbxModels;
+	// ShaderSets mapped to their identifiers
+	std::map<std::string, std::unique_ptr<ShaderSet>> m_shaderSets;
 
-	FBXParser m_fbxParser;
 };
