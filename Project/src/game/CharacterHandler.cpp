@@ -19,7 +19,6 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 		Character* tempChar = new Character(cModel1);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
-		//tempChar->setCurrentLevel(currentLevel);
 		tempChar->setLightColor(settings->players[i].color);
 		tempChar->setTeam(settings->players[i].team);
 
