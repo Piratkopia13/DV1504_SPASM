@@ -20,7 +20,7 @@ GameState::GameState(StateStack& stack)
 	// Set up handlers
 	m_level = std::make_unique<Level>("speedrun.level");
 	m_projHandler = std::make_unique<ProjectileHandler>();
-	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get(), m_level.get());
+	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
 	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
 
 	// Set up camera with controllers

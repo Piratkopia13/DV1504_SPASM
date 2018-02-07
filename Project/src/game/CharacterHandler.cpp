@@ -2,7 +2,7 @@
 
 using namespace DirectX::SimpleMath;
 
-CharacterHandler::CharacterHandler(ProjectileHandler* projHandler, Level* currentLevel)
+CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 	: m_respawnTime(1)
 {
 

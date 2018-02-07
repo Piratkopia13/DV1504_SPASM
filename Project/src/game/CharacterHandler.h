@@ -4,7 +4,7 @@
 class CharacterHandler
 {
 public:
-	CharacterHandler(ProjectileHandler* projHandler = nullptr, Level* currentLevel = nullptr);
+	CharacterHandler(ProjectileHandler* projHandler = nullptr);
 	~CharacterHandler();
 
 	void addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position);
