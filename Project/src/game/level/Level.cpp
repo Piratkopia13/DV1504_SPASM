@@ -91,7 +91,7 @@ Level::Level(const std::string& filename)
 
 		// SWITCH TO ENUM WHEN AVAILABLE
 		if (m_currentGamemode == 0)
-			m_gamemode = std::make_unique<PayloadGamemode>(cnIndices, deferredRenderer);
+			m_gamemode = std::make_unique<PayloadGamemode>(cnIndices);
 
 	}
 	else {

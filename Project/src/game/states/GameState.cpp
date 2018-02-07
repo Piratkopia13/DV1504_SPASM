@@ -18,7 +18,7 @@ GameState::GameState(StateStack& stack)
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("speedrun.level");
+	m_level = std::make_unique<Level>("sprint_demo.level");
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
 	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
@@ -154,7 +154,7 @@ bool GameState::update(float dt) {
 
 	m_characterHandler->update(dt);
 
-	m_currLevel->update(dt, m_characterHandler);
+	m_level->update(dt, m_characterHandler.get());
 
 	if(!m_flyCam)
 		m_playerCamController->update(dt);

@@ -2,10 +2,9 @@
 
 #include "../../CharacterHandler.h"
 
-PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, DeferredRenderer& deferredRenderer)
+PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices)
 : Gamemode(){
-	m_controlNodeModel = std::make_unique<FbxModel>("capture_point.fbx");
-	m_controlNodeModel->getModel()->buildBufferForShader(&deferredRenderer.getGeometryShader());
+	m_controlNodeModel = Application::getInstance()->getResourceManager().getFBXModel("capture_point").getModel();
 	m_indices = indices;
 	m_numOfNodes = indices.size();
 	m_radius = 2;
@@ -13,7 +12,7 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, DeferredRend
 	for (Grid::Index index : indices) {
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
 		float y = Level::DEFAULT_BLOCKSIZE * (index.y);
-		m_controlNodes.push_back(std::make_unique<ControlNode>(m_controlNodeModel->getModel()));
+		m_controlNodes.push_back(std::make_unique<ControlNode>(m_controlNodeModel));
 		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
 	}
 }
@@ -32,7 +31,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	}
 
 	for (Grid::Index cn_index : m_indices) {
-		for (int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+		for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
 
 			bool playerColliding = false;
 			std::vector<Grid::Index> indices = Grid::convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());

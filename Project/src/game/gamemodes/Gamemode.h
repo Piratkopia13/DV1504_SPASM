@@ -6,7 +6,7 @@ class CharacterHandler;
 class Gamemode {
 public:
 	Gamemode();
-	~Gamemode();
+	virtual ~Gamemode();
 
 	virtual void update(CharacterHandler* charHandler, float delta);
 	virtual void draw();
