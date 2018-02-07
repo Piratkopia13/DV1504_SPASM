@@ -8,7 +8,7 @@
 
 const float Level::DEFAULT_BLOCKSIZE = 1.0f;
 
-Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer) 
+Level::Level(const std::string& filename) 
 	: m_grid(nullptr)
 {
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
@@ -35,7 +35,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 			
 			case 0: // Load models
 				m_models.push_back(std::make_unique<FbxModel>(line));
-				m_models.back()->getModel()->buildBufferForShader(&deferredRenderer.getGeometryShader());
+				m_models.back()->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 				break;
 			
 			case 1:

@@ -21,7 +21,7 @@ class Level {
 public:
 	static const float DEFAULT_BLOCKSIZE;
 
-	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
+	Level(const std::string& filename);
 	~Level();
 
 	void update(const float delta);

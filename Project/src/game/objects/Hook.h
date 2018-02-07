@@ -15,8 +15,8 @@ public:
 	Hook(Model *drawModel);
 	~Hook();
 
-	void update(float dt, DirectX::SimpleMath::Vector3 position);
-	void triggerPull(DirectX::SimpleMath::Vector3 position, DirectX::SimpleMath::Vector3 direction);
+	void update(float dt, const DirectX::SimpleMath::Vector3& position);
+	void triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction);
 	void triggerRelease();
 	void draw();
 

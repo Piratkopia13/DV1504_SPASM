@@ -35,14 +35,9 @@ void Moveable::setAcceleration(const DirectX::SimpleMath::Vector3 &newAccelerati
 	m_acceleration = newAcceleration;
 }
 
-void Moveable::addAcceleration(const DirectX::SimpleMath::Vector3& accel)
-{
+void Moveable::addAcceleration(const DirectX::SimpleMath::Vector3& accel) {
 	this->m_acceleration += accel;
 }
-//
-//void Moveable::setCurrentLevel(Level* level) {
-//	m_currLevel = level;
-//}
 
 void Moveable::setGrounded(bool grounded) {
 	m_grounded = grounded;

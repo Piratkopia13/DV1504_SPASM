@@ -2,10 +2,16 @@
 
 using namespace DirectX::SimpleMath;
 
-CharacterHandler::CharacterHandler(ProjectileHandler* projHandler, Level* currentLevel, Model* cModel1, Model* wModel, Model* hModel): m_respawnTime(1){
+CharacterHandler::CharacterHandler(ProjectileHandler* projHandler, Level* currentLevel)
+	: m_respawnTime(1)
+{
 
 	Application* app = Application::getInstance();
 	Application::GameSettings* settings = &app->getGameSettings();
+
+	Model* wModel = app->getResourceManager().getFBXModel("weapon").getModel();
+	Model* hModel = app->getResourceManager().getFBXModel("projectile").getModel();
+	Model* cModel1 = app->getResourceManager().getFBXModel("fisk").getModel();
 
 	for (size_t i = 0; i < settings->players.size(); i++) {
 		Weapon* tempWeapon = new Weapon(wModel, projHandler, settings->players[i].team);
@@ -72,7 +78,7 @@ void CharacterHandler::addPlayer(Character * player) {
 	m_respawnTimers.push_back(0);
 }
 
-void CharacterHandler::addSpawnPoint(unsigned int team, DirectX::SimpleMath::Vector3 position) {
+void CharacterHandler::addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position) {
 	m_spawns[team].push_back(position);
 }
 

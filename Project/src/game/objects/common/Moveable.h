@@ -16,7 +16,6 @@ public:
 	const DirectX::SimpleMath::Vector3& getVelocity();
  	void setAcceleration(const DirectX::SimpleMath::Vector3 &newAcceleration);
 	void addAcceleration(const DirectX::SimpleMath::Vector3& accel );
-	//void setCurrentLevel(Level* level);
 	void setGrounded(bool grounded);
 	bool grounded();
 	virtual void draw() = 0;

@@ -35,20 +35,12 @@ private:
 	Scene m_scene;
 
 	// Models
-	std::unique_ptr<FbxModel> m_sphere;
-	std::unique_ptr<Model> m_plane;
-	std::unique_ptr<Model> m_texturePlane;
-	std::unique_ptr<Model> m_texturePlane2;
+	//std::unique_ptr<FbxModel> m_sphere;
 
 	// Texts
 	SailFont m_font;
 	Text m_fpsText;
 	Text m_debugCamText;
-	
-
-	std::unique_ptr<FbxModel> m_characterModel;
-	std::unique_ptr<FbxModel> m_WeaponModel1;
-	std::unique_ptr<FbxModel> m_hookModel;
 
 	// Handlers
 	std::unique_ptr<Level> m_level;
