@@ -45,10 +45,10 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	// Set character spawn points
-	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
-	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(10, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(11, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
+	m_characterHandler->addSpawnPoint(2, Vector3(10, 2, 0));
+	m_characterHandler->addSpawnPoint(2, Vector3(11, 2, 0));
 
 	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {

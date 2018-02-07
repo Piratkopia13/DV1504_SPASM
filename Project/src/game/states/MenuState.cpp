@@ -296,11 +296,13 @@ bool MenuState::processInput(float dt) {
 								case OFFLINE:
 									if (a) {
 										this->players[i] = ONLINE;
-										this->setColor(i, this->onColor);
+										this->setColor(i, Vector4(1.0f, 0.9f, 0.0f, 1.0f));
+										m_playerTeam[i] = 1;
 									}
 									if (b) {
 										for (size_t u = 0; u < 4; u++) {
 											this->players[u] = OFFLINE;
+											m_playerTeam[u] = 0;
 											this->setColor(u, Vector4(0, 0, 0, 1));
 											this->m_playerCamController->setTargets(this->menuList[0]);
 
@@ -337,14 +339,19 @@ bool MenuState::processInput(float dt) {
 											if (b) {
 											this->players[i] = OFFLINE;
 											this->setColor(i, this->offColor);
-
 											}
 
-											if (right) {
-												this->setColor(i, Utils::getRandomColor());
-											}
-											if (left) {
-												this->setColor(i, Utils::getRandomColor());
+											if (right || left) {
+												m_playerTeam[i] = (m_playerTeam[i] % 2) + 1;
+												if (m_playerTeam[i] == 1) {
+													this->setColor(i, Vector4(1.0f, 0.9f, 0.0f, 1.0f));
+												}
+												else if (m_playerTeam[i] == 2) {
+													this->setColor(i, Vector4(0.0f, 0.9f, 1.0f, 1.0f));
+												}
+												else {
+													this->setColor(i, this->offColor);
+												}
 											}
 
 
@@ -354,7 +361,7 @@ bool MenuState::processInput(float dt) {
 											if (b) {
 												this->players[i] = OFFLINE;
 												this->setColor(i, this->offColor);
-
+												m_playerTeam[i] = 0;
 											}
 												
 
