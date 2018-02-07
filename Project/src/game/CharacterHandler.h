@@ -1,13 +1,13 @@
 #pragma once
-#include "objects\Character.h"
+#include "objects/Character.h"
 
 class CharacterHandler
 {
 public:
-	CharacterHandler(ProjectileHandler* projHandler = nullptr, Level* currentLevel = nullptr, Model* cModel1 = nullptr, Model* cModel2 = nullptr, Model* cModel3 = nullptr);
+	CharacterHandler(ProjectileHandler* projHandler = nullptr);
 	~CharacterHandler();
 
-	void addSpawnPoint(unsigned int team, DirectX::SimpleMath::Vector3 position);
+	void addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position);
 	void killPlayer(unsigned int index);
 	void respawnPlayer(unsigned int id);
 	void setRespawnTime(float time);

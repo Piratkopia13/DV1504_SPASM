@@ -4,18 +4,18 @@
 #include "../sail/Sail.h"
 
 class ProjectileHandler {
-private:
-	std::unique_ptr<FbxModel> m_projectileModel1;
-	std::vector<Projectile*> m_projectiles;
-	std::vector<float> m_projectileLifeSpan;
 public:
-	ProjectileHandler(DeferredRenderer& deferredRenderer);
+	ProjectileHandler();
 	~ProjectileHandler();
 
-	std::vector<Projectile*>& getProjectiles();
-
 	void addProjectile(Projectile* newProjectile);
+	std::vector<Projectile*>& getProjectiles();
 	void removeAt(int index);
 	void update(float dt);
 	void draw();
+
+private:
+	Model* m_projectileModel;
+	std::vector<Projectile*> m_projectiles;
+	std::vector<float> m_projectileLifeSpan;
 };

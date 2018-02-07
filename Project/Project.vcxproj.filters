@@ -86,6 +86,8 @@
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\CharacterHandler.cpp" />
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
@@ -107,7 +109,6 @@
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
     <ClInclude Include="src\game\states\GameState.h" />
-    <ClInclude Include="src\game\states\Variables.h" />
     <ClInclude Include="src\sail\Application.h" />
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\camera\Camera.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="src\sail\utils\Timer.h" />
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
+    <ClInclude Include="src\game\collision\CollisionHandler.h" />
     <ClInclude Include="src\game\states\Settings.h" />
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
@@ -181,7 +183,6 @@
     <ClInclude Include="src\game\CharacterHandler.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />

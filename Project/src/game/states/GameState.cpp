@@ -7,107 +7,56 @@ using namespace DirectX::SimpleMath;
 GameState::GameState(StateStack& stack)
 : State(stack)
 , m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
-, m_hudCam(1280.f, 720.f, -1.f, 1.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
-, m_debugText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
-, m_debugParticleText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
+	// Get the Application instance
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
-	m_currLevel = std::make_unique<Level>("sprint_demo.level", m_scene.getDeferredRenderer());	// Load in textures from file
+	// Set up handlers
+	m_level = std::make_unique<Level>("speedrun.level");
+	m_projHandler = std::make_unique<ProjectileHandler>();
+	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
+	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
 
-	auto& blocks = m_currLevel->getGrid()->getAllBlocks();
-	float mapWidth = blocks.size() * Level::DEFAULT_BLOCKSIZE;
-	float mapHeight = blocks.at(0).size() * Level::DEFAULT_BLOCKSIZE;
-	Vector2 mapSize = Vector2(mapWidth, mapHeight);
+	// Set up camera with controllers
+	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
+	Vector2 mapSize = m_level->getGridWorldSize();
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
-
-	// Update the hud shader
-	m_hudShader.updateCamera(m_hudCam);
-
-	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
-
-	m_timer.startTimer();
-
-	// Add skybox to the scene
+	// Set up the scene
 	m_scene.addSkybox(L"skybox_space_512.dds");
-	auto& l = m_scene.getLights();
-	auto dl = l.getDL();
-	dl.color = Vector3(0.9f, 0.9f, 0.9f);
- 	dl.direction = Vector3(0.4f, -0.6f, 1.0f);
-	//dl.direction = Vector3(0.46f, -0.87f, 0.12f);
-	dl.direction.Normalize();
-	l.setDirectionalLight(dl);
+	// Add a directional light
+	Vector3 color(0.9f, 0.9f, 0.9f);
+ 	Vector3 direction(0.4f, -0.6f, 1.0f);
+	direction.Normalize();
+	m_scene.setUpDirectionalLight(Lights::DirectionalLight(color, direction));
 
-	m_scene.setShadowLight();
-
-	m_matShader.updateLights(m_scene.getLights());
-
-
-	Vector3 halfSizes(0.5f, 0.5f, 0.5f);
-
-	/* Planes for debugging */
-	float windowWidth = (float)m_app->getWindow()->getWindowWidth();
-	float windowHeight = (float)m_app->getWindow()->getWindowHeight();
-	float texPlaneHeight = windowHeight / 2.5f;
-	Vector2 texPlaneHalfSize(texPlaneHeight / 2.f * (windowWidth / windowHeight), texPlaneHeight / 2.f);
-	m_texturePlane = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_texturePlane->buildBufferForShader(&m_colorShader);
-	m_texturePlane->getMaterial()->setTextures(m_scene.getDLShadowMap().getSRV(), 1);
-	//m_texturePlane->getTransform().rotateAroundX(-XM_PIDIV2);
-	//m_texturePlane->getTransform().rotateAroundY(XM_PI);
-	//m_texturePlane->getTransform().translate(Vector3(-windowWidth / 2.f + texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
-
-	m_texturePlane2 = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
-	m_texturePlane2->buildBufferForShader(&m_hudShader);
-	m_texturePlane2->getMaterial()->setTextures(m_scene.getDeferredRenderer().getGBufferSRV(DeferredRenderer::DEPTH_GBUFFER), 1);
-	m_texturePlane2->getTransform().rotateAroundX(-XM_PIDIV2);
-	m_texturePlane2->getTransform().rotateAroundY(XM_PI);
-	m_texturePlane2->getTransform().translate(Vector3(windowWidth / 2.f - texPlaneHalfSize.x, 0.f, -windowHeight / 2.f + texPlaneHalfSize.y));
-	/* Planes for debugging */
-
+	// Set up HUD texts
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
-	m_debugText.setPosition(Vector2(0.f, 40.f));
-
 	// Add texts to the scene
 	m_scene.addText(&m_fpsText);
 #ifdef _DEBUG
-	m_scene.addText(&m_debugText);
 	m_scene.addText(&m_debugCamText);
-	m_scene.addText(&m_debugParticleText);
 #endif
 
-	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
-	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
-	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
-	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-	
-	m_projHandler = new ProjectileHandler(m_scene.getDeferredRenderer());
-
-	m_characterHandler = new CharacterHandler(m_projHandler, m_currLevel.get(), m_characterModel->getModel(), m_WeaponModel1->getModel(), m_hookModel->getModel());
-
-
+	// Set character spawn points
 	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
 	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
 	m_characterHandler->addSpawnPoint(1, Vector3(10, 2, 0));
 	m_characterHandler->addSpawnPoint(1, Vector3(11, 2, 0));
 
-
+	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		m_scene.addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
 	}
 
+	// Give the cam controller targets to follow
 	m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
 		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
@@ -120,10 +69,6 @@ GameState::GameState(StateStack& stack)
 
 GameState::~GameState() {
 
-	if(m_characterHandler)
-		delete m_characterHandler;
-	if(m_projHandler)
-		delete m_projHandler;
 }
 
 // Process input for the state
@@ -148,17 +93,15 @@ bool GameState::processInput(float dt) {
 		pl.setPosition(m_cam.getPosition());
 		pl.setAttenuation(.0f, 0.1f, 0.02f);
 		m_scene.getLights().addPointLight(pl);
-
-		m_matShader.updateLights(m_scene.getLights());
 	}
-
 
 	if (kbTracker.pressed.T) {
 		m_characterHandler->killPlayer(0);
 	}
 
 
-	for(int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+	// Pause menu
+	for(size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		int port = m_characterHandler->getCharacter(i)->getPort();
 
 
@@ -184,7 +127,6 @@ bool GameState::processInput(float dt) {
 	}
 
 	// Update the camera controller from input devices
-
 	if (m_flyCam)
 		m_camController.update(dt);
 
@@ -204,19 +146,11 @@ bool GameState::resize(int width, int height) {
 // Updates the state
 bool GameState::update(float dt) {
 
-
-	static float counter = 0.f;
-	counter += dt;
-
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
-	auto& cPos = m_cam.getPosition();
-
 	auto& camPos = m_cam.getPosition();
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L"  NumNodes: " + std::to_wstring(Quadtree::numNodes));
-
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(m_characterHandler->getCharacter(0)->getBoundingBox()->getMinPos()) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
+	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
 	m_characterHandler->update(dt);
 
@@ -241,36 +175,15 @@ bool GameState::update(float dt) {
 }
 // Renders the state
 bool GameState::render(float dt) {
-	// Clear the buffer where the deferred light pass will render to
-	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
+
 	// Clear back buffer
+	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 
-	// Draw the scene
-	// before rendering the final output to the back buffer
-	m_scene.draw(dt, m_cam, m_currLevel.get(), m_projHandler);
-
-	//m_app->getDXManager()->enableAlphaBlending();
-	//m_colorShader.updateCamera(m_cam);
-	//for(int i = 0; i < 4; i++)
-	//	m_player[i]->draw();
-
-	//m_projHandler->draw();
-
+	// Draw the scene using deferred rendering
+	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get());
 
 	// Draw HUD
 	m_scene.drawHUD();
-
-	///* Debug Stuff */
-	//m_app->getDXManager()->disableDepthBuffer();
-	//m_app->getDXManager()->disableAlphaBlending();
-	//m_texturePlane->draw();
-	//m_texturePlane2->draw();
-	//m_quadtreeCamtexPlane->draw();
-	//m_app->getDXManager()->enableDepthBuffer();
-	/* Debug Stuff */
-
-	// Swap backbuffers
-	//m_app->getDXManager()->present(false);
 
 	return true;
 }

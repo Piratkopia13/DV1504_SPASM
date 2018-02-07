@@ -4,35 +4,32 @@
 #include "../ProjectileHandler.h"
 
 class Weapon : public Moveable {
-private:
-	ProjectileHandler * m_projectileHandler;
-	bool m_held;
-	int m_team;
-
-
-	bool triggerHeld;
-	float timeSinceFire;
-
 public:
 
-	bool automatic;
-	float cooldownTime;
 	Weapon();
 	Weapon(Model *drawModel, ProjectileHandler* projHandler, int team);
 	virtual ~Weapon();
 
-	const bool getHeld() const;
+	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
+	virtual void draw();
 
+	const bool getHeld() const;
 	void setHeld(bool held);
-	
+
 	void triggerPull();
 	void triggerRelease();
-	void fire(DirectX::SimpleMath::Vector3 direction);
+	void fire(const DirectX::SimpleMath::Vector3& direction);
 
 	ProjectileHandler& getProjectileHandler();
 
+private:
+	ProjectileHandler* m_projectileHandler;
+	bool m_held;
+	int m_team;
+	bool m_triggerHeld;
+	float m_timeSinceFire;
 
+	bool m_automatic;
+	float m_cooldownTime;
 
-	void update(float dt, DirectX::SimpleMath::Vector3 direction);
-	virtual void draw();
 };

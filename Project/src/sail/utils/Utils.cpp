@@ -27,3 +27,7 @@ float Utils::clamp(float val, float min, float max) {
 	return val;
 
 }
+
+DirectX::SimpleMath::Vector4 Utils::getRandomColor() {
+	return DirectX::SimpleMath::Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 1);
+}

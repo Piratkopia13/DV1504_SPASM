@@ -8,7 +8,7 @@ DeferredRenderer::DeferredRenderer(){
 
 	// Create light volumes
 	m_pointLightVolume = std::make_unique<FbxModel>("normalizedSphere.fbx");
-	m_pointLightVolume->getModel()->buildBufferForShader(&m_pointLightShader);
+	m_pointLightVolume->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredPointLightShader>());
 
 	// Create full screen quad model for directional light
 	createFullscreenQuad();
@@ -64,12 +64,12 @@ void DeferredRenderer::beginGeometryPass(Camera& camera, ID3D11RenderTargetView*
 		m_gBuffers[i]->clear({0.f, 0.f, 0.f, 0.0f});
 
 	// Update the camera in the shaders
-	m_geometryShader.updateCamera(camera);
-	m_dirLightShader.updateCamera(camera);
-	m_pointLightShader.updateCamera(camera);
+	Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>().updateCamera(camera);
+	Application::getInstance()->getResourceManager().getShaderSet<DeferredDirectionalLightShader>().updateCamera(camera);
+	Application::getInstance()->getResourceManager().getShaderSet<DeferredPointLightShader>().updateCamera(camera);
 
 	// Bind the geometry shader
-	m_geometryShader.bind();
+	Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>().bind();
 
 }
 
@@ -93,28 +93,31 @@ void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMa
 	UINT height = window->getWindowHeight();
 	m_dirLightShader.createTextureArray(width, height, depthTextures);*/
 
+	DeferredDirectionalLightShader& dirLightShader = Application::getInstance()->getResourceManager().getShaderSet<DeferredDirectionalLightShader>();
+	DeferredPointLightShader& pointLightShader = Application::getInstance()->getResourceManager().getShaderSet<DeferredPointLightShader>();
+
 	//devCon->PSSetShaderResources(9, 1, &m_dsvSrv);
 	devCon->PSSetShaderResources(10, 1, dlShadowMap.getSRV());
-	m_dirLightShader.updateCameraBuffer(cam, lights.getDirectionalLightCamera());
+	dirLightShader.updateCameraBuffer(cam, lights.getDirectionalLightCamera());
 
 	auto* dxm = Application::getInstance()->getDXManager();	
 	dxm->disableDepthBuffer();
 	dxm->enableAdditiveBlending();
 
 	// Bind for dir light rendering pass
-	m_dirLightShader.bind();
+	dirLightShader.bind();
 	// Do the directional light
-	m_dirLightShader.setLight(lights.getDL());
+	dirLightShader.setLight(lights.getDL());
 
 	// Draw all pixels on the screen since the directional light affects them all
-	m_dirLightShader.draw(m_fullScreenPlane, false);
+	dirLightShader.draw(m_fullScreenPlane, false);
 // 	m_fullScreenPlane.draw(false);
 
 	// Bind for point light rendering pass
-	m_pointLightShader.bind();
+	pointLightShader.bind();
 
 	for (const Lights::PointLight& pl : lights.getPLs()) {
-		m_pointLightShader.setLight(pl);
+		pointLightShader.setLight(pl);
 
 		m_pointLightVolume->getModel()->getTransform().setTranslation(pl.getPosition());
 		m_pointLightVolume->getModel()->getTransform().setScale(pl.getRadius());
@@ -151,19 +154,19 @@ void DeferredRenderer::resize(int width, int height) {
 	for (int i = 0; i < NUM_GBUFFERS - 1; i++) {
 		gbufferTextures[i] = m_gBuffers[i]->getTexture2D();
 	}
-	m_dirLightShader.createTextureArray(width, height, gbufferTextures);*/
+	dirLightShader.createTextureArray(width, height, gbufferTextures);*/
 
 }
 
-DeferredGeometryShader& DeferredRenderer::getGeometryShader() {
-	return m_geometryShader;
-}
-DeferredDirectionalLightShader& DeferredRenderer::getDirLightShader() {
-	return m_dirLightShader;
-}
-DeferredPointLightShader& DeferredRenderer::getPointLightShader() {
-	return m_pointLightShader;
-}
+//DeferredGeometryShader& DeferredRenderer::getGeometryShader() {
+//	return m_geometryShader;
+//}
+//DeferredDirectionalLightShader& DeferredRenderer::getDirLightShader() {
+//	return m_dirLightShader;
+//}
+//DeferredPointLightShader& DeferredRenderer::getPointLightShader() {
+//	return m_pointLightShader;
+//}
 
 ID3D11ShaderResourceView** DeferredRenderer::getGBufferSRV(UINT index) {
 	if (index > NUM_GBUFFERS) return nullptr;
@@ -208,7 +211,7 @@ void DeferredRenderer::createFullscreenQuad() {
 	data.texCoords = texCoords;
 
 	m_fullScreenPlane.setBuildData(data);
-	m_fullScreenPlane.buildBufferForShader(&m_pointLightShader);
+	m_fullScreenPlane.buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredPointLightShader>());
 	
 }
 

@@ -20,25 +20,24 @@ public:
 private:
 	Application * m_app;
 
+	// Camera
 	PerspectiveCamera m_cam;
-	OrthographicCamera m_hudCam;
-	PlayerCameraController m_playerCamController;
+	std::unique_ptr<PlayerCameraController> m_playerCamController;
+	bool m_flyCam;
+
+	// Scene
 	Scene m_scene;
 
+	// Models
+	std::unique_ptr<FbxModel> m_sphere;
+	std::unique_ptr<Model> m_plane;
+	std::unique_ptr<Model> m_texturePlane;
+	std::unique_ptr<Model> m_texturePlane2;
 
-	SimpleColorShader m_colorShader;
-	SimpleTextureShader m_texShader;
-	SimpleTextureShader m_hudShader;
-	DirectionalLightShader m_dirLightShader;
-	MaterialShader m_matShader;
+	// Texts
 	SailFont m_font;
-
-	Timer m_timer;
-
 	Text m_fpsText;
-	Text m_debugText;
 	Text m_debugCamText;
-	Text m_debugParticleText;
 
 
 	std::unique_ptr<FbxModel> m_player;
@@ -120,8 +119,6 @@ private:
 		this->playerColor[player] = color;
 		this->playerMenu[player]->setLightColor(this->playerColor[player]);
 	}
-	DirectX::SimpleMath::Vector4 getRandomColor() {
-		return DirectX::SimpleMath::Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 1);
-	}
+	
 };
 

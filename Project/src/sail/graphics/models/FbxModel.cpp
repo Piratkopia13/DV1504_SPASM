@@ -16,7 +16,7 @@ FbxModel::FbxModel(const std::string& filename) {
 }
 
 FbxModel::~FbxModel() {
-	if(m_scene != nullptr)
+	if (m_scene != nullptr)
 		m_scene->Destroy();
 }
 
