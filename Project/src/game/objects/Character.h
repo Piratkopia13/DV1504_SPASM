@@ -47,6 +47,7 @@ private:
 	DirectX::SimpleMath::Vector3 m_inputVec;
 	DirectX::SimpleMath::Vector3 m_velAtJump;
 
+	bool m_inHole;
 	bool m_hooked;
 	float jumpTimer;
 

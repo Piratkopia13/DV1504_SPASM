@@ -18,6 +18,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 		unsigned int currTask = 0;
 		unsigned int x = 0;
 		unsigned int y = 0;
+		std::vector<Grid::Index> holeIndices;
 
 		while (infile >> line) {
 			if (!line.compare("attributes")) {
@@ -70,6 +71,8 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
+					case 'h':
+						holeIndices.push_back({ static_cast<int>(x), static_cast<int>(y - 1) });
 					default:
 						break;
 					}
@@ -124,6 +127,8 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 
 			}
 		}
+		m_grid->setHoles(holeIndices);
+
 	}
 	else {
 	}
@@ -260,4 +265,8 @@ DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const floa
 
 Grid* Level::getGrid() {
 	return m_grid.get();
+}
+
+bool Level::checkHoles(DirectX::SimpleMath::Vector3 playerPos) {
+	return m_grid->checkHoles(m_grid->convertToIndexed(DirectX::SimpleMath::Vector3(playerPos.x, playerPos.y + 0.5f, playerPos.z)));
 }

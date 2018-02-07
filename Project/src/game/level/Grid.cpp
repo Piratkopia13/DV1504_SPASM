@@ -172,3 +172,17 @@ DirectX::SimpleMath::Vector3 Grid::raytraceBlock(const DirectX::SimpleMath::Vect
 
 	return hitPos;
 }
+
+void Grid::setHoles(std::vector<Grid::Index> indices) {
+	m_holes = indices;
+}
+
+bool Grid::checkHoles(Grid::Index index) {
+	bool isHole = false;
+	for (Grid::Index currIndex : m_holes) {
+		if (currIndex.x == index.x && currIndex.y == index.y) {
+			isHole = true;
+		}
+	}
+	return isHole;
+}

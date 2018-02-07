@@ -48,10 +48,16 @@ void Moveable::setCurrentLevel(Level* level) {
 	m_currLevel = level;
 }
 
+
+
 void Moveable::setGrounded(bool grounded) {
 	m_grounded = grounded;
 }
 
 bool Moveable::grounded() {
 	return m_grounded;
+}
+
+bool Moveable::testHoles(DirectX::SimpleMath::Vector3 playerPos) {
+	return m_currLevel->checkHoles(playerPos);
 }

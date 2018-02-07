@@ -18,6 +18,10 @@ public:
 	void setCurrentLevel(Level* level);
 	void setGrounded(bool grounded);
 	bool grounded();
+	//TEST
+	bool testHoles(DirectX::SimpleMath::Vector3 playerPos);
+	//--
+
 	virtual void draw() = 0;
 
 private:

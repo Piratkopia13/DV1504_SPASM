@@ -27,6 +27,7 @@ public:
 	void update(const float delta);
 	void draw();
 	Grid* getGrid();
+	bool checkHoles(DirectX::SimpleMath::Vector3 playerPos);
 
 	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
 	

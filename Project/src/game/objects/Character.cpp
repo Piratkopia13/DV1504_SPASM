@@ -19,6 +19,7 @@ Character::Character()
 	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
 	this->setLightColor(Vector4(1, 1, 1, 1));
 	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(2.0f + 3.0f, 3.0f, 0.0f));
+	m_inHole = false;
 }
 
 Character::Character(Model * model) : Character() {
@@ -56,7 +57,12 @@ void Character::input(
 				//this->currentWeapon->cooldownTime += 0.02f;
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-				this->addVibration(0, 1);
+				if (this->testHoles(getTransform().getTranslation()) && !m_inHole) {
+					m_inHole = true;
+				}
+				else
+					m_inHole = false;
+				
 				/*if(this->currentWeapon->cooldownTime > 0.02f)
 					this->currentWeapon->cooldownTime -= 0.02f;*/
 
@@ -155,28 +161,47 @@ void Character::update(float dt) {
 	//	this->addAcceleration(Vector3(0, jumpStr, 0));
 	//	this->jumpTimer += dt;
 	//}
+	if (getTransform().getTranslation().z == 0.f && !m_inHole) {
+		if (grounded())
+			this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
+		else {
+			float velX = m_inputVec.x * this->speed * 0.1f + getVelocity().x;
+			velX = max(min(velX, this->speed * 0.8f), -this->speed * 0.8f);
+			this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+		}
 
-	if (grounded())
-		this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
-	else {
-		float velX = m_inputVec.x * this->speed * 0.1f + getVelocity().x;
-		velX = max(min(velX, this->speed * 0.8f), -this->speed * 0.8f);
-		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+		if (m_hooked) {
+			this->setGrounded(false);
+			this->setAcceleration(m_hook->getDirection() * 40.0f);
+		}
 	}
-
-	if (m_hooked) {
-		this->setGrounded(false);
-		this->setAcceleration(m_hook->getDirection() * 40.0f);
+	else {
+		if (m_inHole) {
+			this->setVelocity(DirectX::SimpleMath::Vector3(((floor(getTransform().getTranslation().x) + 0.5f) - getTransform().getTranslation().x) * this->speed, 0.f, 1.f * this->speed));
+		} else if(!m_inHole)
+			this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, -1.f * this->speed));
 	}
 
 	Moveable::move(dt);
 
-	this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, 0.f));
-	this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
+	if (getTransform().getTranslation().z <= 0.f) {
+		DirectX::SimpleMath::Vector3 temp = getTransform().getTranslation();
+		temp.z = 0.f;
+		getTransform().setTranslation(temp);
+	}
+	if (getTransform().getTranslation().z >= 1.f) {
+		DirectX::SimpleMath::Vector3 temp = getTransform().getTranslation();
+		temp.z = 1.f;
+		getTransform().setTranslation(temp);
+	}
 
-	this->currentWeapon->update(dt, this->aimVec);
-	m_hook->update(dt, currentWeapon->getTransform().getTranslation());
+	if (!m_inHole) {
+		this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, 0.f));
+		this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
 
+		this->currentWeapon->update(dt, this->aimVec);
+		m_hook->update(dt, currentWeapon->getTransform().getTranslation());
+	}
 	//Collision detection for projectiles
 	for (unsigned int i = 0; i < currentWeapon->getProjectileHandler().getProjectiles().size(); i++) {
 		if (currentWeapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != currentTeam) {
@@ -186,6 +211,7 @@ void Character::update(float dt) {
 			}
 		}
 	}
+	
 }
 
 void Character::draw() {
