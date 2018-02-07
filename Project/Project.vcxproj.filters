@@ -188,5 +188,6 @@
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
+    <None Include="res\models\capture_point.fbx" />
   </ItemGroup>
 </Project>

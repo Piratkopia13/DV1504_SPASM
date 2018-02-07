@@ -71,7 +71,7 @@ Level::Level(const std::string& filename, DeferredRenderer& deferredRenderer)
 					
 					// Controlnodes
 					case 'c':
-						cnIndices.push_back(Grid::Index{ static_cast<int>(x), static_cast<int>(y) });
+						cnIndices.push_back(Grid::Index{ static_cast<int>(x), static_cast<int>(y - 1) });
 					
 					default:
 						break;
@@ -104,14 +104,16 @@ Level::~Level() {
 }
 
 void Level::update(const float delta, CharacterHandler* charHandler) {
-	m_gamemode->update(charHandler, delta);
+	if(m_gamemode)
+		m_gamemode->update(charHandler, delta);
 }
 
 void Level::draw() {
 	for (const auto& block : m_blocks) 
 		block->draw();
 
-	m_gamemode->draw();
+	if (m_gamemode)
+		m_gamemode->draw();
 }
 
 DirectX::SimpleMath::Vector3 Level::collisionTest(Moveable& moveable, const float dt) {

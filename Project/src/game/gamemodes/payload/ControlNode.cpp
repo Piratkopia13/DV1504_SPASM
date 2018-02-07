@@ -6,15 +6,28 @@ ControlNode::ControlNode(Model* model) {
 	m_team = 0;
 
 	m_beingCaptured = false;
-	m_timeTillCapture = 2.f;
-	m_teamCapturing = 0;
-	m_timeBeingCaptured = 0.f;
+	m_timeTillCapture = 5.f;
+	m_timeTillScore = 3.f;
 	m_timeCaptured = 0.f;
-	m_captureTimer.startTimer();
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f);
 	m_teamOneColor = DirectX::SimpleMath::Vector4(1.f, 0.f, 0.f, 1.f);
 	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 1.f, 1.f);
+
+	m_teamOne.color = m_teamOneColor;
+	m_teamOne.ownershipTime = 0.f;
+	m_teamOne.id = 1;
+	m_teamOne.capturing = false;
+	m_teamOne.isOwner = false;
+	m_teamOne.timeCapturing = 0.f;
+
+
+	m_teamTwo.color = m_teamTwoColor;
+	m_teamTwo.ownershipTime = 0.f;
+	m_teamTwo.id = 2;
+	m_teamTwo.capturing = false;
+	m_teamTwo.isOwner = false;
+	m_teamTwo.timeCapturing = 0.f;
 
 	m_nodeColor = m_teamZeroColor;
 }
@@ -38,74 +51,167 @@ int ControlNode::getTeam() {
 }
 
 void ControlNode::capture(const int teamOne, const int teamTwo) {
-	if (teamOne != teamTwo) {
-		if (m_teamCapturing == 0) {
+	if (teamOne > 0 || teamTwo > 0) {
+		if (teamOne == teamTwo) {
+			m_teamOne.capturing = true;
+			m_teamTwo.capturing = true;
+			m_beingCaptured = false;
+		}
+		if (!m_teamOne.capturing && !m_teamTwo.capturing) {
 			if (teamOne > teamTwo) {
-				if (m_team != 1) {
-					m_teamCapturing = 1;
-					m_timeBeingCaptured = 0.f;
-				}
-				else
-					m_teamCapturing = 0;
+				m_beingCaptured = true;
+				if (!m_teamOne.isOwner)
+					m_teamOne.capturing = true;
 			}
-			else {
-				if (m_team != 2) {
-					m_teamCapturing = 2;
-					m_timeBeingCaptured = 0.f;
-				}
-				else
-					m_teamCapturing = 0;
+			else if (teamOne < teamTwo) {
+				m_beingCaptured = true;
+				if (!m_teamTwo.isOwner)
+					m_teamTwo.capturing = true;
 			}
 		}
-		else if (m_teamCapturing == 1) {
-			if (teamOne < teamTwo) {
-				m_teamCapturing = teamTwo;
-				m_timeBeingCaptured = 0.f;
-			}
+		else if (m_teamOne.capturing && m_teamTwo.capturing) {
+			m_beingCaptured = false;
 		}
 		else {
-			if (teamTwo < teamOne) {
-				m_teamCapturing = teamOne;
-				m_timeBeingCaptured = 0.f;
+			if (m_teamOne.capturing) {
+				if (teamOne < teamTwo) {
+					m_beingCaptured = true;
+					m_teamTwo.capturing = true;
+				}
+				else {
+					m_beingCaptured = true;
+					m_teamOne.capturing = true;
+				}
+			}
+
+			if (m_teamTwo.capturing) {
+				if (teamTwo < teamOne) {
+					m_beingCaptured = true;
+					m_teamOne.capturing = true;
+				}
+				else {
+					m_beingCaptured = true;
+					m_teamTwo.capturing = true;
+				}
 			}
 		}
 	}
 	else {
-		m_teamCapturing = 0;
+		m_beingCaptured = false;
 	}
 }
 
 bool ControlNode::updateNodeTimer(float dt) {
-	if (m_team != m_teamCapturing && m_teamCapturing) {
-		m_timeBeingCaptured += dt;
-		if (m_timeBeingCaptured >= m_timeTillCapture) {
-			m_team = m_teamCapturing;
-			m_teamCapturing = 0;
-			m_timeBeingCaptured = 0.f;
+	if (m_teamOne.capturing) {
+		if (m_beingCaptured) {
+			if (!m_teamTwo.capturing) {
+				if (m_teamTwo.timeCapturing <= 0.f)
+					m_teamOne.timeCapturing += dt;
+				else
+					m_teamTwo.timeCapturing -= dt;
+			}
+			else
+				m_teamOne.timeCapturing -= dt;
+		}
+		else if (m_teamOne.capturing && !m_teamTwo.capturing) 
+			m_teamOne.timeCapturing -= dt;
+	}
+	
+	if (m_teamTwo.capturing) {
+		if (m_beingCaptured) {
+			if (!m_teamOne.capturing) {
+				if (m_teamOne.timeCapturing <= 0.f)
+					m_teamTwo.timeCapturing += dt;
+				else
+					m_teamOne.timeCapturing -= dt;
+			}
+			else
+				m_teamTwo.timeCapturing -= dt;
+		}
+		else if (m_teamTwo.capturing && !m_teamOne.capturing)
+			m_teamTwo.timeCapturing -= dt;
+	}
+
+	if (!m_beingCaptured) {
+		if (m_teamOne.isOwner && m_teamOne.timeCapturing < m_timeTillCapture && !m_teamTwo.capturing) {
+			m_teamOne.timeCapturing += dt;
+			if (m_teamOne.timeCapturing >= m_timeTillCapture)
+				m_teamOne.timeCapturing = m_timeTillCapture;
+		}
+
+		if (m_teamTwo.isOwner && m_teamTwo.timeCapturing < m_timeTillCapture && !m_teamOne.capturing) {
+			m_teamTwo.timeCapturing += dt;
+			if (m_teamTwo.timeCapturing >= m_timeTillCapture)
+				m_teamTwo.timeCapturing = m_timeTillCapture;
 		}
 	}
 
-	if (m_timeBeingCaptured && m_teamCapturing) {
-		if(m_teamCapturing == 1) 
-			m_nodeColor = m_teamOneColor * (m_timeBeingCaptured / m_timeTillCapture) +
-			((float(m_team)/2.f) * m_teamTwoColor * (1.f - (m_timeBeingCaptured / m_timeTillCapture)));
-		else
-			m_nodeColor = m_teamTwoColor * (m_timeBeingCaptured / m_timeTillCapture) +
-			((float(m_team)) * m_teamOneColor * (1.f - (m_timeBeingCaptured / m_timeTillCapture)));;
+	if (m_teamOne.timeCapturing <= 0.f) {
+		m_teamOne.capturing = false;
+		m_teamOne.isOwner = false;
+		m_teamOne.timeCapturing = 0.f;
 	}
-	else {
-		switch (m_team) {
-		case 1:
-			m_nodeColor = m_teamOneColor;
-			break;
-		case 2:
-			m_nodeColor = m_teamTwoColor;
-			break;
-		default:
-			m_nodeColor = m_teamZeroColor;
-			break;
-		}
+	else if (m_teamOne.timeCapturing > m_timeTillCapture) {
+		m_teamOne.capturing = false;
+		m_teamOne.isOwner = true;
+		m_teamOne.timeCapturing = m_timeTillCapture;
 	}
 	
+	if (m_teamTwo.timeCapturing <= 0.f) {
+		m_teamTwo.capturing = false;
+		m_teamTwo.isOwner = false;
+		m_teamTwo.timeCapturing = 0.f;
+	}
+	else if (m_teamTwo.timeCapturing > m_timeTillCapture) {
+		m_teamTwo.capturing = false;
+		m_teamTwo.isOwner = true;
+		m_teamTwo.timeCapturing = m_timeTillCapture;
+	}
+
+	m_nodeColor = DirectX::SimpleMath::Vector4(m_teamOne.color * pow(m_teamOne.timeCapturing / m_timeTillCapture, 2.f)) +
+		DirectX::SimpleMath::Vector4(m_teamTwo.color * pow(m_teamTwo.timeCapturing / m_timeTillCapture, 2.f));
+	
+	if (m_teamOne.isOwner) {
+		if (m_team != m_teamOne.id) {
+			setTeam(m_teamOne.id);
+			m_timeCaptured = 0.f;
+		}
+		else {
+			m_timeCaptured += dt;
+			if (m_timeCaptured >= m_timeTillScore) {
+				m_timeCaptured = 0.f;
+				return true;
+			}
+		}
+	}
+	if (m_teamTwo.isOwner) {
+		if (m_team != m_teamTwo.id) {
+			setTeam(m_teamTwo.id);
+			m_timeCaptured = 0.f;
+		}
+		else {
+			m_timeCaptured += dt;
+			if (m_timeCaptured >= m_timeTillScore) {
+				m_timeCaptured = 0.f;
+				return true;
+			}
+		}
+	}
+
+
+
 	return false;
+}
+
+std::string ControlNode::getAsString() {
+	std::string toReturn;
+	toReturn += "Team 1 - Owner: " + std::to_string(m_teamOne.isOwner) +
+		" Capture timer: " + std::to_string(m_teamOne.timeCapturing) +
+		" is capturing: " + std::to_string(m_teamOne.capturing) + "  ";
+
+	toReturn += "Team 2 - Owner: " + std::to_string(m_teamTwo.isOwner) +
+		" Capture timer: " + std::to_string(m_teamTwo.timeCapturing) +
+		" is capturing: " + std::to_string(m_teamTwo.capturing) + "-" + std::to_string(m_beingCaptured);
+
+	return toReturn;
 }

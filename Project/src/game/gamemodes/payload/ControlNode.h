@@ -6,7 +6,7 @@
 class ControlNode : public Object {
 public:
 	ControlNode(Model* model);
-	~ControlNode();
+	virtual ~ControlNode();
 
 	virtual void draw();
 
@@ -17,16 +17,28 @@ public:
 
 	bool updateNodeTimer(float dt);
 
+	std::string getAsString();
+
+private:
+	struct Team {
+		unsigned int id;
+		bool capturing;
+		bool isOwner;
+		float timeCapturing;
+		float ownershipTime;
+		DirectX::SimpleMath::Vector4 color;
+	};
+
 private:
 	int m_team;
-	int teamOne = 1, teamTwo = 2;
-	int m_teamCapturing;
 	bool m_beingCaptured;
 
-	float m_timeBeingCaptured;
-	float m_timeTillCapture;
+	Team m_teamOne, m_teamTwo;
+
+	float m_timeTillCapture, m_timeTillScore;
 	float m_timeCaptured;
-	Timer m_captureTimer;
 
 	DirectX::SimpleMath::Vector4 m_teamZeroColor, m_teamOneColor, m_teamTwoColor, m_nodeColor;
+
+
 };

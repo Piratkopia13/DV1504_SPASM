@@ -214,6 +214,7 @@
     <None Include="res\levels\sprint_demo.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
+    <None Include="res\models\capture_point.fbx" />
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>

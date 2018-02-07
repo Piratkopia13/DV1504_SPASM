@@ -8,7 +8,7 @@
 class CharacterHandler;
 class PayloadGamemode : public Gamemode {
 public:
-	PayloadGamemode(std::vector<Grid::Index> indices, DeferredRenderer& deferredRenderer);
+	PayloadGamemode(std::vector<Grid::Index>& indices, DeferredRenderer& deferredRenderer);
 	~PayloadGamemode();
 
 	virtual void update(CharacterHandler* charHandler, float dt);
@@ -22,4 +22,5 @@ private:
 	std::unique_ptr<FbxModel> m_controlNodeModel;
 
 	int m_numOfNodes;
+	int m_radius;
 };
