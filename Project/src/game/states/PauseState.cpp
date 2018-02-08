@@ -31,11 +31,10 @@ PauseState::PauseState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 #endif
 
-	m_menuOn = std::make_unique<FbxModel>("block.fbx");
-	m_menuOn->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	auto& resMan = m_app->getResourceManager();
 
-	m_menuOff = std::make_unique<FbxModel>("block2.fbx");
-	m_menuOff->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	m_menuOnModel = resMan.getFBXModel("block").getModel();
+	m_menuOffModel = resMan.getFBXModel("block2").getModel();
 
 	float windowWidth = (float)m_app->getWindow()->getWindowWidth();
 	float windowHeight = (float)m_app->getWindow()->getWindowHeight();
@@ -52,9 +51,9 @@ PauseState::PauseState(StateStack& stack)
 	
 	
 
-	MenuItem* start = new MenuItem(m_menuOn->getModel(), Vector3(1, 3, 3));
-	MenuItem* something = new MenuItem(m_menuOff->getModel(), Vector3(1, 2, 3));
-	MenuItem* exit = new MenuItem(m_menuOff->getModel(), Vector3(1, 1, 3));
+	MenuItem* start = new MenuItem(m_menuOnModel, Vector3(1, 3, 3));
+	MenuItem* something = new MenuItem(m_menuOffModel, Vector3(1, 2, 3));
+	MenuItem* exit = new MenuItem(m_menuOffModel, Vector3(1, 1, 3));
 	
 
 	this->m_menuList.push_back(start);
@@ -218,14 +217,14 @@ void PauseState::beginStartTimer()
 
 void PauseState::changeMenu(int change)
 {
-	this->m_menuList[this->m_selector]->setModel(m_menuOff->getModel());
+	this->m_menuList[this->m_selector]->setModel(m_menuOffModel);
 	this->m_selector += change;
 	if (this->m_selector < 0)
 		this->m_selector = 2;
 	if (this->m_selector > 2)
 		this->m_selector = 0;
 
-	this->m_menuList[this->m_selector]->setModel(m_menuOn->getModel());
+	this->m_menuList[this->m_selector]->setModel(m_menuOnModel);
 	m_playerCamController->setTargets(
 		this->m_menuList[this->m_selector],
 		nullptr,

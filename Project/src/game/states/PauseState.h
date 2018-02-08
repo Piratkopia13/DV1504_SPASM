@@ -31,12 +31,6 @@ private:
 	// Scene
 	Scene m_scene;
 
-	// Models
-	std::unique_ptr<FbxModel> m_sphere;
-	std::unique_ptr<Model> m_plane;
-	std::unique_ptr<Model> m_texturePlane;
-	std::unique_ptr<Model> m_texturePlane2;
-
 	// Texts
 	SailFont m_font;
 	Text m_fpsText;
@@ -47,9 +41,8 @@ private:
 	SimpleColorShader m_colorShader;
 
 	// Models
-	std::unique_ptr<FbxModel> m_fbxModel;
-	std::unique_ptr<FbxModel> m_menuOn;
-	std::unique_ptr<FbxModel> m_menuOff;
+	Model* m_menuOnModel;
+	Model* m_menuOffModel;
 	std::unique_ptr<Model> m_background;
 
 	int m_selector;

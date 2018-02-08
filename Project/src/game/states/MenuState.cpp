@@ -38,24 +38,14 @@ MenuState::MenuState(StateStack& stack)
 #endif
 
 
+	auto& resMan = m_app->getResourceManager();
 
-	m_menuBlock = std::make_unique<FbxModel>("block.fbx");
-	m_menuBlock->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
-
-	m_menuStart = std::make_unique<FbxModel>("startButton.fbx");
-	m_menuStart->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
-
-	m_menuOptions = std::make_unique<FbxModel>("optionsButton.fbx");
-	m_menuOptions->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
-
-	m_menuExit = std::make_unique<FbxModel>("exitButton.fbx");
-	m_menuExit->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
-
-	m_player = std::make_unique<FbxModel>("fisk.fbx");
-	m_player->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
-
-	m_backGround = std::make_unique<FbxModel>("menu_screen.fbx");
-	m_backGround->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	m_menuBlockModel = resMan.getFBXModel("block").getModel();
+	m_menuStartModel = resMan.getFBXModel("startButton").getModel();
+	m_menuOptionsModel = resMan.getFBXModel("optionsButton").getModel();
+	m_menuExitModel = resMan.getFBXModel("exitButton").getModel();
+	m_playerModel = resMan.getFBXModel("fisk").getModel();
+	m_backGroundModel = resMan.getFBXModel("menu_screen").getModel();
 	
 
 	m_activeMenu = 0;
@@ -64,24 +54,24 @@ MenuState::MenuState(StateStack& stack)
 
 	m_menu = -1;
 	
-	this->background = new MenuItem(m_backGround->getModel(), Vector3(0.f, -2.3f, 0.5f));
+	this->background = new MenuItem(m_backGroundModel, Vector3(0.f, -2.3f, 0.5f));
 	this->background->useColor = 1;
 	this->background->setLightColor(Vector4(0.5f,0.5f,0.5f,0.5f));
 	m_scene.addObject(background);
 
 
-	MenuItem* start = new MenuItem(m_menuStart->getModel(), Vector3(0.f, 2.f, 7.f));
-	MenuItem* options = new MenuItem(m_menuOptions->getModel(), Vector3(0.f, 0.f, 7.f));
-	MenuItem* exit = new MenuItem(m_menuExit->getModel(), Vector3(0.f, -2.f, 7.f));
+	MenuItem* start = new MenuItem(m_menuStartModel, Vector3(0.f, 2.f, 7.f));
+	MenuItem* options = new MenuItem(m_menuOptionsModel, Vector3(0.f, 0.f, 7.f));
+	MenuItem* exit = new MenuItem(m_menuExitModel, Vector3(0.f, -2.f, 7.f));
 
-	MenuItem* player1 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, 2.25f));
-	MenuItem* player2 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, 0.75f));
-	MenuItem* player3 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, -0.75f));
-	MenuItem* player4 = new MenuItem(m_player->getModel(), Vector3(4.0f, 0.0f, -2.25f));
+	MenuItem* player1 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 2.25f));
+	MenuItem* player2 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 0.75f));
+	MenuItem* player3 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, -0.75f));
+	MenuItem* player4 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, -2.25f));
 
-	MenuItem* option1 = new MenuItem(m_menuOptions->getModel(), Vector3(-7.0f, 1.5f, 0.f));
-	MenuItem* option2 = new MenuItem(m_menuOptions->getModel(), Vector3(-7.0f, 0.f, 0.f));
-	MenuItem* option3 = new MenuItem(m_menuOptions->getModel(), Vector3(-7.0f, -1.5f, 0.f));
+	MenuItem* option1 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, 1.5f, 0.f));
+	MenuItem* option2 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, 0.f, 0.f));
+	MenuItem* option3 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, -1.5f, 0.f));
 
 	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
 	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -93,7 +83,7 @@ MenuState::MenuState(StateStack& stack)
 	int extraY = 0;
 	for (size_t i = 0; i < 5; i++) {
 
-		maps[i] = new MenuItem(m_menuBlock->getModel(), Vector3(3.f - float(i) * 1.5f, 0.f, -7.f));
+		maps[i] = new MenuItem(m_menuBlockModel, Vector3(3.f - float(i) * 1.5f, 0.f, -7.f));
 		maps[i]->setLightColor(m_offColor);
 		
 		this->mapMenu.push_back(maps[i]);
@@ -393,7 +383,7 @@ bool MenuState::processInput(float dt) {
 										Application::GameSettings::player player;
 										player.port = u;
 										player.color = this->playerColor[u];
-										player.model = m_playerModel[u];
+										player.model = m_playerModelIndex[u];
 										player.team = m_playerTeam[u];
 										m_app->getGameSettings().players.push_back(player);
 
