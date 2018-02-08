@@ -2,18 +2,23 @@
 
 using namespace DirectX::SimpleMath;
 
-CharacterHandler::CharacterHandler(ProjectileHandler* projHandler, Level* currentLevel, Model* cModel1, Model* wModel, Model* hModel): m_respawnTime(1){
+CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
+	: m_respawnTime(1)
+{
 
 	Application* app = Application::getInstance();
 	Application::GameSettings* settings = &app->getGameSettings();
 
+	Model* wModel = app->getResourceManager().getFBXModel("weapon").getModel();
+	Model* hModel = app->getResourceManager().getFBXModel("projectile").getModel();
+	Model* cModel1 = app->getResourceManager().getFBXModel("fisk").getModel();
+
 	for (size_t i = 0; i < settings->players.size(); i++) {
 		Weapon* tempWeapon = new Weapon(wModel, projHandler, settings->players[i].team);
-		Hook* tempHook = new Hook(hModel, currentLevel->getGrid());
+		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
-		tempChar->setCurrentLevel(currentLevel);
 		tempChar->setLightColor(settings->players[i].color);
 		tempChar->setTeam(settings->players[i].team);
 
@@ -29,6 +34,33 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler, Level* curren
 		addPlayer(tempChar);
 	}
 
+#ifdef _DEBUG
+	if (settings->players.size() == 0) {
+		Weapon* tempWeapon = new Weapon(wModel, projHandler, 0);
+		Hook* tempHook = new Hook(hModel);
+		Character* tempChar = new Character(cModel1);
+		tempChar->setLightColor(Vector4(0.2f, 0.8f, 0.8f, 1.f));
+		tempChar->setTeam(0);
+		tempChar->setHook(tempHook);
+		tempChar->setWeapon(tempWeapon);
+		tempChar->setControllerPort(0);
+		tempChar->setController(true);
+		addPlayer(tempChar);
+	}
+	if (settings->players.size() < 4) {
+		Weapon* tempWeapon = new Weapon(wModel, projHandler, 1);
+		Hook* tempHook = new Hook(hModel);
+		Character* tempChar = new Character(cModel1);
+		tempChar->setLightColor(Vector4(0.8f, 0.2f, 0.8f, 1.f));
+		tempChar->setTeam(1);
+		tempChar->setHook(tempHook);
+		tempChar->setWeapon(tempWeapon);
+		tempChar->setControllerPort(1);
+		tempChar->setController(true);
+		addPlayer(tempChar);
+	}
+#endif
+
 }
 
 
@@ -36,7 +68,6 @@ CharacterHandler::~CharacterHandler() {
 	for (size_t i = 0; i < m_characters.size(); i++) {
 		if (m_characters[i]) {
 			delete m_characters[i];
-			m_characters.pop_back();
 		}
 	}
 }
@@ -46,7 +77,7 @@ void CharacterHandler::addPlayer(Character * player) {
 	m_respawnTimers.push_back(0);
 }
 
-void CharacterHandler::addSpawnPoint(unsigned int team, DirectX::SimpleMath::Vector3 position) {
+void CharacterHandler::addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position) {
 	m_spawns[team].push_back(position);
 }
 

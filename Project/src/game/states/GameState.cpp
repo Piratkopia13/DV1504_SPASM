@@ -17,21 +17,11 @@ GameState::GameState(StateStack& stack)
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
-	// TODO: move all model loading to a ModelManager
-	m_characterModel = std::make_unique<FbxModel>("fisk.fbx");
-	m_characterModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-	m_WeaponModel1 = std::make_unique<FbxModel>("weapon.fbx");
-	m_WeaponModel1->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-	m_hookModel = std::make_unique<FbxModel>("projectile.fbx");
-	m_hookModel->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
-
-
 	// Set up handlers
-	m_level = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());
-	m_projHandler = std::make_unique<ProjectileHandler>(m_scene.getDeferredRenderer());
-	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get(), m_level.get(), m_characterModel->getModel(), m_WeaponModel1->getModel(), m_hookModel->getModel());
+	m_level = std::make_unique<Level>("speedrun.level");
+	m_projHandler = std::make_unique<ProjectileHandler>();
+	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
+	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));

@@ -89,6 +89,7 @@
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\states\PauseState.h" />

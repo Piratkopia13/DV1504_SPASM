@@ -40,22 +40,22 @@ MenuState::MenuState(StateStack& stack)
 
 
 	m_menuBlock = std::make_unique<FbxModel>("block.fbx");
-	m_menuBlock->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuBlock->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	m_menuStart = std::make_unique<FbxModel>("startButton.fbx");
-	m_menuStart->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuStart->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	m_menuOptions = std::make_unique<FbxModel>("optionsButton.fbx");
-	m_menuOptions->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuOptions->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	m_menuExit = std::make_unique<FbxModel>("exitButton.fbx");
-	m_menuExit->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuExit->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	m_player = std::make_unique<FbxModel>("fisk.fbx");
-	m_player->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_player->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	m_backGround = std::make_unique<FbxModel>("menu_screen.fbx");
-	m_backGround->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_backGround->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 	
 
 	m_activeMenu = 0;

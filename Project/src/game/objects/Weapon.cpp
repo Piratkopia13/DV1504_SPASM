@@ -9,8 +9,10 @@ Weapon::Weapon() {
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) : Weapon() {
-	m_Model = drawModel;
+Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) 
+	: Weapon()
+{
+	model = drawModel;
 	m_projectileHandler = projHandler;
 	m_team = team;
 	m_held = true;
@@ -63,7 +65,7 @@ ProjectileHandler& Weapon::getProjectileHandler() {
 	return *m_projectileHandler;
 }
 
-void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
+void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 
 	m_upgrade->update(dt);
 	static float baseAuto = 1.0f;
@@ -83,11 +85,11 @@ void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 
 
 
-	//this->move(dt);
+	//move(dt);
 }
 
 void Weapon::draw() {
-	m_Model->setTransform(&getTransform());
-	m_Model->getMaterial()->setColor(this->lightColor);
-	m_Model->draw();
+	m_model->setTransform(&getTransform());
+	m_model->getMaterial()->setColor(lightColor);
+	m_model->draw();
 }

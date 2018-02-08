@@ -1,5 +1,6 @@
 #pragma once
 #include "Character.h"
+#include "../collision/CollisionHandler.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -31,10 +32,8 @@ Character::Character(Model * model, unsigned int usingController, unsigned int p
 }
 
 Character::~Character() {
-	if (m_weapon)
-		delete m_weapon;
-	if (m_hook)
-		delete m_hook;
+	Memory::safeDelete(m_weapon);
+	Memory::safeDelete(m_hook);
 }
 
 void Character::input(
@@ -181,6 +180,7 @@ void Character::input(
 
 void Character::update(float dt) {
 	Application* app = Application::getInstance();
+	CollisionHandler* collHandler = CollisionHandler::getInstance();
 	auto& pad = app->getInput().gamepad;
 
 	if (updateVibration(dt))
@@ -211,10 +211,12 @@ void Character::update(float dt) {
 		this->setAcceleration(m_hook->getDirection() * 40.0f);
 	}
 
+	Moveable::updateVelocity(dt);
+	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
 
 	if (m_weapon) {
-		m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f,-0.8f));
+		m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f, -0.0f));
 		m_weapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(m_input.aim) - 1.6f));
 		m_weapon->update(dt, m_input.aim);
 	}
@@ -222,24 +224,16 @@ void Character::update(float dt) {
 		m_hook->update(dt, m_weapon->getTransform().getTranslation());
 	}
 
+	collHandler->resolveProjectileCollisionWith(this);
 
-	//Collision detection for projectiles
-	for (unsigned int i = 0; i < m_weapon->getProjectileHandler().getProjectiles().size(); i++) {
-		if (m_weapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != m_currentTeam) {
-			if (this->getBoundingBox()->containsOrIntersects(*m_weapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
-				m_weapon->getProjectileHandler().removeAt(i);
-				std::cout << "\nHit";
-			}
-		}
-	}
 }
 
 void Character::draw() {
-	this->m_Model->setTransform(&getTransform());
-	this->m_Model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
-	this->m_Model->draw();
+	model->setTransform(&getTransform());
+	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
+	model->draw();
 	if(m_weapon)
-	m_weapon->draw();
+		m_weapon->draw();
 	if(m_hook)
 		m_hook->draw();
 }
@@ -251,64 +245,52 @@ void Character::setController(const bool usingController) {
 void Character::setControllerPort(const unsigned int port) {
 	if (port < 4)
 		m_inputDevice.controllerPort = port;
-	
-
 }
 
-
-
-unsigned int Character::getPort()
-{
+unsigned int Character::getPort() {
 	return m_inputDevice.controllerPort;
 }
 
-unsigned int Character::getTeam()
-{
+unsigned int Character::getTeam() {
 	return m_currentTeam;
 }
 
-float Character::getHealth()
-{
+float Character::getHealth() {
 	return m_playerHealth.current;
 }
 
-float Character::getMaxHealth()
-{
+float Character::getMaxHealth() {
 	return m_playerHealth.max;
 }
 
-bool Character::isAlive()
-{
+bool Character::isAlive() {
 	return m_playerHealth.alive;
 }
 
+void Character::damage(float dmg) {
+	m_playerHealth.addHealth(-dmg);
+}
 
-
-void Character::setVibration(unsigned int index, float strength, float time)
-{
+void Character::setVibration(unsigned int index, float strength, float time) {
 	m_vibration[index] = { strength, time };
 }
 
-void Character::addVibration(unsigned int index, float strength, float time)
-{
+void Character::addVibration(unsigned int index, float strength, float time) {
 	m_vibration[index].currentStrength += strength;
 	m_vibration[index].timeLeft += time;
 }
 
-void Character::setTeam(unsigned int team)
-{
+void Character::setTeam(unsigned int team) {
 	m_currentTeam = team;
 }
 
-void Character::setWeapon(Weapon * weapon)
-{
+void Character::setWeapon(Weapon * weapon) {
 	m_weapon = weapon;
 	m_weapon->setHeld(true);
 	m_weapon->getTransform().setScale(1.0f);
 }
 
-bool Character::isUsingController()
-{
+bool Character::isUsingController() {
 	return m_inputDevice.controller;
 }
 
@@ -346,14 +328,12 @@ void Character::fire()
 	//m_weapon->fire(m_input.aim);
 }
 
-void Character::hook()
-{
+void Character::hook() {
 	m_hook->triggerPull(m_weapon->getTransform().getTranslation(), m_input.aim);
 	m_movement.hooked = true;
 }
 
-void Character::stopHook()
-{
+void Character::stopHook() {
 	m_hook->triggerRelease();
 	setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
 	m_movement.hooked = false;

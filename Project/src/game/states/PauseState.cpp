@@ -32,10 +32,10 @@ PauseState::PauseState(StateStack& stack)
 #endif
 
 	m_menuOn = std::make_unique<FbxModel>("block.fbx");
-	m_menuOn->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuOn->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	m_menuOff = std::make_unique<FbxModel>("block2.fbx");
-	m_menuOff->getModel()->buildBufferForShader(&m_scene.getDeferredRenderer().getGeometryShader());
+	m_menuOff->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 
 	float windowWidth = (float)m_app->getWindow()->getWindowWidth();
 	float windowHeight = (float)m_app->getWindow()->getWindowHeight();

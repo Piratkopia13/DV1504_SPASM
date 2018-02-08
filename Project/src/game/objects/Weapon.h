@@ -11,13 +11,13 @@ public:
 	virtual ~Weapon();
 
 	void update(float dt, DirectX::SimpleMath::Vector3 direction);
-
 	void setHeld(bool held);
 	const bool getHeld() const;
 
 	void addUpgrade(Upgrade* upgrade);
 	void triggerPull();
 	void triggerRelease();
+	void fire(const DirectX::SimpleMath::Vector3& direction);
 
 	ProjectileHandler& getProjectileHandler();
 
@@ -35,6 +35,5 @@ private:
 
 private:
 
-	void fire(DirectX::SimpleMath::Vector3 direction);
 
 };

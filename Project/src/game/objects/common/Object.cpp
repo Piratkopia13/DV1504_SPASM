@@ -2,9 +2,10 @@
 
 using namespace DirectX::SimpleMath;
 
-Object::Object() {
-	m_Model = nullptr;
-	this->lightColor = Vector4(1, 1, 1, 1);
+Object::Object()
+	: model(nullptr)
+	, lightColor(Vector4(1.f))
+{
 }
 
 Object::~Object() {
@@ -25,10 +26,10 @@ void Object::updateBoundingBox()
 	}
 }
 
-void Object::setModel(Model * model)
+void Object::setModel(Model* model)
 {
 	if (model) {
-		this->m_Model = model;
+		this->model = model;
 		if (&model->getAABB()) {
 			if (this->boundingBox) {
 				delete this->boundingBox;
@@ -49,7 +50,7 @@ void Object::setLightColor(DirectX::SimpleMath::Vector4 color)
 
 Model* Object::getModel()
 {
-	return m_Model;
+	return this->model;
 }
 
 Transform& Object::getTransform() {

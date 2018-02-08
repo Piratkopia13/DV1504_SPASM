@@ -200,6 +200,7 @@
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
     <ClCompile Include="src\sail\resources\parsers\FBXParser.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
     <ClCompile Include="src\sail\resources\TextureData.cpp" />
     <ClCompile Include="src\sail\states\State.cpp" />
     <ClCompile Include="src\sail\states\StateStack.cpp" />

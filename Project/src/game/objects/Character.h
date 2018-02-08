@@ -12,7 +12,7 @@ public:
 	Character();
 	Character(Model * model);
 	Character(Model * model, unsigned int usingController, unsigned int port);
-	~Character();
+	virtual ~Character();
 
 	void input(
 		DirectX::GamePad::State& padState,
@@ -31,6 +31,7 @@ public:
 	float getHealth();
 	float getMaxHealth();
 	bool isAlive();
+	void damage(float dmg);
 
 	void setVibration(unsigned int index, float strength = 1, float time = 1);
 	void addVibration(unsigned int index, float strength = 1, float time = 1);
