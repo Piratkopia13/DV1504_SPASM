@@ -189,8 +189,8 @@ bool ControlNode::updateNodeTimer(float dt) {
 	}
 
 	// Set the node color depending on the timing
-	m_nodeColor = DirectX::SimpleMath::Vector4(m_teamOne.color * pow(m_teamOne.timeCapturing / m_timeTillCapture, 2.f)) +
-		DirectX::SimpleMath::Vector4(m_teamTwo.color * pow(m_teamTwo.timeCapturing / m_timeTillCapture, 2.f));
+	m_nodeColor = DirectX::SimpleMath::Vector4(m_teamOne.color * (m_teamOne.timeCapturing * 0.7) / m_timeTillCapture) +
+		DirectX::SimpleMath::Vector4(m_teamTwo.color * (m_teamTwo.timeCapturing * 0.7) / m_timeTillCapture);
 
 	// Updates the timer for the capturepoints pointcounter
 	if (m_teamOne.isOwner) {
