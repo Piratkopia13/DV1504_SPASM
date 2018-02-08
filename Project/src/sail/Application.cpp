@@ -119,10 +119,6 @@ int Application::startGameLoop() {
 
 			if (m_input.keyboardState.Escape)
 				PostQuitMessage(0);
-
-
-			if(delta > 0.0166)
-				Logger::Warning(std::to_string(elapsedTime) + " delta over 0.0166: " + std::to_string(delta));
 #endif
 			updateTimer += delta;
 
