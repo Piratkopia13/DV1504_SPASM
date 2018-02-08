@@ -58,7 +58,7 @@ void Character::processInput() {
 				this->jump();
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-				if (!m_movement.inCover) {
+				if (!m_movement.inCover && !m_movement.hooked) {
 					CollisionHandler* collHandler = CollisionHandler::getInstance();
 					DirectX::SimpleMath::Vector3 pos = getTransform().getTranslation();
 					pos.y += 0.5f;//Player pos is currently beneath the character with the trashcan model, inside a block
