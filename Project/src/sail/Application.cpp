@@ -130,7 +130,7 @@ int Application::startGameLoop() {
 		
 
 			while (updateTimer >= timeBetweenUpdates) {
-				if (maxCounter >= 2)
+				if (maxCounter >= 4)
 					break;
 				update(timeBetweenUpdates);
 				updateTimer -= timeBetweenUpdates;
