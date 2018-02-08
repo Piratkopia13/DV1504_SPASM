@@ -55,7 +55,7 @@ private:
 	float m_timeTillCapture, m_timeTillScore;
 	float m_timeCaptured;
 
-	DirectX::SimpleMath::Vector4 m_teamZeroColor, m_teamOneColor, m_teamTwoColor, m_nodeColor;
+	DirectX::SimpleMath::Vector4 m_teamZeroColor, m_teamOneColor, m_teamTwoColor, m_nodeColor, m_ownershipColor;
 
 
 };

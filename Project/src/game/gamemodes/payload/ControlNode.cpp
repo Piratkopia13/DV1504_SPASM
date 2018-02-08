@@ -11,8 +11,8 @@ ControlNode::ControlNode(Model* model) {
 	m_timeCaptured = 0.f;
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f);
-	m_teamOneColor = DirectX::SimpleMath::Vector4(1.f, 1.f, 0.f, 1.f);
-	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.f, 1.f, 1.f, 1.f);
+	m_teamOneColor = DirectX::SimpleMath::Vector4(3.f, 0.0f, 0.0f, 1.f);
+	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 3.f, 1.f);
 
 	m_teamOne.color = m_teamOneColor;
 	m_teamOne.ownershipTime = 0.f;
@@ -30,6 +30,7 @@ ControlNode::ControlNode(Model* model) {
 	m_teamTwo.timeCapturing = 0.f;
 
 	m_nodeColor = m_teamZeroColor;
+	m_ownershipColor = m_teamZeroColor;
 }
 
 ControlNode::~ControlNode() {
@@ -163,34 +164,38 @@ bool ControlNode::updateNodeTimer(float dt) {
 	}
 
 	// Set team to not capture if the timer goes to zero
-	if (m_teamOne.timeCapturing <= 0.f) {
+	if (m_teamOne.timeCapturing <= 0.f && m_teamOne.isOwner) {
 		m_teamOne.capturing = false;
 		m_teamOne.isOwner = false;
 		m_teamOne.timeCapturing = 0.f;
+		m_ownershipColor = m_teamZeroColor;
 	}
 	// Else if the timer has passed the amount required to capture a point, set ownership
 	else if (m_teamOne.timeCapturing > m_timeTillCapture) {
 		m_teamOne.capturing = false;
 		m_teamOne.isOwner = true;
 		m_teamOne.timeCapturing = m_timeTillCapture;
+		m_ownershipColor = m_teamOneColor;
 	}
 
 	// Set team to not capture if the timer goes to zero
-	if (m_teamTwo.timeCapturing <= 0.f) {
+	if (m_teamTwo.timeCapturing <= 0.f && m_teamTwo.isOwner) {
 		m_teamTwo.capturing = false;
 		m_teamTwo.isOwner = false;
 		m_teamTwo.timeCapturing = 0.f;
+		m_ownershipColor = m_teamZeroColor;
 	}
 	// Else if the timer has passed the amount required to capture a point, set ownership
 	else if (m_teamTwo.timeCapturing > m_timeTillCapture) {
 		m_teamTwo.capturing = false;
 		m_teamTwo.isOwner = true;
 		m_teamTwo.timeCapturing = m_timeTillCapture;
+		m_ownershipColor = m_teamTwoColor;
 	}
 
 	// Set the node color depending on the timing
-	m_nodeColor = DirectX::SimpleMath::Vector4(m_teamOne.color * (m_teamOne.timeCapturing * 0.7) / m_timeTillCapture) +
-		DirectX::SimpleMath::Vector4(m_teamTwo.color * (m_teamTwo.timeCapturing * 0.7) / m_timeTillCapture);
+	m_nodeColor = m_ownershipColor + DirectX::SimpleMath::Vector4(m_teamOne.color * (m_teamOne.timeCapturing * 0.6f) / m_timeTillCapture) +
+		DirectX::SimpleMath::Vector4(m_teamTwo.color * (m_teamTwo.timeCapturing * 0.6f) / m_timeTillCapture);
 
 	// Updates the timer for the capturepoints pointcounter
 	if (m_teamOne.isOwner) {
