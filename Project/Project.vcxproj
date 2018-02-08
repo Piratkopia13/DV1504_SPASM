@@ -135,6 +135,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
     <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
@@ -213,9 +216,13 @@
     <None Include="res\levels\sprint_demo.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
+    <None Include="res\models\capture_point.fbx" />
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
     <ClInclude Include="src\game\states\PauseState.h" />

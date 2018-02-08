@@ -13,7 +13,8 @@ Level::Level(const std::string& filename)
 {
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
 	
-	if (infile) {
+	if (infile) {		
+
 		std::string line;
 		unsigned int currTask = 0;
 		unsigned int x = 0;
@@ -65,16 +66,25 @@ Level::Level(const std::string& filename)
 				x = 0;
 				for (auto c : line) {
 					switch (c) {
+
+					// Normal blocks
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
+					
+					// Controlnodes
+					case 'c':
+						m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						break;
+					
 					case 'h':
 						holeIndices.push_back({ static_cast<int>(x), static_cast<int>(y - 1) });
 					default:
 						break;
+					
 					}
 					x++;
 				}
@@ -131,6 +141,7 @@ Level::Level(const std::string& filename)
 
 	}
 	else {
+		Logger::Error("Could not load the file '" + filename + "'.");
 	}
 }
 
@@ -138,8 +149,7 @@ Level::~Level() {
 
 }
 
-void Level::update(const float delta) {
-
+void Level::update(const float delta, CharacterHandler* charHandler) {
 }
 
 void Level::draw() {

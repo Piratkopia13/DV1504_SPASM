@@ -3,7 +3,7 @@
 #include "../../sail/Sail.h"
 #include "../../sail/graphics/models/FbxModel.h"
 #include "../../sail/graphics/renderer/DeferredRenderer.h"
-#include "../level/Grid.h"
+#include "Grid.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
@@ -14,6 +14,7 @@ namespace {
 /**
 	Handles all objects of a level
 */
+class CharacterHandler;
 class Block;
 class Grid;
 class Moveable;
@@ -25,7 +26,7 @@ public:
 	Level(const std::string& filename);
 	~Level();
 
-	void update(const float delta);
+	void update(const float delta, CharacterHandler* charHandler);
 	void draw();
 
 	Grid* getGrid();
@@ -39,9 +40,11 @@ private:
 	// Number of blocks in the y-axis
 	int m_height;
 	
+	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;
+	// Blocks placed in the level
 	std::vector<std::unique_ptr<Block>> m_blocks;
 
+	// Grid of the level
 	std::unique_ptr<Grid> m_grid;
-
 };

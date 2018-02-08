@@ -182,7 +182,7 @@ bool PauseState::render(float dt) {
 
 	// Draw the scene
 	m_background->draw();
-	m_scene.draw(dt, m_cam, nullptr, nullptr);
+	m_scene.draw(dt, m_cam, nullptr, nullptr, nullptr);
 
 	m_colorShader.updateCamera(m_cam);
 
