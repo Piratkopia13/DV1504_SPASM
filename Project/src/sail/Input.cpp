@@ -14,8 +14,6 @@ Input::Input()
 	// Init dxtk keyboard, mouse and gamepad input
 	m_keyboard = std::make_unique<Keyboard>();
 	m_gamepad = std::make_unique<GamePad>();
-
-	// Default values
 }
 
 Input::~Input() {
