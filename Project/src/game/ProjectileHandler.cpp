@@ -1,4 +1,5 @@
 #include "ProjectileHandler.h"
+#include "collision/CollisionHandler.h"
 
 ProjectileHandler::ProjectileHandler() {
 	m_projectileModel = Application::getInstance()->getResourceManager().getFBXModel("projectile").getModel();
@@ -32,7 +33,11 @@ void ProjectileHandler::update(float dt) {
 	for (unsigned int i = 0; i < m_projectiles.size(); i++) {
 		m_projectiles.at(i)->move(dt);
 		m_projectileLifeSpan.at(i) -= dt;
-		if (m_projectileLifeSpan.at(i) < 0) {
+
+		DirectX::SimpleMath::Vector3 hitPos;
+		bool hit = CollisionHandler::getInstance()->checkLevelCollisionWith(m_projectiles.at(i), hitPos);
+
+		if (hit || m_projectileLifeSpan.at(i) < 0) {
 			removeAt(i);
 		}
 	}
