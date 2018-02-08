@@ -18,6 +18,10 @@ public:
 	void addAcceleration(const DirectX::SimpleMath::Vector3& accel );
 	void setGrounded(bool grounded);
 	bool grounded();
+	//TEST
+	bool testHoles(DirectX::SimpleMath::Vector3 playerPos);
+	//--
+
 	virtual void draw() = 0;
 
 private:

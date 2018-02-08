@@ -100,24 +100,17 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 	return indices;
 }
 
-std::vector<Grid::Index> Grid::getCurrentCollisionIndices(const AABB& boundingBox) {
-	std::vector<Grid::Index> indices;
+void Grid::setHoles(const std::vector<Grid::Index>& indices) {
+	m_holes = indices;
+}
 
-	DirectX::SimpleMath::Vector2 minInGridCoords = boundingBox.getMinPos() / Level::DEFAULT_BLOCKSIZE;
-	DirectX::SimpleMath::Vector2 maxInGridCoords = boundingBox.getMaxPos() / Level::DEFAULT_BLOCKSIZE;;
-
-	if (minInGridCoords.x >= 0 && minInGridCoords.y >= 0 && maxInGridCoords.y < m_gridHeight && maxInGridCoords.x < m_gridWidth) {
-		for (int x = (int)minInGridCoords.x; x <= maxInGridCoords.x; x++) {
-			for (int y = (int)minInGridCoords.y; y <= maxInGridCoords.y; y++) {
-				if (m_cells[x][y] != nullptr) {
-					indices.push_back(Grid::Index{x, y});
-					//Logger::log("Hit!");
-				}
-			}
-		}
+bool Grid::checkHoles(const Grid::Index& playerPos) {
+	bool cover = false;
+	for (Grid::Index index : m_holes) {
+		if (index.x == playerPos.x && index.y == playerPos.y)
+			cover = true;
 	}
-
-	return indices;
+	return cover;
 }
 
 std::vector<std::vector<Block*>>& Grid::getAllBlocks() {

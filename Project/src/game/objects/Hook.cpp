@@ -28,6 +28,7 @@ void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const Direc
 
 void Hook::triggerRelease() {
 	m_triggerHeld = false;
+	this->getTransform().setScale(0.f);
 }
 
 void Hook::draw() {
