@@ -50,8 +50,10 @@ private:
 	std::unique_ptr<FbxModel> m_backGround;
 
 
-	DirectX::SimpleMath::Vector4 onColor;
-	DirectX::SimpleMath::Vector4 offColor;
+	DirectX::SimpleMath::Vector4 m_onColor;
+	DirectX::SimpleMath::Vector4 m_offColor;
+	DirectX::SimpleMath::Vector4 m_orangeColor;
+	DirectX::SimpleMath::Vector4 m_blueColor;
 
 
 
