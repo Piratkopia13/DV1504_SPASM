@@ -29,29 +29,24 @@ private:
 	Scene m_scene;
 
 	// Models
-	std::unique_ptr<FbxModel> m_sphere;
-	std::unique_ptr<Model> m_plane;
-	std::unique_ptr<Model> m_texturePlane;
-	std::unique_ptr<Model> m_texturePlane2;
+	Model* m_playerModel;
+	Model* m_menuStartModel;
+
+	Model* m_menuOptionsModel;
+	Model* m_menuExitModel;
+
+	Model* m_menuBlockModel;
+	Model* m_backGroundModel;
 
 	// Texts
 	SailFont m_font;
 	Text m_fpsText;
 	Text m_debugCamText;
 
-
-	std::unique_ptr<FbxModel> m_player;
-	std::unique_ptr<FbxModel> m_menuStart;
-
-	std::unique_ptr<FbxModel> m_menuOptions;
-	std::unique_ptr<FbxModel> m_menuExit;
-
-	std::unique_ptr<FbxModel> m_menuBlock;
-	std::unique_ptr<FbxModel> m_backGround;
-
-
-	DirectX::SimpleMath::Vector4 onColor;
-	DirectX::SimpleMath::Vector4 offColor;
+	DirectX::SimpleMath::Vector4 m_onColor;
+	DirectX::SimpleMath::Vector4 m_offColor;
+	DirectX::SimpleMath::Vector4 m_orangeColor;
+	DirectX::SimpleMath::Vector4 m_blueColor;
 
 
 
@@ -101,7 +96,7 @@ private:
 	int m_map;
 	int players[4];
 	int playersReady[4];
-	int m_playerModel[4];
+	int m_playerModelIndex[4];
 	int m_playerTeam[4];
 
 	DirectX::SimpleMath::Vector4 playerColor[4];

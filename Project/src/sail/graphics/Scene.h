@@ -61,7 +61,6 @@ public:
 private:
 
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
-	//void createFullscreenQuad();
 
 private:
 	DeferredRenderer m_deferredRenderer;
@@ -88,6 +87,7 @@ private:
 	// This is what the deferred renderer will render to
 	std::unique_ptr<RenderableTexture> m_deferredOutputTex;
 
+	bool m_doShadows;
 	bool m_doPostProcessing;
 	PostProcessPass m_postProcessPass;
 

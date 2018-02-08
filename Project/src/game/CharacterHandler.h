@@ -17,6 +17,8 @@ public:
 	bool useableTarget(unsigned int index);
 
 	void update(float dt);
+	void processInput();
+
 private:
 	void addPlayer(Character* player);
 

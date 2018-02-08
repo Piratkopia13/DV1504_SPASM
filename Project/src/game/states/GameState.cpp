@@ -48,10 +48,10 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	// Set character spawn points
-	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
-	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(10, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(11, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
+	m_characterHandler->addSpawnPoint(2, Vector3(10, 2, 0));
+	m_characterHandler->addSpawnPoint(2, Vector3(11, 2, 0));
 
 	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
@@ -79,13 +79,8 @@ GameState::~GameState() {
 // Process input for the state
 bool GameState::processInput(float dt) {
 
-	static Keyboard::KeyboardStateTracker kbTracker;
-	static GamePad::ButtonStateTracker gpTracker[4];
-	for(int i = 0; i < 4; i++)
-		gpTracker[i].Update(m_app->getInput().gamepadState[i]);
-	kbTracker.Update(m_app->getInput().keyboardState);
-
-
+	const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
+	auto& gamePad = m_app->getInput().getGamePad();
 
 	// Toggle camera controller on 'F' key or 'Y' btn
 	if (kbTracker.pressed.F)
@@ -106,30 +101,30 @@ bool GameState::processInput(float dt) {
 
 
 	// Pause menu
-	for(size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
-		int port = m_characterHandler->getCharacter(i)->getPort();
-
-
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[port];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
-
-		if (padState.IsConnected()) {
-			if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
-				auto& pad = m_app->getInput().gamepad;
-				for(int u = 0; u < 4; u++)
-					pad->SetVibration(u, 0,	0);
-				requestStackPush(States::Pause);
-			}
+	m_app->getInput().processAllGamepads([&](auto& state, auto& tracker) {
+		if (tracker.menu == GamePad::ButtonStateTracker::PRESSED) {
+			for (int u = 0; u < 4; u++)
+				gamePad.SetVibration(u, 0, 0);
+			requestStackPush(States::Pause);
 		}
+	});
+	/*
+		for(size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+			int port = m_characterHandler->getCharacter(i)->getPort();
 
+			const GamePad::State& padState = m_app->getInput().getGamePadState(i);
+			const GamePad::ButtonStateTracker& padTracker = m_app->getInput().getGpStateTracker(i);
 
-
-		this->m_characterHandler->getCharacter(i)->input(
-			padState,
-			gpTracker[port],
-			m_app->getInput().keyboardState, 
-			kbTracker);
-	}
+			if (padState.IsConnected()) {
+				if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
+					for(int u = 0; u < 4; u++)
+						gamePad.SetVibration(u, 0,	0);
+					requestStackPush(States::Pause);
+				}
+			}
+		}*/
+	
+	m_characterHandler->processInput();
 
 	// Update the camera controller from input devices
 	if (m_flyCam)

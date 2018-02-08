@@ -28,6 +28,7 @@ public:
 
 	void update(const float delta, CharacterHandler* charHandler);
 	void draw();
+
 	Grid* getGrid();
 	DirectX::SimpleMath::Vector2 getGridWorldSize();
 	const int& getGridWidth() const;

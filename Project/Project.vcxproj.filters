@@ -88,6 +88,7 @@
     <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
+    <ClInclude Include="src\sail\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

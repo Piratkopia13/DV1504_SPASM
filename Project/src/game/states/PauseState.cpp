@@ -31,11 +31,10 @@ PauseState::PauseState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 #endif
 
-	m_menuOn = std::make_unique<FbxModel>("block.fbx");
-	m_menuOn->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	auto& resMan = m_app->getResourceManager();
 
-	m_menuOff = std::make_unique<FbxModel>("block2.fbx");
-	m_menuOff->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	m_menuOnModel = resMan.getFBXModel("block").getModel();
+	m_menuOffModel = resMan.getFBXModel("block2").getModel();
 
 	float windowWidth = (float)m_app->getWindow()->getWindowWidth();
 	float windowHeight = (float)m_app->getWindow()->getWindowHeight();
@@ -52,9 +51,9 @@ PauseState::PauseState(StateStack& stack)
 	
 	
 
-	MenuItem* start = new MenuItem(m_menuOn->getModel(), Vector3(1, 3, 3));
-	MenuItem* something = new MenuItem(m_menuOff->getModel(), Vector3(1, 2, 3));
-	MenuItem* exit = new MenuItem(m_menuOff->getModel(), Vector3(1, 1, 3));
+	MenuItem* start = new MenuItem(m_menuOnModel, Vector3(1, 3, 3));
+	MenuItem* something = new MenuItem(m_menuOffModel, Vector3(1, 2, 3));
+	MenuItem* exit = new MenuItem(m_menuOffModel, Vector3(1, 1, 3));
 	
 
 	this->m_menuList.push_back(start);
@@ -90,71 +89,53 @@ PauseState::~PauseState()
 // Process input for the state
 bool PauseState::processInput(float dt) {
 
-	static Keyboard::KeyboardStateTracker kbTracker;
-	static GamePad::ButtonStateTracker gpTracker[4];
-	for (int i = 0; i < 4; i++)
-		gpTracker[i].Update(m_app->getInput().gamepadState[i]);
-	kbTracker.Update(m_app->getInput().keyboardState);
-
-	//DirectX::Keyboard::State& keyState;
-	//Keyboard::KeyboardStateTracker& keyTracker;
 	if (this->startTimer > 0)
 		return false;
 
+	m_app->getInput().processAllGamepads([&](auto& state, auto& tracker) {
+		// ON BUTTON CLICK
+		if (tracker.a == GamePad::ButtonStateTracker::PRESSED) {
+			switch (this->m_selector) {
+			case 0:
 
-	for (int i = 0; i < 4; i++) {
+				requestStackPop();
+				//this->beginStartTimer();
+				break;
 
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[i];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
-		if (padState.IsConnected()) {
-
-			// ON BUTTON CLICK
-			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
-				switch (this->m_selector) {
-				case 0:
-
-					requestStackPop();
-					//this->beginStartTimer();
-					break;
-
-				case 1:
+			case 1:
 
 
-					break;
-				case 2:
+				break;
+			case 2:
 
-					requestStackClear();
-					requestStackPush(States::MainMenu);
+				requestStackClear();
+				requestStackPush(States::MainMenu);
 
-				default:
-					break;
-				}
-
-			}
-			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-
-
+			default:
+				break;
 			}
 
-			if (padTracker.dpadDown == GamePad::ButtonStateTracker::PRESSED) {
-				this->changeMenu(1);
-			}
-			if (padTracker.dpadUp == GamePad::ButtonStateTracker::PRESSED) {
-				this->changeMenu(-1);
-			}
+		}
+		if (tracker.b == GamePad::ButtonStateTracker::PRESSED) {
 
 
-			if (padTracker.menu == 3) {
-			}
-			if (padTracker.back == 3) {
+		}
 
-				// show scoreboard ? 
-			}
+		if (tracker.dpadDown == GamePad::ButtonStateTracker::PRESSED) {
+			this->changeMenu(1);
+		}
+		if (tracker.dpadUp == GamePad::ButtonStateTracker::PRESSED) {
+			this->changeMenu(-1);
 		}
 
 
+		if (tracker.menu == 3) {
+		}
+		if (tracker.back == 3) {
 
-	}
+			// show scoreboard ? 
+		}
+	});
 
 	return false;
 }
@@ -218,14 +199,14 @@ void PauseState::beginStartTimer()
 
 void PauseState::changeMenu(int change)
 {
-	this->m_menuList[this->m_selector]->setModel(m_menuOff->getModel());
+	this->m_menuList[this->m_selector]->setModel(m_menuOffModel);
 	this->m_selector += change;
 	if (this->m_selector < 0)
 		this->m_selector = 2;
 	if (this->m_selector > 2)
 		this->m_selector = 0;
 
-	this->m_menuList[this->m_selector]->setModel(m_menuOn->getModel());
+	this->m_menuList[this->m_selector]->setModel(m_menuOnModel);
 	m_playerCamController->setTargets(
 		this->m_menuList[this->m_selector],
 		nullptr,

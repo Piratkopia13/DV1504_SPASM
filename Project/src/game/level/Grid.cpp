@@ -56,14 +56,14 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 	maxY = min(m_gridHeight - 1, maxY);
 
 	for (int i = minX - 1; i < maxX + 1; i++) {
-		for (int j = minY - 1; j < maxY + 1; j++) {
-			if (m_cells[i][j] != nullptr) {
-				Grid::Index index;
-				index.x = i;
-				index.y = j;
-				indices.push_back(index);
-			}
-		}
+	for (int j = minY - 1; j < maxY + 1; j++) {
+	if (m_cells[i][j] != nullptr) {
+	Grid::Index index;
+	index.x = i;
+	index.y = j;
+	indices.push_back(index);
+	}
+	}
 	}*/
 	//Getting all the boxes surrounding the bounding box
 	int top = maxY + 1;
@@ -83,7 +83,7 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 				indices.push_back(index);
 			}
 		}
-		top = maxX + 1; 
+		top = maxX + 1;
 		bottom = minX - 1;
 		for (int i = minY; i < maxY + 1; i++) {
 			if (m_cells[bottom][i] != nullptr) {
@@ -102,6 +102,39 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 	}
 
 	return indices;
+}
+
+std::vector<Grid::Index> Grid::getCurrentCollisionIndices(const AABB& boundingBox) {
+	std::vector<Grid::Index> indices;
+
+	DirectX::SimpleMath::Vector2 minInGridCoords = boundingBox.getMinPos() / Level::DEFAULT_BLOCKSIZE;
+	DirectX::SimpleMath::Vector2 maxInGridCoords = boundingBox.getMaxPos() / Level::DEFAULT_BLOCKSIZE;;
+
+	if (minInGridCoords.x >= 0 && minInGridCoords.y >= 0 && maxInGridCoords.y < m_gridHeight && maxInGridCoords.x < m_gridWidth) {
+		for (int x = (int)minInGridCoords.x; x <= maxInGridCoords.x; x++) {
+			for (int y = (int)minInGridCoords.y; y <= maxInGridCoords.y; y++) {
+				if (m_cells[x][y] != nullptr) {
+					indices.push_back(Grid::Index{ x, y });
+					//Logger::log("Hit!");
+				}
+			}
+		}
+	}
+
+	return indices;
+}
+
+void Grid::setHoles(const std::vector<Grid::Index>& indices) {
+	m_holes = indices;
+}
+
+bool Grid::checkHoles(const Grid::Index& playerPos) {
+	bool cover = false;
+	for (Grid::Index index : m_holes) {
+		if (index.x == playerPos.x && index.y == playerPos.y)
+			cover = true;
+	}
+	return cover;
 }
 
 std::vector<std::vector<Block*>>& Grid::getAllBlocks() {
