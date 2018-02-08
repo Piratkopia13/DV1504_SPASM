@@ -100,6 +100,19 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 	return indices;
 }
 
+void Grid::setHoles(const std::vector<Grid::Index>& indices) {
+	m_holes = indices;
+}
+
+bool Grid::checkHoles(const Grid::Index& playerPos) {
+	bool cover = false;
+	for (Grid::Index index : m_holes) {
+		if (index.x == playerPos.x && index.y == playerPos.y)
+			cover = true;
+	}
+	return cover;
+}
+
 std::vector<std::vector<Block*>>& Grid::getAllBlocks() {
 	return m_cells;
 }

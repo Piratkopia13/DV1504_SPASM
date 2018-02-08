@@ -39,10 +39,10 @@ public:
 	~Grid();
 
 	void addBlock(Block* block, const int x, const int y);
-	//TEST
-	void setHoles(std::vector<Grid::Index> indices);
-	bool checkHoles(Grid::Index index);
-	//--
+
+	void setHoles(const std::vector<Grid::Index>& indices);
+	bool checkHoles(const Grid::Index& index);
+
 	bool atGrid(const int x, const int y);
 	std::vector<Index> getCollisionIndices(const AABB& boundingBox);
 	std::vector<std::vector<Block*>>& getAllBlocks();

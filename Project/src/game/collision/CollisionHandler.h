@@ -14,6 +14,7 @@ public:
 	void resolveLevelCollisionWith(Character* chara, float dt);
 	void resolveLevelCollisionWith(Projectile* proj);
 	bool resolveProjectileCollisionWith(Character* chara);
+	bool resolveCoverCollision(const DirectX::SimpleMath::Vector3& playerPos);
 	DirectX::SimpleMath::Vector3 rayTraceLevel(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& dir);
 
 	static CollisionHandler* getInstance();

@@ -58,6 +58,7 @@ private:
 	struct Movement {
 		bool hooked;
 		float speed;
+		bool inCover;
 	};
 	struct Health {
 		float current;

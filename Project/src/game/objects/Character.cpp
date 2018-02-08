@@ -11,7 +11,7 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0,0,0), Vector3(1,0,0)};
-	m_movement = { 0, 10 };
+	m_movement = { 0, 10, 0 };
 	m_playerHealth.setMax(100);
 	m_playerHealth.setHealth(100);
 	m_playerHealth.regen = 5;
@@ -58,7 +58,14 @@ void Character::input(
 				this->jump();
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-				
+				if (!m_movement.inCover) {
+					CollisionHandler* collHandler = CollisionHandler::getInstance();
+					DirectX::SimpleMath::Vector3 pos = getTransform().getTranslation();
+					pos.y += 0.5f;//Player pos is currently beneath the character with the trashcan model, inside a block
+					m_movement.inCover = collHandler->resolveCoverCollision(pos);
+				}
+				else
+					m_movement.inCover = false;
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				m_playerHealth.addHealth(-10);
@@ -152,35 +159,52 @@ void Character::update(float dt) {
 	}
 
 	m_playerHealth.updatePercent();
-	
 
-	if (grounded())
-		this->setVelocity(DirectX::SimpleMath::Vector3(m_input.movement.x * m_movement.speed, this->getVelocity().y, 0.f));
-	else {
-		float velX = m_input.movement.x * m_movement.speed * 0.1f + getVelocity().x;
-		velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
-		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+	if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
+		if (grounded())
+			this->setVelocity(DirectX::SimpleMath::Vector3(m_input.movement.x * m_movement.speed, this->getVelocity().y, 0.f));
+		else {
+			float velX = m_input.movement.x * m_movement.speed * 0.1f + getVelocity().x;
+			velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
+			this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+		}
+
+		if (m_movement.hooked) {
+			this->setGrounded(false);
+			this->setAcceleration(m_hook->getDirection() * 40.0f);
+		}
+
+		if (m_weapon) {
+			m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, -0.0f));
+			m_weapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(m_input.aim) - 1.6f));
+			m_weapon->update(dt, m_input.aim);
+		}
+		if (m_hook) {
+			m_hook->update(dt, m_weapon->getTransform().getTranslation());
+		}
+
+		collHandler->resolveProjectileCollisionWith(this);
 	}
 
-	if (m_movement.hooked) {
-		this->setGrounded(false);
-		this->setAcceleration(m_hook->getDirection() * 40.0f);
+	//Going in and out of cover
+	if (getTransform().getTranslation().z == 0.f && m_movement.inCover) {
+		this->setVelocity(DirectX::SimpleMath::Vector3((((floor(getTransform().getTranslation().x)) - getTransform().getTranslation().x) + 0.5f) * m_movement.speed, 0.f, m_movement.speed));
+	}
+	else if (getTransform().getTranslation().z > 1.f && m_movement.inCover) {
+		this->setVelocity(DirectX::SimpleMath::Vector3((((floor(getTransform().getTranslation().x)) - getTransform().getTranslation().x) + 0.5f) * m_movement.speed, 0.f, 0.f));
+	}
+	else if (getTransform().getTranslation().z > 0.f && !m_movement.inCover)
+		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, -m_movement.speed));
+	else if (getTransform().getTranslation().z < 0.f && !m_movement.inCover){
+		getTransform().setTranslation(DirectX::SimpleMath::Vector3(getTransform().getTranslation().x, getTransform().getTranslation().y, 0.f));
+		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
 	}
 
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
 
-	if (m_weapon) {
-		m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f, -0.0f));
-		m_weapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(m_input.aim) - 1.6f));
-		m_weapon->update(dt, m_input.aim);
-	}
-	if (m_hook) {
-		m_hook->update(dt, m_weapon->getTransform().getTranslation());
-	}
 
-	collHandler->resolveProjectileCollisionWith(this);
 
 }
 
@@ -190,7 +214,7 @@ void Character::draw() {
 	model->draw();
 	if(m_weapon)
 		m_weapon->draw();
-	if(m_hook)
+	if(m_hook)// && !m_movement.inCover)
 		m_hook->draw();
 }
 

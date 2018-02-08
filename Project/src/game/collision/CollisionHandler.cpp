@@ -142,6 +142,10 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 void CollisionHandler::resolveLevelCollisionWith(Projectile* proj) {
 }
 
+bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3& playerPos) {
+	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
+}
+
 bool CollisionHandler::resolveProjectileCollisionWith(Character* chara) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
