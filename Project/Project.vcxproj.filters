@@ -88,6 +88,7 @@
     <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\states\PauseState.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
+    <ClInclude Include="src\sail\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

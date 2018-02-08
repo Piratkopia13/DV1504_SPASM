@@ -164,19 +164,10 @@ MenuState::~MenuState()
 // Process input for the state
 bool MenuState::processInput(float dt) {
 
-	static Keyboard::KeyboardStateTracker kbTracker;
-	static GamePad::ButtonStateTracker gpTracker[4];
-	for (int i = 0; i < 4; i++)
-		gpTracker[i].Update(m_app->getInput().gamepadState[i]);
-	kbTracker.Update(m_app->getInput().keyboardState);
-
-	//DirectX::Keyboard::State& keyState;
-	
-	
-
 	for (int i = 0; i < 4; i++) {
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[i];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
+		const GamePad::State& padState = m_app->getInput().getGamePadState(i);
+		const GamePad::ButtonStateTracker& padTracker = m_app->getInput().getGpStateTracker(i);
+		const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
 		
 		int a = 0;
 		int b = 0;

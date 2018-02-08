@@ -4,13 +4,6 @@ using namespace DirectX;
 
 Application* Application::m_instance = nullptr;
 
-LONG Application::Input::m_frameDeltaAccumulationMouseDX = 0;
-LONG Application::Input::m_frameDeltaAccumulationMouseDY = 0;
-LONG Application::Input::m_mouseDXSinceLastFrame = 0;
-LONG Application::Input::m_mouseDYSinceLastFrame = 0;
-bool Application::Input::m_mouseButtons[2] = { false, false };
-bool Application::Input::m_mouseButtonsPressedSinceLastFrame[2] = {false, false};
-
 Application::Application(int windowWidth, int windowHeight, char* windowTitle, HINSTANCE hInstance)
 : m_window(hInstance, windowWidth, windowHeight, windowTitle)
 {
@@ -27,10 +20,6 @@ Application::Application(int windowWidth, int windowHeight, char* windowTitle, H
 		Logger::Error("Failed to initialize Direct3D!");
 		return;
 	}
-
-	// Init dxtk keyboard, mouse and gamepad input
-	m_input.keyboard = std::make_unique<Keyboard>();
-	m_input.gamepad = std::make_unique<GamePad>();
 
 	// Register devices to use raw input from hardware
 	m_input.registerRawDevices(*m_window.getHwnd());
@@ -96,29 +85,25 @@ int Application::startGameLoop() {
 				secCounter = 0.f;
 			}
 
-			// Update input states for keyboard and X controllers
-			for(int i = 0 ; i < 4 ; i++)
-				m_input.gamepadState[i] = GamePad::Get().GetState(i);
-			m_input.keyboardState = Keyboard::Get().GetState();
-
+			// Update input states
+			m_input.updateStates();
 
 			// Update mouse deltas
 			m_input.newFrame();
 
 			// Quit on escape or alt-f4
-			
-
-
-			if (m_input.keyboardState.LeftAlt && m_input.keyboardState.F4)
+			if (m_input.getKeyboardState().LeftAlt && m_input.getKeyboardState().F4)
 				PostQuitMessage(0);
 
 			processInput(delta);
 
 			// Update
 #ifdef _DEBUG
-
-			if (m_input.keyboardState.Escape)
+			if (m_input.getKeyboardState().Escape)
 				PostQuitMessage(0);
+
+			/*if(delta > 0.0166)
+				Logger::Warning(std::to_string(elapsedTime) + " delta over 0.0166: " + std::to_string(delta));*/
 #endif
 			updateTimer += delta;
 
@@ -165,7 +150,7 @@ const UINT Application::getFPS() const {
 	return m_fps;
 }
 
-Application::Input& Application::getInput() {
+Input& Application::getInput() {
 	return m_input;
 }
 

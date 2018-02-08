@@ -47,8 +47,5 @@ private:
 	std::unique_ptr<ProjectileHandler> m_projHandler;
 	std::unique_ptr<CollisionHandler> m_collisionHandler;
 	std::unique_ptr<CharacterHandler> m_characterHandler;
-
-
-
-
+	
 };
