@@ -89,71 +89,53 @@ PauseState::~PauseState()
 // Process input for the state
 bool PauseState::processInput(float dt) {
 
-	static Keyboard::KeyboardStateTracker kbTracker;
-	static GamePad::ButtonStateTracker gpTracker[4];
-	for (int i = 0; i < 4; i++)
-		gpTracker[i].Update(m_app->getInput().gamepadState[i]);
-	kbTracker.Update(m_app->getInput().keyboardState);
-
-	//DirectX::Keyboard::State& keyState;
-	//Keyboard::KeyboardStateTracker& keyTracker;
 	if (this->startTimer > 0)
 		return false;
 
+	m_app->getInput().processAllGamepads([&](auto& state, auto& tracker) {
+		// ON BUTTON CLICK
+		if (tracker.a == GamePad::ButtonStateTracker::PRESSED) {
+			switch (this->m_selector) {
+			case 0:
 
-	for (int i = 0; i < 4; i++) {
+				requestStackPop();
+				//this->beginStartTimer();
+				break;
 
-		DirectX::GamePad::State& padState = m_app->getInput().gamepadState[i];
-		GamePad::ButtonStateTracker& padTracker = gpTracker[i];
-		if (padState.IsConnected()) {
-
-			// ON BUTTON CLICK
-			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
-				switch (this->m_selector) {
-				case 0:
-
-					requestStackPop();
-					//this->beginStartTimer();
-					break;
-
-				case 1:
+			case 1:
 
 
-					break;
-				case 2:
+				break;
+			case 2:
 
-					requestStackClear();
-					requestStackPush(States::MainMenu);
+				requestStackClear();
+				requestStackPush(States::MainMenu);
 
-				default:
-					break;
-				}
-
-			}
-			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-
-
+			default:
+				break;
 			}
 
-			if (padTracker.dpadDown == GamePad::ButtonStateTracker::PRESSED) {
-				this->changeMenu(1);
-			}
-			if (padTracker.dpadUp == GamePad::ButtonStateTracker::PRESSED) {
-				this->changeMenu(-1);
-			}
+		}
+		if (tracker.b == GamePad::ButtonStateTracker::PRESSED) {
 
 
-			if (padTracker.menu == 3) {
-			}
-			if (padTracker.back == 3) {
+		}
 
-				// show scoreboard ? 
-			}
+		if (tracker.dpadDown == GamePad::ButtonStateTracker::PRESSED) {
+			this->changeMenu(1);
+		}
+		if (tracker.dpadUp == GamePad::ButtonStateTracker::PRESSED) {
+			this->changeMenu(-1);
 		}
 
 
+		if (tracker.menu == 3) {
+		}
+		if (tracker.back == 3) {
 
-	}
+			// show scoreboard ? 
+		}
+	});
 
 	return false;
 }

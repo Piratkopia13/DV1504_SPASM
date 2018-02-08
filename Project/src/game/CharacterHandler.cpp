@@ -127,6 +127,11 @@ void CharacterHandler::update(float dt) {
 	}
 }
 
+void CharacterHandler::processInput() {
+	for (auto* character : m_characters)
+		character->processInput();
+}
+
 unsigned int CharacterHandler::getNrOfPlayers()
 {
 	return m_characters.size();

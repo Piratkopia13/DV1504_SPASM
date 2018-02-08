@@ -2,9 +2,6 @@
 
 #include <Windows.h>
 #include <string>
-#include <Keyboard.h>
-#include <Mouse.h>
-#include <GamePad.h>
 
 class Win32Window {
 

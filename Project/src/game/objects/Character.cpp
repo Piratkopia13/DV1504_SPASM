@@ -36,11 +36,7 @@ Character::~Character() {
 	Memory::safeDelete(m_hook);
 }
 
-void Character::input(
-	DirectX::GamePad::State& padState,
-	DirectX::GamePad::ButtonStateTracker& padTracker,
-	DirectX::Keyboard::State& keyState,
-	DirectX::Keyboard::KeyboardStateTracker& keyTracker) {
+void Character::processInput() {
 	if (!m_playerHealth.alive)
 		return;
 
@@ -50,6 +46,10 @@ void Character::input(
 
 	}
 	else {
+
+		const GamePad::State& padState = Application::getInstance()->getInput().getGamePadState(m_inputDevice.controllerPort);
+		const GamePad::ButtonStateTracker& padTracker = Application::getInstance()->getInput().getGpStateTracker(m_inputDevice.controllerPort);
+
 		if (padState.IsConnected()) {
 
 			// ON BUTTON CLICK
@@ -137,10 +137,10 @@ void Character::input(
 void Character::update(float dt) {
 	Application* app = Application::getInstance();
 	CollisionHandler* collHandler = CollisionHandler::getInstance();
-	auto& pad = app->getInput().gamepad;
+	auto& gamePad = Application::getInstance()->getInput().getGamePad();
 
 	if (updateVibration(dt))
-		pad->SetVibration(m_inputDevice.controllerPort,
+		gamePad.SetVibration(m_inputDevice.controllerPort,
 			m_vibration[0].currentStrength,
 			m_vibration[1].currentStrength);
 

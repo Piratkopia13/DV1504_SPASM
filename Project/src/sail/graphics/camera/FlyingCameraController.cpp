@@ -16,8 +16,7 @@ void FlyingCameraController::update(float dt) {
 
 	Application* app = Application::getInstance();
 
-	auto& keyboard = app->getInput().keyboard;
-	auto kbState = app->getInput().keyboardState;
+	auto& kbState = app->getInput().getKeyboardState();
 
 	float movementSpeed = dt * 5.f;
 	float lookSensitivityMouse = 0.1f;
@@ -85,7 +84,7 @@ void FlyingCameraController::update(float dt) {
 	// Mouse input
 
 	// Toggle cursor capture on right click
-	if (app->getInput().wasJustPressed(Application::Input::MouseButton::RIGHT)) {
+	if (app->getInput().wasJustPressed(Input::MouseButton::RIGHT)) {
 		app->getInput().showCursor(app->getInput().isCursorHidden());
 	}
 
