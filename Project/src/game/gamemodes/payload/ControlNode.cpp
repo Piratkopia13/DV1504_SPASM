@@ -11,8 +11,8 @@ ControlNode::ControlNode(Model* model) {
 	m_timeCaptured = 0.f;
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f);
-	m_teamOneColor = DirectX::SimpleMath::Vector4(1.f, 0.f, 0.f, 1.f);
-	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 1.f, 1.f);
+	m_teamOneColor = DirectX::SimpleMath::Vector4(1.f, 1.f, 0.f, 1.f);
+	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.f, 1.f, 1.f, 1.f);
 
 	m_teamOne.color = m_teamOneColor;
 	m_teamOne.ownershipTime = 0.f;
@@ -51,12 +51,15 @@ int ControlNode::getTeam() {
 }
 
 void ControlNode::capture(const int teamOne, const int teamTwo) {
+	// If no one is on the point, no one is capturing it
 	if (teamOne > 0 || teamTwo > 0) {
+		// First checks if theres equal amount of each team on point
 		if (teamOne == teamTwo) {
 			m_teamOne.capturing = true;
 			m_teamTwo.capturing = true;
 			m_beingCaptured = false;
 		}
+		// Checks if no one is currently capturing and puts a team on capturing depending on which team is more
 		if (!m_teamOne.capturing && !m_teamTwo.capturing) {
 			if (teamOne > teamTwo) {
 				m_beingCaptured = true;
@@ -69,14 +72,18 @@ void ControlNode::capture(const int teamOne, const int teamTwo) {
 					m_teamTwo.capturing = true;
 			}
 		}
+		// Else if both is capturing, the point won't be captured
 		else if (m_teamOne.capturing && m_teamTwo.capturing) {
 			m_beingCaptured = false;
 		}
+		// Else if someone is currently holding capture of the point, and have left, and a new team enters
 		else {
 			if (m_teamOne.capturing) {
+				// If team one is the current capturer, switch if team two are greater in numbers
 				if (teamOne < teamTwo) {
 					m_beingCaptured = true;
 					m_teamTwo.capturing = true;
+					m_teamOne.capturing = false;
 				}
 				else {
 					m_beingCaptured = true;
@@ -85,9 +92,11 @@ void ControlNode::capture(const int teamOne, const int teamTwo) {
 			}
 
 			if (m_teamTwo.capturing) {
+				// If team two is the current capturer, switch if team one are greater in numbers
 				if (teamTwo < teamOne) {
 					m_beingCaptured = true;
 					m_teamOne.capturing = true;
+					m_teamTwo.capturing = false;
 				}
 				else {
 					m_beingCaptured = true;
@@ -102,8 +111,11 @@ void ControlNode::capture(const int teamOne, const int teamTwo) {
 }
 
 bool ControlNode::updateNodeTimer(float dt) {
+	// Timing is removed if team one is not on the point, and their timing is what is active
 	if (m_teamOne.capturing) {
+		// If someone is on the point
 		if (m_beingCaptured) {
+			// Adds time if team two is not trying to capture at the same time as team one
 			if (!m_teamTwo.capturing) {
 				if (m_teamTwo.timeCapturing <= 0.f)
 					m_teamOne.timeCapturing += dt;
@@ -117,8 +129,10 @@ bool ControlNode::updateNodeTimer(float dt) {
 			m_teamOne.timeCapturing -= dt;
 	}
 	
+	// Timing is removed if team two is not on the point, and their timing is what is active
 	if (m_teamTwo.capturing) {
 		if (m_beingCaptured) {
+			// Adds time if team one is not trying to capture at the same time as team two
 			if (!m_teamOne.capturing) {
 				if (m_teamOne.timeCapturing <= 0.f)
 					m_teamTwo.timeCapturing += dt;
@@ -132,6 +146,8 @@ bool ControlNode::updateNodeTimer(float dt) {
 			m_teamTwo.timeCapturing -= dt;
 	}
 
+	// If the point isn't being captured and either team is the current owner and no one is on the point, 
+	// the timer goes back up for the team
 	if (!m_beingCaptured) {
 		if (m_teamOne.isOwner && m_teamOne.timeCapturing < m_timeTillCapture && !m_teamTwo.capturing) {
 			m_teamOne.timeCapturing += dt;
@@ -146,31 +162,37 @@ bool ControlNode::updateNodeTimer(float dt) {
 		}
 	}
 
+	// Set team to not capture if the timer goes to zero
 	if (m_teamOne.timeCapturing <= 0.f) {
 		m_teamOne.capturing = false;
 		m_teamOne.isOwner = false;
 		m_teamOne.timeCapturing = 0.f;
 	}
+	// Else if the timer has passed the amount required to capture a point, set ownership
 	else if (m_teamOne.timeCapturing > m_timeTillCapture) {
 		m_teamOne.capturing = false;
 		m_teamOne.isOwner = true;
 		m_teamOne.timeCapturing = m_timeTillCapture;
 	}
-	
+
+	// Set team to not capture if the timer goes to zero
 	if (m_teamTwo.timeCapturing <= 0.f) {
 		m_teamTwo.capturing = false;
 		m_teamTwo.isOwner = false;
 		m_teamTwo.timeCapturing = 0.f;
 	}
+	// Else if the timer has passed the amount required to capture a point, set ownership
 	else if (m_teamTwo.timeCapturing > m_timeTillCapture) {
 		m_teamTwo.capturing = false;
 		m_teamTwo.isOwner = true;
 		m_teamTwo.timeCapturing = m_timeTillCapture;
 	}
 
+	// Set the node color depending on the timing
 	m_nodeColor = DirectX::SimpleMath::Vector4(m_teamOne.color * pow(m_teamOne.timeCapturing / m_timeTillCapture, 2.f)) +
 		DirectX::SimpleMath::Vector4(m_teamTwo.color * pow(m_teamTwo.timeCapturing / m_timeTillCapture, 2.f));
-	
+
+	// Updates the timer for the capturepoints pointcounter
 	if (m_teamOne.isOwner) {
 		if (m_team != m_teamOne.id) {
 			setTeam(m_teamOne.id);

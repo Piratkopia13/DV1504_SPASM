@@ -30,6 +30,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		numOfTeam[i].y = 0;
 	}
 
+	// Checks the indices all around each player to see if it's within a controlpoints radius
 	for (Grid::Index cn_index : m_indices) {
 		for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
 
@@ -43,25 +44,16 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 							playerColliding = true;
 				
 			if (playerColliding) {
-				// UNCOMMENT WHEN SUPPORT FOR TEAMS HAS BEEN ADDED
-				//if (charHandler->getCharacter(i)->getTeam() + 1 == 1)
-				//	numOfTeam[index].x += 1;
-				//else
-				//	numOfTeam[index].y += 1;
-				numOfTeam[index].x += (i + 1) % 2;
-				numOfTeam[index].y += i % 2;
+				if (charHandler->getCharacter(i)->getTeam() == 1)
+					numOfTeam[index].x += 1;
+				else
+					numOfTeam[index].y += 1;
 			}
-		}
-
-		if (index == 2) {
-			//std::cout << m_controlNodes[index]->getAsString() << std::endl;
-			//std::cout << numOfTeam[index].x << "   " << numOfTeam[index].y << std::endl;
 		}
 
 		m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);
 		if (m_controlNodes[index]->updateNodeTimer(dt)) {
 			Gamemode::addScore(1, m_controlNodes[index]->getTeam());
-			std::cout << "Score update from point " << index << " Team Red: " << Gamemode::getScore(1) << " Team Blue: " << Gamemode::getScore(2) << std::endl;
 		}
 		index++;
 	}

@@ -17,7 +17,7 @@ void Gamemode::draw() {
 
 }
 
-int Gamemode::getScore(const int team) {
+float Gamemode::getScore(const int team) {
 	switch (team) {
 	case 1:
 		return m_scoreTeamOne;
@@ -28,7 +28,7 @@ int Gamemode::getScore(const int team) {
 	}
 }
 
-void Gamemode::addScore(const int toAdd, const int team) {
+void Gamemode::addScore(const float toAdd, const int team) {
 	switch (team) {
 	case 1:
 		m_scoreTeamOne += toAdd;

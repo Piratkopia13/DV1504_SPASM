@@ -3,6 +3,7 @@
 #include "../../sail/Sail.h"
 #include "../../sail/graphics/models/FbxModel.h"
 #include "../../sail/graphics/renderer/DeferredRenderer.h"
+#include "Grid.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
@@ -17,7 +18,6 @@ class CharacterHandler;
 class Block;
 class Grid;
 class Moveable;
-class Gamemode;
 class Level {
 
 public:
@@ -46,10 +46,4 @@ private:
 
 	// Grid of the level
 	std::unique_ptr<Grid> m_grid;
-
-	// int for the current gamemode
-	int m_currentGamemode = 0;
-
-	// The gamemode to be played on the level
-	std::unique_ptr<Gamemode> m_gamemode;
 };

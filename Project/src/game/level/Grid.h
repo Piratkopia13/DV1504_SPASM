@@ -39,13 +39,17 @@ public:
 	~Grid();
 
 	void addBlock(Block* block, const int x, const int y);
+	void addControlpoint(const int x, const int y);
 	bool atGrid(const int x, const int y);
 	std::vector<Index> getCollisionIndices(const AABB& boundingBox);
 	std::vector<std::vector<Block*>>& getAllBlocks();
+	std::vector<Grid::Index> & getControlpointIndices();
+	
 
 private:
 	std::vector<std::vector<Block*>> m_cells;
-	
+	std::vector<Index> m_cpIndices;
+
 	int m_gridWidth;
 	int m_gridHeight;
 

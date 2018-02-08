@@ -11,11 +11,11 @@ public:
 	virtual void update(CharacterHandler* charHandler, float delta);
 	virtual void draw();
 
-	int getScore(const int team);
+	float getScore(const int team);
 	
 protected:
-	void addScore(const int toAdd, const int team);
+	void addScore(const float toAdd, const int team);
 
 private:
-	int m_scoreTeamOne, m_scoreTeamTwo;
+	float m_scoreTeamOne, m_scoreTeamTwo;
 };

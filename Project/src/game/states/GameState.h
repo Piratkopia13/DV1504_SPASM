@@ -7,6 +7,7 @@
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
 #include "../collision/CollisionHandler.h"
+#include "../gamemodes/Gamemode.h"
 
 class GameState : public State {
 public:
@@ -48,7 +49,6 @@ private:
 	std::unique_ptr<CollisionHandler> m_collisionHandler;
 	std::unique_ptr<CharacterHandler> m_characterHandler;
 
-
-
-
+	// The current gamemode
+	std::unique_ptr<Gamemode> m_gamemode;
 };

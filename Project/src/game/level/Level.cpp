@@ -2,7 +2,6 @@
 #include "../objects/Block.h"
 #include "Grid.h"
 #include "../objects/common/Moveable.h"
-#include "../gamemodes/payload/PayloadGamemode.h"
 
 #include <string>
 #include <fstream>
@@ -14,11 +13,7 @@ Level::Level(const std::string& filename)
 {
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
 	
-	if (infile) {
-
-		// ONLY FOR PAYLOADGAMEMODE - Controlnode Indices
-		std::vector<Grid::Index> cnIndices;
-		
+	if (infile) {		
 
 		std::string line;
 		unsigned int currTask = 0;
@@ -71,7 +66,8 @@ Level::Level(const std::string& filename)
 					
 					// Controlnodes
 					case 'c':
-						cnIndices.push_back(Grid::Index{ static_cast<int>(x), static_cast<int>(y - 1) });
+						m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						break;
 					
 					default:
 						break;
@@ -89,10 +85,6 @@ Level::Level(const std::string& filename)
 			}
 		}
 
-		// SWITCH TO ENUM WHEN AVAILABLE
-		if (m_currentGamemode == 0)
-			m_gamemode = std::make_unique<PayloadGamemode>(cnIndices);
-
 	}
 	else {
 		Logger::Error("Could not load the file '" + filename + "'.");
@@ -104,16 +96,11 @@ Level::~Level() {
 }
 
 void Level::update(const float delta, CharacterHandler* charHandler) {
-	if(m_gamemode)
-		m_gamemode->update(charHandler, delta);
 }
 
 void Level::draw() {
 	for (const auto& block : m_blocks) 
 		block->draw();
-
-	if (m_gamemode)
-		m_gamemode->draw();
 }
 
 Grid* Level::getGrid() {
