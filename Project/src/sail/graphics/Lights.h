@@ -49,7 +49,7 @@ public:
 	};
 
 	struct DirectionalLight {
-		DirectionalLight() : color(DirectX::SimpleMath::Vector3(.8f)), direction(DirectX::SimpleMath::Vector3(0.f, -1.f, 0.f)) {}
+		DirectionalLight(const DirectX::SimpleMath::Vector3& color = DirectX::SimpleMath::Vector3(.8f), const DirectX::SimpleMath::Vector3& dir = DirectX::SimpleMath::Vector3(0.f, -1.f, 0.f)) : color(color), direction(dir) {}
 		DirectX::SimpleMath::Vector3 color;
 		float padding1;
 		DirectX::SimpleMath::Vector3 direction;

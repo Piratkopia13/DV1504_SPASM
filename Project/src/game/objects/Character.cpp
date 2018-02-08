@@ -1,25 +1,24 @@
-#include "Character.h"
-
 #pragma once
+#include "Character.h"
+#include "../collision/CollisionHandler.h"
+
+using namespace DirectX;
+using namespace DirectX::SimpleMath;
 
 Character::Character()
-	: Moveable()
+	: Moveable(),
+	m_currentTeam(0)
 {
+	m_inputDevice = { 1, 0 };
+	m_input = {Vector3(0,0,0), Vector3(1,0,0)};
+	m_movement = { 0, 10 };
+	m_playerHealth.setMax(100);
+	m_playerHealth.setHealth(100);
+	m_playerHealth.regen = 5;
+	m_vibration[0] = { 0, 0};
 
-	this->usingController = 0;
-	this->controllerPort = 0;
-	m_inputVec = DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
-	this->aimVec = DirectX::SimpleMath::Vector3(1.0f, 0.0f, 0.0f);
-	this->speed = 10;
-	this->jumpTimer = 0;
-	for (int i = 0; i < 2; i++) {
-		//this->padVibration[i] = 1;
-		this->vibrationReduction[i] = 1;
-	}
-	this->getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
-	this->setLightColor(Vector4(1, 1, 1, 1));
-	this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(2.0f + 3.0f, 3.0f, 0.0f));
-	m_inHole = false;
+	getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
+	setLightColor(Vector4(1, 1, 1, 1));
 }
 
 Character::Character(Model * model) : Character() {
@@ -33,17 +32,20 @@ Character::Character(Model * model, unsigned int usingController, unsigned int p
 }
 
 Character::~Character() {
-	//delete this->model;
-
+	Memory::safeDelete(m_weapon);
+	Memory::safeDelete(m_hook);
 }
 
 void Character::input(
 	DirectX::GamePad::State& padState,
-	GamePad::ButtonStateTracker& padTracker,
+	DirectX::GamePad::ButtonStateTracker& padTracker,
 	DirectX::Keyboard::State& keyState,
-	Keyboard::KeyboardStateTracker& keyTracker) {
+	DirectX::Keyboard::KeyboardStateTracker& keyTracker) {
+	if (!m_playerHealth.alive)
+		return;
 
-	if (!usingController) {
+
+	if (!m_inputDevice.controller) {
 
 
 	}
@@ -54,38 +56,27 @@ void Character::input(
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
 				this->addVibration(1, 1);
 				this->jump();
-				//this->currentWeapon->cooldownTime += 0.02f;
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-				if (this->testHoles(getTransform().getTranslation()) && !m_inHole) {
-					m_inHole = true;
-				}
-				else
-					m_inHole = false;
 				
-				/*if(this->currentWeapon->cooldownTime > 0.02f)
-					this->currentWeapon->cooldownTime -= 0.02f;*/
-
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
+				m_playerHealth.addHealth(-10);
 				this->addVibration(0, 1);
-				this->currentWeapon->automatic = true;
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
-				this->addVibration(0, 1);
-				this->currentWeapon->automatic = false;
+				m_playerHealth.addHealth(10);
 			}
 
 			// ON BUTTON RELEASE
 			if (padTracker.a == GamePad::ButtonStateTracker::RELEASED) {
-				this->addVibration(1, 1);
 				this->stopJump();
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::RELEASED) {
-				this->addVibration(0, 1);
+				
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::RELEASED) {
-				this->addVibration(0, 1);
+				
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::RELEASED) {
 				this->addVibration(0, 1);
@@ -108,26 +99,24 @@ void Character::input(
 			// ON TRIGGER HOLD
 
 			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::PRESSED) {
-				this->currentWeapon->triggerPull();
+				m_weapon->triggerPull();
 				
 			}
 			if (padTracker.rightTrigger == GamePad::ButtonStateTracker::RELEASED) {
-				this->currentWeapon->triggerRelease();
+				m_weapon->triggerRelease();
 
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::PRESSED) {
 				hook();
 			}
 			if (padTracker.leftTrigger == GamePad::ButtonStateTracker::RELEASED) {
-				m_hook->triggerRelease();
-				setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-				m_hooked = false;
+				stopHook();
 			}
 
 
-
+			
 			//update inputVector
-			m_inputVec = Vector3(
+			m_input.movement = Vector3(
 				padState.thumbSticks.leftX,
 				padState.thumbSticks.leftY, 
 				0);
@@ -136,9 +125,10 @@ void Character::input(
 				padState.thumbSticks.rightX,
 				padState.thumbSticks.rightY,
 				0);
-			if (tempVec.LengthSquared() > 0.3) {
-				this->aimVec = tempVec;
-				this->aimVec.Normalize();
+
+			if (tempVec.LengthSquared() > 0.3) {			
+				tempVec.Normalize();
+				m_input.aim = tempVec;
 			}
 		}
 	}
@@ -146,152 +136,162 @@ void Character::input(
 
 void Character::update(float dt) {
 	Application* app = Application::getInstance();
+	CollisionHandler* collHandler = CollisionHandler::getInstance();
 	auto& pad = app->getInput().gamepad;
 
 	if (updateVibration(dt))
-		pad->SetVibration(this->controllerPort,
-			this->padVibration[0],
-			this->padVibration[1],
-			this->padVibration[2],
-			this->padVibration[3]);
-	//if (this->jumping) {
+		pad->SetVibration(m_inputDevice.controllerPort,
+			m_vibration[0].currentStrength,
+			m_vibration[1].currentStrength);
 
-	//	float jumpStr = 10;
-	//	jumpStr -= this->jumpTimer * 10;
-	//	this->addAcceleration(Vector3(0, jumpStr, 0));
-	//	this->jumpTimer += dt;
-	//}
-	if (getTransform().getTranslation().z == 0.f && !m_inHole) {
-		if (grounded())
-			this->setVelocity(DirectX::SimpleMath::Vector3(m_inputVec.x * this->speed, this->getVelocity().y, 0.f));
-		else {
-			float velX = m_inputVec.x * this->speed * 0.1f + getVelocity().x;
-			velX = max(min(velX, this->speed * 0.8f), -this->speed * 0.8f);
-			this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
-		}
+	if (!m_playerHealth.alive)
+		return;
 
-		if (m_hooked) {
-			this->setGrounded(false);
-			this->setAcceleration(m_hook->getDirection() * 40.0f);
-		}
+	if (m_playerHealth.current < m_playerHealth.max) {
+		m_playerHealth.current += m_playerHealth.regen * dt;
 	}
+
+	m_playerHealth.updatePercent();
+	
+
+	if (grounded())
+		this->setVelocity(DirectX::SimpleMath::Vector3(m_input.movement.x * m_movement.speed, this->getVelocity().y, 0.f));
 	else {
-		if (m_inHole) {
-			this->setVelocity(DirectX::SimpleMath::Vector3(((floor(getTransform().getTranslation().x) + 0.5f) - getTransform().getTranslation().x) * this->speed, 0.f, 1.f * this->speed));
-		} else if(!m_inHole)
-			this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, -1.f * this->speed));
+		float velX = m_input.movement.x * m_movement.speed * 0.1f + getVelocity().x;
+		velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
+		this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
 	}
 
+	if (m_movement.hooked) {
+		this->setGrounded(false);
+		this->setAcceleration(m_hook->getDirection() * 40.0f);
+	}
+
+	Moveable::updateVelocity(dt);
+	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
 
-	if (getTransform().getTranslation().z <= 0.f) {
-		DirectX::SimpleMath::Vector3 temp = getTransform().getTranslation();
-		temp.z = 0.f;
-		getTransform().setTranslation(temp);
+	if (m_weapon) {
+		m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f,0.5f, -0.0f));
+		m_weapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(m_input.aim) - 1.6f));
+		m_weapon->update(dt, m_input.aim);
 	}
-	if (getTransform().getTranslation().z >= 1.f) {
-		DirectX::SimpleMath::Vector3 temp = getTransform().getTranslation();
-		temp.z = 1.f;
-		getTransform().setTranslation(temp);
+	if (m_hook) {
+		m_hook->update(dt, m_weapon->getTransform().getTranslation());
 	}
 
-	if (!m_inHole) {
-		this->currentWeapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, 0.f));
-		this->currentWeapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(this->aimVec) - 1.6f));
+	collHandler->resolveProjectileCollisionWith(this);
 
-		this->currentWeapon->update(dt, this->aimVec);
-		m_hook->update(dt, currentWeapon->getTransform().getTranslation());
-	}
-	//Collision detection for projectiles
-	for (unsigned int i = 0; i < currentWeapon->getProjectileHandler().getProjectiles().size(); i++) {
-		if (currentWeapon->getProjectileHandler().getProjectiles().at(i)->getTeam() != currentTeam) {
-			if (this->getBoundingBox()->containsOrIntersects(*currentWeapon->getProjectileHandler().getProjectiles().at(i)->getBoundingBox())) {
-				currentWeapon->getProjectileHandler().removeAt(i);
-				std::cout << "\nHit";
-			}
-		}
-	}
-	
 }
 
 void Character::draw() {
-	this->m_Model->setTransform(&this->getTransform());
-	this->m_Model->getMaterial()->setColor(this->lightColor);
-	this->m_Model->draw();
-	this->currentWeapon->draw();
-	m_hook->draw();
+	model->setTransform(&getTransform());
+	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
+	model->draw();
+	if(m_weapon)
+		m_weapon->draw();
+	if(m_hook)
+		m_hook->draw();
 }
 
 void Character::setController(const bool usingController) {
-	this->usingController = usingController;
+	m_inputDevice.controller = usingController;
 }
 
 void Character::setControllerPort(const unsigned int port) {
 	if (port < 4)
-		this->controllerPort = port;
-	
-//#ifdef _DEBUG
-	//this->getTransform().setTranslation(DirectX::SimpleMath::Vector3(port * 2.0f + 3.0f, 3.0f, 0.0f));
-//#endif
+		m_inputDevice.controllerPort = port;
 }
 
-void Character::addVibration(unsigned int index, float addition) {
-	if (index < 4)
-	{
-		this->padVibration[index] += addition;
-		if (this->padVibration[index] > 1)
-		{
-			this->padVibration[index] = 1;
-		}
-	}
+unsigned int Character::getPort() {
+	return m_inputDevice.controllerPort;
 }
 
-unsigned int Character::getPort()
-{
-	return this->controllerPort;
+unsigned int Character::getTeam() {
+	return m_currentTeam;
 }
 
-void Character::setTeam(unsigned int team)
-{
-	this->currentTeam = team;
+float Character::getHealth() {
+	return m_playerHealth.current;
 }
 
-void Character::setWeapon(Weapon * weapon)
-{
-	this->currentWeapon = weapon;
-	this->currentWeapon->setHeld(true);
-	//this->currentWeapon->setPosition(this->getTransform().getTranslation()+Vector3(0,0.5,0.5f));
-	this->currentWeapon->getTransform().setScale(1.0f);
-	
+float Character::getMaxHealth() {
+	return m_playerHealth.max;
+}
+
+bool Character::isAlive() {
+	return m_playerHealth.alive;
+}
+
+void Character::damage(float dmg) {
+	m_playerHealth.addHealth(-dmg);
+}
+
+void Character::setVibration(unsigned int index, float strength, float time) {
+	m_vibration[index] = { strength, time };
+}
+
+void Character::addVibration(unsigned int index, float strength, float time) {
+	m_vibration[index].currentStrength += strength;
+	m_vibration[index].timeLeft += time;
+}
+
+void Character::setTeam(unsigned int team) {
+	m_currentTeam = team;
+}
+
+void Character::setWeapon(Weapon * weapon) {
+	m_weapon = weapon;
+	m_weapon->setHeld(true);
+	m_weapon->getTransform().setScale(1.0f);
+}
+
+bool Character::isUsingController() {
+	return m_inputDevice.controller;
 }
 
 void Character::setHook(Hook* hook) {
 	this->m_hook = hook;
 }
 
-void Character::jump()
-{
+void Character::living() {
+	m_playerHealth.current = m_playerHealth.max;
+	m_playerHealth.alive = true;
+	m_weapon->setHeld(true);
+	
+}
+void Character::dead() {
+	m_playerHealth.current = 0;
+	m_playerHealth.updatePercent();
+	m_playerHealth.alive = false;
+	m_weapon->setHeld(false);
+}
+
+void Character::jump() {
 	//this->jumping = true;
 	if(grounded())
 		this->setVelocity(getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }
 
-void Character::stopJump()
-{
+void Character::stopJump() {
 	//this->jumping = false;
 	//this->getTransform().translate(Vector3(0, -10, 0));
 }
 
-void Character::fire()
-{
-	currentWeapon->fire(aimVec);
+void Character::fire() {
+	m_weapon->fire(m_input.aim);
 }
 
-void Character::hook()
-{
-	m_hook->triggerPull(currentWeapon->getTransform().getTranslation(), this->aimVec);
-	m_hooked = true;
+void Character::hook() {
+	m_hook->triggerPull(m_weapon->getTransform().getTranslation(), m_input.aim);
+	m_movement.hooked = true;
+}
+
+void Character::stopHook() {
+	m_hook->triggerRelease();
+	setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+	m_movement.hooked = false;
 }
 
 bool Character::updateVibration(float dt) {
@@ -301,12 +301,7 @@ bool Character::updateVibration(float dt) {
 	deltaAcc += dt;
 	if(deltaAcc >= freq)
 		for (int i = 0; i < 2; i++) {
-			if (this->padVibration[i] > 0) {
-				upd++;
-				this->padVibration[i] -= this->vibrationReduction[i] * freq;
-				if (this->padVibration[i] < 0)
-					this->padVibration[i] = 0;
-			}
+			
 				
 		}
 	if (upd > 0)

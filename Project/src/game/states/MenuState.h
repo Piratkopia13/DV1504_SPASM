@@ -20,25 +20,24 @@ public:
 private:
 	Application * m_app;
 
+	// Camera
 	PerspectiveCamera m_cam;
-	OrthographicCamera m_hudCam;
-	PlayerCameraController m_playerCamController;
+	std::unique_ptr<PlayerCameraController> m_playerCamController;
+	bool m_flyCam;
+
+	// Scene
 	Scene m_scene;
 
+	// Models
+	std::unique_ptr<FbxModel> m_sphere;
+	std::unique_ptr<Model> m_plane;
+	std::unique_ptr<Model> m_texturePlane;
+	std::unique_ptr<Model> m_texturePlane2;
 
-	SimpleColorShader m_colorShader;
-	SimpleTextureShader m_texShader;
-	SimpleTextureShader m_hudShader;
-	DirectionalLightShader m_dirLightShader;
-	MaterialShader m_matShader;
+	// Texts
 	SailFont m_font;
-
-	Timer m_timer;
-
 	Text m_fpsText;
-	Text m_debugText;
 	Text m_debugCamText;
-	Text m_debugParticleText;
 
 
 	std::unique_ptr<FbxModel> m_player;
@@ -54,12 +53,11 @@ private:
 	DirectX::SimpleMath::Vector4 onColor;
 	DirectX::SimpleMath::Vector4 offColor;
 
-	DirectX::SimpleMath::Vector4 playerColor[4];
 
 
 	// MENU 0
 
-	enum ActiveMenu {
+	enum m_activeMenu {
 		MAINMENU,
 		STARTMENU,
 		OPTIONSMENU
@@ -91,15 +89,22 @@ private:
 	};
 
 
-	int activeMenu;
-	int activeSubMenu;
-	int selector;
-	int menu;
-	int startMenu;
-	int maxChoices;
+	int m_activeMenu;
+	int m_activeSubMenu;
+	int m_selector;
+	int m_menu;
+	int m_startMenu;
+	int m_maxChoices;
 
+
+	int m_gamemode;
+	int m_map;
 	int players[4];
 	int playersReady[4];
+	int m_playerModel[4];
+	int m_playerTeam[4];
+
+	DirectX::SimpleMath::Vector4 playerColor[4];
 
 	MenuItem* background;
 	std::vector<MenuItem*> menuList;
@@ -114,8 +119,6 @@ private:
 		this->playerColor[player] = color;
 		this->playerMenu[player]->setLightColor(this->playerColor[player]);
 	}
-	DirectX::SimpleMath::Vector4 getRandomColor() {
-		return DirectX::SimpleMath::Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 1);
-	}
+	
 };
 

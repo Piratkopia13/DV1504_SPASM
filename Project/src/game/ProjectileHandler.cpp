@@ -1,8 +1,7 @@
 #include "ProjectileHandler.h"
 
-ProjectileHandler::ProjectileHandler(DeferredRenderer& deferredRenderer) {
-	m_projectileModel1 = std::make_unique<FbxModel>("projectile.fbx");
-	m_projectileModel1->getModel()->buildBufferForShader(&deferredRenderer.getGeometryShader());
+ProjectileHandler::ProjectileHandler() {
+	m_projectileModel = Application::getInstance()->getResourceManager().getFBXModel("projectile").getModel();
 }
 
 ProjectileHandler::~ProjectileHandler() {
@@ -16,7 +15,7 @@ std::vector<Projectile*>& ProjectileHandler::getProjectiles() {
 }
 
 void ProjectileHandler::addProjectile(Projectile* newProjectile) {
-	newProjectile->setModel(m_projectileModel1->getModel());
+	newProjectile->setModel(m_projectileModel);
 	m_projectiles.push_back(newProjectile);
 	m_projectileLifeSpan.push_back(2.0f);
 }

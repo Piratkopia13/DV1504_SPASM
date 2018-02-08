@@ -9,13 +9,13 @@ public:
 	virtual ~Moveable();
 
 	void move(const float dt);
+	void updateVelocity(const float dt);
 	void move(DirectX::SimpleMath::Vector3& toMove);
 	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
 
 	const DirectX::SimpleMath::Vector3& getVelocity();
  	void setAcceleration(const DirectX::SimpleMath::Vector3 &newAcceleration);
 	void addAcceleration(const DirectX::SimpleMath::Vector3& accel );
-	void setCurrentLevel(Level* level);
 	void setGrounded(bool grounded);
 	bool grounded();
 	//TEST
@@ -29,8 +29,7 @@ private:
 	DirectX::SimpleMath::Vector3 m_gravity;
 	DirectX::SimpleMath::Vector3 m_velocity;
 	DirectX::SimpleMath::Vector3 m_acceleration;
-	float grav;
+	float m_gravScale;
 	bool m_grounded;
 
-	Level* m_currLevel;
 };

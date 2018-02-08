@@ -35,25 +35,23 @@ public:
 	}
 
 	Grid();
-	Grid(const int worldWidth, const int worldHeight, const int cellSize);
+	Grid(const int worldWidth, const int worldHeight);
 	~Grid();
 
-	DirectX::SimpleMath::Vector3 raytraceBlock(const DirectX::SimpleMath::Vector3 &playerPos, const DirectX::SimpleMath::Vector3 &aimVec);
 	void addBlock(Block* block, const int x, const int y);
 	//TEST
 	void setHoles(std::vector<Grid::Index> indices);
 	bool checkHoles(Grid::Index index);
 	//--
 	bool atGrid(const int x, const int y);
-	std::vector<Index> getCollisionIndices(const AABB& boundingBox, const float cellSize);
+	std::vector<Index> getCollisionIndices(const AABB& boundingBox);
 	std::vector<std::vector<Block*>>& getAllBlocks();
+
 private:
 	std::vector<std::vector<Block*>> m_cells;
 	std::vector<Grid::Index> m_holes;
 	
 	int m_gridWidth;
 	int m_gridHeight;
-	int m_cellSize;
-	
 
 };

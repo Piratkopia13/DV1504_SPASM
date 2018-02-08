@@ -2,11 +2,11 @@
 
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/Character.h"
+#include "../CharacterHandler.h"
 #include "../level/Level.h"
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
-#include "Variables.h"
+#include "../collision/CollisionHandler.h"
 
 class GameState : public State {
 public:
@@ -25,49 +25,30 @@ public:
 private:
 	Application* m_app;
 
+	// Camera
 	PerspectiveCamera m_cam;
-	OrthographicCamera m_hudCam;
 	FlyingCameraController m_camController;
-	Scene m_scene;
-	std::unique_ptr<FbxModel> m_sphere;
-	std::unique_ptr<Model> m_plane;
-	std::unique_ptr<Model> m_texturePlane;
-	std::unique_ptr<Model> m_texturePlane2;
-
-
-	SimpleColorShader m_colorShader;
-	SimpleTextureShader m_texShader;
-	SimpleTextureShader m_hudShader;
-	DirectionalLightShader m_dirLightShader;
-	MaterialShader m_matShader;
-	SailFont m_font;
-
-	Timer m_timer;
-
-	Text m_fpsText;
-	Text m_debugText;
-	Text m_debugCamText;
-	Text m_debugParticleText;
-
 	std::unique_ptr<PlayerCameraController> m_playerCamController;
 	bool m_flyCam;
 
-	std::vector<Model*> m_modelCopies;
+	// Scene
+	Scene m_scene;
 
-	std::unique_ptr<FbxModel> m_fbxModel;
-	std::unique_ptr<FbxModel> m_characterModel;
-	std::unique_ptr<FbxModel> m_WeaponModel1;
-	std::unique_ptr<FbxModel> m_hookModel;
+	// Models
+	//std::unique_ptr<FbxModel> m_sphere;
 
-	// TEST REMOVE THIS
-	std::vector<std::unique_ptr<Model>> models;
+	// Texts
+	SailFont m_font;
+	Text m_fpsText;
+	Text m_debugCamText;
 
-	// Currently used level
-	std::unique_ptr<Level> m_currLevel;
+	// Handlers
+	std::unique_ptr<Level> m_level;
+	std::unique_ptr<ProjectileHandler> m_projHandler;
+	std::unique_ptr<CollisionHandler> m_collisionHandler;
+	std::unique_ptr<CharacterHandler> m_characterHandler;
 
-	Hook* m_hooks[4];
-	Weapon* m_weapons[4];
-	Character* m_player[4];
-	ProjectileHandler* m_projHandler;
+
+
 
 };

@@ -21,16 +21,16 @@ class Level {
 public:
 	static const float DEFAULT_BLOCKSIZE;
 
-	Level(const std::string& filename, DeferredRenderer& deferredRenderer);
+	Level(const std::string& filename);
 	~Level();
 
 	void update(const float delta);
 	void draw();
-	Grid* getGrid();
-	bool checkHoles(DirectX::SimpleMath::Vector3 playerPos);
 
-	DirectX::SimpleMath::Vector3 collisionTest(Moveable& moveable, const float dt);
-	
+	DirectX::SimpleMath::Vector2 getGridWorldSize();
+	const int& getGridWidth() const;
+	const int& getGridHeight() const;
+
 private:
 	// Number of blocks in the x-axis
 	int m_width;
