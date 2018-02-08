@@ -120,14 +120,23 @@ bool ControlNode::updateNodeTimer(float dt) {
 			if (!m_teamTwo.capturing) {
 				if (m_teamTwo.timeCapturing <= 0.f)
 					m_teamOne.timeCapturing += dt;
-				else
+				else {
 					m_teamTwo.timeCapturing -= dt;
+					if (m_teamTwo.timeCapturing < 0.f)
+						m_teamTwo.capturing = false;
+				}
 			}
-			else
+			else {
 				m_teamOne.timeCapturing -= dt;
+				if (m_teamOne.timeCapturing < 0.f)
+					m_teamOne.capturing = false;
+			}
 		}
-		else if (m_teamOne.capturing && !m_teamTwo.capturing) 
+		else if (m_teamOne.capturing && !m_teamTwo.capturing) {
 			m_teamOne.timeCapturing -= dt;
+			if (m_teamOne.timeCapturing < 0.f)
+				m_teamOne.capturing = false;
+		}
 	}
 	
 	// Timing is removed if team two is not on the point, and their timing is what is active
@@ -137,14 +146,23 @@ bool ControlNode::updateNodeTimer(float dt) {
 			if (!m_teamOne.capturing) {
 				if (m_teamOne.timeCapturing <= 0.f)
 					m_teamTwo.timeCapturing += dt;
-				else
+				else {
 					m_teamOne.timeCapturing -= dt;
+					if (m_teamOne.timeCapturing < 0.f)
+						m_teamOne.capturing = false;
+				}
 			}
-			else
+			else {
 				m_teamTwo.timeCapturing -= dt;
+				if (m_teamTwo.timeCapturing < 0.f)
+					m_teamTwo.capturing = false;
+			}
 		}
-		else if (m_teamTwo.capturing && !m_teamOne.capturing)
+		else if (m_teamTwo.capturing && !m_teamOne.capturing) {
 			m_teamTwo.timeCapturing -= dt;
+			if (m_teamTwo.timeCapturing < 0.f)
+				m_teamTwo.capturing = false;
+		}
 	}
 
 	// If the point isn't being captured and either team is the current owner and no one is on the point, 

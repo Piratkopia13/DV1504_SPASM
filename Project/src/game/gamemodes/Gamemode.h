@@ -12,6 +12,8 @@ public:
 	virtual void draw();
 
 	float getScore(const int team);
+
+	virtual int checkWin() = 0;
 	
 protected:
 	void addScore(const float toAdd, const int team);

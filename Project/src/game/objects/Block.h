@@ -4,6 +4,7 @@
 
 class Block : public Object {
 private:
+	DirectX::SimpleMath::Vector4 m_color;
 
 public:
 	Block();
@@ -11,4 +12,5 @@ public:
 	virtual ~Block();
 
 	virtual void draw();
+	void setColor(const DirectX::SimpleMath::Vector4& color);
 };
