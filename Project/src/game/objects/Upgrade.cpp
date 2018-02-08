@@ -80,7 +80,7 @@ float Upgrade::speedTime()
 }
 
 void Upgrade::draw() {
-	this->m_Model->setTransform(&getTransform());
-	this->m_Model->getMaterial()->setColor(lightColor);
-	this->m_Model->draw();
+	model->setTransform(&getTransform());
+	model->getMaterial()->setColor(lightColor);
+	model->draw();
 }

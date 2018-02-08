@@ -46,7 +46,7 @@ void Weapon::triggerRelease()
 	m_timeSinceFire = 0;
 }
 
-void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
+void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 	if (m_projectileHandler) {
 		float extraSpeed = 1;
 		float extraDamage = 1;
@@ -89,7 +89,7 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 }
 
 void Weapon::draw() {
-	m_model->setTransform(&getTransform());
-	m_model->getMaterial()->setColor(lightColor);
-	m_model->draw();
+	model->setTransform(&getTransform());
+	model->getMaterial()->setColor(lightColor);
+	model->draw();
 }

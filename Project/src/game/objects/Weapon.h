@@ -10,7 +10,7 @@ public:
 	Weapon(Model *drawModel, ProjectileHandler* projHandler, int team);
 	virtual ~Weapon();
 
-	void update(float dt, DirectX::SimpleMath::Vector3 direction);
+	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
 	void setHeld(bool held);
 	const bool getHeld() const;
 
