@@ -44,9 +44,53 @@ void Character::input(
 	DirectX::Keyboard::KeyboardStateTracker& keyTracker) {
 	if (!m_playerHealth.alive)
 		return;
-
+	if (keyTracker.pressed.D1) {
+		Upgrade* temp = new Upgrade(Vector3(0, 0, 0));
+		m_weapon->addUpgrade(temp);
+		delete temp;
+	}
+	if (keyTracker.pressed.D2) {
+		Upgrade* temp = new Upgrade(Vector3(1, 0, 0));
+		m_weapon->addUpgrade(temp);
+		delete temp;
+	}
 
 	if (!m_inputDevice.controller) {
+
+		m_input.movement = Vector3(
+			(float)keyState.IsKeyDown(Keyboard::D) - (float)keyState.IsKeyDown(Keyboard::A),
+			(float)keyState.IsKeyDown(Keyboard::W) - (float)keyState.IsKeyDown(Keyboard::S),
+			0);
+		//update aim Direction
+		Vector3 tempVec = Vector3(
+			(float)keyState.IsKeyDown(Keyboard::Right) - (float)keyState.IsKeyDown(Keyboard::Left),
+			(float)keyState.IsKeyDown(Keyboard::Up) - (float)keyState.IsKeyDown(Keyboard::Down),
+			0);
+
+		if (tempVec.LengthSquared() > 0.3) {
+			tempVec.Normalize();
+			m_input.aim = tempVec;
+		}
+
+
+		if (keyTracker.pressed.Space) {
+			jump();
+		}
+	
+		if (keyTracker.pressed.Z) {
+			m_weapon->triggerPull();
+		}
+		if (keyTracker.released.Z) {
+			m_weapon->triggerRelease();
+		}
+		if (keyTracker.pressed.X) {
+			hook();
+		}
+		if (keyTracker.released.X) {
+			stopHook();
+		}
+	
+
 
 
 	}
@@ -299,7 +343,7 @@ void Character::stopJump() {
 
 void Character::fire()
 {
-	m_weapon->fire(m_input.aim);
+	//m_weapon->fire(m_input.aim);
 }
 
 void Character::hook()

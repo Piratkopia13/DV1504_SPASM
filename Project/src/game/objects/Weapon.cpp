@@ -5,10 +5,8 @@ Weapon::Weapon() {
 	int m_team = -1;
 	m_projectileHandler = nullptr;
 
-	this->automatic = true;
-	this->triggerHeld = false;
-	this->timeSinceFire = 0;
-	this->cooldownTime = 0.1f;
+	m_triggerHeld = false;
+	m_timeSinceFire = 0;
 }
 
 Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) : Weapon() {
@@ -16,10 +14,11 @@ Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) : Wea
 	m_projectileHandler = projHandler;
 	m_team = team;
 	m_held = true;
+	m_upgrade = new Upgrade();
 }
 
 Weapon::~Weapon() {
-
+	Memory::safeDelete(m_upgrade);
 }
 
 const bool Weapon::getHeld() const {
@@ -30,24 +29,33 @@ void Weapon::setHeld(bool held) {
 	m_held = held;
 }
 
+void Weapon::addUpgrade(Upgrade * upgrade) {
+	m_upgrade->combine(*upgrade);
+}
+
 void Weapon::triggerPull()
 {
-	this->triggerHeld = true;
+	m_triggerHeld = true;
 }
 
 void Weapon::triggerRelease()
 {
-	this->triggerHeld = false;
-	this->timeSinceFire = 0;
+	m_triggerHeld = false;
+	m_timeSinceFire = 0;
 }
 
 void Weapon::fire(DirectX::SimpleMath::Vector3 direction) {
-	if (m_projectileHandler != nullptr) {
+	if (m_projectileHandler) {
+		float extraSpeed = 1;
+		float extraDamage = 1;
+		if (m_upgrade->speedActive()) {
+			extraSpeed = m_upgrade->speedRate();
+		}
+
 		//Create projectile with inputs; startPos, direction, speed/force etc.
-		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 25.0f, 10.0f, m_team);
+		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 25.0f * extraSpeed, 10.0f * extraDamage, m_team);
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
 		m_projectileHandler->addProjectile(temp);
-		//test
 	}
 }
 
@@ -57,16 +65,20 @@ ProjectileHandler& Weapon::getProjectileHandler() {
 
 void Weapon::update(float dt, DirectX::SimpleMath::Vector3 direction) {
 
-	if (this->triggerHeld) {
-		if (timeSinceFire == 0.0 && !this->automatic) {
-			this->fire(direction);
-		}
-		else if (this->automatic && this->timeSinceFire >= this->cooldownTime) {
-			this->fire(direction);
+	m_upgrade->update(dt);
+	static float baseAuto = 1.0f;
 
-			this->timeSinceFire = 0.0;
+	if (m_triggerHeld) {
+
+		if (m_timeSinceFire == 0.0 && !m_upgrade->autoActive()) {
+			fire(direction);
 		}
-		this->timeSinceFire += dt;
+		else if (m_upgrade->autoActive() && m_timeSinceFire >= baseAuto * m_upgrade->autoRate()) {
+			fire(direction);
+
+			m_timeSinceFire = 0.0;
+		}
+		m_timeSinceFire += dt;
 	}
 
 

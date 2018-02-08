@@ -27,6 +27,7 @@ void CollisionHandler::resolveLevelCollisionWith(Projectile* proj) {
 void CollisionHandler::resolveProjectileCollisionWith(Character* chara) {
 }
 
+
 DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::SimpleMath::Vector3 & origin, const DirectX::SimpleMath::Vector3 & dir) {
 	return DirectX::SimpleMath::Vector3();
 }

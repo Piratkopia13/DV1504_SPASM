@@ -87,6 +87,8 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\game\objects\Upgrade.cpp" />
+    <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\states\PauseState.h" />
@@ -172,8 +174,9 @@
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
-    <ClInclude Include="src\game\states\Settings.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
+    <ClInclude Include="src\game\objects\Upgrade.h" />
+    <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -29,7 +29,7 @@ GameState::GameState(StateStack& stack)
 
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("speedrun.level", m_scene.getDeferredRenderer());
+	m_level = std::make_unique<Level>("the_void.level", m_scene.getDeferredRenderer());
 	m_projHandler = std::make_unique<ProjectileHandler>(m_scene.getDeferredRenderer());
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get(), m_level.get(), m_characterModel->getModel(), m_WeaponModel1->getModel(), m_hookModel->getModel());
 
