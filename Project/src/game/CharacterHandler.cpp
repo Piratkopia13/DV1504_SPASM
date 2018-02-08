@@ -36,11 +36,11 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 
 #ifdef _DEBUG
 	if (settings->players.size() == 0) {
-		Weapon* tempWeapon = new Weapon(wModel, projHandler, 0);
+		Weapon* tempWeapon = new Weapon(wModel, projHandler, 1);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1);
 		tempChar->setLightColor(Vector4(0.2f, 0.8f, 0.8f, 1.f));
-		tempChar->setTeam(0);
+		tempChar->setTeam(1);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setControllerPort(0);
@@ -48,11 +48,11 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 		addPlayer(tempChar);
 	}
 	if (settings->players.size() < 4) {
-		Weapon* tempWeapon = new Weapon(wModel, projHandler, 1);
+		Weapon* tempWeapon = new Weapon(wModel, projHandler, 2);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1);
 		tempChar->setLightColor(Vector4(0.8f, 0.2f, 0.8f, 1.f));
-		tempChar->setTeam(1);
+		tempChar->setTeam(2);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setControllerPort(1);
