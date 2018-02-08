@@ -196,9 +196,10 @@ void Character::update(float dt) {
 	else if (getTransform().getTranslation().z > 0.f && !m_movement.inCover)
 		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, -m_movement.speed));
 	else if (getTransform().getTranslation().z < 0.f && !m_movement.inCover){
-		getTransform().setTranslation(DirectX::SimpleMath::Vector3(getTransform().getTranslation().x, getTransform().getTranslation().y, 0.f));
 		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
 	}
+	if(getTransform().getTranslation().z < 0.f)
+		getTransform().setTranslation(DirectX::SimpleMath::Vector3(getTransform().getTranslation().x, getTransform().getTranslation().y, 0.f));
 
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
