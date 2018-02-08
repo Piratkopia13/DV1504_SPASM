@@ -110,7 +110,7 @@ std::vector<Grid::Index> Grid::getCurrentCollisionIndices(const AABB& boundingBo
 		for (int x = (int)minInGridCoords.x; x <= maxInGridCoords.x; x++) {
 			for (int y = (int)minInGridCoords.y; y <= maxInGridCoords.y; y++) {
 				if (m_cells[x][y] != nullptr) {
-					indices.push_back(Grid::Index{x, y});
+					indices.push_back(Grid::Index{ x, y });
 					//Logger::log("Hit!");
 				}
 			}
@@ -118,6 +118,19 @@ std::vector<Grid::Index> Grid::getCurrentCollisionIndices(const AABB& boundingBo
 	}
 
 	return indices;
+}
+
+void Grid::setHoles(const std::vector<Grid::Index>& indices) {
+	m_holes = indices;
+}
+
+bool Grid::checkHoles(const Grid::Index& playerPos) {
+	bool cover = false;
+	for (Grid::Index index : m_holes) {
+		if (index.x == playerPos.x && index.y == playerPos.y)
+			cover = true;
+	}
+	return cover;
 }
 
 std::vector<std::vector<Block*>>& Grid::getAllBlocks() {

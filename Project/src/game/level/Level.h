@@ -3,6 +3,7 @@
 #include "../../sail/Sail.h"
 #include "../../sail/graphics/models/FbxModel.h"
 #include "../../sail/graphics/renderer/DeferredRenderer.h"
+#include "../level/Grid.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
@@ -26,6 +27,7 @@ public:
 
 	void update(const float delta);
 	void draw();
+
 	Grid* getGrid();
 	DirectX::SimpleMath::Vector2 getGridWorldSize();
 	const int& getGridWidth() const;
