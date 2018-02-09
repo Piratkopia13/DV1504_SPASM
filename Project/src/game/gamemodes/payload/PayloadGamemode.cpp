@@ -5,17 +5,22 @@
 
 PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<Block*>> & blocks, const int levelWidth, const int levelHeight)
 : Gamemode()
-, m_blocks(blocks) {
+, m_blocks(blocks) 
+{
 	Model* controlpointModel = Application::getInstance()->getResourceManager().getFBXModel("capture_point").getModel();
 	m_indices = indices;
 	m_numOfNodes = indices.size();
 	m_radius = 2;
 	m_teamWin = 0;
-	m_scoreToWin = 10.f;
+	m_scoreToWin = 100.f;
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
-	Gamemode::setGametime(60.f);
+	// Add default scores
+	addScore(50, 1);
+	addScore(50, 2);
+
+	Gamemode::setGametime(60000000000000000.f);
 
 	for (Grid::Index index : indices) {
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
@@ -34,6 +39,10 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
+
+	Logger::log("Red: " + std::to_string(redScore));
+	Logger::log("Blue: " + std::to_string(blueScore));
+
 	float totScore = redScore + blueScore;
 	
 	float redBlocks = (redScore / totScore) * float(m_levelWidth);
@@ -93,7 +102,11 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		//}
 		// Points every update
 		m_controlNodes[index]->updateNodeTimer(dt);
-		Gamemode::addScore(dt, m_controlNodes[index]->getTeam());
+		int owningTeam = m_controlNodes[index]->getTeam();
+		if (owningTeam != 0) {
+			Gamemode::addScore(dt, owningTeam);
+			Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
+		}
 		index++;
 	}
 }
@@ -107,7 +120,15 @@ int PayloadGamemode::checkWin() {
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
 
-	if (Gamemode::getGametime() <= 0.f) {
+	m_teamWin = 0;
+	if (redScore > m_scoreToWin)
+		m_teamWin = 1;
+	if (blueScore > m_scoreToWin)
+		m_teamWin = 2;
+	if (m_teamWin != 0 && blueScore == redScore)
+		m_teamWin = -1;
+
+	/*if (Gamemode::getGametime() <= 0.f) {
 		if (redScore > blueScore) {
 			m_teamWin = 1;
 		}
@@ -117,7 +138,7 @@ int PayloadGamemode::checkWin() {
 		else {
 			m_teamWin = -1;
 		}
-	}
+	}*/
 
 	return m_teamWin;
 }

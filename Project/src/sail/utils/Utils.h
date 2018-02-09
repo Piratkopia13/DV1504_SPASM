@@ -55,7 +55,7 @@ public:
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(hstdout, &csbi);
 
-		SetConsoleTextAttribute(hstdout, 0xC0);
+		SetConsoleTextAttribute(hstdout, 0x0F);
 		std::cout << "LOG: " << msg << std::endl;
 
 		// Revert color
