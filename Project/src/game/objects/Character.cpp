@@ -58,7 +58,7 @@ void Character::processInput() {
 				this->jump();
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
-				if (!m_movement.inCover) {
+				if (!m_movement.inCover && !m_movement.hooked) {
 					CollisionHandler* collHandler = CollisionHandler::getInstance();
 					DirectX::SimpleMath::Vector3 pos = getTransform().getTranslation();
 					pos.y += 0.5f;//Player pos is currently beneath the character with the trashcan model, inside a block
@@ -198,8 +198,10 @@ void Character::update(float dt) {
 	else if (getTransform().getTranslation().z < 0.f && !m_movement.inCover){
 		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
 	}
-	if(getTransform().getTranslation().z < 0.f)
+	if (getTransform().getTranslation().z < 0.f) {
 		getTransform().setTranslation(DirectX::SimpleMath::Vector3(getTransform().getTranslation().x, getTransform().getTranslation().y, 0.f));
+		m_movement.inCover = false;
+	}
 
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);

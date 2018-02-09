@@ -21,6 +21,15 @@ void Grid::addBlock(Block* block, const int x, const int y){
 	m_cells[x][y] = block;
 }
 
+void Grid::addControlpoint(const int x, const int y) {
+	m_cpIndices.push_back(Index{ x, y });
+}
+
+void Grid::addHole(const int x, const int y) {
+	m_holes.push_back(Index{ x, y });
+}
+
+
 bool Grid::atGrid(const int x, const int y) {
 	if (m_cells[x][y])
 		return true;
@@ -120,10 +129,6 @@ std::vector<Grid::Index> Grid::getCurrentCollisionIndices(const AABB& boundingBo
 	return indices;
 }
 
-void Grid::setHoles(const std::vector<Grid::Index>& indices) {
-	m_holes = indices;
-}
-
 bool Grid::checkHoles(const Grid::Index& playerPos) {
 	bool cover = false;
 	for (Grid::Index index : m_holes) {
@@ -135,4 +140,8 @@ bool Grid::checkHoles(const Grid::Index& playerPos) {
 
 std::vector<std::vector<Block*>>& Grid::getAllBlocks() {
 	return m_cells;
+}
+
+std::vector<Grid::Index> & Grid::getControlpointIndices() {
+	return m_cpIndices;
 }

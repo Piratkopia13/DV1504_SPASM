@@ -1,6 +1,8 @@
 #include "GameState.h"
 #include "../objects/Block.h"
 
+#include "../gamemodes/payload/PayloadGamemode.h"
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -22,6 +24,7 @@ GameState::GameState(StateStack& stack)
 
 	// Set up handlers
 	m_level = std::make_unique<Level>("speedrun.level");
+	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
 	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
@@ -57,6 +60,8 @@ GameState::GameState(StateStack& stack)
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		m_scene.addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
+		// SETS TEAMS PER INDEX
+		m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
 	}
 
 	// Give the cam controller targets to follow
@@ -170,6 +175,14 @@ bool GameState::update(float dt) {
 
 	m_characterHandler->update(dt);
 
+	m_level->update(dt, m_characterHandler.get());
+	m_gamemode->update(m_characterHandler.get(), dt);
+	if (m_gamemode->checkWin()) {
+		std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
+		requestStackClear();
+		requestStackPush(States::ID::MainMenu);
+	}
+
 	if(!m_flyCam)
 		m_playerCamController->update(dt);
 	
@@ -195,7 +208,7 @@ bool GameState::render(float dt) {
 	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 
 	// Draw the scene using deferred rendering
-	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get());
+	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get());
 
 	// Draw HUD
 	m_scene.drawHUD();

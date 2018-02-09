@@ -3,6 +3,7 @@
 #include "../../game/objects/common/Object.h"
 #include "../../game/ProjectileHandler.h"
 #include "../../game/level/Level.h"
+#include "../../game/gamemodes/Gamemode.h"
 #include "../../game/objects/Block.h"
 #include "../../game/level/Grid.h"
 
@@ -47,7 +48,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles) {
+void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -102,6 +103,9 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	/* draw level here */
 	if (level) {
 		level->draw();
+	}
+	if (gamemode) {
+		gamemode->draw();
 	}
 	if (projectiles) {
 		projectiles->draw();

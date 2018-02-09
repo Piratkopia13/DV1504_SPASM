@@ -18,6 +18,7 @@
 #include "../../game/level/Level.h"
 #include "postprocessing/PostProcessPass.h"
 
+class Gamemode;
 class ProjectileHandler;
 class Object;
 class Level;
@@ -39,7 +40,7 @@ public:
 	void addSkybox(const std::wstring& filename);
 
 	// Draws the scene
-	void draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles);
+	void draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode);
 	// Draws the HUD
 	void drawHUD();
 
