@@ -20,7 +20,7 @@ GameState::GameState(StateStack& stack)
 	Application::GameSettings* settings = &m_app->getGameSettings();
 	
 	// Set up handlers
-	m_level = std::make_unique<Level>("sprint_demo.level");
+	m_level = std::make_unique<Level>("speedrun.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
