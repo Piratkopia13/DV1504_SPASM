@@ -75,7 +75,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			temp->setGravScale(0);
 		}
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
-		
+		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
 		m_projectileHandler->addProjectile(temp);
 
 
