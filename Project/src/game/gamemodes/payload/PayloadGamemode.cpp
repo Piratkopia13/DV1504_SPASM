@@ -15,7 +15,7 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
-	Gamemode::setGametime(10.f);
+	Gamemode::setGametime(60.f);
 
 	for (Grid::Index index : indices) {
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
@@ -23,9 +23,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 		m_controlNodes.push_back(std::make_unique<ControlNode>(controlpointModel));
 		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
 	}
-
-	m_controlNodes[0]->setTeam(1);
-	m_controlNodes[1]->setTeam(2);
 }
 
 PayloadGamemode::~PayloadGamemode() {}
@@ -33,25 +30,7 @@ PayloadGamemode::~PayloadGamemode() {}
 void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	int index = 0;
 
-	/*float redScore;
-	float blueScore;
-	float differenceRed;
-	float differenceBlue;
-
-	for (int i = 0; i < m_levelWidth; i++) {
-		redScore = min(2.f, max(0.f, Gamemode::getScore(1) - i));
-		blueScore = min(2.f, max(0.f, Gamemode::getScore(2) - (m_levelWidth - i)));
-		
-		for (int j = 0; j < m_levelHeight; j++) {
-			if (m_blocks[i][j]) {
-				m_blocks[i][j]->setColor(DirectX::SimpleMath::Vector4(
-					redScore,
-					0.f,
-					blueScore,
-					0.f));
-			}
-		}
-	}*/
+	Gamemode::update(nullptr, dt);
 
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
@@ -117,10 +96,6 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		Gamemode::addScore(dt, m_controlNodes[index]->getTeam());
 		index++;
 	}
-
-	//std::cout << "Point 0" << m_controlNodes[0]->getAsString() << std::endl;
-	//std::cout << "Point 1" << m_controlNodes[1]->getAsString() << std::endl;
-	//std::cout << "Point 2" << m_controlNodes[2]->getAsString() << std::endl;
 }
 
 void PayloadGamemode::draw() {
@@ -129,16 +104,8 @@ void PayloadGamemode::draw() {
 }
 
 int PayloadGamemode::checkWin() {
-	/*if (Gamemode::getScore(1) >= m_scoreToWin) {
-		m_teamWin = 1;
-	}
-	else if (Gamemode::getScore(2) >= m_scoreToWin) {
-		m_teamWin = 2;
-	}*/
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
-
-	//std::cout << "Red%: " << redScore / (redScore + blueScore) << "Blue%: " << blueScore / (redScore + blueScore) << std::endl;
 
 	if (Gamemode::getGametime() <= 0.f) {
 		if (redScore > blueScore) {
