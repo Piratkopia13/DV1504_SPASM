@@ -5,7 +5,7 @@ Moveable::Moveable() {
 	m_gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
 	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 	m_gravScale = 1;
-	m_grounded = false;
+	m_grounded = true;
 }
 
 Moveable::~Moveable() {
