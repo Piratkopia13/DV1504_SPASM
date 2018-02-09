@@ -3,6 +3,8 @@
 Gamemode::Gamemode() {
 	m_scoreTeamOne = 0;
 	m_scoreTeamTwo = 0;
+
+	m_gametime = 60.f;
 }
 
 Gamemode::~Gamemode() {
@@ -10,7 +12,7 @@ Gamemode::~Gamemode() {
 }
 
 void Gamemode::update(CharacterHandler* charHandler, float delta) {
-
+	m_gametime -= delta;
 }
 
 void Gamemode::draw() {
@@ -28,6 +30,10 @@ float Gamemode::getScore(const int team) {
 	}
 }
 
+float Gamemode::getGametime() {
+	return m_gametime;
+}
+
 void Gamemode::addScore(const float toAdd, const int team) {
 	switch (team) {
 	case 1:
@@ -39,4 +45,12 @@ void Gamemode::addScore(const float toAdd, const int team) {
 	default:
 		break;
 	}
+}
+
+void Gamemode::setGametime(const float& seconds) {
+	m_gametime = seconds;
+}
+
+void Gamemode::addGametime(const float& seconds) {
+	m_gametime += seconds;
 }

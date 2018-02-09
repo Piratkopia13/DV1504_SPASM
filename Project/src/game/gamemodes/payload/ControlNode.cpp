@@ -45,6 +45,18 @@ void ControlNode::draw() {
 
 void ControlNode::setTeam(const int team) {
 	m_team = team;
+	if (team == 1) {
+		m_teamOne.isOwner = true;
+		m_teamOne.timeCapturing = m_timeTillCapture;
+		m_teamTwo.isOwner = false;
+		m_teamTwo.timeCapturing = 0.f;
+	} 
+	else if (team == 1) {
+		m_teamTwo.isOwner = true;
+		m_teamTwo.timeCapturing = m_timeTillCapture;
+		m_teamOne.isOwner = false;
+		m_teamOne.timeCapturing = 0.f;
+	}
 }
 
 int ControlNode::getTeam() {

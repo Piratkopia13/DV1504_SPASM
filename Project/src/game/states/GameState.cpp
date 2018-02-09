@@ -157,7 +157,11 @@ bool GameState::update(float dt) {
 	m_level->update(dt, m_characterHandler.get());
 	m_gamemode->update(m_characterHandler.get(), dt);
 	if (m_gamemode->checkWin()) {
-		std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
+		if (m_gamemode->checkWin() > 0)
+			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
+		else
+			std::cout << "DRAW!" << std::endl;
+
 		requestStackClear();
 		requestStackPush(States::ID::MainMenu);
 	}

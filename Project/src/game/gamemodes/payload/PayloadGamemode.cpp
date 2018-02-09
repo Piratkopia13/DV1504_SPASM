@@ -15,12 +15,17 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
+	Gamemode::setGametime(10.f);
+
 	for (Grid::Index index : indices) {
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
 		float y = Level::DEFAULT_BLOCKSIZE * (index.y);
 		m_controlNodes.push_back(std::make_unique<ControlNode>(controlpointModel));
 		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
 	}
+
+	m_controlNodes[0]->setTeam(1);
+	m_controlNodes[1]->setTeam(2);
 }
 
 PayloadGamemode::~PayloadGamemode() {}
@@ -47,6 +52,32 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 			}
 		}
 	}*/
+
+	float redScore = Gamemode::getScore(1);
+	float blueScore = Gamemode::getScore(2);
+	float totScore = redScore + blueScore;
+	
+	float redBlocks = (redScore / totScore) * float(m_levelWidth);
+	float blueBlocks = (blueScore / totScore) * float(m_levelWidth);
+
+	float r, g, b;
+
+	for (int x = 0; x < m_levelWidth; x++) {
+		r = min(2.f, max(0.f, redBlocks - float(x)));
+		g = 0.f;
+		b = min(2.f, max(0.f, blueBlocks - float((m_levelWidth - 1) - x)));
+		for (int y = 0; y < m_levelHeight; y++) {
+			if (m_blocks[x][y]) {
+				m_blocks[x][y]->setColor(DirectX::SimpleMath::Vector4(
+					r,
+					g,
+					b,
+					0.f));
+			}
+		}
+	}
+
+
 	
 	std::vector<Grid::Index> numOfTeam;
 	numOfTeam.resize(m_numOfNodes);
@@ -98,11 +129,27 @@ void PayloadGamemode::draw() {
 }
 
 int PayloadGamemode::checkWin() {
-	if (Gamemode::getScore(1) >= m_scoreToWin) {
+	/*if (Gamemode::getScore(1) >= m_scoreToWin) {
 		m_teamWin = 1;
 	}
 	else if (Gamemode::getScore(2) >= m_scoreToWin) {
 		m_teamWin = 2;
+	}*/
+	float redScore = Gamemode::getScore(1);
+	float blueScore = Gamemode::getScore(2);
+
+	//std::cout << "Red%: " << redScore / (redScore + blueScore) << "Blue%: " << blueScore / (redScore + blueScore) << std::endl;
+
+	if (Gamemode::getGametime() <= 0.f) {
+		if (redScore > blueScore) {
+			m_teamWin = 1;
+		}
+		else if (blueScore > redScore) {
+			m_teamWin = 2;
+		}
+		else {
+			m_teamWin = -1;
+		}
 	}
 
 	return m_teamWin;
