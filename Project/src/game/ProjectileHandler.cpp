@@ -31,6 +31,7 @@ void ProjectileHandler::removeAt(int index) {
 
 void ProjectileHandler::update(float dt) {
 	for (unsigned int i = 0; i < m_projectiles.size(); i++) {
+		m_projectiles.at(i)->updateVelocity(dt);
 		m_projectiles.at(i)->move(dt);
 		m_projectileLifeSpan.at(i) -= dt;
 

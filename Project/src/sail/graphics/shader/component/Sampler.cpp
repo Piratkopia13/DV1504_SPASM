@@ -13,7 +13,7 @@ namespace ShaderComponent {
 		desc.AddressW = addressMode;
 		desc.Filter = filter;
 		desc.MipLODBias = 0.f;
-		desc.MaxAnisotropy = 1;
+		desc.MaxAnisotropy = 0;
 		desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 		desc.MinLOD = 0;
 		desc.MaxLOD = D3D11_FLOAT32_MAX;

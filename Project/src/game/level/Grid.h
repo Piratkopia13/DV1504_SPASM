@@ -40,9 +40,9 @@ public:
 
 	void addBlock(Block* block, const int x, const int y);
 
-	void setHoles(const std::vector<Grid::Index>& indices);
-	bool checkHoles(const Grid::Index& index);
+	bool checkHoles(const Index& index);
 
+	void addHole(const int x, const int y);
 	void addControlpoint(const int x, const int y);
 	bool atGrid(const int x, const int y);
 	// getCollisionIndices returns a list of all indices that a bounding box could collide with in the future
@@ -51,14 +51,14 @@ public:
 	std::vector<Index> getCurrentCollisionIndices(const AABB& boundingBox);
 
 	std::vector<std::vector<Block*>>& getAllBlocks();
-	std::vector<Grid::Index> & getControlpointIndices();
+	std::vector<Index> & getControlpointIndices();
 	
 
 private:
 	std::vector<std::vector<Block*>> m_cells;
 	std::vector<Index> m_cpIndices;
 
-	std::vector<Grid::Index> m_holes;
+	std::vector<Index> m_holes;
 	
 	int m_gridWidth;
 	int m_gridHeight;

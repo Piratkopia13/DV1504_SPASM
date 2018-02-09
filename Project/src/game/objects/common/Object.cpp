@@ -16,6 +16,7 @@ Object::~Object() {
 
 void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
 	m_transform.setTranslation(newPosition);
+	updateBoundingBox();
 }
 
 void Object::updateBoundingBox()

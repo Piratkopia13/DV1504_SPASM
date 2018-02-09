@@ -9,7 +9,7 @@ namespace ModelFactory {
 
 	class PlaneModel {
 	public:
-		static std::unique_ptr<Model> Create(const DirectX::SimpleMath::Vector2& halfSizes) {
+		static std::unique_ptr<Model> Create(const DirectX::SimpleMath::Vector2& halfSizes, const DirectX::SimpleMath::Vector2& texCoordScale = DirectX::SimpleMath::Vector2(1.f)) {
 
 			const int numVerts = 4;
 			Vector3* positions = new Vector3[numVerts]{
@@ -27,10 +27,10 @@ namespace ModelFactory {
 			};
 
 			Vector2* texCoords = new Vector2[numVerts]{
-				Vector2(0.f, 1.f),
+				Vector2(0.f, texCoordScale.y),
 				Vector2(0.f, 0.f),
-				Vector2(1.f, 1.f),
-				Vector2(1.f, 0.f)
+				Vector2(texCoordScale.x, texCoordScale.y),
+				Vector2(texCoordScale.x, 0.f)
 			};
 
 			Vector3* normals = new Vector3[numVerts]{

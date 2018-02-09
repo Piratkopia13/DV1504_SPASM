@@ -19,7 +19,6 @@ Level::Level(const std::string& filename)
 		unsigned int currTask = 0;
 		unsigned int x = 0;
 		unsigned int y = 0;
-		std::vector<Grid::Index> holeIndices;
 
 		while (infile >> line) {
 			if (!line.compare("attributes")) {
@@ -44,12 +43,12 @@ Level::Level(const std::string& filename)
 
 
 			switch (currTask) {
-			
+
 			case 0: // Load models
 				m_models.push_back(std::make_unique<FbxModel>(line));
 				m_models.back()->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 				break;
-			
+
 			case 1:
 				if (!line.compare(0, 6, "height")) {
 					int find = line.find('=');
@@ -67,24 +66,24 @@ Level::Level(const std::string& filename)
 				for (auto c : line) {
 					switch (c) {
 
-					// Normal blocks
+						// Normal blocks
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
-					
-					// Controlnodes
+
+						// Controlnodes
 					case 'c':
 						m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
 						break;
-					
+
 					case 'h':
-						holeIndices.push_back({ static_cast<int>(x), static_cast<int>(y - 1) });
+						m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
 					default:
 						break;
-					
+
 					}
 					x++;
 				}
@@ -137,8 +136,6 @@ Level::Level(const std::string& filename)
 
 			}
 		}
-		m_grid->setHoles(holeIndices);
-
 	}
 	else {
 		Logger::Error("Could not load the file '" + filename + "'.");
