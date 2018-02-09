@@ -46,6 +46,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(getTransform().getTranslation(), direction * 25.0f, 10.0f, m_team);
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
+		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
 		m_projectileHandler->addProjectile(temp);
 		//test
 	}
