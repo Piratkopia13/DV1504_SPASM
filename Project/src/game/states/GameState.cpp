@@ -53,10 +53,10 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	// Set character spawn points
-	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
-	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(14, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(15, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
+	m_characterHandler->addSpawnPoint(2, Vector3(14, 2, 0));
+	m_characterHandler->addSpawnPoint(2, Vector3(15, 2, 0));
 
 	m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
 	m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
@@ -76,7 +76,7 @@ GameState::GameState(StateStack& stack)
 		m_scene.addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
 		// SETS TEAMS PER INDEX
-		m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
+		//m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
 	}
 
 	// Give the cam controller targets to follow
