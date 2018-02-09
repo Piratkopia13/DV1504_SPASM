@@ -17,7 +17,7 @@ DXTexture::DXTexture(const std::string& filename) {
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.Width = data.getWidth();
 	texDesc.Height = data.getHeight();
-	texDesc.MipLevels = 1;
+	texDesc.MipLevels = 6;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -34,7 +34,7 @@ DXTexture::DXTexture(const std::string& filename) {
 	srvDesc.Format = texDesc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
+	srvDesc.Texture2D.MipLevels = texDesc.MipLevels;
 	// Create the ShaderResourceView
 	ThrowIfFailed(Application::getInstance()->getDXManager()->getDevice()->CreateShaderResourceView(m_texture, &srvDesc, &m_resourceView));
 

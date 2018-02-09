@@ -35,7 +35,11 @@ private:
 	Scene m_scene;
 
 	// Models
-	//std::unique_ptr<FbxModel> m_sphere;
+	std::unique_ptr<Model> m_infinityPlane;
+	std::unique_ptr<Block> m_infBottom;
+	std::unique_ptr<Block> m_infTop;
+	std::unique_ptr<Block> m_infLeft;
+	std::unique_ptr<Block> m_infRight;
 
 	// Texts
 	SailFont m_font;

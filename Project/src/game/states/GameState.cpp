@@ -1,4 +1,5 @@
 #include "GameState.h"
+#include "../objects/Block.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -6,7 +7,7 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
+, m_cam(60.f, 1280.f / 720.f, 0.1f, 100000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
@@ -16,6 +17,8 @@ GameState::GameState(StateStack& stack)
 	// Get the Application instance
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
+
+	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
 	m_level = std::make_unique<Level>("speedrun.level");
@@ -65,6 +68,32 @@ GameState::GameState(StateStack& stack)
 	);
 
 	m_playerCamController->setPosition(Vector3(10, 10, 0));
+
+
+	// Set up background infinity planes
+	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f));
+	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
+	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
+	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile.tga");
+
+	m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
+	m_infTop = std::make_unique<Block>(m_infinityPlane.get());
+	m_infLeft = std::make_unique<Block>(m_infinityPlane.get());
+	m_infRight = std::make_unique<Block>(m_infinityPlane.get());
+
+	m_infBottom->getTransform().setRotations(Vector3(0.f, 0.f, 0.f));
+	m_infBottom->getTransform().setTranslation(Vector3(mapSize.x / 2.f, -70.f, 0.f));
+	m_infLeft->getTransform().setRotations(Vector3(0.f, 0.f, -1.57f));
+	m_infLeft->getTransform().setTranslation(Vector3(-70.f, 0.f, 0.f));
+	m_infRight->getTransform().setRotations(Vector3(0.f, 0.f, 1.57f));
+	m_infRight->getTransform().setTranslation(Vector3(mapSize.x + 70.f, 0.f, 0.f));
+	m_infTop->getTransform().setRotations(Vector3(0.f, 0.f, 3.1415f));
+	m_infTop->getTransform().setTranslation(Vector3(mapSize.x / 2.f, mapSize.y + 70.f, 0.f));
+
+	m_scene.addObject(m_infBottom.get());
+	m_scene.addObject(m_infTop.get());
+	m_scene.addObject(m_infLeft.get());
+	m_scene.addObject(m_infRight.get());
 }
 
 GameState::~GameState() {
@@ -103,21 +132,6 @@ bool GameState::processInput(float dt) {
 			requestStackPush(States::Pause);
 		}
 	});
-	/*
-		for(size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
-			int port = m_characterHandler->getCharacter(i)->getPort();
-
-			const GamePad::State& padState = m_app->getInput().getGamePadState(i);
-			const GamePad::ButtonStateTracker& padTracker = m_app->getInput().getGpStateTracker(i);
-
-			if (padState.IsConnected()) {
-				if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
-					for(int u = 0; u < 4; u++)
-						gamePad.SetVibration(u, 0,	0);
-					requestStackPush(States::Pause);
-				}
-			}
-		}*/
 	
 	m_characterHandler->processInput();
 
@@ -141,6 +155,13 @@ bool GameState::resize(int width, int height) {
 // Updates the state
 bool GameState::update(float dt) {
 
+	// Infinity planes color update
+	static float epilepsyAmount = 1.5f;
+	static float epilepsySpeed = 0.3f;
+	static float counter = 0;
+	counter += dt * epilepsySpeed;
+	m_infinityPlane->getMaterial()->setColor(Vector4(-fabs(sinf(counter)) * epilepsyAmount, -fabs(cos(counter)) * epilepsyAmount, -fabs(sinf(counter) + 0.5f) * epilepsyAmount, 1.f));
+
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
@@ -162,7 +183,8 @@ bool GameState::update(float dt) {
 		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
 	);
 
-
+	// Update camera in shaders
+	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 
 	return true;
 }
