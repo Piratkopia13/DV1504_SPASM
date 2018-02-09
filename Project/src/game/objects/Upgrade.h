@@ -106,8 +106,8 @@ private:
 		}
 		AutoFire() {
 			active = false;
-			fireRate = 0.3;
-			baseRate = 0.3;
+			fireRate = 0.3f;
+			baseRate = 0.3f;
 			time.setCap(10);
 		}
 		AutoFire(float _rate, float _time) : AutoFire(){
@@ -236,7 +236,7 @@ private:
 			baseNr = 2;
 			time.setCap(10);
 		}
-		ExtraProjectiles(float multi, float _time) : ExtraProjectiles() {
+		ExtraProjectiles(unsigned int multi, float _time) : ExtraProjectiles() {
 			nr = multi;
 			baseNr = multi;
 			time.setCap(_time);

@@ -51,8 +51,8 @@ public:
 		bool m_online;
 		float m_respawnTime;
 		float m_timeLeft;
-		float m_type;
-		float m_onlineType;
+		int m_type;
+		int m_onlineType;
 		void reset();
 	
 	};

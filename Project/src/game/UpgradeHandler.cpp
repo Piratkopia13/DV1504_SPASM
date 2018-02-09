@@ -106,7 +106,7 @@ void UpgradeHandler::UpgradeSpawn::respawn() {
 
 	m_onlineType = m_type;
 	if (m_type == -1) {
-		m_onlineType = (Utils::rnd() * Upgrade::MAX - 1) + 1;
+		m_onlineType = (int)(Utils::rnd() * Upgrade::MAX - 1) + 1;
 	}
 
 	if (m_onlineType == Upgrade::AUTO_FIRE) {
@@ -167,20 +167,20 @@ void UpgradeHandler::UpgradeSpawn::UpgradeObject::update(float dt) {
 	static float rotationOffset = 0;
 
 	if (direction == 0) {
-		offset += 0.2*dt;
+		offset += 0.2f*dt;
 		if (offset > 0.3) {
 			direction = 1;
 		}
 	}
 	else if(direction == 1) {
-		offset -= 0.2*dt;
-		if (offset < -0.3) {
+		offset -= 0.2f*dt;
+		if (offset < -0.3f) {
 			direction = 0;
 		}
 	}
 
 	rotationOffset = (rotationOffset + 0.2f*dt);
-	if (rotationOffset > 6.28)
+	if (rotationOffset > 6.28f)
 		rotationOffset = 0;
 	
 
