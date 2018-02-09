@@ -39,9 +39,50 @@ Character::~Character() {
 void Character::processInput() {
 	if (!m_playerHealth.alive)
 		return;
-
+	
 
 	if (!m_inputDevice.controller) {
+
+		const Keyboard::State& keyState = Application::getInstance()->getInput().getKeyboardState();
+		const Keyboard::KeyboardStateTracker& keyTracker = Application::getInstance()->getInput().getKbStateTracker();
+		m_input.movement = Vector3(
+			(float)keyState.IsKeyDown(Keyboard::D) - (float)keyState.IsKeyDown(Keyboard::A),
+			(float)keyState.IsKeyDown(Keyboard::W) - (float)keyState.IsKeyDown(Keyboard::S),
+			0);
+
+	
+		if (keyTracker.pressed.V) {
+
+		}
+		//update aim Direction
+		Vector3 tempVec = Vector3(
+			(float)keyState.IsKeyDown(Keyboard::Right) - (float)keyState.IsKeyDown(Keyboard::Left),
+			(float)keyState.IsKeyDown(Keyboard::Up) - (float)keyState.IsKeyDown(Keyboard::Down),
+			0);
+
+		if (tempVec.LengthSquared() > 0.3) {
+			tempVec.Normalize();
+			m_input.aim = tempVec;
+		}
+
+
+		if (keyTracker.pressed.Space) {
+			jump();
+		}
+	
+		if (keyTracker.pressed.Z) {
+			m_weapon->triggerPull();
+		}
+		if (keyTracker.released.Z) {
+			m_weapon->triggerRelease();
+		}
+		if (keyTracker.pressed.X) {
+			hook();
+		}
+		if (keyTracker.released.X) {
+			stopHook();
+		}
+
 
 
 	}
@@ -207,9 +248,9 @@ void Character::update(float dt) {
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
 
-
-
+	collHandler->resolveUpgradeCollisionWith(this);
 }
+
 
 void Character::draw() {
 	model->setTransform(&getTransform());
@@ -281,6 +322,10 @@ void Character::setHook(Hook* hook) {
 	this->m_hook = hook;
 }
 
+void Character::addUpgrade(const Upgrade & upgrade){
+	m_weapon->addUpgrade(upgrade);
+}
+
 void Character::living() {
 	m_playerHealth.current = m_playerHealth.max;
 	m_playerHealth.alive = true;
@@ -306,8 +351,9 @@ void Character::stopJump() {
 	//this->getTransform().translate(Vector3(0, -10, 0));
 }
 
-void Character::fire() {
-	m_weapon->fire(m_input.aim);
+void Character::fire()
+{
+	//m_weapon->fire(m_input.aim);
 }
 
 void Character::hook() {

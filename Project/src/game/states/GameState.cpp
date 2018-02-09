@@ -27,7 +27,9 @@ GameState::GameState(StateStack& stack)
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
-	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
+	m_upgradeHandler = std::make_unique<UpgradeHandler>();
+	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
+
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
@@ -51,10 +53,23 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	// Set character spawn points
-	m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
-	m_characterHandler->addSpawnPoint(2, Vector3(10, 2, 0));
-	m_characterHandler->addSpawnPoint(2, Vector3(11, 2, 0));
+	m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
+	m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(14, 2, 0));
+	m_characterHandler->addSpawnPoint(1, Vector3(15, 2, 0));
+
+	m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
+	m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
+	m_upgradeHandler->addSpawn(Vector3(7, 1.0f, 0), Upgrade::EXTRA_DAMAGE, 10);
+	m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
+	m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);
+
+	m_scene.addObject(m_upgradeHandler->getSpawn(0));
+	m_scene.addObject(m_upgradeHandler->getSpawn(1));
+	m_scene.addObject(m_upgradeHandler->getSpawn(2));
+	m_scene.addObject(m_upgradeHandler->getSpawn(3));
+	m_scene.addObject(m_upgradeHandler->getSpawn(4));
+
 
 	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
@@ -191,7 +206,7 @@ bool GameState::update(float dt) {
 		m_playerCamController->update(dt);
 	
 	m_projHandler->update(dt);
-	
+	m_upgradeHandler->update(dt);
 
 	m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
