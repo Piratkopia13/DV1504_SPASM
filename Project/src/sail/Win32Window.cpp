@@ -92,7 +92,7 @@ LRESULT Win32Window::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 		break;
 
 	case WM_INPUT:
-		Application::Input::processMessage(msg, wParam, lParam);
+		Application::getInstance()->getInput().processMessage(msg, wParam, lParam);
 		break;
 
 	case WM_KEYDOWN:

@@ -142,7 +142,21 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 }
 
-void CollisionHandler::resolveLevelCollisionWith(Projectile* proj) {
+bool CollisionHandler::checkLevelCollisionWith(Projectile* proj, DirectX::SimpleMath::Vector3& hit) {
+
+	proj->getTransform().getTranslation();
+	auto& collisionIndices = m_level->getGrid()->getCurrentCollisionIndices(*proj->getBoundingBox());
+
+	// TODO: calculate the exact hit point using the velocity and backtracking, and set hit to this point
+
+	if (collisionIndices.size() > 0)
+		return true;
+
+	return false;
+}
+
+bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3& playerPos) {
+	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
 bool CollisionHandler::resolveProjectileCollisionWith(Character* chara) {

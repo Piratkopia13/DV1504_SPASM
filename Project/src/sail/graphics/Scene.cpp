@@ -3,17 +3,16 @@
 #include "../../game/objects/common/Object.h"
 #include "../../game/ProjectileHandler.h"
 #include "../../game/level/Level.h"
+#include "../../game/gamemodes/Gamemode.h"
 #include "../../game/objects/Block.h"
 #include "../../game/level/Grid.h"
 
 using namespace std;
 
 Scene::Scene(const AABB& worldSize)
-	:
-	//m_dirLightShadowMap(16384, 8640),
-	m_dirLightShadowMap(8192 / 2, 4320 / 2)
-	//, m_dirLightShadowMap(4096, 2160)
+	: m_dirLightShadowMap(4096, 2160)
 	, m_doPostProcessing(true)
+	, m_doShadows(false)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
 	m_timer.startTimer();
@@ -49,7 +48,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles) {
+void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -67,28 +66,30 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		m_skybox->draw(cam);
 		
 
-	// Renders the depth of the scene out of the directional lights position
+	if (m_doShadows) {
+		// Renders the depth of the scene out of the directional lights position
 
-	//To-do: Fix shadow pass to work with draw call from object
-	m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
-	dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
-	m_depthShader.bind();
-	dxm->enableFrontFaceCulling();
+		//To-do: Fix shadow pass to work with draw call from object
+		m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
+		dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
+		m_depthShader.bind();
+		dxm->enableFrontFaceCulling();
 
-	// Render all blocks to the shadow map
-	// TODO: only render the blocks that the camera can see
-	if (level) {
-		auto& blocks = level->getGrid()->getAllBlocks();
-		for (auto& row : blocks) {
-			for (auto* block : row) {
-				if (block) {
-					block->getModel()->setTransform(&block->getTransform());
-					m_depthShader.draw(*block->getModel(), false);
+		// Render all blocks to the shadow map
+		// TODO: only render the blocks that the camera can see
+		if (level) {
+			auto& blocks = level->getGrid()->getAllBlocks();
+			for (auto& row : blocks) {
+				for (auto* block : row) {
+					if (block) {
+						block->getModel()->setTransform(&block->getTransform());
+						m_depthShader.draw(*block->getModel(), false);
+					}
 				}
 			}
 		}
+		dxm->enableBackFaceCulling();
 	}
-	dxm->enableBackFaceCulling();
 
 	// Begin geometry pass - store depth in the correct texture
 	if (m_doPostProcessing) {
@@ -102,6 +103,9 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	/* draw level here */
 	if (level) {
 		level->draw();
+	}
+	if (gamemode) {
+		gamemode->draw();
 	}
 	if (projectiles) {
 		projectiles->draw();
@@ -121,7 +125,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	}
 
 	// Do the light pass (using additive blending)
-	m_deferredRenderer.doLightPass(m_lights, cam, m_dirLightShadowMap);
+	m_deferredRenderer.doLightPass(m_lights, cam, (m_doShadows) ? &m_dirLightShadowMap : nullptr);
 
 
 	if (m_doPostProcessing) {

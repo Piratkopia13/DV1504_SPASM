@@ -91,6 +91,13 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
+    <ClCompile Include="src\game\CharacterHandler.cpp" />
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -180,6 +187,13 @@
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
+    <ClInclude Include="src\game\collision\CollisionHandler.h" />
+    <ClInclude Include="src\game\states\Settings.h" />
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\CharacterHandler.h" />
+    <ClInclude Include="src\sail\Input.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -188,5 +202,6 @@
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
+    <None Include="res\models\capture_point.fbx" />
   </ItemGroup>
 </Project>

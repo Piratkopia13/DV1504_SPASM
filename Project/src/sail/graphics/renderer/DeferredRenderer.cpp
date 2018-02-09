@@ -81,23 +81,15 @@ void DeferredRenderer::beginLightDepthPass(ID3D11DepthStencilView* const dsv) {
 
 }
 
-void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMap& dlShadowMap) {
+void DeferredRenderer::doLightPass(Lights& lights, Camera& cam, DirLightShadowMap* dlShadowMap) {
 
 	auto devCon = Application::getInstance()->getDXManager()->getDeviceContext();
-
-	/*ID3D11Texture2D* depthTextures[2];
-	depthTextures[0] = m_gBuffers[0]->getDepthTexture2D();
-	depthTextures[1] = dlShadowMap.getTexture2D();
-	auto window = Application::getInstance()->getWindow();
-	UINT width = window->getWindowWidth();
-	UINT height = window->getWindowHeight();
-	m_dirLightShader.createTextureArray(width, height, depthTextures);*/
 
 	DeferredDirectionalLightShader& dirLightShader = Application::getInstance()->getResourceManager().getShaderSet<DeferredDirectionalLightShader>();
 	DeferredPointLightShader& pointLightShader = Application::getInstance()->getResourceManager().getShaderSet<DeferredPointLightShader>();
 
-	//devCon->PSSetShaderResources(9, 1, &m_dsvSrv);
-	devCon->PSSetShaderResources(10, 1, dlShadowMap.getSRV());
+	if (dlShadowMap)
+		devCon->PSSetShaderResources(10, 1, dlShadowMap->getSRV());
 	dirLightShader.updateCameraBuffer(cam, lights.getDirectionalLightCamera());
 
 	auto* dxm = Application::getInstance()->getDXManager();	

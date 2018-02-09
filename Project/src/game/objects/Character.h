@@ -14,11 +14,7 @@ public:
 	Character(Model * model, unsigned int usingController, unsigned int port);
 	virtual ~Character();
 
-	void input(
-		DirectX::GamePad::State& padState,
-		DirectX::GamePad::ButtonStateTracker& padTracker,
-		DirectX::Keyboard::State& keyState,
-		DirectX::Keyboard::KeyboardStateTracker& keyTracker);
+	void processInput();
 	void update(float dt);
 	void draw();
 
@@ -60,6 +56,7 @@ private:
 	struct Movement {
 		bool hooked;
 		float speed;
+		bool inCover;
 	};
 	struct Health {
 		float current;

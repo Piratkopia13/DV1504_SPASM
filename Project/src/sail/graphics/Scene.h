@@ -18,6 +18,7 @@
 #include "../../game/level/Level.h"
 #include "postprocessing/PostProcessPass.h"
 
+class Gamemode;
 class ProjectileHandler;
 class Object;
 class Level;
@@ -39,7 +40,7 @@ public:
 	void addSkybox(const std::wstring& filename);
 
 	// Draws the scene
-	void draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles);
+	void draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode);
 	// Draws the HUD
 	void drawHUD();
 
@@ -60,7 +61,6 @@ public:
 private:
 
 	std::map<ShaderSet*, std::vector<Model*>> mapModelsToShaders(std::vector<Quadtree::Element*>& elements);
-	//void createFullscreenQuad();
 
 private:
 	DeferredRenderer m_deferredRenderer;
@@ -87,6 +87,7 @@ private:
 	// This is what the deferred renderer will render to
 	std::unique_ptr<RenderableTexture> m_deferredOutputTex;
 
+	bool m_doShadows;
 	bool m_doPostProcessing;
 	PostProcessPass m_postProcessPass;
 

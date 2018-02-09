@@ -8,6 +8,7 @@
 #include "../objects/Hook.h"
 #include "../collision/CollisionHandler.h"
 #include "../UpgradeHandler.h"
+#include "../gamemodes/Gamemode.h"
 
 class GameState : public State {
 public:
@@ -36,7 +37,11 @@ private:
 	Scene m_scene;
 
 	// Models
-	//std::unique_ptr<FbxModel> m_sphere;
+	std::unique_ptr<Model> m_infinityPlane;
+	std::unique_ptr<Block> m_infBottom;
+	std::unique_ptr<Block> m_infTop;
+	std::unique_ptr<Block> m_infLeft;
+	std::unique_ptr<Block> m_infRight;
 
 	// Texts
 	SailFont m_font;
@@ -50,7 +55,6 @@ private:
 	std::unique_ptr<CharacterHandler> m_characterHandler;
 	std::unique_ptr<UpgradeHandler> m_upgradeHandler;
 
-
-
-
+	// The current gamemode
+	std::unique_ptr<Gamemode> m_gamemode;
 };

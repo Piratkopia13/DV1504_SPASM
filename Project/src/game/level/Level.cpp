@@ -13,7 +13,8 @@ Level::Level(const std::string& filename)
 {
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
 	
-	if (infile) {
+	if (infile) {		
+
 		std::string line;
 		unsigned int currTask = 0;
 		unsigned int x = 0;
@@ -29,15 +30,25 @@ Level::Level(const std::string& filename)
 				infile >> line;
 				m_grid = std::make_unique<Grid>(m_width, m_height);
 			}
+			if (!line.compare("depth1")) {
+				currTask = 3;
+				infile >> line;
+				y = m_height;
+			}
+			if (!line.compare("depth2")) {
+				currTask = 4;
+				infile >> line;
+				y = m_height;
+			}
 
 
 			switch (currTask) {
-			
+
 			case 0: // Load models
 				m_models.push_back(std::make_unique<FbxModel>(line));
 				m_models.back()->getModel()->buildBufferForShader(&Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>());
 				break;
-			
+
 			case 1:
 				if (!line.compare(0, 6, "height")) {
 					int find = line.find('=');
@@ -54,11 +65,62 @@ Level::Level(const std::string& filename)
 				x = 0;
 				for (auto c : line) {
 					switch (c) {
+
+						// Normal blocks
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
+						break;
+
+						// Controlnodes
+					case 'c':
+						m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						break;
+
+					case 'h':
+						m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
+					default:
+						break;
+
+					}
+					x++;
+				}
+
+				y--;
+				break;
+
+			case 3:
+				x = 0;
+
+				for (auto c : line) {
+					switch (c) {
+					case '1':
+						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
+						m_models.at(1)->getModel()->getMaterial()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE));
+						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
+						break;
+					default:
+						break;
+					}
+					x++;
+				}
+
+				y--;
+				break;
+
+			case 4:
+				x = 0;
+
+				for (auto c : line) {
+					switch (c) {
+					case '1':
+						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
+						m_models.at(1)->getModel()->getMaterial()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
+						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE));
+						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						break;
 					default:
 						break;
@@ -76,6 +138,7 @@ Level::Level(const std::string& filename)
 		}
 	}
 	else {
+		Logger::Error("Could not load the file '" + filename + "'.");
 	}
 }
 
@@ -83,8 +146,7 @@ Level::~Level() {
 
 }
 
-void Level::update(const float delta) {
-
+void Level::update(const float delta, CharacterHandler* charHandler) {
 }
 
 void Level::draw() {

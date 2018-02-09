@@ -136,6 +136,9 @@
   <ItemGroup>
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
     <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
@@ -196,6 +199,7 @@
     <ClCompile Include="src\sail\graphics\shader\ShaderSet.cpp" />
     <ClCompile Include="src\sail\graphics\shader\VertexShader.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
     <ClCompile Include="src\sail\resources\DXCubeMap.cpp" />
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
@@ -215,9 +219,13 @@
     <None Include="res\levels\sprint_demo.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
+    <None Include="res\models\capture_point.fbx" />
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
@@ -289,6 +297,7 @@
     <ClInclude Include="src\sail\graphics\shader\ShaderSet.h" />
     <ClInclude Include="src\sail\graphics\shader\VertexShader.h" />
     <ClInclude Include="src\sail\graphics\text\Text.h" />
+    <ClInclude Include="src\sail\Input.h" />
     <ClInclude Include="src\sail\resources\DXCubeMap.h" />
     <ClInclude Include="src\sail\resources\DXTexture.h" />
     <ClInclude Include="src\sail\resources\loaders\TGALoader.h" />
