@@ -14,7 +14,7 @@ public:
 	void setHeld(bool held);
 	const bool getHeld() const;
 
-	void addUpgrade(Upgrade* upgrade);
+	void addUpgrade(const Upgrade& upgrade);
 	void triggerPull();
 	void triggerRelease();
 	void fire(const DirectX::SimpleMath::Vector3& direction);

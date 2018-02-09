@@ -4,7 +4,7 @@ Moveable::Moveable() {
 	m_velocity = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
 	m_gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
 	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
-	m_gravScale = 0;
+	m_gravScale = 1;
 	m_grounded = false;
 }
 
@@ -16,7 +16,7 @@ void Moveable::move(const float dt) {
 }
 void Moveable::updateVelocity(const float dt) {
 	if (!m_grounded)
-		m_velocity += (m_gravity + m_acceleration) * dt;
+		m_velocity += (m_gravity*m_gravScale + m_acceleration) * dt;
 }
 
 void Moveable::move(DirectX::SimpleMath::Vector3& toMove) {
@@ -26,6 +26,10 @@ void Moveable::move(DirectX::SimpleMath::Vector3& toMove) {
 
 void Moveable::setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity) {
 	m_velocity = newVelocity;
+}
+
+void Moveable::setGravScale(float scale) {
+	m_gravScale = scale;
 }
 
 const DirectX::SimpleMath::Vector3& Moveable::getVelocity() {

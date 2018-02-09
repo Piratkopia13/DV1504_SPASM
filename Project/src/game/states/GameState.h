@@ -7,6 +7,7 @@
 #include "../ProjectileHandler.h"
 #include "../objects/Hook.h"
 #include "../collision/CollisionHandler.h"
+#include "../UpgradeHandler.h"
 
 class GameState : public State {
 public:
@@ -47,6 +48,7 @@ private:
 	std::unique_ptr<ProjectileHandler> m_projHandler;
 	std::unique_ptr<CollisionHandler> m_collisionHandler;
 	std::unique_ptr<CharacterHandler> m_characterHandler;
+	std::unique_ptr<UpgradeHandler> m_upgradeHandler;
 
 
 

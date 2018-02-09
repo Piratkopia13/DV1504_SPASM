@@ -17,6 +17,9 @@
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\game\CharacterHandler.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
@@ -80,18 +83,19 @@
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
     <ClCompile Include="src\sail\resources\parsers\FBXParser.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
     <ClCompile Include="src\sail\resources\TextureData.cpp" />
     <ClCompile Include="src\sail\states\State.cpp" />
     <ClCompile Include="src\sail\states\StateStack.cpp" />
     <ClCompile Include="src\sail\utils\Utils.cpp" />
     <ClCompile Include="src\sail\Win32Window.cpp" />
-    <ClCompile Include="src\game\CharacterHandler.cpp" />
-    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
-    <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
-    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
+    <ClCompile Include="src\game\UpgradeHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
+    <ClInclude Include="src\game\CharacterHandler.h" />
+    <ClInclude Include="src\game\collision\CollisionHandler.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\objects\menu\MenuItem.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
@@ -174,17 +178,15 @@
     <ClInclude Include="src\sail\utils\Timer.h" />
     <ClInclude Include="src\sail\utils\Utils.h" />
     <ClInclude Include="src\sail\Win32Window.h" />
-    <ClInclude Include="src\game\collision\CollisionHandler.h" />
-    <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\game\objects\Upgrade.h" />
-    <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
+    <ClInclude Include="src\game\UpgradeHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="res\levels\speedrun.level" />
+    <None Include="res\levels\sprint_demo.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
-    <None Include="res\levels\sprint_demo.level" />
-    <None Include="res\levels\speedrun.level" />
   </ItemGroup>
 </Project>

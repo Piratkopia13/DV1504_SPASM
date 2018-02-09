@@ -2,13 +2,16 @@
 #include "../objects/Character.h"
 #include "../objects/common/Moveable.h"
 #include "../level/Grid.h"
+#include "../UpgradeHandler.h"
+
 
 CollisionHandler* CollisionHandler::m_instance = nullptr;
 
-CollisionHandler::CollisionHandler(Level* level, CharacterHandler* charHandler, ProjectileHandler* projHandler)
+CollisionHandler::CollisionHandler(Level* level, CharacterHandler* charHandler, ProjectileHandler* projHandler, UpgradeHandler* upHandler)
 	: m_level(level)
 	, m_characterHandler(charHandler)
 	, m_projectileHandler(projHandler)
+	, m_upgradeHandler(upHandler)
 {
 	// Set up instance if not set
 	if (m_instance) {
@@ -161,6 +164,27 @@ bool CollisionHandler::resolveProjectileCollisionWith(Character* chara) {
 	return hit;
 
 }
+
+bool CollisionHandler::resolveUpgradeCollisionWith(Character * character) {
+
+	size_t t = m_upgradeHandler->getNrOfSpawners();
+
+	for (size_t i = 0; i < t; i++) {
+		UpgradeHandler::UpgradeSpawn* spawn = m_upgradeHandler->getSpawn(i);
+		if (spawn->getOnline()) {
+			if (character->getBoundingBox()->containsOrIntersects(*spawn->getBoundingBox())) {
+				character->addUpgrade(spawn->take());
+				int wat = 0;
+			}
+		}
+	}
+
+
+
+	return false;
+}
+
+
 
 DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& dir) {
 	

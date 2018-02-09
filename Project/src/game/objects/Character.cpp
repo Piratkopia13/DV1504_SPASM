@@ -43,16 +43,7 @@ void Character::input(
 	DirectX::Keyboard::KeyboardStateTracker& keyTracker) {
 	if (!m_playerHealth.alive)
 		return;
-	if (keyTracker.pressed.D1) {
-		Upgrade* temp = new Upgrade(Vector3(0, 0, 0));
-		m_weapon->addUpgrade(temp);
-		delete temp;
-	}
-	if (keyTracker.pressed.D2) {
-		Upgrade* temp = new Upgrade(Vector3(1, 0, 0));
-		m_weapon->addUpgrade(temp);
-		delete temp;
-	}
+	
 
 	if (!m_inputDevice.controller) {
 
@@ -225,7 +216,7 @@ void Character::update(float dt) {
 	}
 
 	collHandler->resolveProjectileCollisionWith(this);
-
+	collHandler->resolveUpgradeCollisionWith(this);
 }
 
 void Character::draw() {
@@ -296,6 +287,10 @@ bool Character::isUsingController() {
 
 void Character::setHook(Hook* hook) {
 	this->m_hook = hook;
+}
+
+void Character::addUpgrade(const Upgrade & upgrade){
+	m_weapon->addUpgrade(upgrade);
 }
 
 void Character::living() {

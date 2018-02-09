@@ -12,6 +12,7 @@ public:
 	void updateVelocity(const float dt);
 	void move(DirectX::SimpleMath::Vector3& toMove);
 	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
+	void setGravScale(float scale);
 
 	const DirectX::SimpleMath::Vector3& getVelocity();
  	void setAcceleration(const DirectX::SimpleMath::Vector3 &newAcceleration);

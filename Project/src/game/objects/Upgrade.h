@@ -1,14 +1,14 @@
 #pragma once
 #include "common/object.h"
 
-class Upgrade : public Object {
+class Upgrade{
 public:
 	Upgrade();
-	Upgrade(DirectX::SimpleMath::Vector3 pos, Model* model = nullptr);
+	Upgrade(int type);
 	virtual ~Upgrade(); 
 
 	void update(float dt);
-	virtual void combine(Upgrade& other);
+	virtual void combine(const Upgrade& other);
 
 	
 
@@ -20,7 +20,29 @@ public:
 	float speedRate();
 	float speedTime();
 
-	virtual void draw();
+	bool damageActive();
+	float damageMultiplier();
+	float damageTime();
+
+	bool multiActive();
+	float multiCount();
+	float multiTime();
+
+	bool gravActive();
+	float gravTime();
+
+
+	enum UpgradeType {
+		RANDOM = -1,
+		NONE,
+		AUTO_FIRE,
+		PROJECTILE_SPEED,
+		EXTRA_DAMAGE,
+		EXTRA_PROJECTILES,
+		NO_GRAVITY,
+		MAX = NO_GRAVITY
+	};
+
 
 private:
 
@@ -69,10 +91,10 @@ private:
 				}
 			}
 		}
-		void operator+=(AutoFire& other) {
+		void operator+=(const AutoFire& other) {
 			if (other.active) {
 				if(active)
-					fireRate *= other.fireRate;
+					fireRate *= 0.5;
 				time.addTime(other.time.remaining);
 				active = true;
 			}
@@ -84,10 +106,9 @@ private:
 		}
 		AutoFire() {
 			active = false;
-			fireRate = 0.5;
-			baseRate = 0.5;
+			fireRate = 0.3;
+			baseRate = 0.3;
 			time.setCap(10);
-			time.reset();
 		}
 		AutoFire(float _rate, float _time) : AutoFire(){
 			fireRate = _rate;
@@ -113,7 +134,7 @@ private:
 
 			
 		}
-		void operator+=(ProjectileSpeed& other) {
+		void operator+=(const ProjectileSpeed& other) {
 			if (other.active) {
 				if (active)
 					speed += other.speed;
@@ -141,20 +162,117 @@ private:
 	};
 	
 	struct ExtraDamage {
+
 		bool active;
 		float multiplier;
+		float baseMultiplier;
 		UpgradeTimer time;
+
+		void update(float dt) {
+			if (active) {
+				time.update(dt);
+				if (time.remaining <= 0) {
+					reset();
+				}
+			}
+		}
+		void operator+=(const ExtraDamage& other) {
+			if (other.active) {
+				if (active)
+					multiplier *= 2;
+				time.addTime(other.time.remaining);
+				active = true;
+			}
+		}
+		void reset() {
+			time.reset();
+			active = false;
+			multiplier = baseMultiplier;
+		}
+		ExtraDamage() {
+			active = false;
+			multiplier = 2;
+			baseMultiplier = 2;
+			time.setCap(10);
+		}
+		ExtraDamage(float multi, float _time) : ExtraDamage() {
+			multiplier = multi;
+			baseMultiplier = multi;
+			time.setCap(_time);
+		}
 	};
 	
 	struct ExtraProjectiles {
+
 		bool active;
 		unsigned int nr;
+		unsigned int baseNr;
 		UpgradeTimer time;
+
+		void update(float dt) {
+			if (active) {
+				time.update(dt);
+				if (time.remaining <= 0) {
+					reset();
+				}
+			}
+		}
+		void operator+=(const ExtraProjectiles& other) {
+			if (other.active) {
+				if (active)
+					nr += 2;
+				time.addTime(other.time.remaining);
+				active = true;
+			}
+		}
+		void reset() {
+			time.reset();
+			active = false;
+			nr = baseNr;
+		}
+		ExtraProjectiles() {
+			active = false;
+			nr = 2;
+			baseNr = 2;
+			time.setCap(10);
+		}
+		ExtraProjectiles(float multi, float _time) : ExtraProjectiles() {
+			nr = multi;
+			baseNr = multi;
+			time.setCap(_time);
+		}
 	};
 	
 	struct NoGravity {
 		bool active;
 		UpgradeTimer time;
+
+		void update(float dt) {
+			if (active) {
+				time.update(dt);
+				if (time.remaining <= 0) {
+					reset();
+				}
+			}
+		}
+		void operator+=(const NoGravity& other) {
+			if (other.active) {
+				
+				time.addTime(other.time.remaining);
+				active = true;
+			}
+		}
+		void reset() {
+			time.reset();
+			active = false;
+		}
+		NoGravity() {
+			active = false;			
+			time.setCap(10);
+		}
+		NoGravity(float multi, float _time) : NoGravity() {
+			time.setCap(_time);
+		}
 	};
 	
 	struct Explosion {
@@ -179,3 +297,53 @@ private:
 
 };
 
+
+
+
+
+/*
+
+struct Name {
+
+		bool active;
+		unsigned int stat;
+		unsigned int baseStat;
+		UpgradeTimer time;
+
+		void update(float dt) {
+			if (active) {
+				time.update(dt);
+				if (time.remaining <= 0) {
+					reset();
+				}
+			}
+		}
+		void operator+=(const AutoFire& other) {
+			if (other.active) {
+				if (active)
+					stat += 2;
+				time.addTime(other.time.remaining);
+				active = true;
+			}
+		}
+		void reset() {
+			time.reset();
+			active = false;
+			stat = baseStat;
+		}
+		Name() {
+			active = false;
+			stat = 2;
+			baseStat = 2;
+			time.setCap(10);
+		}
+		Name(float multi, float _time) : Name() {
+			stat = multi;
+			baseStat = multi;
+			time.setCap(_time);
+		}
+	};
+
+
+
+*/

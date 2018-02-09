@@ -5,15 +5,17 @@
 class Character;
 class Projectile;
 class CharacterHandler;
+class UpgradeHandler;
 
 class CollisionHandler {
 public:
-	CollisionHandler(Level* level, CharacterHandler* charHandler, ProjectileHandler* projHandler);
+	CollisionHandler(Level* level, CharacterHandler* charHandler, ProjectileHandler* projHandler, UpgradeHandler* upHandler);
 	~CollisionHandler();
 
 	void resolveLevelCollisionWith(Character* chara, float dt);
 	void resolveLevelCollisionWith(Projectile* proj);
 	bool resolveProjectileCollisionWith(Character* chara);
+	bool resolveUpgradeCollisionWith(Character* character);
 	DirectX::SimpleMath::Vector3 rayTraceLevel(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& dir);
 
 	static CollisionHandler* getInstance();
@@ -26,5 +28,6 @@ private:
 	Level* m_level;
 	CharacterHandler* m_characterHandler;
 	ProjectileHandler* m_projectileHandler;
+	UpgradeHandler* m_upgradeHandler;
 
 };

@@ -1,27 +1,28 @@
 #include "Upgrade.h"
 
 using namespace DirectX::SimpleMath;
-Upgrade::Upgrade() : Object() {
-	Object::setPosition(Vector3(5, 3, 0));
+Upgrade::Upgrade(){
 	m_auto = AutoFire();
 	m_speed = ProjectileSpeed();
-}
-Upgrade::Upgrade(Vector3 pos, Model* model) : Upgrade() {
-	Object::setPosition(pos);	
-	Object::setModel(model);
 
-	if (pos.x == 0) {
-		m_auto = AutoFire();
+}
+Upgrade::Upgrade(int type) : Upgrade(){
+	if (type == AUTO_FIRE) {
 		m_auto.active = true;
 	}
-	if (pos.x == 1) {
-		m_speed = ProjectileSpeed();
+	if (type == PROJECTILE_SPEED) {
 		m_speed.active = true;
 	}
+	if (type == EXTRA_DAMAGE) {
+		m_damage.active = true;
+	}
+	if (type == EXTRA_PROJECTILES) {
+		m_extraProj.active = true;
+	}
+	if (type == NO_GRAVITY) {
+		m_grav.active = true;
+	}
 }
-
-
-
 Upgrade::~Upgrade() {
 
 }
@@ -33,16 +34,24 @@ void Upgrade::update(float dt) {
 	if (m_speed.active) {
 		m_speed.update(dt);
 	}
-
+	if (m_damage.active) {
+		m_damage.update(dt);
+	}
+	if (m_extraProj.active) {
+		m_extraProj.update(dt);
+	}
+	if (m_grav.active) {
+		m_grav.update(dt);
+	}
 }
 
-void Upgrade::combine(Upgrade & other) {
+void Upgrade::combine(const Upgrade & other) {
 	m_auto += other.m_auto;
 	m_speed += other.m_speed;
-	/*m_damage += other.m_damage;
+	m_damage += other.m_damage;
 	m_extraProj += other.m_extraProj;
 	m_grav += other.m_grav;
-	m_explosion += other.m_explosion;
+	/*m_explosion += other.m_explosion;
 	m_bouncy += other.m_bouncy;*/
 
 
@@ -79,8 +88,43 @@ float Upgrade::speedTime()
 	return m_speed.time.getPercent();
 }
 
-void Upgrade::draw() {
-	model->setTransform(&getTransform());
-	model->getMaterial()->setColor(lightColor);
-	model->draw();
+bool Upgrade::damageActive()
+{
+	return m_damage.active;
 }
+
+float Upgrade::damageMultiplier()
+{
+	return m_damage.multiplier;
+}
+
+float Upgrade::damageTime()
+{
+	return m_damage.time.getPercent();
+}
+
+bool Upgrade::multiActive()
+{
+	return m_extraProj.active;
+}
+
+float Upgrade::multiCount()
+{
+	return m_extraProj.nr;
+}
+
+float Upgrade::multiTime()
+{
+	return m_extraProj.time.getPercent();
+}
+
+bool Upgrade::gravActive()
+{
+	return m_grav.active;
+}
+
+float Upgrade::gravTime()
+{
+	return m_grav.time.getPercent();
+}
+

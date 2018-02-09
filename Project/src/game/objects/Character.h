@@ -38,6 +38,8 @@ public:
 
 	void setWeapon(Weapon* weapon);
 	void setHook(Hook* hook);
+	void addUpgrade(const Upgrade& upgrade);
+
 
 	void living();
 	void dead();
