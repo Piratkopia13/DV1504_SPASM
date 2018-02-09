@@ -43,10 +43,17 @@ void Character::processInput() {
 
 	if (!m_inputDevice.controller) {
 
+		const Keyboard::State& keyState = Application::getInstance()->getInput().getKeyboardState();
+		const Keyboard::KeyboardStateTracker& keyTracker = Application::getInstance()->getInput().getKbStateTracker();
 		m_input.movement = Vector3(
 			(float)keyState.IsKeyDown(Keyboard::D) - (float)keyState.IsKeyDown(Keyboard::A),
 			(float)keyState.IsKeyDown(Keyboard::W) - (float)keyState.IsKeyDown(Keyboard::S),
 			0);
+
+	
+		if (keyTracker.pressed.V) {
+
+		}
 		//update aim Direction
 		Vector3 tempVec = Vector3(
 			(float)keyState.IsKeyDown(Keyboard::Right) - (float)keyState.IsKeyDown(Keyboard::Left),
@@ -75,7 +82,6 @@ void Character::processInput() {
 		if (keyTracker.released.X) {
 			stopHook();
 		}
-	
 
 
 
@@ -245,8 +251,6 @@ void Character::update(float dt) {
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
-
-}
 
 void Character::draw() {
 	model->setTransform(&getTransform());
