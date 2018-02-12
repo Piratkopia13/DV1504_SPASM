@@ -247,7 +247,7 @@ void Character::update(float dt) {
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
-	getTransform().setRotations(Vector3(0.0f, (ceil(m_input.aim.x) - 0.5) * 2 * 1.55f, 0.0f));
+	getTransform().setRotations(Vector3(0.0f, ((int)((ceil(m_input.aim.x) - 0.5f) * 2.0f) % 2) * 1.55f, 0.0f));
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
