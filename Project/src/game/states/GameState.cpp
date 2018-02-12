@@ -23,7 +23,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("sprint_demo.level");
+	m_level = std::make_unique<Level>("speedrun.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
@@ -80,7 +80,7 @@ GameState::GameState(StateStack& stack)
 	int index = 0;
 	if (upgradeSpawnPoints.size() > 0) {
 		for (Grid::Index gIndex : upgradeSpawnPoints) {
-			m_upgradeHandler->addSpawn(Vector3(float(gIndex.x) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::AUTO_FIRE, 10);
+			m_upgradeHandler->addSpawn(Vector3(float(gIndex.x) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::RANDOM, 10);
 			m_scene.addObject(m_upgradeHandler->getSpawn(index));
 			index++;
 		}

@@ -207,6 +207,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 	if (m_teamOne.timeCapturing <= 0.f && m_teamOne.isOwner) {
 		m_teamOne.capturing = false;
 		m_teamOne.isOwner = false;
+		m_team = 0;
 		m_teamOne.timeCapturing = 0.f;
 		m_ownershipColor = m_teamZeroColor;
 	}
@@ -222,6 +223,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 	if (m_teamTwo.timeCapturing <= 0.f && m_teamTwo.isOwner) {
 		m_teamTwo.capturing = false;
 		m_teamTwo.isOwner = false;
+		m_team = 0;
 		m_teamTwo.timeCapturing = 0.f;
 		m_ownershipColor = m_teamZeroColor;
 	}
