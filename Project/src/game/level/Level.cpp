@@ -81,6 +81,15 @@ Level::Level(const std::string& filename)
 
 					case 'h':
 						m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
+						break;
+
+					case 'p':
+						m_grid->addPlayerSpawnpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						break;
+
+					case 'u':
+						m_grid->addUpgradeSpawnpoint()
+
 					default:
 						break;
 
