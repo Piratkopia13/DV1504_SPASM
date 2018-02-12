@@ -86,12 +86,12 @@ Level::Level(const std::string& filename)
 
 					// Spawnpoints for players
 					case 'p':
-						m_grid->addPlayerSpawnpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						m_grid->addPlayerSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
 						break;
 
 					// Spawnpoints for upgrades
 					case 'u':
-						m_grid->addUpgradeSpawnpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						m_grid->addUpgradeSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
 						break;
 
 					default:
