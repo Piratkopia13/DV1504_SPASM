@@ -21,12 +21,12 @@ Character::Character()
 	setLightColor(Vector4(1, 1, 1, 1));
 }
 
-Character::Character(Model * model) : Character() {
-	this->setModel(model);
+Character::Character(Model * bodyModel, Model * lArmModel, Model * rArmModel, Model* headModel) : Character() {
+	this->setModel(bodyModel);
 	this->updateBoundingBox();
 }
-Character::Character(Model * model, unsigned int usingController, unsigned int port)
-	: Character(model) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model * rArmModel, Model* headModel, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, rArmModel, headModel) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -247,7 +247,7 @@ void Character::update(float dt) {
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
-	getTransform().setRotations(Vector3(0.0f, ((int)((ceil(m_input.aim.x) - 0.5f) * 2.0f) % 2) * 1.55f, 0.0f));
+	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.55f + 1.55f, 0.0f));
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
