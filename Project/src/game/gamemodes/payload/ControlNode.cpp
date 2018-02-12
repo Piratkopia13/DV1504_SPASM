@@ -12,7 +12,7 @@ ControlNode::ControlNode(Model* model) {
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f);
 	m_teamOneColor = DirectX::SimpleMath::Vector4(3.f, 0.0f, 0.0f, 1.f);
-	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 3.f, 1.f);
+	m_teamTwoColor = DirectX::SimpleMath::Vector4(0.0f, 0.0f, 5.f, 1.f);
 
 	m_teamOne.color = m_teamOneColor;
 	m_teamOne.ownershipTime = 0.f;
@@ -41,6 +41,21 @@ void ControlNode::draw() {
 	getModel()->setTransform(&getTransform());
 	getModel()->getMaterial()->setColor(m_nodeColor);
 	getModel()->draw();
+}
+
+void ControlNode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
+	switch (team) {
+	case 1: 
+		m_teamOneColor = color;
+		m_teamOne.color = color;
+		break;
+	case 2:
+		m_teamTwoColor = color;
+		m_teamTwo.color = color;
+		break;
+	default:
+		break;
+	}
 }
 
 void ControlNode::setTeam(const int team) {
@@ -134,20 +149,11 @@ bool ControlNode::updateNodeTimer(float dt) {
 					m_teamOne.timeCapturing += dt;
 				else {
 					m_teamTwo.timeCapturing -= dt;
-					if (m_teamTwo.timeCapturing < 0.f)
-						m_teamTwo.capturing = false;
 				}
 			}
-			else {
-				m_teamOne.timeCapturing -= dt;
-				if (m_teamOne.timeCapturing < 0.f)
-					m_teamOne.capturing = false;
-			}
 		}
-		else if (m_teamOne.capturing && !m_teamTwo.capturing) {
+		else if (!m_teamTwo.capturing) {
 			m_teamOne.timeCapturing -= dt;
-			if (m_teamOne.timeCapturing < 0.f)
-				m_teamOne.capturing = false;
 		}
 	}
 	
@@ -160,22 +166,26 @@ bool ControlNode::updateNodeTimer(float dt) {
 					m_teamTwo.timeCapturing += dt;
 				else {
 					m_teamOne.timeCapturing -= dt;
-					if (m_teamOne.timeCapturing < 0.f)
-						m_teamOne.capturing = false;
 				}
 			}
-			else {
-				m_teamTwo.timeCapturing -= dt;
-				if (m_teamTwo.timeCapturing < 0.f)
-					m_teamTwo.capturing = false;
-			}
 		}
-		else if (m_teamTwo.capturing && !m_teamOne.capturing) {
+		else if (!m_teamOne.capturing) {
 			m_teamTwo.timeCapturing -= dt;
-			if (m_teamTwo.timeCapturing < 0.f)
-				m_teamTwo.capturing = false;
 		}
 	}
+
+
+	if (m_teamOne.timeCapturing <= 0.f) {
+		m_teamOne.capturing = false;
+		m_teamOne.timeCapturing = 0.f;
+	}
+
+	if (m_teamTwo.timeCapturing <= 0.f) {
+		m_teamTwo.capturing = false;
+		m_teamTwo.timeCapturing = 0.f;
+	}
+
+
 
 	// If the point isn't being captured and either team is the current owner and no one is on the point, 
 	// the timer goes back up for the team
@@ -224,8 +234,8 @@ bool ControlNode::updateNodeTimer(float dt) {
 	}
 
 	// Set the node color depending on the timing
-	m_nodeColor = m_ownershipColor + DirectX::SimpleMath::Vector4(m_teamOne.color * (m_teamOne.timeCapturing * 0.6f) / m_timeTillCapture) +
-		DirectX::SimpleMath::Vector4(m_teamTwo.color * (m_teamTwo.timeCapturing * 0.6f) / m_timeTillCapture);
+	m_nodeColor = m_ownershipColor + DirectX::SimpleMath::Vector4(m_teamOne.color * (m_teamOne.timeCapturing * 0.7f) / m_timeTillCapture) +
+		DirectX::SimpleMath::Vector4(m_teamTwo.color * (m_teamTwo.timeCapturing * 0.7f) / m_timeTillCapture);
 
 	// Updates the timer for the capturepoints pointcounter
 	if (m_teamOne.isOwner) {

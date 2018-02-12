@@ -16,6 +16,9 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
+	m_teamOneColor = Application::getInstance()->getGameSettings().teamOneColor;
+	m_teamTwoColor = Application::getInstance()->getGameSettings().teamTwoColor;
+
 	// Add default scores
 	addScore(50, 1);
 	addScore(50, 2);
@@ -40,27 +43,29 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
 
-	Logger::log("Red: " + std::to_string(redScore));
-	Logger::log("Blue: " + std::to_string(blueScore));
-
 	float totScore = redScore + blueScore;
 	
-	float redBlocks = (redScore / totScore) * float(m_levelWidth);
-	float blueBlocks = (blueScore / totScore) * float(m_levelWidth);
+	float teamOneBlocks = (redScore / totScore) * float(m_levelWidth);
+	float teamTwoBlocks = (blueScore / totScore) * float(m_levelWidth);
 
-	float r, g, b;
+	DirectX::SimpleMath::Vector4 blockColor;
 
 	for (int x = 0; x < m_levelWidth; x++) {
-		r = min(2.f, max(0.f, redBlocks - float(x)));
-		g = 0.f;
-		b = min(2.f, max(0.f, blueBlocks - float((m_levelWidth - 1) - x)));
+		blockColor.x = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
+		blockColor.y = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
+		blockColor.z = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
+
+		blockColor.x += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.x));
+		blockColor.y += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.y));
+		blockColor.z += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.z));
+
 		for (int y = 0; y < m_levelHeight; y++) {
 			if (m_blocks[x][y]) {
 				m_blocks[x][y]->setColor(DirectX::SimpleMath::Vector4(
-					r,
-					g,
-					b,
-					0.f));
+					blockColor.x,
+					blockColor.y,
+					blockColor.z,
+					1.f));
 			}
 		}
 	}
@@ -96,6 +101,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		}
 
 		m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);
+		//Logger::log(m_controlNodes[0]->getAsString());
 		// Points per x seconds
 		//if (m_controlNodes[index]->updateNodeTimer(dt)) {
 		//	Gamemode::addScore(1, m_controlNodes[index]->getTeam());
@@ -114,6 +120,11 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 void PayloadGamemode::draw() {
 	for (const auto& cn : m_controlNodes)
 		cn->draw();
+}
+
+void PayloadGamemode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
+	for (const auto& cn : m_controlNodes)
+		cn->setTeamColor(team, color);
 }
 
 int PayloadGamemode::checkWin() {

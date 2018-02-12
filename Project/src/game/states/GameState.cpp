@@ -23,8 +23,16 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("speedrun.level");
+	m_level = std::make_unique<Level>("the_void.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+	// **Upgrade to dynamic and only PayloadGamemode later**
+	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
+	if (gamemode) {
+		gamemode->setTeamColor(1, m_app->getGameSettings().teamOneColor);
+		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
+	}
+	// **Upgrade to dynamic and only PayloadGamemode later**
+
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();

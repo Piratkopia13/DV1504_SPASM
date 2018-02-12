@@ -78,6 +78,9 @@ MenuState::MenuState(StateStack& stack)
 	m_orangeColor = Vector4(1.0f, 0.5f, 0.0f, 1.0f);
 	m_blueColor = Vector4(0.0f, 0.9f, 1.0f, 1.0f);
 
+	m_app->getGameSettings().teamOneColor = m_orangeColor;
+	m_app->getGameSettings().teamTwoColor = m_blueColor;
+
 
 	MenuItem* maps[5];
 	int extraY = 0;

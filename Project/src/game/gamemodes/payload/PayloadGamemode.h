@@ -15,6 +15,8 @@ public:
 	virtual void update(CharacterHandler* charHandler, float dt);
 	virtual void draw();
 
+	void setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color);
+
 	virtual int checkWin();
 
 private:
@@ -30,4 +32,6 @@ private:
 
 	std::vector<std::vector<Block*>>& m_blocks;
 	int m_levelWidth, m_levelHeight;
+
+	DirectX::SimpleMath::Vector4 m_teamOneColor, m_teamTwoColor;
 };
