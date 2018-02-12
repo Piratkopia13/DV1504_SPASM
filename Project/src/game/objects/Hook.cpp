@@ -24,6 +24,9 @@ void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
 	m_triggerHeld = true;
 	m_position = CollisionHandler::getInstance()->rayTraceLevel(position, direction);
+	m_direction = (m_position - position);
+	m_direction.z = 0.f;
+	m_distance = m_direction.Length();
 }
 
 void Hook::triggerRelease() {
@@ -39,5 +42,11 @@ void Hook::draw() {
 }
 
 DirectX::SimpleMath::Vector3 Hook::getDirection() {
-	return m_direction;
+	DirectX::SimpleMath::Vector3 tempvec = m_direction;
+	tempvec.Normalize();
+	return tempvec;
+}
+
+float Hook::getLength(DirectX::SimpleMath::Vector3 playerPos){
+	return (m_position - playerPos).Length();
 }

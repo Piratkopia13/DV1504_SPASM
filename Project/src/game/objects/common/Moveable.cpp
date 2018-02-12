@@ -17,6 +17,8 @@ void Moveable::move(const float dt) {
 void Moveable::updateVelocity(const float dt) {
 	if (!m_grounded)
 		m_velocity += (m_gravity + m_acceleration) * dt;
+	else
+		m_velocity += m_acceleration * dt;
 }
 
 void Moveable::move(DirectX::SimpleMath::Vector3& toMove) {

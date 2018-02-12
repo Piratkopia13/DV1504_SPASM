@@ -53,6 +53,7 @@ private:
 	};	
 	struct Movement {
 		bool hooked;
+		float hookLength;
 		float speed;
 		bool inCover;
 	};
