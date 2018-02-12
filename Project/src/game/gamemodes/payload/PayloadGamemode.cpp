@@ -40,8 +40,8 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
 
-	Logger::log("Red: " + std::to_string(redScore));
-	Logger::log("Blue: " + std::to_string(blueScore));
+	//Logger::log("Red: " + std::to_string(redScore));
+	//Logger::log("Blue: " + std::to_string(blueScore));
 
 	float totScore = redScore + blueScore;
 	
@@ -96,6 +96,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		}
 
 		m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);
+		//Logger::log(m_controlNodes[0]->getAsString());
 		// Points per x seconds
 		//if (m_controlNodes[index]->updateNodeTimer(dt)) {
 		//	Gamemode::addScore(1, m_controlNodes[index]->getTeam());
@@ -114,6 +115,11 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 void PayloadGamemode::draw() {
 	for (const auto& cn : m_controlNodes)
 		cn->draw();
+}
+
+void PayloadGamemode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
+	for (const auto& cn : m_controlNodes)
+		cn->setTeamColor(team, color);
 }
 
 int PayloadGamemode::checkWin() {

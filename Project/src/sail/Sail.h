@@ -44,3 +44,8 @@
 #include "graphics/renderer/DeferredRenderer.h"
 #include "resources/DXCubeMap.h"
 #include "states/StateStack.h"
+
+namespace Sail {
+	static DirectX::SimpleMath::Vector4 TEAM_ONE_COLOR = DirectX::SimpleMath::Vector4(1.0f, 0.5f, 0.0f, 1.0f);
+	static DirectX::SimpleMath::Vector4 TEAM_TWO_COLOR = DirectX::SimpleMath::Vector4(0.0f, 0.9f, 1.0f, 1.0f);
+}

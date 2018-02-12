@@ -15,6 +15,8 @@ public:
 	virtual void update(CharacterHandler* charHandler, float dt);
 	virtual void draw();
 
+	void setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color);
+
 	virtual int checkWin();
 
 private:

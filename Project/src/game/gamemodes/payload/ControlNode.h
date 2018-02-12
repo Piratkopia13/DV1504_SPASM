@@ -10,6 +10,8 @@ public:
 
 	virtual void draw();
 
+	void setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color);
+
 	void setTeam(const int team);
 	/*
 		Gets the team that currently holds the controlpoint
@@ -25,6 +27,7 @@ public:
 		@param teamTwo number of players from team two
 	*/
 	void capture(const int teamOne, const int teamTwo);
+
 
 	/*
 		Deals with all the updates of the controlnode
