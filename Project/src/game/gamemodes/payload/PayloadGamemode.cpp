@@ -45,22 +45,27 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 	float totScore = redScore + blueScore;
 	
-	float redBlocks = (redScore / totScore) * float(m_levelWidth);
-	float blueBlocks = (blueScore / totScore) * float(m_levelWidth);
+	float teamOneBlocks = (redScore / totScore) * float(m_levelWidth);
+	float teamTwoBlocks = (blueScore / totScore) * float(m_levelWidth);
 
-	float r, g, b;
+	DirectX::SimpleMath::Vector4 blockColor;
 
 	for (int x = 0; x < m_levelWidth; x++) {
-		r = min(2.f, max(0.f, redBlocks - float(x)));
-		g = 0.f;
-		b = min(2.f, max(0.f, blueBlocks - float((m_levelWidth - 1) - x)));
+		blockColor.x = min(2.f, max(0.f, (teamOneBlocks - float(x))) * Sail::TEAM_ONE_COLOR.x);
+		blockColor.y = min(2.f, max(0.f, (teamOneBlocks - float(x))) * Sail::TEAM_ONE_COLOR.y);
+		blockColor.z = min(2.f, max(0.f, (teamOneBlocks - float(x))) * Sail::TEAM_ONE_COLOR.z);
+
+		blockColor.x += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * Sail::TEAM_TWO_COLOR.x));
+		blockColor.y += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * Sail::TEAM_TWO_COLOR.y));
+		blockColor.z += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * Sail::TEAM_TWO_COLOR.z));
+
 		for (int y = 0; y < m_levelHeight; y++) {
 			if (m_blocks[x][y]) {
 				m_blocks[x][y]->setColor(DirectX::SimpleMath::Vector4(
-					r,
-					g,
-					b,
-					0.f));
+					blockColor.x,
+					blockColor.y,
+					blockColor.z,
+					1.f));
 			}
 		}
 	}
