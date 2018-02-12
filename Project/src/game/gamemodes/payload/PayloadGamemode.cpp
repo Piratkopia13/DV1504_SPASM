@@ -16,6 +16,9 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
+	m_teamOneColor = Application::getInstance()->getGameSettings().teamOneColor;
+	m_teamTwoColor = Application::getInstance()->getGameSettings().teamTwoColor;
+
 	// Add default scores
 	addScore(50, 1);
 	addScore(50, 2);
@@ -40,9 +43,6 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	float redScore = Gamemode::getScore(1);
 	float blueScore = Gamemode::getScore(2);
 
-	//Logger::log("Red: " + std::to_string(redScore));
-	//Logger::log("Blue: " + std::to_string(blueScore));
-
 	float totScore = redScore + blueScore;
 	
 	float teamOneBlocks = (redScore / totScore) * float(m_levelWidth);
@@ -51,13 +51,13 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	DirectX::SimpleMath::Vector4 blockColor;
 
 	for (int x = 0; x < m_levelWidth; x++) {
-		blockColor.x = min(2.f, max(0.f, (teamOneBlocks - float(x))) * Sail::TEAM_ONE_COLOR.x);
-		blockColor.y = min(2.f, max(0.f, (teamOneBlocks - float(x))) * Sail::TEAM_ONE_COLOR.y);
-		blockColor.z = min(2.f, max(0.f, (teamOneBlocks - float(x))) * Sail::TEAM_ONE_COLOR.z);
+		blockColor.x = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
+		blockColor.y = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
+		blockColor.z = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
 
-		blockColor.x += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * Sail::TEAM_TWO_COLOR.x));
-		blockColor.y += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * Sail::TEAM_TWO_COLOR.y));
-		blockColor.z += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * Sail::TEAM_TWO_COLOR.z));
+		blockColor.x += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.x));
+		blockColor.y += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.y));
+		blockColor.z += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.z));
 
 		for (int y = 0; y < m_levelHeight; y++) {
 			if (m_blocks[x][y]) {

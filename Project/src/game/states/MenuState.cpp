@@ -75,8 +75,11 @@ MenuState::MenuState(StateStack& stack)
 
 	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
 	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
-	m_orangeColor = Sail::TEAM_ONE_COLOR;
-	m_blueColor = Sail::TEAM_TWO_COLOR;
+	m_orangeColor = Vector4(1.0f, 0.5f, 0.0f, 1.0f);
+	m_blueColor = Vector4(0.0f, 0.9f, 1.0f, 1.0f);
+
+	m_app->getGameSettings().teamOneColor = m_orangeColor;
+	m_app->getGameSettings().teamTwoColor = m_blueColor;
 
 
 	MenuItem* maps[5];

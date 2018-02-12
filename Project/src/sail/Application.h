@@ -21,6 +21,8 @@ public:
 		int used;
 		int level;
 		int gamemode;
+		DirectX::SimpleMath::Vector4 teamOneColor;
+		DirectX::SimpleMath::Vector4 teamTwoColor;
 		std::vector<player> players;
 		void reset() {
 			used = 0;

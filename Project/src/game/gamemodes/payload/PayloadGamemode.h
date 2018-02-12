@@ -32,4 +32,6 @@ private:
 
 	std::vector<std::vector<Block*>>& m_blocks;
 	int m_levelWidth, m_levelHeight;
+
+	DirectX::SimpleMath::Vector4 m_teamOneColor, m_teamTwoColor;
 };

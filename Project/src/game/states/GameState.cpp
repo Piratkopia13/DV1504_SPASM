@@ -28,8 +28,8 @@ GameState::GameState(StateStack& stack)
 	// **Upgrade to dynamic and only PayloadGamemode later**
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
-		gamemode->setTeamColor(1, Sail::TEAM_ONE_COLOR);
-		gamemode->setTeamColor(2, Sail::TEAM_TWO_COLOR);
+		gamemode->setTeamColor(1, m_app->getGameSettings().teamOneColor);
+		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
 	}
 	// **Upgrade to dynamic and only PayloadGamemode later**
 
