@@ -17,16 +17,18 @@ Character::Character()
 	m_playerHealth.regen = 5;
 	m_vibration[0] = { 0, 0};
 
-	getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
+	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 	setLightColor(Vector4(1, 1, 1, 1));
 }
 
-Character::Character(Model * bodyModel, Model * lArmModel, Model * rArmModel, Model* headModel) : Character() {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel) : Character() {
 	this->setModel(bodyModel);
 	this->updateBoundingBox();
+	m_leftArm = lArmModel;
+	m_head = headModel;
 }
-Character::Character(Model * bodyModel, Model * lArmModel, Model * rArmModel, Model* headModel, unsigned int usingController, unsigned int port)
-	: Character(bodyModel, lArmModel, rArmModel, headModel) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, headModel) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -216,8 +218,10 @@ void Character::update(float dt) {
 		}
 
 		if (m_weapon) {
-			m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, -0.0f));
-			m_weapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(m_input.aim) - 1.6f));
+			Transform tempTransform = getTransform();
+			tempTransform.rotateAroundZ(this->sinDegFromVec(m_input.aim) + 0.785f + (std::signbit(m_input.aim.x) * 1.57f));
+			m_weapon->getTransform().setTranslation(tempTransform.getTranslation());
+			m_weapon->getTransform().setRotations(tempTransform.getRotations());
 			m_weapon->update(dt, m_input.aim);
 		}
 		if (m_hook) {
@@ -247,15 +251,19 @@ void Character::update(float dt) {
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
-	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.55f + 1.55f, 0.0f));
+	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.57f + 1.57f, 0.0f));
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
 
 void Character::draw() {
 	model->setTransform(&getTransform());
+	m_leftArm->setTransform(&getTransform());
+	m_head->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	model->draw();
+	m_leftArm->draw();
+	m_head->draw();
 	if(m_weapon)
 		m_weapon->draw();
 	if(m_hook)// && !m_movement.inCover)

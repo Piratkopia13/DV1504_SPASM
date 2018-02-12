@@ -50,7 +50,7 @@ void Weapon::triggerRelease()
 
 void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
-	static float baseSpeed = 25.0f;
+	static float baseSpeed = 5.0f;
 	static float baseDamage = 10.0f;
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2;
@@ -66,8 +66,22 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		}
 
 		//Create projectile with inputs; startPos, direction, speed/force etc.
+		Vector3 tempPos = getTransform().getTranslation();
+		Matrix tempMatrix;
+		
+		//translation away from origo of the weapon
+		tempMatrix *= Matrix::CreateTranslation(Vector3(0.4f, -0.36f, -0.3f));
+
+		//rotation around the origo of the weapon
+		tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x));
+
+		//translation into world space
+		tempMatrix *= Matrix::CreateTranslation(tempPos);
+
+		tempPos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
+
 		Projectile* temp = new Projectile(
-			getTransform().getTranslation(), 
+			tempPos,
 			direction * baseSpeed * extraSpeed, 
 			baseDamage * extraDamage, 
 			m_team);
@@ -93,12 +107,12 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 				tempVec2.Normalize();
 
 				Projectile* temp1 = new Projectile(
-					getTransform().getTranslation(),
+					tempPos,
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					m_team);
 				Projectile* temp2 = new Projectile(
-					getTransform().getTranslation(),
+					tempPos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					m_team);

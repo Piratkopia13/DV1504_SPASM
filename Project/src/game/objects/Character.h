@@ -10,8 +10,8 @@
 class Character : public Moveable {
 public:
 	Character();
-	Character(Model * bodyModel, Model * lArmModel, Model * rArmModel, Model* headModel);
-	Character(Model * bodyModel, Model * lArmModel, Model * rArmModel, Model* headModel, unsigned int usingController, unsigned int port);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port);
 	virtual ~Character();
 
 	void processInput();
@@ -99,6 +99,9 @@ private:
 	ControllerVibration m_vibration[2];
 	
 	unsigned int m_currentTeam;
+
+	Model * m_leftArm;
+	Model * m_head;
 	
 	void jump();
 	void stopJump();
