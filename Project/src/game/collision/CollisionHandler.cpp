@@ -190,6 +190,7 @@ bool CollisionHandler::resolveUpgradeCollisionWith(Character * character) {
 			DirectX::SimpleMath::Vector2 pMaxPos = character->getBoundingBox()->getMaxPos();
 			DirectX::SimpleMath::Vector2 uMinPos = spawn->getBoundingBox()->getMinPos();
 			DirectX::SimpleMath::Vector2 uMaxPos = spawn->getBoundingBox()->getMaxPos();
+			uMaxPos.y += 0.7f;
 			
 			if (pMinPos.x <= uMaxPos.x && pMinPos.y <= uMaxPos.y && pMaxPos.x >= uMinPos.x && pMaxPos.y >= uMinPos.y)
 				character->addUpgrade(spawn->take());
