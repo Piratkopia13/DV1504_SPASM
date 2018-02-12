@@ -66,7 +66,7 @@ Level::Level(const std::string& filename)
 				for (auto c : line) {
 					switch (c) {
 
-						// Normal blocks
+					// Normal blocks
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
@@ -74,21 +74,25 @@ Level::Level(const std::string& filename)
 						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
 						break;
 
-						// Controlnodes
+					// Controlnodes
 					case 'c':
 						m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
 						break;
 
+					// Holes to hide in
 					case 'h':
 						m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
 						break;
 
+					// Spawnpoints for players
 					case 'p':
-						m_grid->addPlayerSpawnpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						m_grid->addPlayerSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
 						break;
 
+					// Spawnpoints for upgrades
 					case 'u':
-						m_grid->addUpgradeSpawnpoint()
+						m_grid->addUpgradeSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
+						break;
 
 					default:
 						break;

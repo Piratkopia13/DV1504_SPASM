@@ -10,11 +10,11 @@ Character::Character()
 	m_currentTeam(0)
 {
 	m_inputDevice = { 1, 0 };
-	m_input = {Vector3(0,0,0), Vector3(1,0,0)};
-	m_movement = { 0, 10, 0 };
-	m_playerHealth.setMax(100);
-	m_playerHealth.setHealth(100);
-	m_playerHealth.regen = 5;
+	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
+	m_movement = { 0.f, 10.f, 0.f };
+	m_playerHealth.setMax(100.f);
+	m_playerHealth.setHealth(100.f);
+	m_playerHealth.regen = 5.f;
 	m_vibration[0] = { 0, 0};
 
 	getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));

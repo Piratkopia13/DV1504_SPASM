@@ -25,11 +25,11 @@ void Grid::addControlpoint(const int x, const int y) {
 	m_cpIndices.push_back(Index{ x, y });
 }
 
-void Grid::addPlayerSpawnpoint(const int x, const int y) {
+void Grid::addPlayerSpawnPoint(const int x, const int y) {
 	m_pspIndices.push_back(Index{ x, y });
 }
 
-void Grid::addUpgradeSpawnpoint(const int x, const int y) {
+void Grid::addUpgradeSpawnPoint(const int x, const int y) {
 	m_uspIndices.push_back(Index{ x, y });
 }
 
@@ -154,10 +154,10 @@ std::vector<Grid::Index> & Grid::getControlpointIndices() {
 	return m_cpIndices;
 }
 
-std::vector<Grid::Index> & Grid::getPlayerSpawnpointIndices() {
+std::vector<Grid::Index> & Grid::getPlayerSpawnPointIndices() {
 	return m_pspIndices;
 }
 
-std::vector<Grid::Index> & Grid::getUpgradeSpawnpointIndices() {
+std::vector<Grid::Index> & Grid::getUpgradeSpawnPointIndices() {
 	return m_uspIndices;
 }
