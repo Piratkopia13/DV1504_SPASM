@@ -23,7 +23,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("speedrun.level");
+	m_level = std::make_unique<Level>("the_void.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
@@ -63,9 +63,9 @@ GameState::GameState(StateStack& stack)
 	if (playerSpawnPoints.size() > 0) {
 		for (Grid::Index index : playerSpawnPoints) {
 			if (float(index.x) <= m_level->getGridWidth() / 2.f)
-				m_characterHandler->addSpawnPoint(1, Vector3(float(index.x * Level::DEFAULT_BLOCKSIZE), float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
 			else
-				m_characterHandler->addSpawnPoint(2, Vector3(float(index.x * Level::DEFAULT_BLOCKSIZE), float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+				m_characterHandler->addSpawnPoint(2, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
 		}
 	}
 	else {
@@ -80,7 +80,7 @@ GameState::GameState(StateStack& stack)
 	int index = 0;
 	if (upgradeSpawnPoints.size() > 0) {
 		for (Grid::Index gIndex : upgradeSpawnPoints) {
-			m_upgradeHandler->addSpawn(Vector3(float(gIndex.x) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::RANDOM, 10);
+			m_upgradeHandler->addSpawn(Vector3((float(gIndex.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::RANDOM, 10);
 			m_scene.addObject(m_upgradeHandler->getSpawn(index));
 			index++;
 		}
