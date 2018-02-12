@@ -3,6 +3,7 @@
 
 Hook::Hook(Model *drawModel) {
 	model = drawModel;
+	setLightColor(DirectX::SimpleMath::Vector4(3.f));
 }
 
 Hook::~Hook() {
@@ -37,6 +38,7 @@ void Hook::triggerRelease() {
 void Hook::draw() {
 	if (m_triggerHeld) {
 		model->setTransform(&getTransform());
+		model->getMaterial()->setColor(this->lightColor);
 		model->draw();
 	}
 }

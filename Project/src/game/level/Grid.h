@@ -44,6 +44,8 @@ public:
 
 	void addHole(const int x, const int y);
 	void addControlpoint(const int x, const int y);
+	void addPlayerSpawnPoint(const int x, const int y);
+	void addUpgradeSpawnPoint(const int x, const int y);
 	bool atGrid(const int x, const int y);
 	// getCollisionIndices returns a list of all indices that a bounding box could collide with in the future
 	std::vector<Index> getCollisionIndices(const AABB& boundingBox);
@@ -52,11 +54,18 @@ public:
 
 	std::vector<std::vector<Block*>>& getAllBlocks();
 	std::vector<Index> & getControlpointIndices();
+	std::vector<Index> & getPlayerSpawnPointIndices();
+	std::vector<Index> & getUpgradeSpawnPointIndices();
 	
 
 private:
 	std::vector<std::vector<Block*>> m_cells;
+	// Controlpoint indices
 	std::vector<Index> m_cpIndices;
+	// Player spawnpoint indices
+	std::vector<Index> m_pspIndices;
+	// Upgrade spawnpoint indices
+	std::vector<Index> m_uspIndices;
 
 	std::vector<Index> m_holes;
 	

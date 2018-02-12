@@ -254,3 +254,4 @@ ModelManifest.xml
 !/bin/Release/libfbxsdk.dll
 
 /Project/ClassDiagram.cd
+/hook.py

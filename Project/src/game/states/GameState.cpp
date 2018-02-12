@@ -23,11 +23,19 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("speedrun.level");
+	m_level = std::make_unique<Level>("the_void.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
+	if (gamemode) {
+		gamemode->setTeamColor(1, m_app->getGameSettings().teamOneColor);
+		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
+	}
+
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
-	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get());
+	m_upgradeHandler = std::make_unique<UpgradeHandler>();
+	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
+
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
@@ -51,17 +59,54 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	// Set character spawn points
-	m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
-	m_characterHandler->addSpawnPoint(2, Vector3(10, 2, 0));
-	m_characterHandler->addSpawnPoint(2, Vector3(11, 2, 0));
+	std::vector<Grid::Index> playerSpawnPoints = m_level->getGrid()->getPlayerSpawnPointIndices();
+	if (playerSpawnPoints.size() > 0) {
+		for (Grid::Index index : playerSpawnPoints) {
+			if (float(index.x) <= m_level->getGridWidth() / 2.f)
+				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+			else
+				m_characterHandler->addSpawnPoint(2, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+		}
+	}
+	else {
+		m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
+		m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
+		m_characterHandler->addSpawnPoint(2, Vector3(14, 2, 0));
+		m_characterHandler->addSpawnPoint(2, Vector3(15, 2, 0));
+	}
+
+
+	std::vector<Grid::Index> upgradeSpawnPoints = m_level->getGrid()->getUpgradeSpawnPointIndices();
+	int index = 0;
+	if (upgradeSpawnPoints.size() > 0) {
+		for (Grid::Index gIndex : upgradeSpawnPoints) {
+			m_upgradeHandler->addSpawn(Vector3((float(gIndex.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::RANDOM, 10);
+			m_scene.addObject(m_upgradeHandler->getSpawn(index));
+			index++;
+		}
+	}
+	else {
+		m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
+		m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
+		m_upgradeHandler->addSpawn(Vector3(7, 1.0f, 0), Upgrade::EXTRA_DAMAGE, 10);
+		m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
+		m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);
+
+		m_scene.addObject(m_upgradeHandler->getSpawn(0));
+		m_scene.addObject(m_upgradeHandler->getSpawn(1));
+		m_scene.addObject(m_upgradeHandler->getSpawn(2));
+		m_scene.addObject(m_upgradeHandler->getSpawn(3));
+		m_scene.addObject(m_upgradeHandler->getSpawn(4));
+	}
+
+
 
 	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		m_scene.addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
 		// SETS TEAMS PER INDEX
-		m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
+		//m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
 	}
 
 	// Give the cam controller targets to follow
@@ -182,7 +227,11 @@ bool GameState::update(float dt) {
 	m_level->update(dt, m_characterHandler.get());
 	m_gamemode->update(m_characterHandler.get(), dt);
 	if (m_gamemode->checkWin()) {
-		std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
+		if (m_gamemode->checkWin() > 0)
+			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
+		else
+			std::cout << "DRAW!" << std::endl;
+
 		requestStackClear();
 		requestStackPush(States::ID::MainMenu);
 	}
@@ -191,7 +240,7 @@ bool GameState::update(float dt) {
 		m_playerCamController->update(dt);
 	
 	m_projHandler->update(dt);
-	
+	m_upgradeHandler->update(dt);
 
 	m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,

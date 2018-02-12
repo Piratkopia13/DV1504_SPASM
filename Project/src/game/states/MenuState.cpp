@@ -78,6 +78,9 @@ MenuState::MenuState(StateStack& stack)
 	m_orangeColor = Vector4(1.0f, 0.5f, 0.0f, 1.0f);
 	m_blueColor = Vector4(0.0f, 0.9f, 1.0f, 1.0f);
 
+	m_app->getGameSettings().teamOneColor = m_orangeColor;
+	m_app->getGameSettings().teamTwoColor = m_blueColor;
+
 
 	MenuItem* maps[5];
 	int extraY = 0;
@@ -178,7 +181,7 @@ bool MenuState::processInput(float dt) {
 		int menu = 0;
 		int back = 0;
 		int pressed = 0;
-
+		int spacePressed = 0;
 		if (i == 0) {
 
 			if (kbTracker.pressed.W) {
@@ -200,6 +203,7 @@ bool MenuState::processInput(float dt) {
 			if (kbTracker.pressed.Space) {
 				a = 1;
 				pressed = 1;
+				spacePressed = 1;
 			}
 			if (kbTracker.pressed.Tab) {
 				b = 1;
@@ -372,7 +376,11 @@ bool MenuState::processInput(float dt) {
 								for (size_t u = 0; u < 4; u++) {
 									if (playersReady[u]) {
 										Application::GameSettings::player player;
-										player.port = u;
+										if (spacePressed && u == 0) {
+											player.port = -1;
+										}
+										else
+											player.port = u;
 										player.color = this->playerColor[u];
 										player.model = m_playerModelIndex[u];
 										player.team = m_playerTeam[u];
