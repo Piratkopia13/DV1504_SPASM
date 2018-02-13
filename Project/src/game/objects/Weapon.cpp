@@ -50,7 +50,7 @@ void Weapon::triggerRelease()
 
 void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
-	static float baseSpeed = 5.0f;
+	static float baseSpeed = 25.0f;
 	static float baseDamage = 10.0f;
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2;

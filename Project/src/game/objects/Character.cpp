@@ -248,10 +248,10 @@ void Character::update(float dt) {
 		m_movement.inCover = false;
 	}
 
+	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.57f + 1.57f, 0.0f));
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
-	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.57f + 1.57f, 0.0f));
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
@@ -270,6 +270,7 @@ void Character::draw() {
 		m_weapon->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_weapon->draw();
 	if(m_hook)// && !m_movement.inCover)
+		m_hook->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_hook->draw();
 }
 
