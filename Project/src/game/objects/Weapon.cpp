@@ -1,4 +1,5 @@
 #include "Weapon.h"
+#include "../collision/CollisionHandler.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -11,10 +12,12 @@ Weapon::Weapon() {
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *drawModel, ProjectileHandler* projHandler, int team) 
+Weapon::Weapon(Model *armModel, Model* laserModel, ProjectileHandler* projHandler, int team) 
 	: Weapon()
 {
-	model = drawModel;
+	model = armModel;
+	m_laser = laserModel;
+
 	m_projectileHandler = projHandler;
 	m_team = team;
 	m_held = true;
@@ -65,33 +68,10 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			extraDamage = m_upgrade->damageMultiplier();
 		}
 
-		//Create projectile with inputs; startPos, direction, speed/force etc.
-		Vector3 tempPos = getTransform().getTranslation();
-		Matrix tempMatrix;
-		
-		//translation away from origo of the weapon (Z should be -0.3 and 0.3 but that does not hit the boundingbox atm
-		if (direction.x >= 0.0f) {
-			tempMatrix *= Matrix::CreateTranslation(Vector3(0.4f, -0.36f, -0.19f));
-		}
-		else {
-			tempMatrix *= Matrix::CreateTranslation(Vector3(-0.4f, -0.36f, 0.19f));
-		}
 
-		//rotation around the origo of the weapon
-		if (direction.x >= 0.0f) {
-			tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x));
-		}
-		else {
-			tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x) + 3.14f);
-		}
-
-		//translation into world space
-		tempMatrix *= Matrix::CreateTranslation(tempPos);
-
-		tempPos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
 
 		Projectile* temp = new Projectile(
-			tempPos,
+			m_nozzlePos,
 			direction * baseSpeed * extraSpeed, 
 			baseDamage * extraDamage, 
 			m_team);
@@ -117,12 +97,12 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 				tempVec2.Normalize();
 
 				Projectile* temp1 = new Projectile(
-					tempPos,
+					m_nozzlePos,
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					m_team);
 				Projectile* temp2 = new Projectile(
-					tempPos,
+					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					m_team);
@@ -168,12 +148,49 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 		m_timeSinceFire += dt;
 	}
 
+	//Updating position where projectiles spawn
+	//Create projectile with inputs; startPos, direction, speed/force etc.
+	Vector3 tempPos = getTransform().getTranslation();
+	Matrix tempMatrix;
+
+	//translation away from origo of the weapon (Z should be -0.3 and 0.3 but that does not hit the boundingbox atm
+	if (direction.x >= 0.0f) {
+		tempMatrix *= Matrix::CreateTranslation(Vector3(0.4f, -0.36f, -0.19f));
+	}
+	else {
+		tempMatrix *= Matrix::CreateTranslation(Vector3(-0.4f, -0.36f, 0.19f));
+	}
+
+	//rotation around the origo of the weapon
+	if (direction.x >= 0.0f) {
+		tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x));
+	}
+	else {
+		tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x) + 3.14f);
+	}
+
+	//translation into world space
+	tempMatrix *= Matrix::CreateTranslation(tempPos);
+
+	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
+
+	float length = (CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) - m_nozzlePos).Length();
+
+	m_laser->getTransform().setTranslation(m_nozzlePos + direction * (min(length, 5.f)/2.f));
+	m_laser->getTransform().setNonUniScale(min(50.f, length*10), 1.f, 1.f);
+
+	m_laser->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
 
 
 	//move(dt);
 }
 
 void Weapon::draw() {
+	if (this->getTransform().getTranslation().z < 0.5f){
+	m_laser->setTransform(&m_laser->getTransform());
+	m_laser->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+	m_laser->draw();
+	}
 	model->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor);
 	model->draw();

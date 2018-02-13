@@ -103,7 +103,7 @@ void Character::processInput() {
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				if (!m_movement.inCover && !m_movement.hooked) {
 					DirectX::SimpleMath::Vector3 pos = getTransform().getTranslation();
-					m_movement.inCover = collHandler->resolveCoverCollision(pos);
+					m_movement.inCover = CollisionHandler::getInstance()->resolveCoverCollision(pos);
 				}
 				else
 					m_movement.inCover = false;

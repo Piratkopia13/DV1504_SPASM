@@ -7,7 +7,7 @@
 class Weapon : public Moveable {
 public:
 	Weapon();
-	Weapon(Model *drawModel, ProjectileHandler* projHandler, int team);
+	Weapon(Model *armModel, Model* laserModel, ProjectileHandler* projHandler, int team);
 	virtual ~Weapon();
 
 	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
@@ -30,6 +30,8 @@ private:
 
 	bool m_triggerHeld;
 	float m_timeSinceFire;
+	
+	DirectX::SimpleMath::Vector3 m_nozzlePos;
 
 	Upgrade * m_upgrade;
 

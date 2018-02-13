@@ -10,13 +10,14 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 	Application::GameSettings* settings = &app->getGameSettings();
 
 	Model* wModel = app->getResourceManager().getFBXModel("fisk/fisk_armR").getModel();
+	Model* lModel = app->getResourceManager().getFBXModel("laser").getModel();
 	Model* hModel = app->getResourceManager().getFBXModel("projectile").getModel();
 	Model* cModel1 = app->getResourceManager().getFBXModel("fisk/fisk_body").getModel();
 	Model* cModel2 = app->getResourceManager().getFBXModel("fisk/fisk_armL").getModel();
 	Model* cModel3 = app->getResourceManager().getFBXModel("fisk/fisk_head").getModel();
 
 	for (size_t i = 0; i < settings->players.size(); i++) {
-		Weapon* tempWeapon = new Weapon(wModel, projHandler, settings->players[i].team);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, projHandler, settings->players[i].team);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
 		tempChar->setHook(tempHook);
