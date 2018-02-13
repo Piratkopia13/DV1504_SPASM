@@ -265,7 +265,7 @@ void Character::update(float dt) {
 			m_weapon->update(dt, m_input.aim);
 		}
 		if (m_hook) {
-			m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f));
+			m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.45f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f));
 		}
 
 		collHandler->resolveProjectileCollisionWith(this);
