@@ -66,8 +66,32 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		}
 
 		//Create projectile with inputs; startPos, direction, speed/force etc.
+		Vector3 tempPos = getTransform().getTranslation();
+		Matrix tempMatrix;
+		
+		//translation away from origo of the weapon (Z should be -0.3 and 0.3 but that does not hit the boundingbox atm
+		if (direction.x >= 0.0f) {
+			tempMatrix *= Matrix::CreateTranslation(Vector3(0.4f, -0.36f, -0.19f));
+		}
+		else {
+			tempMatrix *= Matrix::CreateTranslation(Vector3(-0.4f, -0.36f, 0.19f));
+		}
+
+		//rotation around the origo of the weapon
+		if (direction.x >= 0.0f) {
+			tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x));
+		}
+		else {
+			tempMatrix *= Matrix::CreateRotationZ(atan2(direction.y, direction.x) + 3.14f);
+		}
+
+		//translation into world space
+		tempMatrix *= Matrix::CreateTranslation(tempPos);
+
+		tempPos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
+
 		Projectile* temp = new Projectile(
-			getTransform().getTranslation(), 
+			tempPos,
 			direction * baseSpeed * extraSpeed, 
 			baseDamage * extraDamage, 
 			m_team);
@@ -93,12 +117,12 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 				tempVec2.Normalize();
 
 				Projectile* temp1 = new Projectile(
-					getTransform().getTranslation(),
+					tempPos,
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					m_team);
 				Projectile* temp2 = new Projectile(
-					getTransform().getTranslation(),
+					tempPos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					m_team);

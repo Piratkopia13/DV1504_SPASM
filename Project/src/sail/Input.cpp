@@ -113,7 +113,7 @@ void Input::processAllGamepads(std::function<void(const DirectX::GamePad::State&
 void Input::updateStates() {
 	// Update input states for keyboard and controllers
 	for (int i = 0; i < 4; i++)
-		m_gamepadState[i] = GamePad::Get().GetState(i);
+		m_gamepadState[i] = GamePad::Get().GetState(i, GamePad::DEAD_ZONE_CIRCULAR);
 	m_keyboardState = Keyboard::Get().GetState();
 
 	// Update trackers

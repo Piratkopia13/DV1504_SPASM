@@ -17,16 +17,18 @@ Character::Character()
 	m_playerHealth.regen = 5.f;
 	m_vibration[0] = { 0, 0};
 
-	getTransform().setRotations(Vector3(0.0f, 1.55f, 0.0f));
+	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 	setLightColor(Vector4(1, 1, 1, 1));
 }
 
-Character::Character(Model * model) : Character() {
-	this->setModel(model);
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel) : Character() {
+	this->setModel(bodyModel);
 	this->updateBoundingBox();
+	m_leftArm = lArmModel;
+	m_head = headModel;
 }
-Character::Character(Model * model, unsigned int usingController, unsigned int port)
-	: Character(model) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, headModel) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -101,8 +103,7 @@ void Character::processInput() {
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				if (!m_movement.inCover && !m_movement.hooked) {
 					DirectX::SimpleMath::Vector3 pos = getTransform().getTranslation();
-					pos.y += 0.5f;//Player pos is currently beneath the character with the trashcan model, inside a block
-					m_movement.inCover = CollisionHandler::getInstance()->resolveCoverCollision(pos);
+					m_movement.inCover = collHandler->resolveCoverCollision(pos);
 				}
 				else
 					m_movement.inCover = false;
@@ -254,16 +255,23 @@ void Character::update(float dt) {
 			}
 		}
 
-		if (m_weapon) {
-			m_weapon->getTransform().setTranslation(this->getTransform().getTranslation() + Vector3(0.f, 0.5f, -0.0f));
-			m_weapon->getTransform().setRotations(Vector3(1.6f, -1.6f, this->sinDegFromVec(m_input.aim) - 1.6f));
-			m_weapon->update(dt, m_input.aim);
-		}
+		
 		if (m_hook) {
-			m_hook->update(dt, m_weapon->getTransform().getTranslation());
+			//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
+			m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 		}
 
 		collHandler->resolveProjectileCollisionWith(this);
+	}
+
+	if (m_weapon) {
+		Transform tempTransform = getTransform();
+		tempTransform.rotateAroundZ(this->sinDegFromVec(m_input.aim) + 0.785f + (std::signbit(m_input.aim.x) * 1.57f));
+		m_weapon->getTransform().setTranslation(tempTransform.getTranslation());
+		m_weapon->getTransform().setRotations(tempTransform.getRotations());
+		if (!m_movement.inCover) {
+			m_weapon->update(dt, m_input.aim);
+		}
 	}
 
 	//Going in and out of cover
@@ -283,22 +291,38 @@ void Character::update(float dt) {
 		m_movement.inCover = false;
 	}
 
+	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.57f + 1.57f, 0.0f));
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt);
-
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
 
 void Character::draw() {
 	model->setTransform(&getTransform());
+	Transform tempTransform = getTransform();
+	m_leftArm->setTransform(&tempTransform);
+
+	if (m_movement.hooked == true && m_hook) {
+		m_leftArm->getTransform().rotateAroundZ(sinDegFromVec(m_hook->getDirection()) + 1.57f);
+	}
+
+	m_head->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	model->draw();
-	if(m_weapon)
+	m_leftArm->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
+	m_leftArm->draw();
+	m_head->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
+	m_head->draw();
+	if (m_weapon) {
+		m_weapon->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_weapon->draw();
-	if(m_hook)// && !m_movement.inCover)
+	}
+	if (m_hook) { // && !m_movement.inCover) 
+		m_hook->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_hook->draw();
+	}
 }
 
 void Character::setController(const bool usingController) {

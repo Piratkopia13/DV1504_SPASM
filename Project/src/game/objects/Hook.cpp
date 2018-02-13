@@ -15,8 +15,8 @@ void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 		m_direction = (m_position - position);
 		m_direction.z = 0.f;
 		m_distance = m_direction.Length();
-		this->setPosition(position + (m_direction * 0.5f));
 		m_direction.Normalize();
+		this->setPosition(position + (m_direction * m_distance * 0.5f));
 		this->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(m_direction.y, m_direction.x)));
 		this->getTransform().setNonUniScale(m_distance*10.0f, 1.0f, 1.0f);
 	}
