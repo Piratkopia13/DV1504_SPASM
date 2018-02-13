@@ -100,7 +100,7 @@ void CharacterHandler::respawnPlayer(unsigned int id) {
 			unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
 			respawnPos = m_spawns[team][spawn];
 		}
-		m_characters[id]->setPosition(respawnPos);
+		m_characters[id]->setPosition(respawnPos + Vector3(0.0f, 1.0f, 0.0f));
 		m_characters[id]->living();
 	}
 }

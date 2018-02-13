@@ -256,19 +256,23 @@ void Character::update(float dt) {
 			}
 		}
 
-		if (m_weapon) {
-			Transform tempTransform = getTransform();
-			tempTransform.rotateAroundZ(this->sinDegFromVec(m_input.aim) + 0.785f + (std::signbit(m_input.aim.x) * 1.57f));
-			m_weapon->getTransform().setTranslation(tempTransform.getTranslation());
-			m_weapon->getTransform().setRotations(tempTransform.getRotations());
-			m_weapon->update(dt, m_input.aim);
-		}
+		
 		if (m_hook) {
 			//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
 			m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 		}
 
 		collHandler->resolveProjectileCollisionWith(this);
+	}
+
+	if (m_weapon) {
+		Transform tempTransform = getTransform();
+		tempTransform.rotateAroundZ(this->sinDegFromVec(m_input.aim) + 0.785f + (std::signbit(m_input.aim.x) * 1.57f));
+		m_weapon->getTransform().setTranslation(tempTransform.getTranslation());
+		m_weapon->getTransform().setRotations(tempTransform.getRotations());
+		if (!m_movement.inCover) {
+			m_weapon->update(dt, m_input.aim);
+		}
 	}
 
 	//Going in and out of cover
