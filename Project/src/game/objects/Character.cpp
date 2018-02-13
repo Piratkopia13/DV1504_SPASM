@@ -266,7 +266,8 @@ void Character::draw() {
 	m_leftArm->draw();
 	m_head->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	m_head->draw();
-	if(m_weapon)
+	if (m_weapon)
+		m_weapon->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_weapon->draw();
 	if(m_hook)// && !m_movement.inCover)
 		m_hook->draw();
