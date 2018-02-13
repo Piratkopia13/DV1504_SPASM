@@ -258,7 +258,13 @@ void Character::update(float dt) {
 
 void Character::draw() {
 	model->setTransform(&getTransform());
-	m_leftArm->setTransform(&getTransform());
+	Transform tempTransform = getTransform();
+	m_leftArm->setTransform(&tempTransform);
+
+	if (m_movement.hooked == true && m_hook) {
+		m_leftArm->getTransform().rotateAroundZ(sinDegFromVec(m_hook->getDirection()) + 1.57f);
+	}
+
 	m_head->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	model->draw();
@@ -266,12 +272,14 @@ void Character::draw() {
 	m_leftArm->draw();
 	m_head->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	m_head->draw();
-	if (m_weapon)
+	if (m_weapon) {
 		m_weapon->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_weapon->draw();
-	if(m_hook)// && !m_movement.inCover)
+	}
+	if (m_hook) { // && !m_movement.inCover) 
 		m_hook->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_hook->draw();
+	}
 }
 
 void Character::setController(const bool usingController) {
