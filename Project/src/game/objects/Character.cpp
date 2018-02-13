@@ -211,10 +211,12 @@ void Character::update(float dt) {
 				else
 					this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
 
-				if (this->getVelocity().x > 1)
-					this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
+				if (fabs(this->getVelocity().x) > 5)
+					this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
 				else if (this->getVelocity().x < -1)
 					this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
+				else if (this->getVelocity().x > 1)
+					this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
 				else if (fabs(this->getVelocity().x) < 1.f) {
 					this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
 					this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
@@ -395,13 +397,7 @@ void Character::fire()
 }
 
 void Character::hook() {
-	if (m_input.movement.Length() == 0) {
-		m_hook->triggerPull(m_weapon->getTransform().getTranslation(), Vector3(0.f, 1.f, 0.f));
-	}
-	else
-	{
-		m_hook->triggerPull(m_weapon->getTransform().getTranslation(), m_input.movement);
-	}
+	m_hook->triggerPull(m_weapon->getTransform().getTranslation(), m_input.aim);
 	m_movement.hooked = true;
 	m_movement.hookLength = m_hook->getLength(m_weapon->getTransform().getTranslation());
 }
