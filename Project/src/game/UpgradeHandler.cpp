@@ -59,8 +59,10 @@ UpgradeHandler::UpgradeSpawn::UpgradeSpawn() {
 UpgradeHandler::UpgradeSpawn::UpgradeSpawn(const DirectX::SimpleMath::Vector3& _position, float _cooldown, int type) {
 	setModel(Application::getInstance()->getResourceManager().getFBXModel("upgrade_spawner").getModel());
 	setPosition(_position);
+	updateBoundingBox();
 	m_upgradeObject = new UpgradeObject(_position+Vector3(0,0.5f,0));
 	m_upgradeObject->setModel(Application::getInstance()->getResourceManager().getFBXModel("weapon_upgrade").getModel());
+	m_upgradeObject->updateBoundingBox();
 	m_respawnTime = _cooldown;
 	m_type = type;
 

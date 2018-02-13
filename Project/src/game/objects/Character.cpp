@@ -10,11 +10,11 @@ Character::Character()
 	m_currentTeam(0)
 {
 	m_inputDevice = { 1, 0 };
-	m_input = {Vector3(0,0,0), Vector3(1,0,0)};
-	m_movement = { 0, 10, 0 };
-	m_playerHealth.setMax(100);
-	m_playerHealth.setHealth(100);
-	m_playerHealth.regen = 5;
+	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
+	m_movement = { 0.f, 0.f, 10.f, 0.f };
+	m_playerHealth.setMax(100.f);
+	m_playerHealth.setHealth(100.f);
+	m_playerHealth.regen = 5.f;
 	m_vibration[0] = { 0, 0};
 
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
@@ -204,17 +204,57 @@ void Character::update(float dt) {
 	m_playerHealth.updatePercent();
 
 	if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
-		if (grounded())
-			this->setVelocity(DirectX::SimpleMath::Vector3(m_input.movement.x * m_movement.speed, this->getVelocity().y, 0.f));
-		else {
-			float velX = m_input.movement.x * m_movement.speed * 0.1f + getVelocity().x;
-			velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
-			this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
-		}
+		if (grounded()) {
+			if (!m_movement.hooked) {//Movement while on the ground
+				if(m_input.movement.x > 0)
+					this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
+				else if(m_input.movement.x < 0)
+					this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x - 1.0f, -m_movement.speed), this->getVelocity().y, 0.f));
+				else
+					this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
 
-		if (m_movement.hooked) {
-			this->setGrounded(false);
-			this->setAcceleration(m_hook->getDirection() * 40.0f);
+				if (fabs(this->getVelocity().x) > 5)
+					this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
+				else if (this->getVelocity().x < -1)
+					this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
+				else if (this->getVelocity().x > 1)
+					this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
+				else if (fabs(this->getVelocity().x) < 1.f) {
+					this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+					this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
+				}
+			}
+			else//Movement on the ground while using grappling hook
+			{	
+				if (m_hook->getDirection().x >= 0) {
+					this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+				}
+				else
+				{
+					this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (-m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+				}
+				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, m_hook->getDirection().y * 20.0f, 0.f));
+			}
+
+		}
+		else {
+			if (!m_movement.hooked) {//Movement in the air
+				float velX = m_input.movement.x * m_movement.speed * 0.1f + getVelocity().x;
+				velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
+				this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+			}
+			else {//Movement in the air while using grappling hook
+				DirectX::SimpleMath::Vector3 currVelocity = this->getVelocity();
+				currVelocity.Normalize();
+				if (m_hook->getDirection().Dot(currVelocity) < 0.f) {
+					DirectX::SimpleMath::Vector3 tempVec = m_hook->getDirection().Cross(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f));
+
+					tempVec = (this->getVelocity().Dot(tempVec) / tempVec.LengthSquared()) * tempVec;
+					this->setVelocity(tempVec);
+				}
+				this->setAcceleration(m_hook->getDirection() * 20.0f);
+			}
 		}
 
 		if (m_weapon) {
@@ -379,6 +419,7 @@ void Character::fire()
 void Character::hook() {
 	m_hook->triggerPull(m_weapon->getTransform().getTranslation(), m_input.aim);
 	m_movement.hooked = true;
+	m_movement.hookLength = m_hook->getLength(m_weapon->getTransform().getTranslation());
 }
 
 void Character::stopHook() {

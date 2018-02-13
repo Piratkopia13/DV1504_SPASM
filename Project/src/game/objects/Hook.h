@@ -19,6 +19,7 @@ public:
 	void triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction);
 	void triggerRelease();
 	void draw();
+	float getLength(DirectX::SimpleMath::Vector3 playerPos);
 
 	DirectX::SimpleMath::Vector3 getDirection();
 

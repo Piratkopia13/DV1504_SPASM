@@ -186,10 +186,14 @@ bool CollisionHandler::resolveUpgradeCollisionWith(Character * character) {
 	for (size_t i = 0; i < t; i++) {
 		UpgradeHandler::UpgradeSpawn* spawn = m_upgradeHandler->getSpawn(i);
 		if (spawn->getOnline()) {
-			if (character->getBoundingBox()->containsOrIntersects(*spawn->getBoundingBox())) {
+			DirectX::SimpleMath::Vector2 pMinPos = character->getBoundingBox()->getMinPos();
+			DirectX::SimpleMath::Vector2 pMaxPos = character->getBoundingBox()->getMaxPos();
+			DirectX::SimpleMath::Vector2 uMinPos = spawn->getBoundingBox()->getMinPos();
+			DirectX::SimpleMath::Vector2 uMaxPos = spawn->getBoundingBox()->getMaxPos();
+			uMaxPos.y += 0.7f;
+			
+			if (pMinPos.x <= uMaxPos.x && pMinPos.y <= uMaxPos.y && pMaxPos.x >= uMinPos.x && pMaxPos.y >= uMinPos.y)
 				character->addUpgrade(spawn->take());
-				int wat = 0;
-			}
 		}
 	}
 

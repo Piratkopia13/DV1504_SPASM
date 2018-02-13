@@ -25,13 +25,11 @@ GameState::GameState(StateStack& stack)
 	// Set up handlers
 	m_level = std::make_unique<Level>("speedrun.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
-	// **Upgrade to dynamic and only PayloadGamemode later**
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
 		gamemode->setTeamColor(1, m_app->getGameSettings().teamOneColor);
 		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
 	}
-	// **Upgrade to dynamic and only PayloadGamemode later**
 
 	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
@@ -61,22 +59,46 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	// Set character spawn points
-	m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
-	m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
-	m_characterHandler->addSpawnPoint(2, Vector3(14, 2, 0));
-	m_characterHandler->addSpawnPoint(2, Vector3(15, 2, 0));
+	std::vector<Grid::Index> playerSpawnPoints = m_level->getGrid()->getPlayerSpawnPointIndices();
+	if (playerSpawnPoints.size() > 0) {
+		for (Grid::Index index : playerSpawnPoints) {
+			if (float(index.x) <= m_level->getGridWidth() / 2.f)
+				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+			else
+				m_characterHandler->addSpawnPoint(2, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+		}
+	}
+	else {
+		m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
+		m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
+		m_characterHandler->addSpawnPoint(2, Vector3(14, 2, 0));
+		m_characterHandler->addSpawnPoint(2, Vector3(15, 2, 0));
+	}
 
-	m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
-	m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
-	m_upgradeHandler->addSpawn(Vector3(7, 1.0f, 0), Upgrade::EXTRA_DAMAGE, 10);
-	m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
-	m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);
 
-	m_scene.addObject(m_upgradeHandler->getSpawn(0));
-	m_scene.addObject(m_upgradeHandler->getSpawn(1));
-	m_scene.addObject(m_upgradeHandler->getSpawn(2));
-	m_scene.addObject(m_upgradeHandler->getSpawn(3));
-	m_scene.addObject(m_upgradeHandler->getSpawn(4));
+	std::vector<Grid::Index> upgradeSpawnPoints = m_level->getGrid()->getUpgradeSpawnPointIndices();
+	int index = 0;
+	if (upgradeSpawnPoints.size() > 0) {
+		for (Grid::Index gIndex : upgradeSpawnPoints) {
+			m_upgradeHandler->addSpawn(Vector3((float(gIndex.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::RANDOM, 10);
+			m_scene.addObject(m_upgradeHandler->getSpawn(index));
+			index++;
+		}
+	}
+	else {
+		m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
+		m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
+		m_upgradeHandler->addSpawn(Vector3(7, 1.0f, 0), Upgrade::EXTRA_DAMAGE, 10);
+		m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
+		m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);
+
+		m_scene.addObject(m_upgradeHandler->getSpawn(0));
+		m_scene.addObject(m_upgradeHandler->getSpawn(1));
+		m_scene.addObject(m_upgradeHandler->getSpawn(2));
+		m_scene.addObject(m_upgradeHandler->getSpawn(3));
+		m_scene.addObject(m_upgradeHandler->getSpawn(4));
+	}
+
 
 
 	// Add the characters for rendering and respawn them

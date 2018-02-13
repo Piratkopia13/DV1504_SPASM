@@ -58,7 +58,7 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setControllerPort(1);
-		tempChar->setController(true);
+		tempChar->setController(false);
 		addPlayer(tempChar);
 	}
 #endif
