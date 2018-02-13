@@ -9,6 +9,7 @@
 class DeferredGeometryShader;
 class FbxModel;
 class ShaderSet;
+class SoundManager;
 
 class ResourceManager {
 public:
@@ -34,7 +35,6 @@ public:
 	bool hasFBXModel(const std::string& filename);
 
 	// ShaderSets
-
 	template <typename T>
 	void LoadShaderSet() {
 		// Insert and get the new ShaderSet
@@ -57,6 +57,9 @@ public:
 		return m_shaderSets.find(typeid(T).name()) != m_shaderSets.end();
 	}
 
+	// SoundManager
+	SoundManager* getSoundManager();
+
 private:
 	// DONT MOVE THE NEXT LINE, WILL CAUSE CRASHES
 	FBXParser m_fbxParser;
@@ -68,5 +71,7 @@ private:
 	std::map<std::string, std::unique_ptr<FbxModel>> m_fbxModels;
 	// ShaderSets mapped to their identifiers
 	std::map<std::string, std::unique_ptr<ShaderSet>> m_shaderSets;
+	// SoundManager containing all sounds
+	std::unique_ptr<SoundManager> m_soundManager;
 
 };

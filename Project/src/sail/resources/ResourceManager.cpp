@@ -1,8 +1,11 @@
 #include "ResourceManager.h"
 #include "../graphics/models/FbxModel.h"
 #include "../graphics/shader/deferred/DeferredGeometryShader.h"
+#include "audio/SoundManager.h"
 
-ResourceManager::ResourceManager() {}
+ResourceManager::ResourceManager() {
+	m_soundManager = std::make_unique<SoundManager>();
+}
 ResourceManager::~ResourceManager() {}
 
 //
@@ -72,4 +75,10 @@ FbxModel& ResourceManager::getFBXModel(const std::string& filename) {
 }
 bool ResourceManager::hasFBXModel(const std::string& filename) {
 	return m_fbxModels.find(filename) != m_fbxModels.end();
+}
+
+
+// Sound Manager
+SoundManager* ResourceManager::getSoundManager() {
+	return m_soundManager.get();
 }

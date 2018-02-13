@@ -98,6 +98,7 @@
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -188,12 +189,12 @@
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
-    <ClInclude Include="src\game\states\Settings.h" />
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -203,5 +204,9 @@
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sounds\Explo1.wav" />
+    <Media Include="res\sounds\NightAmbienceSimple_02.wav" />
   </ItemGroup>
 </Project>

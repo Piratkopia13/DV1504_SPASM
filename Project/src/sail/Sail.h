@@ -21,6 +21,7 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 #include <GamePad.h>
+#include <Audio.h>
 
 #include "Application.h"
 #include "Utils/Utils.h"
