@@ -122,23 +122,11 @@ void PlayerCameraController::updatePosition(float dt)
 	static float r = 0.04f;
 	static float r2 = 0.1f;
 	static float z = -1.6f;
-	static float t = 18.0f;
-	static float t2 = 19.0f;
+	static float t = 19.0f;
+	static float t2 = 20.0f;
 
 	//Calculate extra z
 	if (m_useExtraZ) {
-
-		//float horExtraZ = m_extraZ;
-		//float vertExtraZ = m_extraZ;
-
-		// TODO: Get MaxL for x and y, if x > y use horExtraZ otherwise vertExtraZ
-
-		//if (maxXDst > maxYDst)
-			//m_extraZ = (sin(r*Utils::clamp(maxXDst, 0.f, 60.f) + z) + 1) * t;
-		//else
-			//m_extraZ = (sin(r2*Utils::clamp(maxYDst, 0.f, 30.f) + z) + 1) * t2;
-
-
 		float addedDst = maxXDst + maxYDst;
 		float xFac, yFac;
 		if (addedDst != 0.f) {
@@ -156,11 +144,6 @@ void PlayerCameraController::updatePosition(float dt)
 	if (nr > 0) {
 		newTarget /= float(nr);
 		Vector3 moveVec = newTarget - m_target;
-		
-		//if (moveVec.LengthSquared() > 0.1f)
-		//{
-		//	moveVec.Normalize();
-		//}
 		m_target += moveVec * dt * m_followSpeed;
 	}
 
@@ -189,19 +172,12 @@ void PlayerCameraController::updatePosition(float dt)
 			float camZ = -getCameraPosition().z - 1;
 			Vector3 min = Vector3(camZ * tan(halfHFOVRad), camZ * tan( halfVFOVRad ), -100000000000.f);
 			Vector3 max = Vector3(m_mapSize.x - min.x, m_mapSize.y - min.y, 1000000000.f);
-			//if (min.x < max.x)
-				//m_target.x = Utils::clamp(m_target.x, min.x, max.x);
+
+			// Clamp values
 			m_target.x = (m_target.x < min.x) ? min.x : m_target.x;
 			m_target.y = (m_target.y < min.y) ? min.y : m_target.y;
-
-			//if (min.y < max.y)
-				//m_target.y = Utils::clamp(m_target.y, min.y, max.y);
-
-			//m_target.Clamp(min, max);
-
-			//Logger::log(std::to_string(m_extraZ));
-			//Logger::log(Utils::vec3ToStr(m_target));
-
+			m_target.x = (m_target.x > max.x) ? max.x : m_target.x;
+			m_target.y = (m_target.y > max.y) ? max.y : m_target.y;
 		}
 
 	}
