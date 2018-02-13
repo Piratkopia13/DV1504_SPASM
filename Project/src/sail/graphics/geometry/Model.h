@@ -15,10 +15,11 @@ class Model {
 public: 
 
 	struct Data {
-		Data() : numIndices(0), indices(nullptr), numVertices(0), normals(nullptr), positions(nullptr), colors(nullptr), texCoords(nullptr), tangents(nullptr), bitangents(nullptr) {};
+		Data() : numIndices(0), numInstances(0), indices(nullptr), numVertices(0), normals(nullptr), positions(nullptr), colors(nullptr), texCoords(nullptr), tangents(nullptr), bitangents(nullptr) {};
 		UINT numIndices;
 		ULONG* indices;
 		UINT numVertices;
+		UINT numInstances;
 		DirectX::SimpleMath::Vector3* positions;
 		DirectX::SimpleMath::Vector3* normals;
 		DirectX::SimpleMath::Vector4* colors;
@@ -42,8 +43,10 @@ public:
 
 	UINT getNumVertices() const;
 	UINT getNumIndices() const;
+	UINT getNumInstances() const;
 	ID3D11Buffer* const* getVertexBuffer() const;
 	ID3D11Buffer* getIndexBuffer() const;
+	ID3D11Buffer* getInstanceBuffer() const;
 	void setTransform(Transform* newTransform);
 	Transform& getTransform();
 	ShaderSet* getShader() const;
@@ -57,6 +60,7 @@ private:
 private:
 	ID3D11Buffer* m_vertexBuffer;
 	ID3D11Buffer* m_indexBuffer;
+	ID3D11Buffer* m_instanceBuffer;
 	ShaderSet* m_shader;
 
 	bool m_transformChanged;

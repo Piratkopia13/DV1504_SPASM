@@ -83,7 +83,7 @@ void DeferredPointLightShader::bind() {
 
 }
 
-void DeferredPointLightShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data) {
+void DeferredPointLightShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
 
 	Model::Data modelData = *(Model::Data*)data;
 

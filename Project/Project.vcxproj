@@ -175,6 +175,7 @@
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\ComputeShader.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\SphereModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
@@ -270,7 +272,7 @@
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\postprocess\BloomShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
     <ClInclude Include="src\sail\graphics\shader\ComputeShader.h" />
@@ -363,6 +365,12 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\instanced\ParticleShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\MaterialShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>

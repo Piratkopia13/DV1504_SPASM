@@ -7,6 +7,10 @@ Application* Application::m_instance = nullptr;
 Application::Application(int windowWidth, int windowHeight, char* windowTitle, HINSTANCE hInstance)
 : m_window(hInstance, windowWidth, windowHeight, windowTitle)
 {
+	// Set default team colors
+	m_gameVariables.teamOneColor = DirectX::SimpleMath::Vector4(1.0f, 0.5f, 0.0f, 1.0f);
+	m_gameVariables.teamTwoColor = DirectX::SimpleMath::Vector4(0.0f, 0.9f, 1.0f, 1.0f);
+
 	// Initalize the window
 	if (!m_window.initialize()) {
 		OutputDebugString(L"\nFailed to initialize Win32Window\n");

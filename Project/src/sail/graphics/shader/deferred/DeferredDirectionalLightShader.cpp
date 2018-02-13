@@ -155,7 +155,7 @@ void DeferredDirectionalLightShader::bind() {
 
 }
 
-void DeferredDirectionalLightShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data) {
+void DeferredDirectionalLightShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
 
 	Model::Data modelData = *(Model::Data*)data;
 

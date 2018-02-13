@@ -9,10 +9,10 @@
 #include "../../Lights.h"
 #include "../../geometry/Material.h"
 
-class DeferredPointLightShader : public ShaderSet {
+class ParticleShader : public ShaderSet {
 public:
-	DeferredPointLightShader();
-	~DeferredPointLightShader();
+	ParticleShader();
+	~ParticleShader();
 
 	void bind() override;
 
@@ -21,43 +21,43 @@ public:
 	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data);
 
 	virtual void updateCamera(Camera& cam);
-	
-	void setLight(const Lights::PointLight& pl);
 
 	struct Vertex {
 		DirectX::SimpleMath::Vector3 position;
 	};
 
 private:
-	void updateModelDataBuffer(const DirectX::SimpleMath::Matrix& wv, const DirectX::SimpleMath::Matrix& p) const;
+	void updateCameraBuffer(const DirectX::SimpleMath::Matrix& vp) const;
 
 private:
 	// Input element description
-	static D3D11_INPUT_ELEMENT_DESC IED[1];
+	static D3D11_INPUT_ELEMENT_DESC IED[5];
 	// Input layout
 	ID3D11InputLayout* m_inputLayout;
 
 	// Transform constant buffer structure
-	struct ModelDataBuffer {
-		DirectX::SimpleMath::Matrix mWV;
-		DirectX::SimpleMath::Matrix mP;
+	struct CameraBuffer {
+		DirectX::SimpleMath::Matrix mVP;
+		DirectX::SimpleMath::Vector3 camPos;
+		float padding;
 	};
-	struct LightDataBuffer {
-		DirectX::SimpleMath::Vector3 color;
-		float attCostant;
-		float attLinear;
-		float attQuadratic;
-		float padding[2];
-		DirectX::SimpleMath::Vector3 positionVS; // View space position of pointlight
-		float padding2;
+	struct InstanceData {
+		DirectX::SimpleMath::Vector3 position;
+		DirectX::SimpleMath::Vector4 color;
+		DirectX::SimpleMath::Vector2 textureOffset1;
+		DirectX::SimpleMath::Vector2 textureOffset2;
+		float blendFactor;
+		//float padding[2];
 	};
 	DirectX::SimpleMath::Matrix m_mV;
 	DirectX::SimpleMath::Matrix m_mP;
+	DirectX::SimpleMath::Vector3 m_camPos;
+
+	UINT m_maxParticles;
+	std::vector<InstanceData> m_instanceData;
 
 	// Components
-
-	std::unique_ptr<ShaderComponent::ConstantBuffer> m_modelDataBuffer;
-	std::unique_ptr<ShaderComponent::ConstantBuffer> m_lightDataBuffer;
+	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cameraDataBuffer;
 	std::unique_ptr<ShaderComponent::Sampler> m_sampler;
 
 };

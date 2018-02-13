@@ -1,6 +1,6 @@
 #include "GameState.h"
 #include "../objects/Block.h"
-
+#include "../../sail/graphics/geometry/factory/InstancedTestModel.h"
 #include "../gamemodes/payload/PayloadGamemode.h"
 
 using namespace DirectX;
@@ -122,6 +122,20 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
+
+
+	// Instance test stuff
+	m_instancedModel = ModelFactory::InstancedTestModel::Create(10000);
+	m_instancedModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<ParticleShader>());
+
+	m_notinstancedModel = ModelFactory::PlaneModel::Create(Vector2(0.5f, 0.5f));
+	m_notinstancedModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleColorShader>());
+
+	for (int i = 0; i < 10000; i++) {
+		m_notinstancedBlocks.push_back(std::make_unique<Block>(m_notinstancedModel.get()));
+		m_notinstancedBlocks.back()->getTransform().setTranslation(Vector3(Utils::rnd() * 5, Utils::rnd() * 5, Utils::rnd() * 5));
+	}
+
 }
 
 GameState::~GameState() {
@@ -229,6 +243,8 @@ bool GameState::update(float dt) {
 
 	// Update camera in shaders
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
 
 	return true;
 }
@@ -240,6 +256,10 @@ bool GameState::render(float dt) {
 
 	// Draw the scene using deferred rendering
 	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get());
+
+	m_instancedModel->draw();
+	/*for (auto& b : m_notinstancedBlocks)
+		b->draw();*/
 
 	// Draw HUD
 	m_scene.drawHUD();
