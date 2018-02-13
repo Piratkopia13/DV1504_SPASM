@@ -69,12 +69,12 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		Vector3 tempPos = getTransform().getTranslation();
 		Matrix tempMatrix;
 		
-		//translation away from origo of the weapon
+		//translation away from origo of the weapon (Z should be -0.3 and 0.3 but that does not hit the boundingbox atm
 		if (direction.x >= 0.0f) {
-			tempMatrix *= Matrix::CreateTranslation(Vector3(0.4f, -0.36f, -0.3f));
+			tempMatrix *= Matrix::CreateTranslation(Vector3(0.4f, -0.36f, -0.19f));
 		}
 		else {
-			tempMatrix *= Matrix::CreateTranslation(Vector3(-0.4f, -0.36f, 0.3f));
+			tempMatrix *= Matrix::CreateTranslation(Vector3(-0.4f, -0.36f, 0.19f));
 		}
 
 		//rotation around the origo of the weapon

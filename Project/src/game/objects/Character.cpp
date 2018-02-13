@@ -262,7 +262,9 @@ void Character::draw() {
 	m_head->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	model->draw();
+	m_leftArm->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	m_leftArm->draw();
+	m_head->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
 	m_head->draw();
 	if(m_weapon)
 		m_weapon->draw();
