@@ -36,11 +36,9 @@ void Hook::triggerRelease() {
 }
 
 void Hook::draw() {
-	if (m_triggerHeld) {
-		model->setTransform(&getTransform());
-		model->getMaterial()->setColor(this->lightColor);
-		model->draw();
-	}
+	model->setTransform(&getTransform());
+	model->getMaterial()->setColor(this->lightColor);
+	model->draw();
 }
 
 DirectX::SimpleMath::Vector3 Hook::getDirection() {

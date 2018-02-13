@@ -33,6 +33,8 @@ private:
 
 	Upgrade * m_upgrade;
 
+	Model* m_laser;
+
 private:
 
 
