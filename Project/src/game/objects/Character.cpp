@@ -445,9 +445,9 @@ void Character::fire()
 }
 
 void Character::hook() {
-	m_hook->triggerPull(m_weapon->getTransform().getTranslation(), m_input.aim);
+	m_hook->triggerPull(getTransform().getTranslation(), m_input.aim);
 	m_movement.hooked = true;
-	m_movement.hookLength = m_hook->getLength(m_weapon->getTransform().getTranslation());
+	m_movement.hookLength = m_hook->getLength(getTransform().getTranslation());
 }
 
 void Character::stopHook() {
