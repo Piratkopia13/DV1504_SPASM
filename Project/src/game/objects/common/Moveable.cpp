@@ -11,8 +11,8 @@ Moveable::Moveable() {
 Moveable::~Moveable() {
 }
 
-void Moveable::move(const float dt) {
-	move(m_velocity * dt);
+void Moveable::move(const float dt, bool includeBoundingBoxRotation) {
+	move(m_velocity * dt, includeBoundingBoxRotation);
 }
 void Moveable::updateVelocity(const float dt) {
 	if (!m_grounded)
@@ -21,9 +21,9 @@ void Moveable::updateVelocity(const float dt) {
 		m_velocity += m_acceleration * dt;
 }
 
-void Moveable::move(DirectX::SimpleMath::Vector3& toMove) {
+void Moveable::move(DirectX::SimpleMath::Vector3& toMove, bool includeBoundingBoxRotation) {
 	this->getTransform().translate(toMove);
-	this->updateBoundingBox();
+	this->updateBoundingBox(includeBoundingBoxRotation);
 }
 
 void Moveable::setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity) {

@@ -11,7 +11,7 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
-	m_movement = { 0.f, 0.f, 10.f, 0.f };
+	m_movement = { 0.f, 0.f, 10.f, 0.f, 0.f, 1.0f};
 	m_playerHealth.setMax(100.f);
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
@@ -292,30 +292,54 @@ void Character::update(float dt) {
 		m_movement.inCover = false;
 	}
 
-	getTransform().setRotations(Vector3(0.0f, std::signbit(m_input.aim.x) * -2.0f * 1.57f + 1.57f, 0.0f));
+	float tempRotation = getTransform().getRotations().y;
+	if (std::signbit(m_input.aim.x) && tempRotation > -1.57f) {
+		m_movement.turning = true;
+		m_movement.xDirection = -1.0f;
+		getTransform().rotateAroundY(max(-15.7f * dt, -1.57f));
+	}
+	else if (!std::signbit(m_input.aim.x) && tempRotation < 1.57f) {
+		m_movement.turning = true;
+		m_movement.xDirection = 1.0f;
+		getTransform().rotateAroundY(min(15.7f * dt, 1.57f));
+	}
+	else {
+		m_movement.turning = false;
+	}
+
 	Moveable::updateVelocity(dt);
 	collHandler->resolveLevelCollisionWith(this, dt);
-	Moveable::move(dt);
+	Moveable::move(dt, false);
 	collHandler->resolveUpgradeCollisionWith(this);
 }
 
 
 void Character::draw() {
-	model->setTransform(&getTransform());
-	Transform tempTransform = getTransform();
-	m_leftArm->setTransform(&tempTransform);
-
+	Transform armTransform;
+	Transform bodyTransform;
 	if (m_movement.hooked == true && m_hook) {
-		m_leftArm->getTransform().rotateAroundZ(sinDegFromVec(m_hook->getDirection()) + 1.57f);
+		armTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_hook->getDirection()) + 1.57f));
+		bodyTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_movement.xDirection * m_hook->getDirection())) * 0.3f);
+		//bodyTransform.rotateAroundX(0.0f);
+		armTransform.setMatrix(armTransform.getMatrix() * getTransform().getMatrix());
+		bodyTransform.setMatrix(bodyTransform.getMatrix() * getTransform().getMatrix());
 	}
+	else {
+		armTransform = getTransform();
+		bodyTransform = getTransform();
+	}
+	model->setTransform(&bodyTransform);
+	m_leftArm->setTransform(&armTransform);
+	m_head->setTransform(&bodyTransform);
 
-	m_head->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
-	model->draw();
 	m_leftArm->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
-	m_leftArm->draw();
 	m_head->getMaterial()->setColor(lightColor*m_playerHealth.healthPercent);
+
+	model->draw();
+	m_leftArm->draw();
 	m_head->draw();
+
 	if (m_weapon) {
 		m_weapon->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_weapon->draw();

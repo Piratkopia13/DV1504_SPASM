@@ -16,7 +16,7 @@ public:
 	virtual ~Object();
 
 	void setPosition(const DirectX::SimpleMath::Vector3 &newPosition);
-	void updateBoundingBox();
+	void updateBoundingBox(bool includeBoundingBoxRotation = true);
 	void setModel(Model* model);
 	void setLightColor(DirectX::SimpleMath::Vector4 color);
 	Model* getModel();

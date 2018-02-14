@@ -58,6 +58,8 @@ private:
 		float hookLength;
 		float speed;
 		bool inCover;
+		bool turning;
+		float xDirection;
 	};
 	struct Health {
 		float current;

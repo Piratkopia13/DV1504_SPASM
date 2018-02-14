@@ -8,9 +8,9 @@ public:
 	Moveable();
 	virtual ~Moveable();
 
-	void move(const float dt);
+	void move(const float dt, bool includeBoundingBoxRotation = true);
 	void updateVelocity(const float dt);
-	void move(DirectX::SimpleMath::Vector3& toMove);
+	void move(DirectX::SimpleMath::Vector3& toMove, bool includeBoundingBoxRotation = true);
 	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
 	void setGravScale(float scale);
 
