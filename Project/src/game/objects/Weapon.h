@@ -7,17 +7,19 @@
 class Weapon : public Moveable {
 public:
 	Weapon();
-	Weapon(Model *drawModel, ProjectileHandler* projHandler, int team);
+	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team);
 	virtual ~Weapon();
 
 	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
 	void setHeld(bool held);
 	const bool getHeld() const;
+	DirectX::SimpleMath::Vector3 getNozzlePos() const;
 
 	void addUpgrade(const Upgrade& upgrade);
 	void triggerPull();
 	void triggerRelease();
 	void fire(const DirectX::SimpleMath::Vector3& direction);
+
 
 	ProjectileHandler& getProjectileHandler();
 
@@ -30,10 +32,18 @@ private:
 
 	bool m_triggerHeld;
 	float m_timeSinceFire;
+	
+	DirectX::SimpleMath::Vector3 m_nozzlePos;
 
 	Upgrade * m_upgrade;
 
-private:
+	struct Laser {
+		Model* laserModel;
+		Model* dotModel;
+		Transform laserTransform;
+		Transform dotTransform;
+	};
 
+	Laser m_laser;
 
 };

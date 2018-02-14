@@ -188,7 +188,6 @@
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
-    <ClInclude Include="src\game\states\Settings.h" />
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
@@ -203,5 +202,6 @@
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
+    <None Include="res\levels\symmetric.level" />
   </ItemGroup>
 </Project>
