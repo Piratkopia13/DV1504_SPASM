@@ -12,11 +12,14 @@ Weapon::Weapon() {
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *armModel, Model* laserModel, ProjectileHandler* projHandler, int team) 
+Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team) 
 	: Weapon()
 {
 	model = armModel;
-	m_laser = laserModel;
+
+	m_laser.laserModel = laserModel;
+	m_laser.dotModel = dotModel;
+	m_laser.dotTransform.setScale(0.1f);
 
 	m_projectileHandler = projHandler;
 	m_team = team;
@@ -49,6 +52,10 @@ void Weapon::triggerRelease()
 {
 	m_triggerHeld = false;
 	m_timeSinceFire = 0;
+}
+
+DirectX::SimpleMath::Vector3 Weapon::getNozzlePos() const {
+	return m_nozzlePos;
 }
 
 void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
@@ -175,23 +182,26 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
 
 	float length = (CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) - m_nozzlePos).Length();
+	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
+	m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
+	m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
 
-	m_laser->getTransform().setTranslation(m_nozzlePos + direction * (min(length, 5.f)/2.f));
-	m_laser->getTransform().setNonUniScale(min(50.f, length*10), 1.f, 1.f);
-
-	m_laser->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
+	m_laser.dotTransform.setTranslation(CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
 
 
 	//move(dt);
 }
 
 void Weapon::draw() {
-	if (this->getTransform().getTranslation().z < 0.5f){
-	m_laser->setTransform(&m_laser->getTransform());
-	m_laser->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
-	m_laser->draw();
-	}
 	model->setTransform(&getTransform());
+	if (this->getTransform().getTranslation().z < 0.5f) {
+		m_laser.laserModel->setTransform(&m_laser.laserTransform);
+		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+		m_laser.dotModel->setTransform(&m_laser.dotTransform);
+		m_laser.dotModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+		m_laser.laserModel->draw();
+		m_laser.dotModel->draw();
+	}
 	model->getMaterial()->setColor(lightColor);
 	model->draw();
 }
