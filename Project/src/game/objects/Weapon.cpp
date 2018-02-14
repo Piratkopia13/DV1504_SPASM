@@ -45,12 +45,12 @@ void Weapon::triggerPull()
 void Weapon::triggerRelease()
 {
 	m_triggerHeld = false;
-	m_timeSinceFire = 0;
+	//m_timeSinceFire = 0;
 }
 
 void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
-	static float baseSpeed = 25.0f;
+	static float baseSpeed = 20.0f;
 	static float baseDamage = 10.0f;
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2;
@@ -153,21 +153,19 @@ ProjectileHandler& Weapon::getProjectileHandler() {
 void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 
 	m_upgrade->update(dt);
-	static float baseAuto = 1.0f;
+
+	static float baseAuto = 0.3f;
 
 	if (m_triggerHeld) {
 
-		if (m_timeSinceFire == 0.0 && !m_upgrade->autoActive()) {
-			fire(direction);
-		}
-		else if (m_upgrade->autoActive() && (m_timeSinceFire >= baseAuto * m_upgrade->autoRate() || m_timeSinceFire == 0)) {
+		if (m_timeSinceFire >= baseAuto * m_upgrade->autoRate() || m_timeSinceFire == 0) {
 			fire(direction);
 
 			m_timeSinceFire = 0.0;
 		}
-		m_timeSinceFire += dt;
+		
 	}
-
+	m_timeSinceFire += dt;
 
 
 	//move(dt);
