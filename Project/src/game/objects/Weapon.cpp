@@ -195,8 +195,11 @@ void Weapon::draw() {
 	if (this->getTransform().getTranslation().z < 0.5f) {
 		m_laser.laserModel->setTransform(&m_laser.laserTransform);
 		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+
+		m_laser.dotModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(4.0f, 0.f, 0.f, 1.f));
+
 		m_laser.dotModel->setTransform(&m_laser.dotTransform);
-		m_laser.dotModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+
 		m_laser.laserModel->draw();
 		m_laser.dotModel->draw();
 	}
