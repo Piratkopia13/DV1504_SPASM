@@ -166,6 +166,8 @@
     <ClCompile Include="src\sail\graphics\geometry\spatial\Quadtree.cpp" />
     <ClCompile Include="src\sail\graphics\Lights.cpp" />
     <ClCompile Include="src\sail\graphics\models\FbxModel.cpp" />
+    <ClCompile Include="src\sail\graphics\Particle.cpp" />
+    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
@@ -264,6 +266,8 @@
     <ClInclude Include="src\sail\graphics\models\FbxModel.h" />
     <ClInclude Include="src\sail\graphics\camera\OrthographicCamera.h" />
     <ClInclude Include="src\sail\graphics\camera\PerspectiveCamera.h" />
+    <ClInclude Include="src\sail\graphics\Particle.h" />
+    <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
@@ -368,9 +372,9 @@
     </FxCompile>
     <FxCompile Include="res\shaders\instanced\ParticleShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\MaterialShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>

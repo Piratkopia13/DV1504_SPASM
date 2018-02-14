@@ -44,7 +44,8 @@ private:
 	std::unique_ptr<Block> m_infRight;
 
 	// test stuff
-	std::unique_ptr<Model> m_instancedModel;
+	ParticleEmitter m_particleEmitter;
+	//std::unique_ptr<Model> m_instancedModel;
 	std::unique_ptr<Model> m_notinstancedModel;
 	std::vector<std::unique_ptr<Block>> m_notinstancedBlocks;
 

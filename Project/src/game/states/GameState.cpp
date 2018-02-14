@@ -15,7 +15,9 @@ GameState::GameState(StateStack& stack)
 , m_debugCamText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
+, m_particleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), Vector3(5.f, -2.f, 0.5f), 500.f, 10000, 1.f, 0.5f, Vector4::One, 1.f, &m_cam, false)
 {
+
 	// Get the Application instance
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
@@ -23,7 +25,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("the_void.level");
+	m_level = std::make_unique<Level>("speedrun.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	// **Upgrade to dynamic and only PayloadGamemode later**
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
@@ -125,8 +127,8 @@ GameState::GameState(StateStack& stack)
 
 
 	// Instance test stuff
-	m_instancedModel = ModelFactory::InstancedTestModel::Create(10000);
-	m_instancedModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<ParticleShader>());
+	//m_instancedModel = ModelFactory::InstancedTestModel::Create(10000);
+	//m_instancedModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<ParticleShader>());
 
 	m_notinstancedModel = ModelFactory::PlaneModel::Create(Vector2(0.5f, 0.5f));
 	m_notinstancedModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleColorShader>());
@@ -246,6 +248,11 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
 
+	// Update particles
+	//if (m_app->getInput().getKeyboardState().B)
+	m_particleEmitter.updateEmitPosition(m_characterHandler->getCharacter(0)->getTransform().getTranslation() - Vector3(0.f, -0.3f, 0.f));
+	m_particleEmitter.update(dt);
+
 	return true;
 }
 // Renders the state
@@ -257,7 +264,12 @@ bool GameState::render(float dt) {
 	// Draw the scene using deferred rendering
 	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get());
 
-	m_instancedModel->draw();
+	//m_app->getDXManager()->disableDepthBuffer();
+	m_app->getDXManager()->enableAlphaBlending();
+	m_particleEmitter.draw();
+	//m_app->getDXManager()->disableAlphaBlending();
+	//m_app->getDXManager()->enableDepthBuffer();
+	//m_app->getDXManager()->enableBackFaceCulling();
 	/*for (auto& b : m_notinstancedBlocks)
 		b->draw();*/
 

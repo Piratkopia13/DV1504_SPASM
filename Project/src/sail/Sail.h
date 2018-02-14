@@ -43,5 +43,6 @@
 #include "graphics/RenderableTexture.h"
 #include "graphics/Skybox.h"
 #include "graphics/renderer/DeferredRenderer.h"
+#include "graphics/ParticleEmitter.h"
 #include "resources/DXCubeMap.h"
 #include "states/StateStack.h"

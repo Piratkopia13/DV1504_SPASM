@@ -11,20 +11,31 @@
 
 class ParticleShader : public ShaderSet {
 public:
+	struct Vertex {
+		DirectX::SimpleMath::Vector3 position;
+	};
+
+	struct InstanceData {
+		DirectX::SimpleMath::Vector3 position;
+		DirectX::SimpleMath::Vector4 color;
+		DirectX::SimpleMath::Vector2 textureOffset1;
+		DirectX::SimpleMath::Vector2 textureOffset2;
+		float blendFactor;
+		float padding[2];
+	};
+public:
 	ParticleShader();
 	~ParticleShader();
 
 	void bind() override;
 
-	virtual void draw(Model& model, bool bindFirst = true);
+	void draw(Model& model, bool bindFirst = true, UINT instanceCount = -1);
 
 	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data);
 
 	virtual void updateCamera(Camera& cam);
 
-	struct Vertex {
-		DirectX::SimpleMath::Vector3 position;
-	};
+	void updateInstanceData(const void* instanceData, UINT bufferSize, ID3D11Buffer* instanceBuffer);
 
 private:
 	void updateCameraBuffer(const DirectX::SimpleMath::Matrix& vp) const;
@@ -41,20 +52,12 @@ private:
 		DirectX::SimpleMath::Vector3 camPos;
 		float padding;
 	};
-	struct InstanceData {
-		DirectX::SimpleMath::Vector3 position;
-		DirectX::SimpleMath::Vector4 color;
-		DirectX::SimpleMath::Vector2 textureOffset1;
-		DirectX::SimpleMath::Vector2 textureOffset2;
-		float blendFactor;
-		//float padding[2];
-	};
 	DirectX::SimpleMath::Matrix m_mV;
 	DirectX::SimpleMath::Matrix m_mP;
 	DirectX::SimpleMath::Vector3 m_camPos;
 
 	UINT m_maxParticles;
-	std::vector<InstanceData> m_instanceData;
+	//std::vector<InstanceData> m_instanceData;
 
 	// Components
 	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cameraDataBuffer;

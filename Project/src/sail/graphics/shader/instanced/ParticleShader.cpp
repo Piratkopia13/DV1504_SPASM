@@ -6,9 +6,9 @@ using namespace SimpleMath;
 D3D11_INPUT_ELEMENT_DESC ParticleShader::IED[5] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-	/*{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "TEXCOORD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 	{ "TEXCOORD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-	{ "TEXCOORD", 3, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },*/
+	{ "TEXCOORD", 3, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 };
 
 ParticleShader::ParticleShader()
@@ -20,7 +20,7 @@ ParticleShader::ParticleShader()
 	m_cameraDataBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&defaultCamData, sizeof(CameraBuffer)));
 
 	// Set up sampler for point sampling
-	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_POINT);
+	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
 	// Compile VS
 	auto vsBlob = compileShader(L"instanced/ParticleShader.hlsl", "VSMain", "vs_5_0");
@@ -135,7 +135,7 @@ void ParticleShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D
 	ibd.MiscFlags = 0;
 	ibd.StructureByteStride = 0;
 
-	for (UINT i = 0; i < modelData.numInstances; i++) {
+	/*for (UINT i = 0; i < modelData.numInstances; i++) {
 		InstanceData data;
 		data.position = Vector3(Utils::rnd() * 5, Utils::rnd() * 5, Utils::rnd() * 5);
 		data.color = Utils::getRandomColor();
@@ -143,18 +143,19 @@ void ParticleShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D
 		data.textureOffset1 = Vector2(0.f);
 		data.textureOffset2 = Vector2(0.f);
 		m_instanceData.push_back(data);
-	}
+	}*/
 
-	D3D11_SUBRESOURCE_DATA instanceInitData;
+	/*D3D11_SUBRESOURCE_DATA instanceInitData;
 	ZeroMemory(&instanceInitData, sizeof(instanceInitData));
-	instanceInitData.pSysMem = &m_instanceData[0];
+	instanceInitData.pSysMem = &m_instanceData[0];*/
 
 	// Create the instance buffer
-	ThrowIfFailed(Application::getInstance()->getDXManager()->getDevice()->CreateBuffer(&ibd, &instanceInitData, instanceBuffer));
+	//ThrowIfFailed(Application::getInstance()->getDXManager()->getDevice()->CreateBuffer(&ibd, &instanceInitData, instanceBuffer));
+	ThrowIfFailed(Application::getInstance()->getDXManager()->getDevice()->CreateBuffer(&ibd, nullptr, instanceBuffer));
 
 }
 
-void ParticleShader::draw(Model& model, bool bindFirst) {
+void ParticleShader::draw(Model& model, bool bindFirst, UINT instanceCount) {
 	if (bindFirst)
 		bind();
 
@@ -183,20 +184,32 @@ void ParticleShader::draw(Model& model, bool bindFirst) {
 	// Set topology
 	devCon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 
+	UINT instances = (instanceCount == -1) ? model.getNumInstances() : instanceCount;
+
 	// Draw
 	if (iBuffer)
-		devCon->DrawIndexedInstanced(model.getNumIndices(), model.getNumInstances(), 0, 0, 0);
+		devCon->DrawIndexedInstanced(model.getNumIndices(), instances, 0, 0, 0);
 	else
-		devCon->DrawInstanced(model.getNumVertices(), model.getNumInstances(), 0, 0);
+		devCon->DrawInstanced(model.getNumVertices(), instances, 0, 0);
 
 	ID3D11ShaderResourceView* nullSRV[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 5, nullSRV);
+	Application::getInstance()->getDXManager()->getDeviceContext()->GSSetShader(nullptr, 0, 0);
 }
 
 void ParticleShader::updateCamera(Camera& cam) {
 	m_mV = cam.getViewMatrix();
 	m_mP = cam.getProjMatrix();
 	m_camPos = cam.getPosition();
+}
+
+void ParticleShader::updateInstanceData(const void* instanceData, UINT bufferSize, ID3D11Buffer* instanceBuffer) {
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	Application::getInstance()->getDXManager()->getDeviceContext()->Map(instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	std::memcpy(mappedResource.pData, instanceData, bufferSize);
+	Application::getInstance()->getDXManager()->getDeviceContext()->Unmap(instanceBuffer, 0);
+
 }
 
 void ParticleShader::updateCameraBuffer(const DirectX::SimpleMath::Matrix& vp) const {

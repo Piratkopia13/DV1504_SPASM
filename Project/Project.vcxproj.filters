@@ -100,6 +100,8 @@
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
     <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
+    <ClCompile Include="src\sail\graphics\Particle.cpp" />
+    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -196,6 +198,8 @@
     <ClInclude Include="src\sail\Input.h" />
     <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
+    <ClInclude Include="src\sail\graphics\Particle.h" />
+    <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
