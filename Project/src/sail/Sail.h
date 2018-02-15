@@ -43,4 +43,5 @@
 #include "graphics/Skybox.h"
 #include "graphics/renderer/DeferredRenderer.h"
 #include "resources/DXCubeMap.h"
+#include "resources/audio/SoundManager.h"
 #include "states/StateStack.h"
