@@ -15,7 +15,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_scoreToWin = 100.f;
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
-	m_currentActivePoint = -1;
 
 	m_teamOneColor = Application::getInstance()->getGameSettings().teamOneColor;
 	m_teamTwoColor = Application::getInstance()->getGameSettings().teamTwoColor;
@@ -32,8 +31,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 		m_controlNodes.push_back(std::make_unique<ControlNode>(controlpointModel));
 		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
 	}
-
-	replacePoint();
 }
 
 PayloadGamemode::~PayloadGamemode() {}
@@ -110,9 +107,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		//	Gamemode::addScore(1, m_controlNodes[index]->getTeam());
 		//}
 		// Points every update
-		if (m_controlNodes[index]->updateNodeTimer(dt)) {
-			replacePoint();
-		}
+		m_controlNodes[index]->updateNodeTimer(dt);
 		int owningTeam = m_controlNodes[index]->getTeam();
 		if (owningTeam != 0) {
 			Gamemode::addScore(dt, owningTeam);
@@ -123,9 +118,8 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 }
 
 void PayloadGamemode::draw() {
-	//for (const auto& cn : m_controlNodes)
-	//	cn->draw();
-	m_controlNodes[m_currentActivePoint]->draw();
+	for (const auto& cn : m_controlNodes)
+		cn->draw();
 }
 
 void PayloadGamemode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
@@ -158,15 +152,4 @@ int PayloadGamemode::checkWin() {
 	}*/
 
 	return m_teamWin;
-}
-
-void PayloadGamemode::replacePoint() {
-	int newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
-	while (newIndex == m_currentActivePoint) {
-		newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
-	}
-	//FIX REST
-	m_controlNodes[m_currentActivePoint]->rensa();
-
-	m_currentActivePoint = newIndex;
 }

@@ -20,9 +20,6 @@ public:
 	virtual int checkWin();
 
 private:
-	void replacePoint();
-
-private:
 	std::vector<std::unique_ptr<ControlNode>> m_controlNodes;
 
 	std::vector<Grid::Index> m_indices;
@@ -30,7 +27,6 @@ private:
 	int m_numOfNodes;
 	int m_radius;
 	int m_teamWin;
-	int m_currentActivePoint;
 
 	float m_scoreToWin;
 
