@@ -20,6 +20,7 @@
 
 class Gamemode;
 class ProjectileHandler;
+class ParticleHandler;
 class Object;
 class Level;
 class Scene {
@@ -40,7 +41,7 @@ public:
 	void addSkybox(const std::wstring& filename);
 
 	// Draws the scene
-	void draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode);
+	void draw(float dt, Camera& cam, Level* level = nullptr, ProjectileHandler* projectiles = nullptr, Gamemode* gamemode = nullptr, ParticleHandler* particles = nullptr);
 	// Draws the HUD
 	void drawHUD();
 

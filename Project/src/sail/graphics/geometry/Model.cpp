@@ -10,6 +10,7 @@ Model::Model(Data& buildData)
 	: m_data(buildData)
 	, m_vertexBuffer(nullptr)
 	, m_indexBuffer(nullptr)
+	, m_instanceBuffer(nullptr)
 	, m_aabb(Vector3::Zero, Vector3(.2f, .2f, .2f))
 {
 	m_material = new Material();
@@ -28,6 +29,7 @@ Model::Model()
 Model::~Model() {
 	Memory::safeRelease(m_vertexBuffer);
 	Memory::safeRelease(m_indexBuffer);
+	Memory::safeRelease(m_instanceBuffer);
 
 	Memory::safeDeleteArr(m_data.indices);
 	Memory::safeDeleteArr(m_data.positions);
@@ -52,7 +54,7 @@ const Model::Data& Model::getBuildData() const {
 
 void Model::buildBufferForShader(ShaderSet* shader) {
 
-	shader->createBufferFromModelData(&m_vertexBuffer, &m_indexBuffer, &m_data);
+	shader->createBufferFromModelData(&m_vertexBuffer, &m_indexBuffer, &m_instanceBuffer, &m_data);
 	m_shader = shader;
 	calculateAABB();
 
@@ -79,11 +81,18 @@ UINT Model::getNumVertices() const {
 UINT Model::getNumIndices() const {
 	return m_data.numIndices;
 }
+UINT Model::getNumInstances() const {
+	return m_data.numInstances;
+}
 ID3D11Buffer* const* Model::getVertexBuffer() const {
 	return const_cast<ID3D11Buffer**>(&m_vertexBuffer);
 }
 ID3D11Buffer* Model::getIndexBuffer() const {
 	return const_cast<ID3D11Buffer*>(m_indexBuffer);
+}
+
+ID3D11Buffer* Model::getInstanceBuffer() const {
+	return const_cast<ID3D11Buffer*>(m_instanceBuffer);
 }
 
 void Model::setTransform(Transform* newTransform) {

@@ -2,8 +2,9 @@
 
 using namespace DirectX::SimpleMath;
 
-CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
+CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileHandler* projHandler)
 	: m_respawnTime(1)
+	, m_particleHandler(particleHandler)
 {
 
 	Application* app = Application::getInstance();
@@ -43,7 +44,7 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, 1);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
-		tempChar->setLightColor(Vector4(0.2f, 0.8f, 0.8f, 1.f));
+		tempChar->setLightColor(settings->teamOneColor);
 		tempChar->setTeam(1);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
@@ -55,7 +56,7 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, 2);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
-		tempChar->setLightColor(Vector4(0.8f, 0.2f, 0.8f, 1.f));
+		tempChar->setLightColor(settings->teamTwoColor);
 		tempChar->setTeam(2);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
@@ -76,9 +77,10 @@ CharacterHandler::~CharacterHandler() {
 	}
 }
 
-void CharacterHandler::addPlayer(Character * player) {
+void CharacterHandler::addPlayer(Character* player) {
 	m_characters.push_back(player);
 	m_respawnTimers.push_back(0);
+	m_particleHandler->addEmitter(player->m_thrusterEmitter);
 }
 
 void CharacterHandler::addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position) {

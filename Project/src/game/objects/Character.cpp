@@ -18,6 +18,8 @@ Character::Character()
 	m_vibration[0] = { 0, 0};
 
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
+
+	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
 	setLightColor(Vector4(1, 1, 1, 1));
 }
 
@@ -192,8 +194,13 @@ void Character::update(float dt) {
 			m_vibration[0].currentStrength,
 			m_vibration[1].currentStrength);
 
-	if (!m_playerHealth.alive)
+
+	if (!m_playerHealth.alive) {
+		m_thrusterEmitter->updateSpawnsPerSecond(0.f);
 		return;
+	} else {
+		m_thrusterEmitter->updateSpawnsPerSecond(500.f);
+	}
 
 	if (m_playerHealth.current < m_playerHealth.max) {
 		m_playerHealth.current += m_playerHealth.regen * dt;
@@ -313,6 +320,16 @@ void Character::update(float dt) {
 	collHandler->resolveLevelCollisionWith(this, dt);
 	Moveable::move(dt, false);
 	collHandler->resolveUpgradeCollisionWith(this);
+
+	// Update thruster particle settings
+	m_thrusterEmitter->updateEmitPosition(getTransform().getTranslation() + Vector3(0.f, 0.3f, 0.f));
+	if (grounded()) {
+		m_thrusterEmitter->updateVelocityVariety(Vector3(10.f, 0.f, 0.5f));
+		m_thrusterEmitter->updateGravityScale(0.5f);
+	} else {
+		m_thrusterEmitter->updateVelocityVariety(Vector3(5.f, -2.f, 0.5f));
+		m_thrusterEmitter->updateGravityScale(1.f);
+	}
 }
 
 
@@ -428,6 +445,11 @@ void Character::dead() {
 	m_playerHealth.updatePercent();
 	m_playerHealth.alive = false;
 	m_weapon->setHeld(false);
+}
+
+void Character::setLightColor(const DirectX::SimpleMath::Vector4& color) {
+	Object::setLightColor(color);
+	m_thrusterEmitter->updateColor(color);
 }
 
 void Character::jump() {

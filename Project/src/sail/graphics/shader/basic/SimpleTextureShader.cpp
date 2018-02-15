@@ -64,7 +64,7 @@ void SimpleTextureShader::bind() {
 
 }
 
-void SimpleTextureShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data) {
+void SimpleTextureShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
 
 	Model::Data modelData = *(Model::Data*)data;
 

@@ -1,6 +1,6 @@
 #include "GameState.h"
 #include "../objects/Block.h"
-
+#include "../../sail/graphics/geometry/factory/InstancedTestModel.h"
 #include "../gamemodes/payload/PayloadGamemode.h"
 
 using namespace DirectX;
@@ -16,6 +16,7 @@ GameState::GameState(StateStack& stack)
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
+
 	// Get the Application instance
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
@@ -31,10 +32,12 @@ GameState::GameState(StateStack& stack)
 		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
 	}
 
+	// Set up handlers
 	m_projHandler = std::make_unique<ProjectileHandler>();
-	m_characterHandler = std::make_unique<CharacterHandler>(m_projHandler.get());
+	m_particleHandler = std::make_unique<ParticleHandler>(&m_cam);
+	m_characterHandler = std::make_unique<CharacterHandler>(m_particleHandler.get(), m_projHandler.get());
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
-	m_collisionHandler = std::make_unique <CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
+	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
 
 
 	// Set up camera with controllers
@@ -144,6 +147,7 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
+
 }
 
 GameState::~GameState() {
@@ -220,7 +224,7 @@ bool GameState::update(float dt) {
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
 	auto& camPos = m_cam.getPosition();
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
+	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
 
 	m_characterHandler->update(dt);
 
@@ -251,9 +255,15 @@ bool GameState::update(float dt) {
 
 	// Update camera in shaders
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
+
+	// Update particles
+	m_particleHandler->update(dt);
 
 	return true;
 }
+
 // Renders the state
 bool GameState::render(float dt) {
 
@@ -261,7 +271,9 @@ bool GameState::render(float dt) {
 	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
 
 	// Draw the scene using deferred rendering
-	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get());
+	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
+
+	//m_particleHandler->draw();
 
 	// Draw HUD
 	m_scene.drawHUD();

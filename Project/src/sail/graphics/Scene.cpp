@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "../../game/objects/common/Object.h"
 #include "../../game/ProjectileHandler.h"
+#include "../../game/ParticleHandler.h"
 #include "../../game/level/Level.h"
 #include "../../game/gamemodes/Gamemode.h"
 #include "../../game/objects/Block.h"
@@ -48,7 +49,7 @@ void Scene::resize(int width, int height) {
 }
 
 // Draws the scene
-void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode) {
+void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* projectiles, Gamemode* gamemode, ParticleHandler* particles) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
@@ -112,6 +113,9 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	}
 	for (Object* m : m_objects)
 		m->draw();
+	if (particles) {
+		particles->draw();
+	}
 	//double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
@@ -127,7 +131,6 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	// Do the light pass (using additive blending)
 	m_deferredRenderer.doLightPass(m_lights, cam, (m_doShadows) ? &m_dirLightShadowMap : nullptr);
 
-
 	if (m_doPostProcessing) {
 		// Do post processing
 		//m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
@@ -137,7 +140,6 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	}
 	// Change active depth buffer to the one used in the deferred geometry pass
 	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
-
 }
 
 void Scene::drawHUD() {

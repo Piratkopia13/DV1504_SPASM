@@ -9,6 +9,7 @@
 #include "../collision/CollisionHandler.h"
 #include "../UpgradeHandler.h"
 #include "../gamemodes/Gamemode.h"
+#include "../ParticleHandler.h"
 
 class GameState : public State {
 public:
@@ -54,6 +55,7 @@ private:
 	std::unique_ptr<CollisionHandler> m_collisionHandler;
 	std::unique_ptr<CharacterHandler> m_characterHandler;
 	std::unique_ptr<UpgradeHandler> m_upgradeHandler;
+	std::unique_ptr<ParticleHandler> m_particleHandler;
 
 	// The current gamemode
 	std::unique_ptr<Gamemode> m_gamemode;

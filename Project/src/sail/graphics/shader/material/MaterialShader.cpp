@@ -112,7 +112,7 @@ void MaterialShader::bind() {
 
 }
 
-void MaterialShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data) {
+void MaterialShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
 
 	Model::Data modelData = *(Model::Data*)data;
 

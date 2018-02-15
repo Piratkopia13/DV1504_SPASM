@@ -34,7 +34,7 @@ public:
 	virtual void draw(Model& model, bool bindFirst = true) {}
 	virtual void draw(bool bindFirst = true) {}
 
-	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, const void* data) = 0;
+	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) = 0;
 
 	virtual void updateCamera(Camera& cam) {};
 	virtual void setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {};

@@ -15,6 +15,7 @@
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
+    <FxCompile Include="res\shaders\instanced\ParticleShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
@@ -99,6 +100,10 @@
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
     <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
+    <ClCompile Include="src\sail\graphics\Particle.cpp" />
+    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
+    <ClCompile Include="src\game\ParticleHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -145,7 +150,6 @@
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
-    <ClInclude Include="src\sail\graphics\shader\postprocess\BloomShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
     <ClInclude Include="src\sail\graphics\shader\ComputeShader.h" />
@@ -195,6 +199,11 @@
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\sail\Input.h" />
     <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
+    <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
+    <ClInclude Include="src\sail\graphics\Particle.h" />
+    <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
+    <ClInclude Include="src\game\ParticleHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
