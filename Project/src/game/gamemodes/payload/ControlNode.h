@@ -55,7 +55,8 @@ private:
 
 	Team m_teamOne, m_teamTwo;
 
-	float m_timeTillCapture, m_timeTillScore;
+	float m_timeTillCapture;
+	float m_maxTimeCaptured;
 	float m_timeCaptured;
 
 	DirectX::SimpleMath::Vector4 m_teamZeroColor, m_teamOneColor, m_teamTwoColor, m_nodeColor, m_ownershipColor;
