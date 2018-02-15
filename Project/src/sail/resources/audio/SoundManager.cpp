@@ -188,6 +188,17 @@ bool SoundManager::loadAmbientSound(const AmbientSound soundID, wchar_t* file) {
 	return true;
 }
 
+void SoundManager::setVolume(const float& volume) {
+	m_masterVoice->SetVolume(volume);
+}
+
+float SoundManager::getVolume() {
+	float volume;
+	m_masterVoice->GetVolume(&volume);
+
+	return volume;
+}
+
 
 /////////////////////////////////
 /////// PRIVATE FUNCTIONS ///////

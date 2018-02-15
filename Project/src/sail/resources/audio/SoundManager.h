@@ -51,12 +51,18 @@ public:
 
 	void playSoundEffect(const SoundEffect soundID);
 	void playAmbientSound(const AmbientSound soundID, bool looping = false);
+
 	void pauseAmbientSound(const AmbientSound soundID);
 	void resumeAmbientSound(const AmbientSound soundID);
+
 	void suspendAllSound();
 	void resumeAllSound();
+
 	bool loadSoundEffect(const SoundEffect soundID, wchar_t* file);
 	bool loadAmbientSound(const AmbientSound soundID, wchar_t* file);
+
+	void setVolume(const float& volume);
+	float getVolume();
 
 private:
 	IXAudio2* m_audioEngine;

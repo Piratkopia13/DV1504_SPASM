@@ -143,6 +143,7 @@ MenuState::MenuState(StateStack& stack)
 
 	m_app->getGameSettings().reset();
 	m_app->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Loop2);
+	m_app->getResourceManager().getSoundManager()->setVolume(0.3f);
 }
 
 
