@@ -50,6 +50,7 @@ void PlayerCameraController::setTarget(Vector3 pos)
 void PlayerCameraController::setOffset(Vector3 offset)
 {
 	m_cameraZOffset = offset.z;
+	m_cameraYOffset = offset.y;
 }
 
 void PlayerCameraController::setMoveSpeed(float speed)

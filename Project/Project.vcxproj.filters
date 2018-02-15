@@ -98,6 +98,9 @@
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -188,12 +191,14 @@
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
-    <ClInclude Include="src\game\states\Settings.h" />
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuText.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

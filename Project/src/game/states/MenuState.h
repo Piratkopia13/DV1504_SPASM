@@ -1,7 +1,7 @@
 #pragma once
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/menu/MenuItem.h"
+#include "../objects/menu/MenuHandler.h"
 
 class MenuState : public State {
 public:
@@ -38,6 +38,11 @@ private:
 	Model* m_menuBlockModel;
 	Model* m_backGroundModel;
 
+	Model* m_block;
+
+	Model* m_letters[26];
+
+
 	// Texts
 	SailFont m_font;
 	Text m_fpsText;
@@ -49,25 +54,72 @@ private:
 	DirectX::SimpleMath::Vector4 m_blueColor;
 
 
+	std::vector<MenuItem*> m_area;
+
+
+	struct Profile {
+		size_t name[5];
+		int kills;
+		int wins;
+	};
+
+	struct MenuPlayer {
+		bool online;
+		bool ready;
+		size_t modelIndex;
+		size_t team;
+		Profile profile;
+
+	};
+	struct Teams {
+		DirectX::SimpleMath::Vector4 color;
+	};
+	
+	MenuPlayer m_player[4];
+	Teams m_team;
 
 	// MENU 0
 
 	enum m_activeMenu {
 		MAINMENU,
 		STARTMENU,
+		PROFILEMENU,
 		OPTIONSMENU
 	};
 
-	enum MainMenu {
-		NOTHING = -1,
+	enum MainMenuSelections {
 		START,
+		PROFILE,
 		OPTIONS,
 		EXIT
 	};
 
-	enum StartMenu {
+	enum StartMenuPart {
+		GAMEOPTIONSELECT,
 		PLAYERSELECT,
 		MAPSELECT
+	};
+	
+	enum GameOptionsOptions {
+		GAMEMODE,
+		TIMELIMIT,
+		SCORELIMIT,
+		RESPAWNTIME,
+
+		GRAVITY
+	};
+
+	enum GameModeSelection {
+		PAYLOAD,
+		DEATHMATCH,
+		TEAMDEATHMATCH
+	};
+
+
+	enum ProfileMenu {
+		sak0,
+		sak1,
+		sak2
 	};
 
 	enum OptionsMenu {
@@ -82,6 +134,7 @@ private:
 		NOTREADY = 0,
 		READY
 	};
+
 
 
 	int m_activeMenu;
@@ -108,6 +161,35 @@ private:
 
 	std::vector<MenuItem*> optionsMenuList;
 
+	std::vector<MenuText*> m_menuText;
+
+
+	MenuHandler* m_mainMenu;
+	MenuHandler* m_gamemodeMenu;
+	MenuHandler* m_characterMenu;
+	MenuHandler* m_profileMenu;
+	MenuHandler* m_optionsMenu;
+
+	void initMain();
+	void initGamemode();
+	void initCharacter();
+	void initMap();
+
+	void initProfile();
+	void initOptions();
+
+
+
+
+	void setMainSelect(bool active);
+	void setGamemodeSelect(bool active);
+	void setCharacterSelect(bool active);
+	void setMapSelect(bool active);
+
+	void setProfileMenu(bool active);
+	void setOptionsMenu(bool active);
+
+	void updateCamera();
 
 	void changeMenu(int change, int active);
 	void setColor(int player, DirectX::SimpleMath::Vector4 color) {
