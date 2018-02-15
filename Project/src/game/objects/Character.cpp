@@ -321,15 +321,6 @@ void Character::update(float dt) {
 	Moveable::move(dt, false);
 	collHandler->resolveUpgradeCollisionWith(this);
 
-	// Update thruster particle settings
-	m_thrusterEmitter->updateEmitPosition(getTransform().getTranslation() + Vector3(0.f, 0.3f, 0.f));
-	if (grounded()) {
-		m_thrusterEmitter->updateVelocityVariety(Vector3(10.f, 0.f, 0.5f));
-		m_thrusterEmitter->updateGravityScale(0.5f);
-	} else {
-		m_thrusterEmitter->updateVelocityVariety(Vector3(5.f, -2.f, 0.5f));
-		m_thrusterEmitter->updateGravityScale(1.f);
-	}
 }
 
 
@@ -367,6 +358,23 @@ void Character::draw() {
 	if (m_hook) { // && !m_movement.inCover) 
 		m_hook->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_hook->draw();
+	}
+
+	// Update thruster particle settings
+
+
+
+	Vector4 tempPos(0.0f, -0.75f, 0.0f, 1.0f);
+	tempPos = XMVector4Transform(tempPos, bodyTransform.getMatrix());
+
+	m_thrusterEmitter->updateEmitPosition(Vector3(tempPos));
+	if (grounded()) {
+		m_thrusterEmitter->updateVelocityVariety(Vector3(10.f, 0.f, 0.5f));
+		m_thrusterEmitter->updateGravityScale(0.5f);
+	}
+	else {
+		m_thrusterEmitter->updateVelocityVariety(Vector3(5.f, -2.f, 0.5f));
+		m_thrusterEmitter->updateGravityScale(1.f);
 	}
 }
 
@@ -447,15 +455,17 @@ void Character::dead() {
 	m_weapon->setHeld(false);
 }
 
-void Character::setLightColor(const DirectX::SimpleMath::Vector4& color) {
+void Character::setLightColor(const Vector4& color) {
 	Object::setLightColor(color);
-	m_thrusterEmitter->updateColor(color);
+	Vector4 colorCpy = color * 0.8f;
+	//colorCpy.Clamp(color, Vector4::One);
+	m_thrusterEmitter->updateColor(colorCpy);
 }
 
 void Character::jump() {
 	//this->jumping = true;
 	if(grounded())
-		this->setVelocity(getVelocity() + DirectX::SimpleMath::Vector3(0.f, 10.f, 0.f));
+		this->setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
 	//this->getTransform().translate(Vector3(0,10,0));
 }
 
