@@ -268,9 +268,8 @@ void Character::update(float dt) {
 
 	if (m_weapon) {
 		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
-		Transform tempTransform;// = getTransform();
-		//tempTransform.setRotations(Vector3(-sinDegFromVec(m_input.aim) + 0.785f, 0.0f, 0.0f));
-		tempTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f));
+		Transform tempTransform;
+		tempTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
 		m_weapon->getTransform().setMatrix(tempTransform.getMatrix() * getTransform().getMatrix());
 		if (!m_movement.inCover) {
 			m_weapon->update(dt, m_input.aim);
