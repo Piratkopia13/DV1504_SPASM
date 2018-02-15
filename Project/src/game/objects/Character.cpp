@@ -11,7 +11,7 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
-	m_movement = { 0.f, 0.f, 10.f, 0.f, 1.0f};
+	m_movement = { 0.f, 10.f, 0.f, 1.0f};
 	m_playerHealth.setMax(100.f);
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
@@ -450,7 +450,6 @@ void Character::fire()
 void Character::hook() {
 	m_hook->triggerPull(getTransform().getTranslation(), m_input.aim);
 	m_movement.hooked = true;
-	m_movement.hookLength = m_hook->getLength(getTransform().getTranslation());
 }
 
 void Character::stopHook() {
