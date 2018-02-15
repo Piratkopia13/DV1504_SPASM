@@ -102,9 +102,8 @@ void Character::processInput() {
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
 				if (!m_movement.inCover && !m_movement.hooked) {
-					CollisionHandler* collHandler = CollisionHandler::getInstance();
 					DirectX::SimpleMath::Vector3 pos = getTransform().getTranslation();
-					m_movement.inCover = collHandler->resolveCoverCollision(pos);
+					m_movement.inCover = CollisionHandler::getInstance()->resolveCoverCollision(pos);
 				}
 				else
 					m_movement.inCover = false;
@@ -225,14 +224,16 @@ void Character::update(float dt) {
 			}
 			else//Movement on the ground while using grappling hook
 			{	
-				if (m_hook->getDirection().x >= 0) {
-					this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+				if (fabs(this->getVelocity().x) <(m_movement.speed / 2.f)) {
+					if (m_hook->getDirection().x >= 0) {
+						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+					}
+					else
+					{
+						this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (-m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+					}
 				}
-				else
-				{
-					this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (-m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
-				}
-				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, m_hook->getDirection().y * 20.0f, 0.f));
+				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, fabs(m_hook->getDirection().y) * 20.0f, 0.f));
 			}
 
 		}
@@ -342,8 +343,7 @@ void Character::draw() {
 	model->draw();
 	m_leftArm->draw();
 	m_head->draw();
-
-	if (m_weapon) {
+	if (m_weapon->getHeld()) {
 		m_weapon->setLightColor(lightColor*m_playerHealth.healthPercent);
 		m_weapon->draw();
 	}
@@ -448,7 +448,7 @@ void Character::fire()
 }
 
 void Character::hook() {
-	m_hook->triggerPull(getTransform().getTranslation(), m_input.aim);
+	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
 	m_movement.hooked = true;
 }
 
