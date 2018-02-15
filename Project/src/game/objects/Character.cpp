@@ -299,9 +299,9 @@ void Character::update(float dt) {
 	//----Weapon aim animation----
 	if (m_weapon) {
 		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
-		Transform tempTransform;
-		tempTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
-		m_weapon->getTransform().setMatrix(tempTransform.getMatrix() * getTransform().getMatrix());
+		Matrix tempMatrix;
+		tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
+		m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
 		if (!m_movement.inCover) {
 			m_weapon->update(dt, m_input.aim);
 		}
@@ -319,7 +319,7 @@ void Character::draw() {
 	//----hooking animations----
 	Transform armTransform;
 	Transform bodyTransform;
-	if (m_movement.hooked == true && m_hook) {
+	if (m_movement.hooked && m_hook && !m_movement.inCover) {
 		armTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_hook->getDirection()) + 1.57f));
 		bodyTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_movement.xDirection * m_hook->getDirection())) * 0.3f);
 		armTransform.setMatrix(armTransform.getMatrix() * getTransform().getMatrix());
