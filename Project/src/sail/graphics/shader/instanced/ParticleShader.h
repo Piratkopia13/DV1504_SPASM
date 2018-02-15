@@ -34,6 +34,7 @@ public:
 	virtual void createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data);
 
 	virtual void updateCamera(Camera& cam);
+	void updateSpriteData(UINT spritesPerRow, float scale);
 
 	void updateInstanceData(const void* instanceData, UINT bufferSize, ID3D11Buffer* instanceBuffer);
 
@@ -55,12 +56,18 @@ private:
 	DirectX::SimpleMath::Matrix m_mV;
 	DirectX::SimpleMath::Matrix m_mP;
 	DirectX::SimpleMath::Vector3 m_camPos;
+	struct SpriteData {
+		UINT spritesPerRow;
+		float scale;
+		float padding[2];
+	};
 
 	UINT m_maxParticles;
 	//std::vector<InstanceData> m_instanceData;
 
 	// Components
 	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cameraDataBuffer;
+	std::unique_ptr<ShaderComponent::ConstantBuffer> m_spriteDataBuffer;
 	std::unique_ptr<ShaderComponent::Sampler> m_sampler;
 
 };

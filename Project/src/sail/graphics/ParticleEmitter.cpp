@@ -6,13 +6,13 @@
 using namespace DirectX;
 using namespace SimpleMath;
 
-ParticleEmitter::ParticleEmitter(Type type, const DirectX::SimpleMath::Vector3& emitPos, const Vector3& velocityVariety, float spawnsPerSecond, UINT maxParticles, float scale,
-	float lifetime, const Vector4& color, float gravityScale, const Camera* cam, bool useAdditiveBlending, UINT spritesPerRow, UINT spritesPerColumn)
+ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector3& velocityRndAdd, const Vector3& velocityVariety, 
+	float spawnsPerSecond, UINT maxParticles, float scale, float lifetime, const Vector4& color, float gravityScale, UINT initialSpawnCount, 
+	bool useAdditiveBlending, const Camera* cam)
 	: m_cam(cam)
-	, m_spritesPerRow(spritesPerRow)
-	, m_spritesPerColumn(spritesPerColumn)
 	, m_useAdditiveBlending(useAdditiveBlending)
 	, m_velocityVariety(velocityVariety)
+	, m_velocityRndAdd(velocityRndAdd)
 	, m_spawnsPerSecond(spawnsPerSecond)
 	, m_scale(scale)
 	, m_color(color)
@@ -27,9 +27,18 @@ ParticleEmitter::ParticleEmitter(Type type, const DirectX::SimpleMath::Vector3& 
 	switch (type) {
 	case ParticleEmitter::EXPLOSION:
 		particleSpritesheet = "particles/explosion.tga";
+		m_spritesPerColumn = 3;
+		m_spritesPerRow = 3;
+		break;
+	case ParticleEmitter::FIREBALL:
+		particleSpritesheet = "particles/fireball.tga";
+		m_spritesPerColumn = 7;
+		m_spritesPerRow = 7;
 		break;
 	default:
 		particleSpritesheet = "particles/explosion.tga";
+		m_spritesPerColumn = 3;
+		m_spritesPerRow = 3;
 		break;
 	}
 
@@ -41,22 +50,15 @@ ParticleEmitter::ParticleEmitter(Type type, const DirectX::SimpleMath::Vector3& 
 	m_instancedModel->buildBufferForShader(m_shader);
 	m_instancedModel->getMaterial()->setDiffuseTexture(particleSpritesheet);
 
+	// Resize vector to fit max particles
 	m_instanceData.resize(maxParticles);
 
-	//for (UINT i = 0; i < m_instancedModel->getNumInstances(); i++) {
-	//	ParticleShader::InstanceData data;
-	//	data.position = Vector3(Utils::rnd() * 5, Utils::rnd() * 5, Utils::rnd() * 5);
-	//	data.color = Utils::getRandomColor();
-	//	data.blendFactor = 0.5f;
-	//	data.textureOffset1 = Vector2(0.f);
-	//	data.textureOffset2 = Vector2(0.f);
-	//	m_instanceData.push_back(data);
-
-	//	//m_particles.push_back(Particle(data.position, Vector3(Utils::rnd() - 0.5f, Utils::rnd() - 0.5f, Utils::rnd() - 0.5f), 1.f, 0.f, 10.f));
-	//	m_particles.push_back(Particle(data.position, Vector3::Zero, 1.f, 0.f, 10.f));
-	//}
-
-	//m_shader->updateInstanceData(&m_instanceData[0], m_instanceData.size() * sizeof(m_instanceData[0]), m_instancedModel->getInstanceBuffer());
+	// Spawn init particles
+	for (UINT i = 0; i < initialSpawnCount; i++) {
+		addParticle(Particle(m_emitPosition,
+			Vector3((Utils::rnd() + m_velocityRndAdd.x) * m_velocityVariety.x, (Utils::rnd() + m_velocityRndAdd.y) * m_velocityVariety.y, (Utils::rnd() + m_velocityRndAdd.z) * m_velocityVariety.z),
+			1.f, m_gravityScale, m_lifetime));
+	}
 
 }
 
@@ -71,7 +73,7 @@ void ParticleEmitter::update(float dt) {
 		while (spawnTimer > 0.f) {
 			// Spawn a new particle
 			addParticle(Particle(m_emitPosition, 
-				Vector3((Utils::rnd() - 0.5f) * m_velocityVariety.x, (Utils::rnd() /*- 0.5f*/) * m_velocityVariety.y, (Utils::rnd() - 0.5f) * m_velocityVariety.z),
+				Vector3((Utils::rnd() + m_velocityRndAdd.x) * m_velocityVariety.x, (Utils::rnd() + m_velocityRndAdd.y) * m_velocityVariety.y, (Utils::rnd() + m_velocityRndAdd.z) * m_velocityVariety.z),
 				1.f, m_gravityScale, m_lifetime));
 			spawnTimer -= 1.f / m_spawnsPerSecond;
 		}
@@ -116,7 +118,7 @@ void ParticleEmitter::update(float dt) {
 	}
 
 	// Only sort if neccessary
-	if (!m_useAdditiveBlending)
+	//if (!m_useAdditiveBlending)
 		// TOOD: try different sorting algorithms
 		std::sort(m_instanceData.begin(), m_instanceData.begin() + m_particles.size(), Compare(*this));
 	//insertionSort();
@@ -147,12 +149,41 @@ void ParticleEmitter::updateEmitPosition(const DirectX::SimpleMath::Vector3& emi
 	m_emitPosition = emitPos;
 }
 
+void ParticleEmitter::updateColor(const DirectX::SimpleMath::Vector4& color) {
+	m_color = color;
+}
+
+void ParticleEmitter::updateSpawnsPerSecond(float spawnsPerSec) {
+	m_spawnsPerSecond = spawnsPerSec;
+}
+
+void ParticleEmitter::updateGravityScale(float gravityScale) {
+	m_gravityScale = gravityScale;
+}
+
+void ParticleEmitter::updateVelocityVariety(const DirectX::SimpleMath::Vector3& velVar) {
+	m_velocityVariety = velVar;
+}
+
+void ParticleEmitter::updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& velRndAdd) {
+	m_velocityRndAdd = velRndAdd;
+}
+
 
 void ParticleEmitter::draw() {
+	m_shader->updateSpriteData(m_spritesPerRow, m_scale);
 	m_shader->updateInstanceData(&m_instanceData[0], m_instanceData.size() * sizeof(m_instanceData[0]), m_instancedModel->getInstanceBuffer());
 	if (m_useAdditiveBlending)
 		Application::getInstance()->getDXManager()->enableAdditiveBlending();
 	else
 		Application::getInstance()->getDXManager()->enableAlphaBlending();
 	m_shader->draw(*m_instancedModel, true, m_particles.size());
+}
+
+UINT ParticleEmitter::getParticleCount() const {
+	return m_particles.size();
+}
+
+void ParticleEmitter::setCamera(const Camera* cam) {
+	m_cam = cam;
 }

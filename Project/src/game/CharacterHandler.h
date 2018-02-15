@@ -1,10 +1,9 @@
 #pragma once
 #include "objects/Character.h"
 
-class CharacterHandler
-{
+class CharacterHandler {
 public:
-	CharacterHandler(ProjectileHandler* projHandler = nullptr);
+	CharacterHandler(ParticleHandler* particleHandler, ProjectileHandler* projHandler = nullptr);
 	~CharacterHandler();
 
 	void addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position);
@@ -24,6 +23,7 @@ private:
 
 	float m_respawnTime;
 
+	ParticleHandler* m_particleHandler;
 	std::vector<Character*> m_characters;
 	std::vector<float> m_respawnTimers;
 	std::vector<DirectX::SimpleMath::Vector3> m_spawns[4];

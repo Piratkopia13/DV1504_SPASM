@@ -40,6 +40,11 @@ cbuffer cameraData : register(b0) {
   float3 camPos;
 };
 
+cbuffer SpriteData : register(b1) {
+  uint spritesPerRow;
+  float scale;
+}
+
 float4 format(float3 vec) {
   return mul(float4(vec, 1.f), mVP);
 }
@@ -50,10 +55,10 @@ float4 format(float3 vec) {
 [maxvertexcount(6)]
 void GSMain (point GSIn input[1], inout TriangleStream<PSIn> output) {
 
-  const float spritesPerRow = 3.f;
+  //const float spritesPerRow = 3.f;
   const float texCoord = 1.f / spritesPerRow;
 
-  float halfSize = 0.1f;
+  float halfSize = 0.5f * scale;
   float3 p_pos = input[0].worldPos.xyz;
   float3 p_camPos = camPos;
 	

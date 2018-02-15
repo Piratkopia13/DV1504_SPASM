@@ -4,10 +4,11 @@
 #include "../../sail/graphics/geometry/Model.h"
 #include "Weapon.h"
 #include "Hook.h"
-
+#include "../ParticleHandler.h"
 
 
 class Character : public Moveable {
+friend CharacterHandler;
 public:
 	Character();
 	Character(Model * model);
@@ -40,10 +41,13 @@ public:
 	void living();
 	void dead();
 
+	void setLightColor(const DirectX::SimpleMath::Vector4& color);
 
 private:
 	Weapon* m_weapon;
 	Hook* m_hook;
+
+	std::shared_ptr<ParticleEmitter> m_thrusterEmitter;
 
 	struct InputDevice {
 		bool controller;

@@ -9,6 +9,7 @@
 #include "../collision/CollisionHandler.h"
 #include "../UpgradeHandler.h"
 #include "../gamemodes/Gamemode.h"
+#include "../ParticleHandler.h"
 
 class GameState : public State {
 public:
@@ -43,12 +44,6 @@ private:
 	std::unique_ptr<Block> m_infLeft;
 	std::unique_ptr<Block> m_infRight;
 
-	// test stuff
-	ParticleEmitter m_particleEmitter;
-	//std::unique_ptr<Model> m_instancedModel;
-	std::unique_ptr<Model> m_notinstancedModel;
-	std::vector<std::unique_ptr<Block>> m_notinstancedBlocks;
-
 	// Texts
 	SailFont m_font;
 	Text m_fpsText;
@@ -60,6 +55,7 @@ private:
 	std::unique_ptr<CollisionHandler> m_collisionHandler;
 	std::unique_ptr<CharacterHandler> m_characterHandler;
 	std::unique_ptr<UpgradeHandler> m_upgradeHandler;
+	std::unique_ptr<ParticleHandler> m_particleHandler;
 
 	// The current gamemode
 	std::unique_ptr<Gamemode> m_gamemode;

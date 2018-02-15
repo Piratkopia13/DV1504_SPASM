@@ -458,7 +458,7 @@ bool MenuState::render(float dt) {
 	m_app->getDXManager()->clear(DirectX::Colors::Black);
 
 	// Draw the scene
-	m_scene.draw(dt, m_cam, nullptr, nullptr, nullptr);
+	m_scene.draw(dt, m_cam);
 
 	// Draw HUD
 	m_scene.drawHUD();

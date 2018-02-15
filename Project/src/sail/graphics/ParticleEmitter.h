@@ -6,16 +6,25 @@
 class ParticleEmitter {
 public:
 	enum Type {
-		EXPLOSION
+		EXPLOSION,
+		FIREBALL
 	};
-	ParticleEmitter(Type type, const DirectX::SimpleMath::Vector3& emitPos, const DirectX::SimpleMath::Vector3& velocityVariety, float spawnsPerSecond, UINT maxParticles, float scale = 1.f,
-		float lifetime = 10.f, const DirectX::SimpleMath::Vector4& color = DirectX::SimpleMath::Vector4::One, float gravityScale = 0.f, 
-		const Camera* cam = nullptr, bool useAdditiveBlending = false, UINT spritesPerRow = 3.f, UINT spritesPerColumn = 3.f);
+	ParticleEmitter(Type type, const DirectX::SimpleMath::Vector3& emitPos, const DirectX::SimpleMath::Vector3& velocityRndAdd, const DirectX::SimpleMath::Vector3& velocityVariety, float spawnsPerSecond, UINT maxParticles, float scale = 1.f,
+		float lifetime = 10.f, const DirectX::SimpleMath::Vector4& color = DirectX::SimpleMath::Vector4::One, float gravityScale = 0.f, UINT initialSpawnCount = 0,
+		bool useAdditiveBlending = false, const Camera* cam = nullptr);
 	~ParticleEmitter();
 
-	void updateEmitPosition(const DirectX::SimpleMath::Vector3& emitPos);
 	void update(float dt);
 	void draw();
+	UINT getParticleCount() const;
+	void setCamera(const Camera* cam);
+
+	void updateEmitPosition(const DirectX::SimpleMath::Vector3& emitPos);
+	void updateColor(const DirectX::SimpleMath::Vector4& color);
+	void updateSpawnsPerSecond(float spawnsPerSec);
+	void updateGravityScale(float gravityScale);
+	void updateVelocityVariety(const DirectX::SimpleMath::Vector3& velVar);
+	void updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& velRndAdd);
 
 private:
 	struct Compare {
@@ -44,6 +53,7 @@ private:
 	// Particle settings
 	DirectX::SimpleMath::Vector3 m_emitPosition;
 	DirectX::SimpleMath::Vector3 m_velocityVariety;
+	DirectX::SimpleMath::Vector3 m_velocityRndAdd;
 	float m_spawnsPerSecond;
 	float m_scale;
 	float m_lifetime;

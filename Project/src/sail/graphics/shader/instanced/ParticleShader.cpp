@@ -18,6 +18,8 @@ ParticleShader::ParticleShader()
 	// Set up constant buffers
 	CameraBuffer defaultCamData = { Matrix::Identity, Vector3::Zero };
 	m_cameraDataBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&defaultCamData, sizeof(CameraBuffer)));
+	SpriteData defaultSpriteData = { 3, 1.f };
+	m_spriteDataBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&defaultSpriteData, sizeof(SpriteData)));
 
 	// Set up sampler for point sampling
 	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_CLAMP, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
@@ -58,6 +60,7 @@ void ParticleShader::bind() {
 
 	// Bind cbuffers
 	m_cameraDataBuffer->bind(ShaderComponent::GS, 0);
+	m_spriteDataBuffer->bind(ShaderComponent::GS, 1);
 
 	// Bind sampler
 	m_sampler->bind();
@@ -201,6 +204,14 @@ void ParticleShader::updateCamera(Camera& cam) {
 	m_mV = cam.getViewMatrix();
 	m_mP = cam.getProjMatrix();
 	m_camPos = cam.getPosition();
+}
+
+void ParticleShader::updateSpriteData(UINT spritesPerRow, float scale) {
+	SpriteData data = {
+		spritesPerRow,
+		scale
+	};
+	m_spriteDataBuffer->updateData(&data, sizeof(data));
 }
 
 void ParticleShader::updateInstanceData(const void* instanceData, UINT bufferSize, ID3D11Buffer* instanceBuffer) {
