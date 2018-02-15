@@ -51,6 +51,11 @@ public:
 		m_matNeedsUpdate = true;
 	}
 
+	void setMatrix(DirectX::SimpleMath::Matrix newMatrix) {
+		m_transformMatrix = newMatrix;
+		m_matNeedsUpdate = false;
+	}
+
 	const DirectX::SimpleMath::Vector3& getTranslation() const {
 		return m_translation;
 	}
