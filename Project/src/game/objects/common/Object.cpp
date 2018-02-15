@@ -19,11 +19,14 @@ void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
 	updateBoundingBox();
 }
 
-void Object::updateBoundingBox()
+void Object::updateBoundingBox(bool includeBoundingBoxRotation)
 {
 	if (this->boundingBox) {
-		//this->boundingBox->updateTranslation(this->getTransform().getTranslation());
-		this->boundingBox->updateTransform(this->getTransform().getMatrix());
+		if (includeBoundingBoxRotation)
+			this->boundingBox->updateTransform(this->getTransform().getMatrix());
+			//this->boundingBox->updateTranslation(this->getTransform().getTranslation());
+		else
+			this->boundingBox->updateTranslation(this->getTransform().getTranslation());
 	}
 }
 
