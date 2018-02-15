@@ -105,6 +105,8 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();
+				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
+				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
 
 				Projectile* temp1 = new Projectile(
 					m_nozzlePos,

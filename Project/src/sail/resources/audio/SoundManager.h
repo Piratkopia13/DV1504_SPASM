@@ -42,7 +42,7 @@ public:
 		NumOfAmbientSounds
 	};
 
-	const static int NUMBER_OF_CHANNELS = 32;
+	const static int NUMBER_OF_CHANNELS = 1024;
 
 
 public:
