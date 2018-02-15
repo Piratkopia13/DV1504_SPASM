@@ -93,8 +93,7 @@ private:
 		}
 		void operator+=(const AutoFire& other) {
 			if (other.active) {
-				if(active)
-					fireRate *= 0.5;
+				fireRate *= 0.5;
 				time.addTime(other.time.remaining);
 				active = true;
 			}
@@ -106,8 +105,8 @@ private:
 		}
 		AutoFire() {
 			active = false;
-			fireRate = 0.3f;
-			baseRate = 0.3f;
+			fireRate = 1.0f;
+			baseRate = 1.0f;
 			time.setCap(10);
 		}
 		AutoFire(float _rate, float _time) : AutoFire(){

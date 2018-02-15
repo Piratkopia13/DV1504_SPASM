@@ -9,14 +9,18 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 	Application* app = Application::getInstance();
 	Application::GameSettings* settings = &app->getGameSettings();
 
-	Model* wModel = app->getResourceManager().getFBXModel("weapon").getModel();
+	Model* wModel = app->getResourceManager().getFBXModel("fisk/fisk_armR").getModel();
+	Model* lModel = app->getResourceManager().getFBXModel("laser").getModel();
+	Model* dModel = app->getResourceManager().getFBXModel("sphere").getModel();
 	Model* hModel = app->getResourceManager().getFBXModel("projectile").getModel();
-	Model* cModel1 = app->getResourceManager().getFBXModel("fisk").getModel();
+	Model* cModel1 = app->getResourceManager().getFBXModel("fisk/fisk_body").getModel();
+	Model* cModel2 = app->getResourceManager().getFBXModel("fisk/fisk_armL").getModel();
+	Model* cModel3 = app->getResourceManager().getFBXModel("fisk/fisk_head").getModel();
 
 	for (size_t i = 0; i < settings->players.size(); i++) {
-		Weapon* tempWeapon = new Weapon(wModel, projHandler, settings->players[i].team);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, settings->players[i].team);
 		Hook* tempHook = new Hook(hModel);
-		Character* tempChar = new Character(cModel1);
+		Character* tempChar = new Character(cModel1, cModel2, cModel3);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(settings->players[i].color);
@@ -36,9 +40,9 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 
 #ifdef _DEBUG
 	if (settings->players.size() == 0) {
-		Weapon* tempWeapon = new Weapon(wModel, projHandler, 1);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, 1);
 		Hook* tempHook = new Hook(hModel);
-		Character* tempChar = new Character(cModel1);
+		Character* tempChar = new Character(cModel1, cModel2, cModel3);
 		tempChar->setLightColor(Vector4(0.2f, 0.8f, 0.8f, 1.f));
 		tempChar->setTeam(1);
 		tempChar->setHook(tempHook);
@@ -48,15 +52,15 @@ CharacterHandler::CharacterHandler(ProjectileHandler* projHandler)
 		addPlayer(tempChar);
 	}
 	if (settings->players.size() < 4) {
-		Weapon* tempWeapon = new Weapon(wModel, projHandler, 2);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, 2);
 		Hook* tempHook = new Hook(hModel);
-		Character* tempChar = new Character(cModel1);
+		Character* tempChar = new Character(cModel1, cModel2, cModel3);
 		tempChar->setLightColor(Vector4(0.8f, 0.2f, 0.8f, 1.f));
 		tempChar->setTeam(2);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setControllerPort(1);
-		tempChar->setController(true);
+		tempChar->setController(false);
 		addPlayer(tempChar);
 	}
 #endif
@@ -98,7 +102,7 @@ void CharacterHandler::respawnPlayer(unsigned int id) {
 			unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
 			respawnPos = m_spawns[team][spawn];
 		}
-		m_characters[id]->setPosition(respawnPos);
+		m_characters[id]->setPosition(respawnPos + Vector3(0.0f, 1.0f, 0.0f));
 		m_characters[id]->living();
 	}
 }

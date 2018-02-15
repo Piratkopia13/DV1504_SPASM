@@ -204,6 +204,7 @@
     <None Include="res\models\box.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
+    <None Include="res\levels\symmetric.level" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\effect\laser.wav" />
