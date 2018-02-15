@@ -252,7 +252,8 @@ void Character::update(float dt) {
 					tempVec = (this->getVelocity().Dot(tempVec) / tempVec.LengthSquared()) * tempVec;
 					this->setVelocity(tempVec);
 				}
-				this->setAcceleration(m_hook->getDirection() * 20.0f);
+
+				this->setAcceleration(m_hook->getDirection() * 10.0f);
 			}
 		}
 
@@ -266,10 +267,11 @@ void Character::update(float dt) {
 	}
 
 	if (m_weapon) {
-		Transform tempTransform = getTransform();
-		tempTransform.rotateAroundZ(this->sinDegFromVec(m_input.aim) + 0.785f + (std::signbit(m_input.aim.x) * 1.57f));
-		m_weapon->getTransform().setTranslation(tempTransform.getTranslation());
-		m_weapon->getTransform().setRotations(tempTransform.getRotations());
+		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
+		Transform tempTransform;// = getTransform();
+		//tempTransform.setRotations(Vector3(-sinDegFromVec(m_input.aim) + 0.785f, 0.0f, 0.0f));
+		tempTransform.rotateAroundX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f));
+		m_weapon->getTransform().setMatrix(tempTransform.getMatrix() * getTransform().getMatrix());
 		if (!m_movement.inCover) {
 			m_weapon->update(dt, m_input.aim);
 		}
