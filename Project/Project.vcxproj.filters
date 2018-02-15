@@ -213,5 +213,7 @@
     <Media Include="res\sounds\ambient\windows95.wav" />
     <Media Include="res\sounds\ambient\loop1.wav" />
     <Media Include="res\sounds\ambient\loop2.wav" />
+    <Media Include="res\sounds\effect\death\male_death.wav" />
+    <Media Include="res\sounds\effect\death\goblin_death.wav" />
   </ItemGroup>
 </Project>

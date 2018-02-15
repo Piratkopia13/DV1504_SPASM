@@ -51,13 +51,13 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	DirectX::SimpleMath::Vector4 blockColor;
 
 	for (int x = 0; x < m_levelWidth; x++) {
-		blockColor.x = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
-		blockColor.y = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
-		blockColor.z = min(2.f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
+		blockColor.x = min(m_teamOneColor.x * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
+		blockColor.y = min(m_teamOneColor.y * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
+		blockColor.z = min(m_teamOneColor.z * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
 
-		blockColor.x += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.x));
-		blockColor.y += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.y));
-		blockColor.z += min(2.f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.z));
+		blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.x));
+		blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.y));
+		blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.z));
 
 		for (int y = 0; y < m_levelHeight; y++) {
 			if (m_blocks[x][y]) {

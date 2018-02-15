@@ -90,6 +90,18 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		m_characters[index]->dead();
 		m_characters[index]->setPosition(Vector3(0, 0, -100));
 		m_respawnTimers[index] = 0.01f;
+		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
+		switch (rnd) {
+		case 0:
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Male_Death);
+			break;
+		case 1:
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Goblin_Death);
+			break;
+		default:
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion);
+			break;
+		}
 	}
 }
 

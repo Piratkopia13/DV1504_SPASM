@@ -32,6 +32,8 @@ public:
 		Laser,
 		Loop1,
 		Loop2,
+		Male_Death,
+		Goblin_Death,
 		NumOfSoundEffects
 	};
 

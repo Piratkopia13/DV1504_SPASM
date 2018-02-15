@@ -34,12 +34,14 @@ SoundManager::SoundManager() {
 
 	m_sounds.resize(SoundEffect::NumOfSoundEffects);
 
-	loadSoundEffect(SoundEffect::Explosion, L"res/sounds/explosion.wav");
+	loadSoundEffect(SoundEffect::Explosion, L"res/sounds/effect/explosion.wav");
 	loadSoundEffect(SoundEffect::Windows95, L"res/sounds/windows95.wav");
 	loadSoundEffect(SoundEffect::Laser, L"res/sounds/effect/laser.wav");
 	loadSoundEffect(SoundEffect::Shock, L"res/sounds/effect/shock.wav");
 	loadSoundEffect(SoundEffect::Loop1, L"res/sounds/ambient/loop1.wav");
 	loadSoundEffect(SoundEffect::Loop2, L"res/sounds/ambient/loop2.wav");
+	loadSoundEffect(SoundEffect::Male_Death, L"res/sounds/effect/death/male_death.wav");
+	loadSoundEffect(SoundEffect::Goblin_Death, L"res/sounds/effect/death/goblin_death.wav");
 }
 
 SoundManager::~SoundManager() {
@@ -90,6 +92,11 @@ void SoundManager::playSoundEffect(const SoundEffect soundID) {
 	WAVEFORMATEXTENSIBLE wfx = m_sounds[soundID]->getWFX();
 	XAUDIO2_BUFFER buffer = m_sounds[soundID]->getBuffer();
 	m_audioEngine->CreateSourceVoice(&m_sourceVoices[m_currSVIndex], (WAVEFORMATEX*)&wfx);
+	if (soundID == SoundManager::SoundEffect::Laser)
+		m_sourceVoices[m_currSVIndex]->SetVolume(0.2f);
+	else
+		m_sourceVoices[m_currSVIndex]->SetVolume(1.0f);
+
 	m_sourceVoices[m_currSVIndex]->SubmitSourceBuffer(&buffer);
 	m_sourceVoices[m_currSVIndex]->Start(0);
 	m_currSVIndex++;
