@@ -40,6 +40,7 @@ MenuState::MenuState(StateStack& stack)
 
 	auto& resMan = m_app->getResourceManager();
 
+	m_block = resMan.getFBXModel("block2").getModel();
 	m_menuBlockModel = resMan.getFBXModel("block").getModel();
 	m_menuStartModel = resMan.getFBXModel("startButton").getModel();
 	m_menuOptionsModel = resMan.getFBXModel("optionsButton").getModel();
@@ -48,6 +49,12 @@ MenuState::MenuState(StateStack& stack)
 	m_backGroundModel = resMan.getFBXModel("menu_screen").getModel();
 	
 
+
+	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
+	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+	m_orangeColor = Vector4(1.0f, 0.5f, 0.0f, 1.0f);
+	m_blueColor = Vector4(0.0f, 0.9f, 1.0f, 1.0f);
+
 	m_activeMenu = 0;
 	m_activeSubMenu = 0;
 	m_selector = 0;
@@ -55,33 +62,37 @@ MenuState::MenuState(StateStack& stack)
 	m_menu = -1;
 	
 	this->background = new MenuItem(m_backGroundModel, Vector3(0.f, -2.3f, 0.5f));
-	this->background->useColor = 1;
+	this->background->m_useColor = 1;
 	this->background->setLightColor(Vector4(0.5f,0.5f,0.5f,0.5f));
-	m_scene.addObject(background);
+	//m_scene.addObject(background);
 
 
-	MenuItem* start = new MenuItem(m_menuStartModel, Vector3(0.f, 2.f, 7.f));
+
+	//MAINMENU
+	initMain();
+
+	//STARTMENU
+	initGamemode();
+	initCharacter();
+	initMap();
+
+	//CUSTOMISABILITY
+	initProfile();
+	initOptions();
+
+
+	MenuItem* start = new MenuItem(m_menuStartModel, Vector3(0.f, 1.1f, 7.f));
 	MenuItem* options = new MenuItem(m_menuOptionsModel, Vector3(0.f, 0.f, 7.f));
-	MenuItem* exit = new MenuItem(m_menuExitModel, Vector3(0.f, -2.f, 7.f));
+	MenuItem* exit = new MenuItem(m_menuExitModel, Vector3(0.f, -1.1f, 7.f));
 
-	MenuItem* player1 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 2.25f));
-	MenuItem* player2 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 0.75f));
+	MenuItem* player1 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 2.25f ));
+	MenuItem* player2 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 0.75f ));
 	MenuItem* player3 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, -0.75f));
 	MenuItem* player4 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, -2.25f));
-
+		
 	MenuItem* option1 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, 1.5f, 0.f));
 	MenuItem* option2 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, 0.f, 0.f));
 	MenuItem* option3 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, -1.5f, 0.f));
-
-	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
-	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
-	//m_orangeColor = Vector4(1.0f, 0.5f, 0.0f, 1.0f);
-	//Temp Color
-	m_orangeColor = Vector4(1.0f, 0.9f, 0.0f, 1.0f);
-	m_blueColor = Vector4(0.0f, 0.9f, 1.0f, 1.0f);
-
-	m_app->getGameSettings().teamOneColor = m_orangeColor;
-	m_app->getGameSettings().teamTwoColor = m_blueColor;
 
 
 	MenuItem* maps[5];
@@ -108,29 +119,30 @@ MenuState::MenuState(StateStack& stack)
 	this->optionsMenuList.push_back(option2);
 	this->optionsMenuList.push_back(option3);
 
-	for (int i = 0; i < 4; i++) {
+	for (size_t i = 0; i < 4; i++) {
+		//m_player[i] = { false, false, 0, i, {{0,0,0,0,0},0,0} };
 		this->players[i] = OFFLINE;
 		this->setColor(i, m_offColor);
 	}
 
 	for (size_t i = 0; i < this->menuList.size(); i++) {
 		menuList[i]->setLightColor(m_offColor);
-		m_scene.addObject(menuList[i]);
+		//m_scene.addObject(menuList[i]);
 	}
 	for (size_t i = 0; i < this->playerMenu.size(); i++) {
 		this->playerMenu[i]->setLightColor(m_offColor);
 		this->playerMenu[i]->getTransform().setRotations(Vector3(0.0f, -1.62f, 0.0f));
-		m_scene.addObject(playerMenu[i]);
+		//m_scene.addObject(playerMenu[i]);
 	}
 	for (size_t i = 0; i < this->mapMenu.size(); i++) {
 		
-		m_scene.addObject(mapMenu[i]);
+		//m_scene.addObject(mapMenu[i]);
 	}
 
 	for (size_t i = 0; i < 3; i++) {
 		this->optionsMenuList[i]->getTransform().setRotations(Vector3(0.0f, -1.62f, 0.0f));
 		this->optionsMenuList[i]->setLightColor(m_offColor);
-		m_scene.addObject(this->optionsMenuList[i]);
+		//m_scene.addObject(this->optionsMenuList[i]);
 	}
 
 
@@ -149,6 +161,13 @@ MenuState::MenuState(StateStack& stack)
 
 MenuState::~MenuState()
 {
+	Memory::safeDelete(m_mainMenu);
+	Memory::safeDelete(m_gamemodeMenu);
+	Memory::safeDelete(m_characterMenu);
+	Memory::safeDelete(m_profileMenu);
+	Memory::safeDelete(m_optionsMenu);
+
+
 	delete this->background;
 	for (size_t i = 0; i < this->menuList.size(); i++) {
 		delete this->menuList[i];
@@ -162,6 +181,11 @@ MenuState::~MenuState()
 	for (size_t i = 0; i < this->optionsMenuList.size(); i++) {
 		delete this->optionsMenuList[i];
 	}
+	for (size_t i = 0; i < m_menuText.size(); i++) {
+		Memory::safeDelete(m_menuText[i]);
+	}
+	
+
 }
 
 
@@ -213,7 +237,19 @@ bool MenuState::processInput(float dt) {
 			}
 		}
 
+		if (kbTracker.pressed.F) {
+			static int camP = 0;
+			camP++;
+			if (camP > 2)
+				camP = 0;
+			if (camP == 0) 
+				m_playerCamController->setPosition(Vector3(0, 0, 0));			
+			if(camP == 1)
+				m_playerCamController->setPosition(Vector3(-10, 15, -10));
+			if(camP == 2)
+				m_playerCamController->setPosition(Vector3(10, 15, 10));
 
+		}
 		
 
 
@@ -248,26 +284,27 @@ bool MenuState::processInput(float dt) {
 		if(pressed)
 			switch (m_activeMenu) {
 				case MAINMENU:
-					if (down)
-						this->changeMenu(1, MAINMENU);
-					if (up)
-						this->changeMenu(-1, MAINMENU);
+					if (down) {
+						m_mainMenu->next();
+						m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget());
+					}
+					if (up) {
+						m_mainMenu->back();
+						m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget());
+					}
 					if (a) {
-						switch (m_selector) {
+						switch (m_mainMenu->getActive()) {
 							case START:
-								this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1], 
-									this->playerMenu[2], this->playerMenu[3]);
-								this->menuList[m_selector]->setLightColor(m_offColor);
-								m_selector = 0;
-
-								m_activeMenu = STARTMENU;
+								setMainSelect(false);
+								setGamemodeSelect(true);
+								break;
+							case PROFILE:
+								setMainSelect(false);
+								setProfileMenu(true);
 								break;
 							case OPTIONS:
-								m_activeMenu = OPTIONSMENU;
-								this->menuList[m_selector]->setLightColor(m_offColor);
-								m_selector = 0;
-								this->changeMenu(0, OPTIONSMENU);
-
+								setMainSelect(false);
+								setOptionsMenu(true);
 								break;
 
 							case EXIT:
@@ -280,6 +317,45 @@ bool MenuState::processInput(float dt) {
 					break;
 				case STARTMENU:
 					switch (m_activeSubMenu) {
+						case GAMEOPTIONSELECT:
+							if (a) {
+								int gamemodeOption = m_gamemodeMenu->getOptionAt(GAMEMODE);
+								int TimeOption = m_gamemodeMenu->getOptionAt(TIMELIMIT);
+								int scoreOption = m_gamemodeMenu->getOptionAt(SCORELIMIT);
+								int respawnOption = m_gamemodeMenu->getOptionAt(RESPAWNTIME);
+								int gravityOption = m_gamemodeMenu->getOptionAt(GRAVITY);
+
+
+								
+							}
+							if (b) {
+								setGamemodeSelect(false);
+								setMainSelect(true);							
+
+							}
+							if (down) {
+								m_gamemodeMenu->next();
+								m_playerCamController->setTargets(m_gamemodeMenu, m_gamemodeMenu->getTarget(), m_gamemodeMenu->getExtraTarget());
+							}
+							if (up) {
+								m_gamemodeMenu->back();
+								m_playerCamController->setTargets(m_gamemodeMenu, m_gamemodeMenu->getTarget(), m_gamemodeMenu->getExtraTarget());
+							}
+
+							if (right) {
+								m_gamemodeMenu->right();
+								m_playerCamController->setTargets(m_gamemodeMenu, m_gamemodeMenu->getTarget(), m_gamemodeMenu->getExtraTarget());
+							}
+							if (left) {
+								m_gamemodeMenu->left();
+								m_playerCamController->setTargets(m_gamemodeMenu, m_gamemodeMenu->getTarget(), m_gamemodeMenu->getExtraTarget());
+							}
+
+
+
+
+
+							break;
 						case PLAYERSELECT:
 							switch (this->players[i]) {
 								case OFFLINE:
@@ -409,6 +485,18 @@ bool MenuState::processInput(float dt) {
 					}
 
 					break;
+
+				case PROFILEMENU:
+					if (a) {
+
+					}
+					if (b) {
+						setProfileMenu(false);
+						setMainSelect(true);
+					}
+
+
+					break;
 				case OPTIONSMENU:
 					if (b) {
 						this->m_activeMenu= MAINMENU;
@@ -440,7 +528,6 @@ bool MenuState::resize(int width, int height) {
 	return true;
 }
 
-
 // Updates the state
 bool MenuState::update(float dt) {
 
@@ -450,6 +537,10 @@ bool MenuState::update(float dt) {
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
+	m_mainMenu->update(dt);
+	m_gamemodeMenu->update(dt);
+	m_optionsMenu->update(dt);
+	m_profileMenu->update(dt);
 	m_playerCamController->update(dt);
 
 	return true;
@@ -468,6 +559,192 @@ bool MenuState::render(float dt) {
 	return true;
 }
 
+
+
+
+
+
+
+// CREATE ALL THE MENUS
+
+
+void MenuState::initMain() {
+	m_mainMenu = new MenuHandler();
+	m_scene.addObject(m_mainMenu);
+
+	m_mainMenu->addMenuBox("start");
+	m_mainMenu->addMenuBox("profiles");
+	m_mainMenu->addMenuBox("options");
+	m_mainMenu->addMenuBox("exit");
+	m_mainMenu->addMenuBox("potato");
+	m_mainMenu->setPosition(Vector3(0, -0.5, 7));
+	m_mainMenu->setFacingDirection(Vector3(0, 0, -1));
+	m_mainMenu->setOffColor(m_offColor);
+	m_mainMenu->setOnColor(m_onColor);
+	m_mainMenu->activate();
+}
+
+void MenuState::initGamemode() {
+
+	m_gamemodeMenu = new MenuHandler();
+	m_scene.addObject(m_gamemodeMenu);
+
+	m_gamemodeMenu->addMenuSelector("gamemode");
+	m_gamemodeMenu->addMenuSelectorItem("payload");
+	m_gamemodeMenu->addMenuSelectorItem("deathmatch");
+	m_gamemodeMenu->addMenuSelectorItem("team deathmatch");
+
+	m_gamemodeMenu->addMenuSelector("time limit");
+	m_gamemodeMenu->addMenuSelectorItem("0");
+	m_gamemodeMenu->addMenuSelectorItem("01");
+	m_gamemodeMenu->addMenuSelectorItem("022");
+	m_gamemodeMenu->addMenuSelectorItem("0333");
+	m_gamemodeMenu->setStaticSelection(true, 0);
+
+	m_gamemodeMenu->addMenuSelector("score limit");
+	m_gamemodeMenu->addMenuSelectorItem("1");
+	m_gamemodeMenu->addMenuSelectorItem("11");
+	m_gamemodeMenu->addMenuSelectorItem("122");
+	m_gamemodeMenu->addMenuSelectorItem("1333");
+	m_gamemodeMenu->setStaticSelection(true, 0);
+
+	m_gamemodeMenu->addMenuSelector("respawntime");
+	m_gamemodeMenu->addMenuSelectorItem("2");
+	m_gamemodeMenu->addMenuSelectorItem("21");
+	m_gamemodeMenu->addMenuSelectorItem("222");
+	m_gamemodeMenu->addMenuSelectorItem("2333");
+	m_gamemodeMenu->setStaticSelection(true, 0);
+
+	m_gamemodeMenu->addMenuSelector("Gravity");
+	m_gamemodeMenu->addMenuSelectorItem("none");
+	m_gamemodeMenu->addMenuSelectorItem("moon");
+	m_gamemodeMenu->addMenuSelectorItem("earth");
+	m_gamemodeMenu->addMenuSelectorItem("mars");
+	m_gamemodeMenu->setStaticSelection(true, 0);
+
+
+
+
+
+	
+	m_gamemodeMenu->setPosition(Vector3(5, -0.5, 0));
+	m_gamemodeMenu->setFacingDirection(Vector3(-1, 0, 0));
+
+
+
+
+}
+
+void MenuState::initCharacter() {
+
+}
+
+void MenuState::initMap() {
+
+}
+
+void MenuState::initProfile() {
+	m_profileMenu = new MenuHandler();
+	m_scene.addObject(m_profileMenu);
+
+	m_profileMenu->addMenuBox("kjasd test");
+	m_profileMenu->addMenuBox("asdsad test");
+	m_profileMenu->addMenuBox("team test");
+	m_profileMenu->setPosition(Vector3(-5, -0.5, 0));
+	m_profileMenu->setFacingDirection(Vector3(1, 0, 0));
+
+
+}
+
+void MenuState::initOptions() {
+
+}
+
+
+
+
+
+
+// CHANGEMENU
+
+void MenuState::setMainSelect(bool active) {
+	if (active) {
+		m_mainMenu->activate(); 
+		m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget());
+		m_activeMenu = MAINMENU;
+
+	}
+	else {
+		m_mainMenu->deActivate();
+
+
+
+	}
+}
+
+void MenuState::setGamemodeSelect(bool active) {
+	if (active) {
+		m_gamemodeMenu->activate();
+		m_playerCamController->setTargets(m_gamemodeMenu, m_gamemodeMenu->getTarget(), m_gamemodeMenu->getExtraTarget());
+		m_activeMenu = STARTMENU;
+		m_activeSubMenu = GAMEOPTIONSELECT;
+	}
+	else {
+		m_gamemodeMenu->deActivate();
+
+
+	}
+
+
+
+
+}
+
+void MenuState::setCharacterSelect(bool active) {
+	if (active) {
+		this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1],
+			this->playerMenu[2], this->playerMenu[3]);
+		this->menuList[m_selector]->setLightColor(m_offColor);
+
+		m_activeMenu = STARTMENU;
+
+	}
+	else {
+
+
+
+	}
+
+}
+
+void MenuState::setMapSelect(bool active) {
+
+}
+
+void MenuState::setProfileMenu(bool active) {
+	if (active) {
+		m_profileMenu->activate();
+		m_playerCamController->setTargets(m_profileMenu->getTarget());
+		m_activeMenu = PROFILEMENU;
+
+	}
+	else {
+		m_profileMenu->deActivate();
+
+
+	}
+}
+
+void MenuState::setOptionsMenu(bool active) {
+
+
+}
+
+
+
+void MenuState::updateCamera() {
+
+}
 
 
 
@@ -524,3 +801,4 @@ void MenuState::changeMenu(int change, int active)
 	}
 	
 }
+

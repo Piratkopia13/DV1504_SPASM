@@ -134,6 +134,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
@@ -229,6 +232,9 @@
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuText.h" />
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
     <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />

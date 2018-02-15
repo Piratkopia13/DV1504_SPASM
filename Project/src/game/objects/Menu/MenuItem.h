@@ -6,7 +6,7 @@ public:
 	MenuItem(Model* model, const DirectX::SimpleMath::Vector3& pos);
 	~MenuItem();
 
-	bool useColor;
+	bool m_useColor;
 
 	virtual void draw();
 };

@@ -99,6 +99,9 @@
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
     <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
     <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
     <ClCompile Include="src\sail\graphics\Particle.cpp" />
@@ -204,6 +207,9 @@
     <ClInclude Include="src\sail\graphics\Particle.h" />
     <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
     <ClInclude Include="src\game\ParticleHandler.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuText.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
