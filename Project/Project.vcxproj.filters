@@ -15,6 +15,7 @@
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
