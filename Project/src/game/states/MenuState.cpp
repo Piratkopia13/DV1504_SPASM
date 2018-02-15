@@ -142,6 +142,7 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController->setFollowSpeed(8);
 
 	m_app->getGameSettings().reset();
+	m_app->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Loop2);
 }
 
 

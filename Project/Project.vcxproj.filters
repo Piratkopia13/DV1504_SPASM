@@ -206,7 +206,11 @@
     <None Include="res\models\capture_point.fbx" />
   </ItemGroup>
   <ItemGroup>
-    <Media Include="res\sounds\Explo1.wav" />
-    <Media Include="res\sounds\NightAmbienceSimple_02.wav" />
+    <Media Include="res\sounds\effect\laser.wav" />
+    <Media Include="res\sounds\effect\shock.wav" />
+    <Media Include="res\sounds\effect\explosion.wav" />
+    <Media Include="res\sounds\ambient\windows95.wav" />
+    <Media Include="res\sounds\ambient\loop1.wav" />
+    <Media Include="res\sounds\ambient\loop2.wav" />
   </ItemGroup>
 </Project>

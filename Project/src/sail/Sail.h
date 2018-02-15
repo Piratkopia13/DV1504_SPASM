@@ -21,7 +21,6 @@
 #include <Keyboard.h>
 #include <Mouse.h>
 #include <GamePad.h>
-#include <Audio.h>
 
 #include "Application.h"
 #include "Utils/Utils.h"
@@ -44,4 +43,5 @@
 #include "graphics/Skybox.h"
 #include "graphics/renderer/DeferredRenderer.h"
 #include "resources/DXCubeMap.h"
+#include "resources/audio/SoundManager.h"
 #include "states/StateStack.h"

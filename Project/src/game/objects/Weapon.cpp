@@ -1,5 +1,7 @@
 #include "Weapon.h"
 
+#include "../../sail/resources/audio/SoundManager.h"
+
 using namespace DirectX::SimpleMath;
 
 Weapon::Weapon() {
@@ -64,6 +66,8 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		if (m_upgrade->damageActive()) {
 			extraDamage = m_upgrade->damageMultiplier();
 		}
+
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
 
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
