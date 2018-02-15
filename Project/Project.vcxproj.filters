@@ -98,6 +98,7 @@
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -203,5 +205,15 @@
     <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
     <None Include="res\levels\symmetric.level" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sounds\effect\laser.wav" />
+    <Media Include="res\sounds\effect\shock.wav" />
+    <Media Include="res\sounds\effect\explosion.wav" />
+    <Media Include="res\sounds\ambient\windows95.wav" />
+    <Media Include="res\sounds\ambient\loop1.wav" />
+    <Media Include="res\sounds\ambient\loop2.wav" />
+    <Media Include="res\sounds\effect\death\male_death.wav" />
+    <Media Include="res\sounds\effect\death\goblin_death.wav" />
   </ItemGroup>
 </Project>

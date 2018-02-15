@@ -91,7 +91,7 @@
       <PreprocessorDefinitions>_UNICODE;UNICODE;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;libfbxsdk.lib;xaudio2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -115,7 +115,7 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;libfbxsdk.lib;xaudio2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
     </Link>
@@ -200,6 +200,7 @@
     <ClCompile Include="src\sail\graphics\shader\VertexShader.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
     <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
     <ClCompile Include="src\sail\resources\DXCubeMap.cpp" />
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
@@ -299,6 +300,7 @@
     <ClInclude Include="src\sail\graphics\shader\VertexShader.h" />
     <ClInclude Include="src\sail\graphics\text\Text.h" />
     <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
     <ClInclude Include="src\sail\resources\DXCubeMap.h" />
     <ClInclude Include="src\sail\resources\DXTexture.h" />
     <ClInclude Include="src\sail\resources\loaders\TGALoader.h" />
@@ -421,6 +423,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sounds\ambient\loop1.wav" />
+    <Media Include="res\sounds\ambient\loop2.wav" />
+    <Media Include="res\sounds\effect\death\male_death.wav" />
+    <Media Include="res\sounds\effect\death\goblin_death.wav" />
+    <Media Include="res\sounds\effect\laser.wav" />
+    <Media Include="res\sounds\effect\shock.wav" />
+    <Media Include="res\sounds\effect\explosion.wav" />
+    <Media Include="res\sounds\ambient\windows95.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
