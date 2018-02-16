@@ -294,13 +294,13 @@ void Character::update(float dt) {
 
 	//----Character turn animation----
 	float tempRotation = getTransform().getRotations().y;
-	if (std::signbit(m_input.aim.x) && tempRotation > -1.57f) {
+	if (std::signbit(m_input.aim.x) && tempRotation < 4.71f) {
 		m_movement.xDirection = -1.0f;
-		getTransform().rotateAroundY(max(-15.7f * dt, -1.57f));
+		getTransform().setRotations(Vector3(0.0f, min(tempRotation + 15.7f * dt, 4.71f), 0.0f));
 	}
-	else if (!std::signbit(m_input.aim.x) && tempRotation < 1.57f) {
+	else if (!std::signbit(m_input.aim.x) && tempRotation > 1.57f) {
 		m_movement.xDirection = 1.0f;
-		getTransform().rotateAroundY(min(15.7f * dt, 1.57f));
+		getTransform().setRotations(Vector3(0.0f, max(tempRotation - 15.7f * dt, 1.57f), 0.0f));
 	}
 	//--------------------------------
 
