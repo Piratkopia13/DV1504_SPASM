@@ -140,7 +140,6 @@ void PayloadGamemode::replacePoint() {
 	while (newIndex == m_currentActivePoint) {
 		newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
 	}
-	m_controlNodes[m_currentActivePoint]->reset();
 
 	m_currentActivePoint = newIndex;
 }

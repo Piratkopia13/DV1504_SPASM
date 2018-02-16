@@ -7,7 +7,7 @@ ControlNode::ControlNode(Model* model) {
 
 	m_beingCaptured = false;
 	m_timeTillCapture = 5.f;
-	m_timeTillScore = 3.f;
+	m_maxTimeCaptured = 10.f;
 	m_timeCaptured = 0.f;
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f);
@@ -245,26 +245,19 @@ bool ControlNode::updateNodeTimer(float dt) {
 			setTeam(m_teamOne.id);
 			m_timeCaptured = 0.f;
 		}
-		else {
-			m_timeCaptured += dt;
-			if (m_timeCaptured >= m_timeTillScore) {
-				m_timeCaptured = 0.f;
-				return true;
-			}
-		}
+		m_timeCaptured += dt;
 	}
 	if (m_teamTwo.isOwner) {
 		if (m_team != m_teamTwo.id) {
 			setTeam(m_teamTwo.id);
 			m_timeCaptured = 0.f;
 		}
-		else {
-			m_timeCaptured += dt;
-			if (m_timeCaptured >= m_timeTillScore) {
-				m_timeCaptured = 0.f;
-				return true;
-			}
-		}
+		m_timeCaptured += dt;
+	}
+
+	if (m_timeCaptured >= m_maxTimeCaptured) {
+		reset();
+		return true;
 	}
 
 
