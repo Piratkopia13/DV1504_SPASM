@@ -107,45 +107,6 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		Gamemode::addScore(dt, owningTeam);
 		Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
 	}
-
-
-	// Checks the indices all around each player to see if it's within a controlpoints radius
-	//for (Grid::Index cn_index : m_indices) {
-	//	for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
-	//		bool playerColliding = false;
-	//		std::vector<Grid::Index> indices = Grid::convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
-
-	//		for (int x = cn_index.x - m_radius; x < cn_index.x + m_radius + 1; x++) 
-	//			for (int y = cn_index.y; y < cn_index.y + m_radius + 1; y++) 
-	//				for (Grid::Index p_index : indices) 
-	//					if (p_index.x == x && p_index.y == y) 
-	//						playerColliding = true;
-	//			
-	//		if (playerColliding) {
-	//			if (charHandler->getCharacter(i)->getTeam() == 1)
-	//				numOfTeam[index].x += 1;
-	//			else
-	//				numOfTeam[index].y += 1;
-	//		}
-	//	}
-
-	//	m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);
-	//	//Logger::log(m_controlNodes[0]->getAsString());
-	//	// Points per x seconds
-	//	//if (m_controlNodes[index]->updateNodeTimer(dt)) {
-	//	//	Gamemode::addScore(1, m_controlNodes[index]->getTeam());
-	//	//}
-	//	// Points every update
-	//	if (m_controlNodes[index]->updateNodeTimer(dt)) {
-	//		replacePoint();
-	//	}
-	//	int owningTeam = m_controlNodes[index]->getTeam();
-	//	if (owningTeam != 0) {
-	//		Gamemode::addScore(dt, owningTeam);
-	//		Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
-	//	}
-	//	index++;
-	//}
 }
 
 void PayloadGamemode::draw() {
@@ -169,18 +130,6 @@ int PayloadGamemode::checkWin() {
 		m_teamWin = 2;
 	if (m_teamWin != 0 && blueScore == redScore)
 		m_teamWin = -1;
-
-	/*if (Gamemode::getGametime() <= 0.f) {
-		if (redScore > blueScore) {
-			m_teamWin = 1;
-		}
-		else if (blueScore > redScore) {
-			m_teamWin = 2;
-		}
-		else {
-			m_teamWin = -1;
-		}
-	}*/
 
 	return m_teamWin;
 }
