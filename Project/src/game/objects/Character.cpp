@@ -344,15 +344,16 @@ void Character::draw() {
 	m_leftArm->setTransform(&armTransform);
 	m_head->setTransform(&bodyTransform);
 
-	model->getMaterial()->setColor(lightColor*(m_playerHealth.healthPercent + 1.f));
-	m_leftArm->getMaterial()->setColor(lightColor*(m_playerHealth.healthPercent + 1.f));
-	m_head->getMaterial()->setColor(lightColor*(m_playerHealth.healthPercent + 1.f));
+	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
+	model->getMaterial()->setColor(lightColor*(colorGrad));
+	m_leftArm->getMaterial()->setColor(lightColor*(colorGrad));
+	m_head->getMaterial()->setColor(lightColor*(colorGrad));
 
 	model->draw();
 	m_leftArm->draw();
 	m_head->draw();
 	if (m_weapon->getHeld()) {
-		m_weapon->setLightColor(lightColor*(m_playerHealth.healthPercent + 1.f));
+		m_weapon->setLightColor(lightColor*(colorGrad));
 		m_weapon->draw();
 	}
 	if (m_hook) { // && !m_movement.inCover) 
