@@ -15,7 +15,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_scoreToWin = 100.f;
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
-	m_currentActivePoint = -1;
 
 	m_teamOneColor = Application::getInstance()->getGameSettings().teamOneColor;
 	m_teamTwoColor = Application::getInstance()->getGameSettings().teamTwoColor;
@@ -33,13 +32,13 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
 	}
 
+	m_currentActivePoint = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
 	replacePoint();
 }
 
 PayloadGamemode::~PayloadGamemode() {}
 
 void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
-	int index = 0;
 
 	Gamemode::update(nullptr, dt);
 
@@ -75,51 +74,78 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 
 	
-	std::vector<Grid::Index> numOfTeam;
-	numOfTeam.resize(m_numOfNodes);
+	Grid::Index numOfTeam = { 0, 0 };
 
-	for (int i = 0; i < m_numOfNodes; i++) {
-		numOfTeam[i].x = 0;
-		numOfTeam[i].y = 0;
+	Grid::Index cnIndex = m_indices[m_currentActivePoint];
+	for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+		bool playerColliding = false;
+		std::vector<Grid::Index> indices = Grid::convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
+
+		for (int x = cnIndex.x - m_radius; x < cnIndex.x + m_radius + 1; x++)
+			for (int y = cnIndex.y; y < cnIndex.y + m_radius + 1; y++)
+				for (Grid::Index p_index : indices)
+					if (p_index.x == x && p_index.y == y)
+						playerColliding = true;
+
+		if (playerColliding) {
+			if (charHandler->getCharacter(i)->getTeam() == 1)
+				numOfTeam.x += 1;
+			else
+				numOfTeam.y += 1;
+		}
 	}
+
+	m_controlNodes[m_currentActivePoint]->capture(numOfTeam.x, numOfTeam.y);
+
+	// Points every update
+	if (m_controlNodes[m_currentActivePoint]->updateNodeTimer(dt)) {
+		replacePoint();
+	}
+
+	int owningTeam = m_controlNodes[m_currentActivePoint]->getTeam();
+	if (owningTeam != 0) {
+		Gamemode::addScore(dt, owningTeam);
+		Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
+	}
+
 
 	// Checks the indices all around each player to see if it's within a controlpoints radius
-	for (Grid::Index cn_index : m_indices) {
-		for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
-			bool playerColliding = false;
-			std::vector<Grid::Index> indices = Grid::convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
+	//for (Grid::Index cn_index : m_indices) {
+	//	for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+	//		bool playerColliding = false;
+	//		std::vector<Grid::Index> indices = Grid::convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
 
-			for (int x = cn_index.x - m_radius; x < cn_index.x + m_radius + 1; x++) 
-				for (int y = cn_index.y; y < cn_index.y + m_radius + 1; y++) 
-					for (Grid::Index p_index : indices) 
-						if (p_index.x == x && p_index.y == y) 
-							playerColliding = true;
-				
-			if (playerColliding) {
-				if (charHandler->getCharacter(i)->getTeam() == 1)
-					numOfTeam[index].x += 1;
-				else
-					numOfTeam[index].y += 1;
-			}
-		}
+	//		for (int x = cn_index.x - m_radius; x < cn_index.x + m_radius + 1; x++) 
+	//			for (int y = cn_index.y; y < cn_index.y + m_radius + 1; y++) 
+	//				for (Grid::Index p_index : indices) 
+	//					if (p_index.x == x && p_index.y == y) 
+	//						playerColliding = true;
+	//			
+	//		if (playerColliding) {
+	//			if (charHandler->getCharacter(i)->getTeam() == 1)
+	//				numOfTeam[index].x += 1;
+	//			else
+	//				numOfTeam[index].y += 1;
+	//		}
+	//	}
 
-		m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);
-		//Logger::log(m_controlNodes[0]->getAsString());
-		// Points per x seconds
-		//if (m_controlNodes[index]->updateNodeTimer(dt)) {
-		//	Gamemode::addScore(1, m_controlNodes[index]->getTeam());
-		//}
-		// Points every update
-		if (m_controlNodes[index]->updateNodeTimer(dt)) {
-			replacePoint();
-		}
-		int owningTeam = m_controlNodes[index]->getTeam();
-		if (owningTeam != 0) {
-			Gamemode::addScore(dt, owningTeam);
-			Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
-		}
-		index++;
-	}
+	//	m_controlNodes[index]->capture(numOfTeam[index].x, numOfTeam[index].y);
+	//	//Logger::log(m_controlNodes[0]->getAsString());
+	//	// Points per x seconds
+	//	//if (m_controlNodes[index]->updateNodeTimer(dt)) {
+	//	//	Gamemode::addScore(1, m_controlNodes[index]->getTeam());
+	//	//}
+	//	// Points every update
+	//	if (m_controlNodes[index]->updateNodeTimer(dt)) {
+	//		replacePoint();
+	//	}
+	//	int owningTeam = m_controlNodes[index]->getTeam();
+	//	if (owningTeam != 0) {
+	//		Gamemode::addScore(dt, owningTeam);
+	//		Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
+	//	}
+	//	index++;
+	//}
 }
 
 void PayloadGamemode::draw() {
@@ -166,7 +192,7 @@ void PayloadGamemode::replacePoint() {
 		newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
 	}
 	//FIX REST
-	m_controlNodes[m_currentActivePoint]->rensa();
+	m_controlNodes[m_currentActivePoint]->reset();
 
 	m_currentActivePoint = newIndex;
 }

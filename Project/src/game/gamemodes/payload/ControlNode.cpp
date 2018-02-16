@@ -259,6 +259,26 @@ bool ControlNode::updateNodeTimer(float dt) {
 	return false;
 }
 
+void ControlNode::reset() {
+	m_team = 0;
+
+	m_beingCaptured = false;
+	m_timeCaptured = 0.f;
+
+	m_teamOne.ownershipTime = 0.f;
+	m_teamOne.capturing = false;
+	m_teamOne.isOwner = false;
+	m_teamOne.timeCapturing = 0.f;
+
+
+	m_teamTwo.ownershipTime = 0.f;
+	m_teamTwo.capturing = false;
+	m_teamTwo.isOwner = false;
+	m_teamTwo.timeCapturing = 0.f;
+
+	m_ownershipColor = m_teamZeroColor;
+}
+
 std::string ControlNode::getAsString() {
 	std::string toReturn;
 	toReturn += "Team 1 - Owner: " + std::to_string(m_teamOne.isOwner) +
