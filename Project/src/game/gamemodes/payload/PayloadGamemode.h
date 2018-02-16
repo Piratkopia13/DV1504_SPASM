@@ -19,6 +19,7 @@ public:
 
 	virtual int checkWin();
 
+private:
 	void replacePoint();
 
 private:
