@@ -110,8 +110,9 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 }
 
 void PayloadGamemode::draw() {
-	for (const auto& cn : m_controlNodes)
-		cn->draw();
+	//for (const auto& cn : m_controlNodes)
+	//	cn->draw();
+	m_controlNodes[m_currentActivePoint]->draw();
 }
 
 void PayloadGamemode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
