@@ -37,6 +37,11 @@ public:
 	*/
 	bool updateNodeTimer(float dt);
 
+	/*
+	Resets all the values of the controlnode
+	*/
+	void reset();
+
 	std::string getAsString();
 
 private:
