@@ -24,7 +24,7 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
-	m_level = std::make_unique<Level>("the_void.level");
+	m_level = std::make_unique<Level>("symmetric.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
