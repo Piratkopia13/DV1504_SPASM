@@ -50,8 +50,11 @@ private:
 
 	DirectX::SimpleMath::Vector4 m_onColor;
 	DirectX::SimpleMath::Vector4 m_offColor;
+
+	std::vector<DirectX::SimpleMath::Vector4> m_teamColors;
+
+
 	DirectX::SimpleMath::Vector4 m_orangeColor;
-	DirectX::SimpleMath::Vector4 m_blueColor;
 
 
 	std::vector<MenuItem*> m_area;
@@ -59,8 +62,7 @@ private:
 
 	struct Profile {
 		size_t name[5];
-		int kills;
-		int wins;
+
 	};
 
 	struct MenuPlayer {
@@ -163,16 +165,25 @@ private:
 
 	std::vector<MenuText*> m_menuText;
 
-
+	//MAIN MENU
 	MenuHandler* m_mainMenu;
+
+	//GAMEMODE MENU
 	MenuHandler* m_gamemodeMenu;
-	MenuHandler* m_characterMenu;
+
+	std::vector<MenuHandler*> m_characterMenu;
+	std::vector<Application::GameSettings::player*> m_players;
+	std::vector<MenuItem*> m_playerMenuModels;
+
+	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;
 	MenuHandler* m_optionsMenu;
 
 	void initMain();
 	void initGamemode();
-	void initCharacter();
+	void initCharacterModels();
+	void initCharacter(size_t spot);
+	void removeCharacter(size_t spot);
 	void initMap();
 
 	void initProfile();
@@ -190,6 +201,7 @@ private:
 	void setOptionsMenu(bool active);
 
 	void updateCamera();
+	void startGame();
 
 	void changeMenu(int change, int active);
 	void setColor(int player, DirectX::SimpleMath::Vector4 color) {

@@ -20,6 +20,7 @@ public:
 	void setgrowth(const DirectX::SimpleMath::Vector3& growth);
 	void setDirection(const DirectX::SimpleMath::Vector3& direction);
 	void setSize(float size);
+	void setActiveOption(size_t option);
 
 	void next();
 	void back();

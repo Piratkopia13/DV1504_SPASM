@@ -6,6 +6,7 @@ using namespace DirectX::SimpleMath;
 MenuHandler::MenuHandler() {
 	m_offset = 0.12f;
 	m_size = 1.0f;
+	m_step = 0;
 	m_activeItem = 0;
 	m_active = false;
 	m_position = Vector3(0, 0, 0);
@@ -50,6 +51,18 @@ void MenuHandler::update(float dt) {
 
 }
 
+void MenuHandler::reset() {
+	for (size_t i = 0; i < m_itemList.size(); i++) {
+		Memory::safeDelete(m_itemList[i].item);
+		Memory::safeDelete(m_itemList[i].text);
+		Memory::safeDelete(m_itemList[i].selector);
+	}
+	m_itemList.clear();
+	m_activeItem = 0;
+	m_active = false;
+
+}
+
 void MenuHandler::setPosition(const DirectX::SimpleMath::Vector3 & position) {
 	m_position = position;
 	Object::setPosition(position);
@@ -83,6 +96,22 @@ void MenuHandler::setOffColor(const DirectX::SimpleMath::Vector4 & color) {
 void MenuHandler::setStaticSelection(bool active, size_t sides) {
 	if(m_itemList.back().selector)
 		m_itemList.back().selector->setStaticSelection(active, sides);
+}
+
+void MenuHandler::setStep(float step) {
+	m_step = step;
+	updateTransform();
+}
+
+void MenuHandler::setOptionAt(size_t index, size_t option) {
+	if(index < m_itemList.size())
+		if (m_itemList[index].selector) {
+			m_itemList[index].selector->setActiveOption(option);
+
+
+
+		}
+
 }
 
 void MenuHandler::addMenuBox(std::string text) {
@@ -313,15 +342,15 @@ void MenuHandler::updateTransform() {
 			m_itemList[i].selector->setSize(m_size*3);
 			m_itemList[i].selector->setgrowth(right);
 			m_itemList[i].selector->setDirection(m_direction);
-			extraHeight += m_growth * 0.1f;
 
 			if (m_itemList[i].text) {
-				m_itemList[i].text->setPosition(position - m_growth * 0.4f*m_size + extraHeight);
+				m_itemList[i].text->setPosition(position - m_growth * 0.3f*m_size + extraHeight);
 				m_itemList[i].text->setDirection(right);
 				m_itemList[i].text->setSize(m_size*3);
 				m_itemList[i].text->setFacingDirection(m_direction);
 
 			}
+			extraHeight += m_growth * m_step;
 
 
 

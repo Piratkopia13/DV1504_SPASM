@@ -12,6 +12,7 @@ MenuItem::MenuItem(Model* model, const Vector3& pos)
 {
 	this->setModel(model);
 	this->setPosition(pos);
+
 }
 
 

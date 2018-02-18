@@ -102,6 +102,19 @@ void MenuSelector::setSize(float size) {
 	updatePositions();
 }
 
+void MenuSelector::setActiveOption(size_t option) {
+	if (option < m_options.size()) {
+		int rounds = 0;
+
+		while (option != m_selector && rounds < m_options.size()+1) {
+			next();
+			rounds++;
+		}
+
+
+	}
+}
+
 void MenuSelector::next() {
 
 	if (m_options.size() > 0) {

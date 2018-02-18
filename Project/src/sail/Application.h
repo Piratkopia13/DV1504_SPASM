@@ -10,17 +10,33 @@
 class Application {
 
 public:
+	struct Profile {
+		std::string name;
+		size_t kills;
+		size_t deaths;
+		size_t wins;
+		size_t losses;
+		float winRatio;
+		bool preOrder;
+	};
 	
 	struct GameSettings {
 		struct player {
+			Profile* profile = nullptr;
 			int port;
 			int team;
 			DirectX::SimpleMath::Vector4 color;
 			int model;
+			bool ready;
 		};
 		int used;
 		int level;
 		int gamemode;
+		int scoreLimit;
+		int timeLimit;
+		float respawnTime;
+		float gravityScale;
+
 		DirectX::SimpleMath::Vector4 teamOneColor;
 		DirectX::SimpleMath::Vector4 teamTwoColor;
 		std::vector<player> players;
@@ -31,6 +47,9 @@ public:
 			players.clear();
 		};
 	};
+
+
+
 public:
 	Application(int windowWidth, int windowHeight, char* windowTitle, HINSTANCE hInstance);
 	virtual ~Application();
@@ -55,6 +74,7 @@ public:
 
 	Input& getInput();
 	GameSettings& getGameSettings();
+	std::vector<Profile>& getProfiles();
 
 private:
 	static Application* m_instance;
@@ -67,4 +87,6 @@ private:
 
 	Input m_input;
 	GameSettings m_gameVariables;
+	std::vector<Profile> m_profiles;
+
 };

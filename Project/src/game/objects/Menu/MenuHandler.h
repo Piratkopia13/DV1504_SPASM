@@ -13,6 +13,7 @@ public:
 	~MenuHandler();
 	void draw();
 	void update(float dt);
+	void reset();
 
 	void setPosition(const DirectX::SimpleMath::Vector3& position);
 	void setGrowth(const DirectX::SimpleMath::Vector3& growth);
@@ -20,6 +21,8 @@ public:
 	void setOnColor(const DirectX::SimpleMath::Vector4& color);
 	void setOffColor(const DirectX::SimpleMath::Vector4& color);
 	void setStaticSelection(bool active, size_t sides);
+	void setStep(float step);
+	void setOptionAt(size_t index, size_t option);
 
 	void addMenuBox(std::string text);
 	void addTextItem(std::string text);
@@ -36,6 +39,7 @@ public:
 
 	size_t getActive();
 	size_t getActiveOption();
+	
 	size_t getOptionAt(size_t index);
 	Object* getTarget();
 	Object* getExtraTarget();
@@ -64,6 +68,7 @@ private:
 	DirectX::SimpleMath::Vector3 m_rotation;
 	float m_offset;
 	float m_size;
+	float m_step;
 
 	DirectX::SimpleMath::Vector4 m_onColor;
 	DirectX::SimpleMath::Vector4 m_offColor;
