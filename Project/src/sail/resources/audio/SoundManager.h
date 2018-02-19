@@ -106,5 +106,6 @@ private:
 	XAUDIO2_BUFFER m_buffer;
 	WAVEFORMATEXTENSIBLE m_WFX;
 	
+	float m_playtime;
 
 };

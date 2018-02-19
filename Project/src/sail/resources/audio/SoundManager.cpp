@@ -98,7 +98,10 @@ void SoundManager::playSoundEffect(const SoundEffect soundID) {
 		m_sourceVoices[m_currSVIndex]->SetVolume(1.0f);
 
 	m_sourceVoices[m_currSVIndex]->SubmitSourceBuffer(&buffer);
+	float pitch = Utils::rnd() * 0.4f + 0.5f;
+	m_sourceVoices[m_currSVIndex]->SetFrequencyRatio(pitch);
 	m_sourceVoices[m_currSVIndex]->Start(0);
+	//m_sourceVoices[m_currSVIndex]->SetFrequencyRatio(1.f);
 	m_currSVIndex++;
 	m_currSVIndex = m_currSVIndex % NUMBER_OF_CHANNELS;
 
@@ -296,6 +299,10 @@ HRESULT Sound::Initialize(IXAudio2* audioEngine, wchar_t* file) {
 	m_buffer.AudioBytes = dwChunkSize;  //size of the audio buffer in bytes
 	m_buffer.pAudioData = pDataBuffer;  //buffer containing audio data
 	m_buffer.Flags = XAUDIO2_END_OF_STREAM; // tell the source voice not to expect any data after this buffer
+
+
+	// Gets the length in seconds of the audio
+	m_playtime = float(m_buffer.AudioBytes) / float(m_WFX.Format.nAvgBytesPerSec);
 
 	return S_OK;
 }
