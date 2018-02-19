@@ -42,6 +42,8 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	auto* dxm = Application::getInstance()->getDXManager();
 
 	dxm->disableDepthBuffer();
+	//// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	//dxm->disableConservativeRasterizer();
 
 	m_brightnessCutoffStage->run(inputTexture);
 	m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
@@ -60,10 +62,12 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	// Draw bloom using additive blending
 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage2->getOutput().getColorSRV(), 1);
 	m_fullscreenQuad.draw();
-	m_fullscreenQuad.draw();
+	//m_fullscreenQuad.draw();
 	dxm->disableAlphaBlending();
 
 	dxm->enableDepthBuffer();
+	//// Re-enable conservative rasterization
+	//dxm->enableBackFaceCulling();
 
 }
 

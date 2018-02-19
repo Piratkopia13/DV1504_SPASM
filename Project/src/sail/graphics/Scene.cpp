@@ -128,6 +128,9 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		dxm->renderToBackBuffer();
 	}
 
+	// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	dxm->disableConservativeRasterizer();
+
 	// Do the light pass (using additive blending)
 	m_deferredRenderer.doLightPass(m_lights, cam, (m_doShadows) ? &m_dirLightShadowMap : nullptr);
 
@@ -138,6 +141,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 		m_postProcessPass.run(*m_deferredOutputTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 	}
+
+	// Re-enable conservative rasterization
+	dxm->enableBackFaceCulling();
+
 	// Change active depth buffer to the one used in the deferred geometry pass
 	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 }
