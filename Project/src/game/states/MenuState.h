@@ -77,31 +77,7 @@ private:
 		DirectX::SimpleMath::Vector4 color;
 	};
 	
-	MenuPlayer m_player[4];
-	Teams m_team;
-
-
-	struct Profile {
-		size_t name[5];
-		int kills;
-		int wins;
-	};
-
-	struct MenuPlayer {
-		bool online;
-		bool ready;
-		size_t modelIndex;
-		size_t team;
-		Profile profile;
-
-	};
-	struct Teams {
-		DirectX::SimpleMath::Vector4 color;
-	};
 	
-	MenuPlayer m_player[4];
-	Teams m_team;
-
 	// MENU 0
 
 	enum m_activeMenu {

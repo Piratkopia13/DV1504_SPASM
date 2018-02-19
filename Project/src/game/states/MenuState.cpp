@@ -744,14 +744,7 @@ bool MenuState::processInput(float dt) {
 
 				}	break;
 
-				case PROFILEMENU:
-					if (a) {
-
-					}
-					if (b) {
-						setProfileMenu(false);
-						setMainSelect(true);
-					}
+			
 
 
 					break;
