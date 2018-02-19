@@ -909,7 +909,7 @@ void MenuState::initCharacterModels() {
 }
 
 void MenuState::initCharacter(size_t spot) {
-	static Vector3 charMid(5, -2, -7);
+	static Vector3 charMid(7, -2, -7);
 
 	if (m_characterMenu.size() == 0) {
 		for (size_t i = 0; i < 4; i++) {
@@ -922,7 +922,7 @@ void MenuState::initCharacter(size_t spot) {
 	
 	MenuHandler* temp = m_characterMenu[spot];
 	temp->reset();
-	temp->setPosition(charMid + Vector3(0.0f, 0.0f, -1.0f)*((float)spot - 2.0f) * 2.0f);
+	temp->setPosition(charMid + Vector3(0.0f, 0.0f, -1.0f)*((float)spot - 1.5f) * 3.5f);
 	
 	temp->setFacingDirection(Vector3(-1.0, 0, 0));
 	temp->addMenuSelector("profile");
