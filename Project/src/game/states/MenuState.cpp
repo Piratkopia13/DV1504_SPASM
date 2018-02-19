@@ -294,7 +294,19 @@ bool MenuState::processInput(float dt) {
 			}
 		}
 
+		if (kbTracker.pressed.F) {
+			static int camP = 0;
+			camP++;
+			if (camP > 2)
+				camP = 0;
+			if (camP == 0) 
+				m_playerCamController->setPosition(Vector3(0, 0, 0));			
+			if(camP == 1)
+				m_playerCamController->setPosition(Vector3(-10, 15, -10));
+			if(camP == 2)
+				m_playerCamController->setPosition(Vector3(10, 15, 10));
 
+		}
 		
 
 		
@@ -717,6 +729,17 @@ bool MenuState::processInput(float dt) {
 								m_selector = 0;
 							}
 							break;			
+					}
+
+					break;
+
+				case PROFILEMENU:
+					if (a) {
+
+					}
+					if (b) {
+						setProfileMenu(false);
+						setMainSelect(true);
 					}
 
 				}	break;
