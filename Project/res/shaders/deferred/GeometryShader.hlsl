@@ -106,7 +106,7 @@ GBuffers PSMain(PSIn input) {
 	if (material.hasDiffuseTexture)
 		gbuffers.diffuse *= tex[0].Sample(ss, input.texCoords);
 	if (gbuffers.diffuse.r == 1.0f && gbuffers.diffuse.g == 1.0f && gbuffers.diffuse.b == 1.0f) {
-	  gbuffers.diffuse *= float4(material.modelColor.rgb, 1.0f);
+	  gbuffers.diffuse *= material.modelColor;
 	}
     gbuffers.diffuse.rgb *= material.kd;
 	

@@ -9,7 +9,7 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(60.f, 1280.f / 720.f, 0.1f, 100000.f)
+, m_cam(30.f, 1280.f / 720.f, 0.1f, 100000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
@@ -46,7 +46,7 @@ GameState::GameState(StateStack& stack)
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
 	// Set up the scene
-	m_scene.addSkybox(L"skybox_space_512.dds");
+	//m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
 	Vector3 color(0.9f, 0.9f, 0.9f);
  	Vector3 direction(0.4f, -0.6f, 1.0f);
@@ -124,7 +124,7 @@ GameState::GameState(StateStack& stack)
 
 
 	// Set up background infinity planes
-	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f));
+	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
 	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
 	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
 	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile.tga");
@@ -210,7 +210,7 @@ bool GameState::resize(int width, int height) {
 bool GameState::update(float dt) {
 
 	// Infinity planes color update
-	static float epilepsyAmount = 1.5f;
+	static float epilepsyAmount = 0.7f;
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;

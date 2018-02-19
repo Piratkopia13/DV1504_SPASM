@@ -117,11 +117,13 @@ void ParticleEmitter::update(float dt) {
 		}
 	}
 
+#ifndef _DEBUG
 	// Only sort if neccessary
 	//if (!m_useAdditiveBlending)
 		// TOOD: try different sorting algorithms
 		std::sort(m_instanceData.begin(), m_instanceData.begin() + m_particles.size(), Compare(*this));
 	//insertionSort();
+#endif
 
 }
 
