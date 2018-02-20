@@ -204,6 +204,8 @@
     <ClCompile Include="src\sail\graphics\shader\VertexShader.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
     <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
+    <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
     <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
     <ClCompile Include="src\sail\resources\DXCubeMap.cpp" />
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
@@ -308,6 +310,8 @@
     <ClInclude Include="src\sail\graphics\shader\VertexShader.h" />
     <ClInclude Include="src\sail\graphics\text\Text.h" />
     <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
+    <ClInclude Include="src\sail\resources\audio\Sound.h" />
     <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
     <ClInclude Include="src\sail\resources\DXCubeMap.h" />
     <ClInclude Include="src\sail\resources\DXTexture.h" />
@@ -441,6 +445,7 @@
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />
     <Media Include="res\sounds\ambient\loop2.wav" />
+    <Media Include="res\sounds\ambient\theme.wav" />
     <Media Include="res\sounds\effect\death\male_death.wav" />
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\effect\laser.wav" />
