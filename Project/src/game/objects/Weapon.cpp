@@ -77,7 +77,8 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			extraDamage = m_upgrade->damageMultiplier();
 		}
 
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
+		float pitch = Utils::rnd() * 0.3f + 0.8f;
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.4f, pitch);
 
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
@@ -105,8 +106,9 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();
-				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
-				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
+				pitch = Utils::rnd() * 0.2f + 0.9f;
+				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
+				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 
 				Projectile* temp1 = new Projectile(
 					m_nozzlePos,
