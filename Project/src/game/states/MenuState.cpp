@@ -39,6 +39,9 @@ MenuState::MenuState(StateStack& stack)
 
 
 	auto& resMan = m_app->getResourceManager();
+	m_playerModels.push_back(resMan.getFBXModel("fisk").getModel());
+	m_playerModels.push_back(resMan.getFBXModel("trashbot").getModel());
+	m_playerModels.push_back(resMan.getFBXModel("unibot").getModel());
 
 	m_block = resMan.getFBXModel("block").getModel();
 	m_menuBlockModel = resMan.getFBXModel("block").getModel();
@@ -83,7 +86,7 @@ MenuState::MenuState(StateStack& stack)
 	//STARTMENU
 	initGamemode();
 	initCharacterModels();
-	initMap();
+	m_mapMenu = nullptr;
 
 	//CUSTOMISABILITY
 	initProfile();
@@ -176,6 +179,7 @@ MenuState::~MenuState()
 		Memory::safeDelete(m_characterMenu[i]);
 	Memory::safeDelete(m_profileMenu);
 	Memory::safeDelete(m_optionsMenu);
+	Memory::safeDelete(m_mapMenu);
 
 	for (size_t i = 0; i < m_players.size(); i++) {
 		Memory::safeDelete(m_players[i]);
@@ -343,7 +347,7 @@ bool MenuState::processInput(float dt) {
 		}
 		if(pressed)
 			switch (m_activeMenu) {
-				case MAINMENU:
+				case MAINMENU: {
 					if (down) {
 						m_mainMenu->next();
 						updateCamera();
@@ -372,21 +376,20 @@ bool MenuState::processInput(float dt) {
 								break;
 						}
 					}
+				}break;	
 
-
-					break;
 				case STARTMENU: {
 					switch (m_activeSubMenu) {
 						case GAMEOPTIONSELECT: {
 							if (a) {
+								m_app->getGameSettings().reset();
 								Application::getInstance()->getGameSettings().gamemode = m_gamemodeMenu->getOptionAt(GAMEMODE);
 								Application::getInstance()->getGameSettings().scoreLimit = m_gamemodeMenu->getOptionAt(SCORELIMIT);
 								Application::getInstance()->getGameSettings().timeLimit = m_gamemodeMenu->getOptionAt(TIMELIMIT);
 								Application::getInstance()->getGameSettings().respawnTime = m_gamemodeMenu->getOptionAt(RESPAWNTIME);
 								Application::getInstance()->getGameSettings().gravityScale = m_gamemodeMenu->getOptionAt(GRAVITY);
 
-								
-
+								initMap();
 
 								setGamemodeSelect(false);
 								setCharacterSelect(true);
@@ -411,15 +414,10 @@ bool MenuState::processInput(float dt) {
 							}
 
 							updateCamera();
-
-
-
 						}	break;
 						case PLAYERSELECT: {
-
 							// controller not online by default
 							int spot = -1;
-
 							//check if controller is online
 							for (size_t u = 0; u < m_players.size(); u++) {
 								if (m_players[u]) {
@@ -428,28 +426,19 @@ bool MenuState::processInput(float dt) {
 									} 
 								}
 							}
-							Logger::Warning("contrllerID: " + std::to_string(i));
-							Logger::log("online: "+std::to_string(spot));
-
 							if (a) {
 								if (spot == -1) {
 									//check for empty space
 									for (size_t u = 0; u < m_players.size(); u++) {
 										if (m_players[u] == nullptr) {											
 											spot = u;
-											break;
-											
+											break;										
 										}
-									}
-									Logger::log("check for empty: " + std::to_string(spot));
-									if (spot != -1) {
-										int asd = 0;
 									}
 									Application::GameSettings::player* temp = new Application::GameSettings::player;
 									if (spot == -1) {
 										//if spot not found, create one
 										spot = m_players.size();
-										Logger::log("creating Spot at: "+std::to_string(spot));
 										m_players.push_back(temp);
 
 									}
@@ -465,18 +454,11 @@ bool MenuState::processInput(float dt) {
 
 									}
 									else {
-										temp->team = spot % 2;
-										if (temp->team == 0) {
-											temp->color = m_app->getGameSettings().teamOneColor;
-											
-										}
-										if (temp->team == 1) {
-											temp->color = m_app->getGameSettings().teamTwoColor;
-
-										}
-										temp->color = m_teamColors[spot % 2];
-										m_characterMenu[spot]->setOptionAt(1, spot);
-										m_playerMenuModels[spot]->setLightColor(m_teamColors[temp->team]);
+										temp->team = spot * 0.5;
+										temp->color = m_teamColors[m_app->getGameSettings().teamColors[temp->team]];
+										m_characterMenu[spot]->setOptionAt(1, temp->team);
+										m_characterMenu[spot]->setOptionAt(2, m_app->getGameSettings().teamColors[temp->team]);
+										m_playerMenuModels[spot]->setLightColor(m_teamColors[m_app->getGameSettings().teamColors[temp->team]]);
 
 
 									}
@@ -486,25 +468,35 @@ bool MenuState::processInput(float dt) {
 									temp->ready = false;
 									
 									m_players[spot] = temp;
-									Logger::log("adding to spot: " + std::to_string(spot) +" with port: " + std::to_string(i));
-
 								}
 								else {
 									if(!m_players[spot]->ready) {
 										m_players[spot]->ready = true;
-										m_playerMenuModels[spot]->setLightColor(m_teamColors[m_players[spot]->team] * 3);
+										m_playerMenuModels[spot]->setLightColor(m_players[spot]->color * 2);
 									}
 									else {
-										startGame();
-										break;
+										int ready = 0;
+										for (size_t p = 0; p < m_players.size(); p++) {
+											if (m_players[p]) {
+												if (m_players[p]->ready)
+													ready++;
 
+											}
+											else
+												ready++;
+										}
+										if (ready == m_players.size()) {
+											setCharacterSelect(false);
+											setMapSelect(true);
+
+											updateCamera();
+										}
 									}
 								}
 							}
 
 							if (b) {
 								if (spot == -1) {
-
 									//controller not online, go back to game settings
 									for (size_t u = 0; u < m_players.size(); u++) {
 										Memory::safeDelete(m_players[u]);
@@ -514,49 +506,33 @@ bool MenuState::processInput(float dt) {
 									m_players.clear();
 									setCharacterSelect(false);
 									setGamemodeSelect(true);
-
 								}
 								else {
 									if (m_players[spot]->ready) {
 										m_players[spot]->ready = false;
-										m_playerMenuModels[spot]->setLightColor(m_teamColors[m_players[spot]->team]);
+										m_playerMenuModels[spot]->setLightColor(m_players[spot]->color);
 									}
 									else {
-
 										Memory::safeDelete(m_players[spot]);
 										m_players[spot] = nullptr;
 										removeCharacter(spot);
 										m_playerMenuModels[spot]->setLightColor(m_offColor);
 									}
-
 								}
-
-
 							}
-
-
 							if (down) {
 								if (spot > -1) {
 									if (!m_players[spot]->ready) {
 										m_characterMenu[spot]->next();
 									}
 								}
-
-
 							}
-
 							if (up) {
 								if (spot > -1) {
 									if (!m_players[spot]->ready) {
 										m_characterMenu[spot]->back();
 									}
-
-
 								}
-
-
-
-
 							}
 							if (right) {
 								if (spot > -1) {
@@ -566,7 +542,6 @@ bool MenuState::processInput(float dt) {
 										
 									}
 								}
-
 							}
 							if (left) {
 								if (spot > -1) {
@@ -576,7 +551,6 @@ bool MenuState::processInput(float dt) {
 										
 									}
 								}
-
 							}
 
 							if (left || right) {
@@ -585,31 +559,14 @@ bool MenuState::processInput(float dt) {
 										size_t option = m_characterMenu[spot]->getActive();
 										if (Application::getInstance()->getGameSettings().gamemode == DEATHMATCH) {
 
-
 											if (option == 1) {
 												size_t color = m_characterMenu[spot]->getOptionAt(option);
 												m_playerMenuModels[spot]->setLightColor(m_teamColors[color]);
 												m_players[spot]->color = m_teamColors[color];
 											}
-
-
-
-
-
 											if (option == 2) {
 												m_players[spot]->model = m_characterMenu[spot]->getOptionAt(2);
-												if (m_players[spot]->model == 0) {
-													Logger::log("model: 0");
-													m_playerMenuModels[spot]->setModel(m_playerModel);
-
-												}
-												if (m_players[spot]->model == 1) {
-													Logger::log("model: 1");
-													m_playerMenuModels[spot]->setModel(m_block);
-												}
-
-
-
+												m_playerMenuModels[spot]->setModel(m_playerModels[m_players[spot]->model]);
 											}
 
 										}
@@ -617,38 +574,28 @@ bool MenuState::processInput(float dt) {
 
 											if (option == 1) {
 												m_players[spot]->team = m_characterMenu[spot]->getOptionAt(option);
-												if (m_players[spot]->team == 0) {
-													m_players[spot]->color = m_app->getGameSettings().teamOneColor;
-												}
-												if (m_players[spot]->team == 1) {
-													m_players[spot]->color = m_app->getGameSettings().teamTwoColor;
-												}
+												m_players[spot]->color = m_teamColors[m_app->getGameSettings().teamColors[m_players[spot]->team]];
 												m_playerMenuModels[spot]->setLightColor(m_players[spot]->color);
+												m_characterMenu[spot]->setOptionAt(2, m_app->getGameSettings().teamColors[m_players[spot]->team]);
 											}
 
 											if (option == 2) {
 												size_t team = m_players[spot]->team;
 												size_t color = m_characterMenu[spot]->getOptionAt(option);
-												if (team == 0) {
-													m_app->getGameSettings().teamOneColor = m_teamColors[color];
-												}
-												if (team == 1) {
-													m_app->getGameSettings().teamTwoColor = m_teamColors[color];
-												}
+												m_app->getGameSettings().teamColors[team] = color;
 
 												for (size_t p = 0; p < m_players.size(); p++) {
-													if (m_players[p]->team == team && p != spot) {
-														m_characterMenu[p]->setOptionAt(2, color);
-														if (team == 0) {
-															m_players[p]->color = m_app->getGameSettings().teamOneColor;
+													if (m_players[p]) {
+														if (m_players[p]->team == team && p != spot) {
+															m_characterMenu[p]->setOptionAt(2, color);
+															m_players[p]->color = m_teamColors[m_app->getGameSettings().teamColors[m_players[p]->team]];
+													
+															if (m_players[p]->ready)
+																m_playerMenuModels[p]->setLightColor(m_players[p]->color * 2);
+															else
+																m_playerMenuModels[p]->setLightColor(m_players[p]->color);
 														}
-														if (team == 1) {
-															m_players[p]->color = m_app->getGameSettings().teamTwoColor;
-														}
-														if (m_players[p]->ready)
-															m_playerMenuModels[p]->setLightColor(m_players[p]->color * 3);
-														else
-															m_playerMenuModels[p]->setLightColor(m_players[p]->color);
+
 													}
 												}
 												m_playerMenuModels[spot]->setLightColor(m_teamColors[color]);
@@ -657,14 +604,7 @@ bool MenuState::processInput(float dt) {
 
 											if (option == 3) {
 												m_players[spot]->model = m_characterMenu[spot]->getOptionAt(3);
-
-												if (m_players[spot]->model == 0) {
-													m_playerMenuModels[spot]->setModel(m_playerModel);
-
-												}
-												if (m_players[spot]->model == 1) {
-													m_playerMenuModels[spot]->setModel(m_block);
-												}
+												m_playerMenuModels[spot]->setModel(m_playerModels[m_players[spot]->model]);
 
 
 
@@ -683,57 +623,33 @@ bool MenuState::processInput(float dt) {
 
 
 						}break;
-							
-
-						case MAPSELECT:
+						case MAPSELECT: {
 							if (right) {
-								this->changeMenu(1, STARTMENU);
+								m_mapMenu->right();
 							}
 							if (left) {
-								this->changeMenu(-1, STARTMENU);
+								m_mapMenu->left();
 							}
+							updateCamera();
 							if (a) {	
 								// START GAME
+								//set map: gamemode * menu selection
+								m_app->getGameSettings().level = m_mapMenu->getOptionAt(0)+m_app->getGameSettings().gamemode*10;
+								
 
-								m_app->getGameSettings().level = m_selector;
-								m_app->getGameSettings().gamemode = m_gamemode;
-								m_app->getGameSettings().level = m_map;
-								for (size_t u = 0; u < 4; u++) {
-									if (playersReady[u]) {
-										Application::GameSettings::player player;
-										if (spacePressed && u == 0) {
-											player.port = -1;
-										}
-										else
-											player.port = u;
-										player.color = this->playerColor[u];
-										player.model = m_playerModelIndex[u];
-										player.team = m_playerTeam[u];
-										m_app->getGameSettings().players.push_back(player);
-
-									}
-								}
-
-									
-								requestStackPop();
-								requestStackPush(States::Game);
+								startGame();
 							}
 							if (b) {
-								m_activeSubMenu = PLAYERSELECT;
-								this->m_playerCamController->setTargets(this->playerMenu[0], this->playerMenu[1],
-									this->playerMenu[2], this->playerMenu[3]);
-								for (size_t u = 0; u < 4; u++) {
-									this->playersReady[u] = NOTREADY;
-								}
-								this->mapMenu[m_selector]->setLightColor(m_offColor);
-								m_selector = 0;
+								setMapSelect(false);
+								setCharacterSelect(true);
+								updateCamera();
 							}
-							break;			
-					}
 
-					break;
+						}break;									
+					}break;
+				}break;
 
-				case PROFILEMENU:
+				case PROFILEMENU: {
 					if (a) {
 
 					}
@@ -742,13 +658,9 @@ bool MenuState::processInput(float dt) {
 						setMainSelect(true);
 					}
 
-				}	break;
+				}break;
 
-			
-
-
-					break;
-				case OPTIONSMENU:
+				case OPTIONSMENU: {
 					if (b) {
 						this->m_activeMenu= MAINMENU;
 						this->optionsMenuList[m_selector]->setLightColor(m_offColor);
@@ -763,8 +675,12 @@ bool MenuState::processInput(float dt) {
 						this->changeMenu(-1, OPTIONSMENU);
 					}
 
-
+				}break;
+				
+				default:
 					break;
+
+					
 			}
 		}
 	
@@ -876,7 +792,7 @@ void MenuState::initGamemode() {
 	m_gamemodeMenu->setStaticSelection(true, 0);
 
 
-	m_gamemodeMenu->setStep(0.1);
+	m_gamemodeMenu->setStep(0.0);
 
 
 	
@@ -889,7 +805,7 @@ void MenuState::initGamemode() {
 }
 
 void MenuState::initCharacterModels() {
-	Vector3 charMid(7, 2, -7);
+	Vector3 charMid(7, 1, -9);
 
 	if (m_playerMenuModels.size() > 0) {
 		for (size_t i = 0; i < m_playerMenuModels.size(); i++)
@@ -900,7 +816,7 @@ void MenuState::initCharacterModels() {
 
 	for (size_t i = 0; i < 4; i++) {
 
-		MenuItem* temp = new MenuItem(m_playerModel,charMid + Vector3(0,0,-1.0f)*((float)i-2.0f) * 1.4f);
+		MenuItem* temp = new MenuItem(m_playerModel,charMid + Vector3(0,0,-1.0f)*((float)i-1.5f) * 2.0f);
 		temp->getTransform().setRotations(Vector3(0,-1.55,0));
 		temp->setLightColor(m_offColor);
 		m_scene.addObject(temp);
@@ -909,7 +825,7 @@ void MenuState::initCharacterModels() {
 }
 
 void MenuState::initCharacter(size_t spot) {
-	static Vector3 charMid(7, -2, -7);
+	static Vector3 charMid(7, -2, -9);
 
 	if (m_characterMenu.size() == 0) {
 		for (size_t i = 0; i < 4; i++) {
@@ -961,7 +877,10 @@ void MenuState::initCharacter(size_t spot) {
 	temp->addMenuSelector("Bot");
 	temp->addMenuSelectorItem("Fisk");
 	temp->addMenuSelectorItem("trashbot");
+	temp->addMenuSelectorItem("unibot");
 	temp->setStaticSelection(true, 0);
+	temp->setStep(0.12);
+
 }
 
 void MenuState::removeCharacter(size_t spot) {
@@ -970,6 +889,42 @@ void MenuState::removeCharacter(size_t spot) {
 }
 
 void MenuState::initMap() {
+
+	if (!m_mapMenu) {
+		m_mapMenu = new MenuHandler();
+		m_scene.addObject(m_mapMenu);
+
+	}
+	else
+		m_mapMenu->reset();
+
+
+	m_mapMenu->addMenuSelector("Map");
+
+	if (m_app->getGameSettings().gamemode == PAYLOAD) {
+		m_mapMenu->addMenuSelectorItem("Domination 1");
+		m_mapMenu->addMenuSelectorItem("Domination 2");
+		m_mapMenu->addMenuSelectorItem("Domination 3");
+		m_mapMenu->addMenuSelectorItem("Domination 4");
+	}
+	if (m_app->getGameSettings().gamemode == DEATHMATCH) {
+		m_mapMenu->addMenuSelectorItem("Deathmatch 1");
+		m_mapMenu->addMenuSelectorItem("Deathmatch 2");
+		m_mapMenu->addMenuSelectorItem("Deathmatch 3");
+		m_mapMenu->addMenuSelectorItem("Deathmatch 4");
+	}
+	if (m_app->getGameSettings().gamemode == TEAMDEATHMATCH) {
+		m_mapMenu->addMenuSelectorItem("teamDeath 1");
+		m_mapMenu->addMenuSelectorItem("teamDeath 2");
+		m_mapMenu->addMenuSelectorItem("teamDeath 3");
+		m_mapMenu->addMenuSelectorItem("teamDeath 4");
+	}
+	m_mapMenu->setStaticSelection(true, 0);
+
+	m_mapMenu->setPosition(Vector3(0,0,-12));
+	m_mapMenu->setFacingDirection(Vector3(0,0,1));
+	m_mapMenu->setStep(0.1);
+	
 
 }
 
@@ -1024,10 +979,6 @@ void MenuState::setGamemodeSelect(bool active) {
 
 
 	}
-
-
-
-
 }
 
 void MenuState::setCharacterSelect(bool active) {
@@ -1040,9 +991,7 @@ void MenuState::setCharacterSelect(bool active) {
 		m_activeMenu = STARTMENU;
 		m_activeSubMenu = PLAYERSELECT;
 
-		m_playerCamController->setPosition(Vector3(0, 0, -7));
-		m_playerCamController->setTargets(nullptr);
-		m_playerCamController->setTarget(Vector3(5,0,-7));
+		
 
 	}
 	else {
@@ -1050,14 +999,24 @@ void MenuState::setCharacterSelect(bool active) {
 			//if(m_characterMenu[i])
 				//m_characterMenu[i]->deActivate();
 		}
-		m_playerCamController->setPosition(Vector3(0,0,0));
-
+		m_playerCamController->setPosition(Vector3(0, 0, 0));
 	}
-
 }
 
 void MenuState::setMapSelect(bool active) {
+	if (active) {
+		m_activeMenu = STARTMENU;
+		m_activeSubMenu = MAPSELECT;
 
+	}
+	else {
+		for (size_t i = 0; i < m_players.size(); i++) {
+			m_players[i]->ready = false;
+		}
+
+
+
+	}
 }
 
 void MenuState::setProfileMenu(bool active) {
@@ -1091,9 +1050,15 @@ void MenuState::updateCamera() {
 		}
 		if (m_activeSubMenu == PLAYERSELECT) {
 
+			m_playerCamController->setPosition(Vector3(0, 0, -9));
+			m_playerCamController->setTargets(nullptr);
+			m_playerCamController->setTarget(Vector3(5, 0, -9));
 			//m_playerCamController->setTargets(m_characterMenu[0], m_characterMenu[1], m_characterMenu[2], m_characterMenu[3]);
 		}
 		if (m_activeSubMenu == MAPSELECT) {
+
+			m_playerCamController->setPosition(Vector3(0, 0, -9));
+			m_playerCamController->setTargets(m_mapMenu, m_mapMenu->getTarget(), m_mapMenu->getExtraTarget());
 
 		}
 
@@ -1117,12 +1082,20 @@ void MenuState::updateCamera() {
 
 void MenuState::startGame() {
 	Application::GameSettings& settings = Application::getInstance()->getGameSettings();
-
+	for (size_t i = 0; i < m_players.size(); i++) {
+		if (m_players[i]) {
+			settings.players.push_back(Application::GameSettings::player(*m_players[i]));
+			if (m_players[i]->team == 0) {
+				settings.teamOneColor = m_players[i]->color;
+			}if (m_players[i]->team == 1) {
+				settings.teamTwoColor = m_players[i]->color;
+			}
+		}
+	}
 
 
 	requestStackPop();
 	requestStackPush(States::Game);
-
 }
 
 

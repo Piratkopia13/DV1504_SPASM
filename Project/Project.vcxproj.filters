@@ -107,6 +107,7 @@
     <ClCompile Include="src\sail\graphics\Particle.cpp" />
     <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
     <ClCompile Include="src\game\ParticleHandler.cpp" />
+    <ClCompile Include="src\game\GameInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -210,6 +211,11 @@
     <ClInclude Include="src\game\objects\Menu\MenuText.h" />
     <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
     <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
+    <ClInclude Include="src\game\GameInfo.h" />
+    <ClInclude Include="src\game\GameInfo\Profile.h" />
+    <ClInclude Include="src\game\GameInfo\Score.h" />
+    <ClInclude Include="src\game\GameInfo\PlayerModels.h" />
+    <ClInclude Include="src\game\GameInfo\Maps.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

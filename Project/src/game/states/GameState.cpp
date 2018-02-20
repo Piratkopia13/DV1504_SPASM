@@ -24,6 +24,8 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
+
+
 	m_level = std::make_unique<Level>("symmetric.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
@@ -66,16 +68,16 @@ GameState::GameState(StateStack& stack)
 	if (playerSpawnPoints.size() > 0) {
 		for (Grid::Index index : playerSpawnPoints) {
 			if (float(index.x) <= m_level->getGridWidth() / 2.f)
-				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+				m_characterHandler->addSpawnPoint(0, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
 			else
-				m_characterHandler->addSpawnPoint(2, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
 		}
 	}
 	else {
-		m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
-		m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
-		m_characterHandler->addSpawnPoint(2, Vector3(14, 2, 0));
-		m_characterHandler->addSpawnPoint(2, Vector3(15, 2, 0));
+		m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
+		m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
+		m_characterHandler->addSpawnPoint(1, Vector3(14, 2, 0));
+		m_characterHandler->addSpawnPoint(1, Vector3(15, 2, 0));
 	}
 
 

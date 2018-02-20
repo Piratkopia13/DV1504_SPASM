@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\GameInfo.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
@@ -232,6 +233,11 @@
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\GameInfo.h" />
+    <ClInclude Include="src\game\GameInfo\Maps.h" />
+    <ClInclude Include="src\game\GameInfo\PlayerModels.h" />
+    <ClInclude Include="src\game\GameInfo\Profile.h" />
+    <ClInclude Include="src\game\GameInfo\Score.h" />
     <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
     <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
     <ClInclude Include="src\game\objects\Menu\MenuText.h" />

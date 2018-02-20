@@ -29,6 +29,8 @@ private:
 	Scene m_scene;
 
 	// Models
+	std::vector<Model*> m_playerModels;
+
 	Model* m_playerModel;
 	Model* m_menuStartModel;
 
@@ -172,6 +174,8 @@ private:
 	std::vector<MenuHandler*> m_characterMenu;
 	std::vector<Application::GameSettings::player*> m_players;
 	std::vector<MenuItem*> m_playerMenuModels;
+
+	MenuHandler* m_mapMenu;
 
 	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;

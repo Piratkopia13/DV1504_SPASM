@@ -37,6 +37,7 @@ public:
 		float respawnTime;
 		float gravityScale;
 
+		int teamColors[2];
 		DirectX::SimpleMath::Vector4 teamOneColor;
 		DirectX::SimpleMath::Vector4 teamTwoColor;
 		std::vector<player> players;
@@ -44,6 +45,13 @@ public:
 			used = 0;
 			level = 0;
 			gamemode = 0;
+			scoreLimit = 0;
+			timeLimit = 0;
+			respawnTime = 2;
+			gravityScale = 1;
+
+			teamColors[0] = 0;
+			teamColors[1] = 1;
 			players.clear();
 		};
 	};

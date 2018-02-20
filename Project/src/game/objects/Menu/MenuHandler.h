@@ -18,6 +18,7 @@ public:
 	void setPosition(const DirectX::SimpleMath::Vector3& position);
 	void setGrowth(const DirectX::SimpleMath::Vector3& growth);
 	void setFacingDirection(const DirectX::SimpleMath::Vector3& direction);
+	void setSize(float size);
 	void setOnColor(const DirectX::SimpleMath::Vector4& color);
 	void setOffColor(const DirectX::SimpleMath::Vector4& color);
 	void setStaticSelection(bool active, size_t sides);

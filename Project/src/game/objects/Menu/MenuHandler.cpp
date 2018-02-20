@@ -79,6 +79,13 @@ void MenuHandler::setFacingDirection(const DirectX::SimpleMath::Vector3 & direct
 	updateTransform();
 }
 
+void MenuHandler::setSize(float size) {
+	m_size = size;
+	updateTransform();
+}
+
+
+
 void MenuHandler::setOnColor(const DirectX::SimpleMath::Vector4 & color) {
 	m_onColor = color;
 }
@@ -187,6 +194,7 @@ void MenuHandler::next() {
 	if (text)
 		text->setColor(m_onColor);
 
+	updateTransform();
 
 
 }
@@ -219,6 +227,7 @@ void MenuHandler::back() {
 		text->setColor(m_onColor);
 
 
+	updateTransform();
 }
 
 void MenuHandler::right() {
@@ -319,10 +328,23 @@ void MenuHandler::crazy(bool watafaq) {
 
 void MenuHandler::updateTransform() {
 	Vector3 extraHeight(0,0,0);
+	Vector3 selectionSpace(0,0,0);
+
 
 	for (size_t i = 0; i < m_itemList.size(); i++) {
+		if ((int)((int)i - (int)m_activeItem) > 0) {
+			selectionSpace = m_growth * m_size * 0.2;
+		}
+		if ((int)((int)i - (int)m_activeItem) == 0) {
+			selectionSpace = Vector3(0,0,0);
+		}
+		if ((int)((int)i - (int)m_activeItem) < 0) {
+			selectionSpace = m_growth * -1 * m_size * 0.2;
+		}
+
 		if (m_itemList[i].item) {
-			Vector3 position = m_position + m_growth * ((float)i - (float)m_itemList.size()*0.5f) * (m_size + m_offset);
+			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size()-1)*0.5f) * (m_size + m_offset);
+			position += selectionSpace;
 			Vector3 right = m_growth.Cross(m_direction);
 			m_itemList[i].item->setPosition(position + extraHeight);
 			m_itemList[i].item->getTransform().setRotations(Vector3(0, -atan2(m_direction.z, m_direction.x) + 1.55f, 0));
@@ -336,7 +358,8 @@ void MenuHandler::updateTransform() {
 		}
 		if (m_itemList[i].selector) {
 
-			Vector3 position = m_position + m_growth * ((float)i - (float)m_itemList.size()*0.5f)*(m_size + m_offset);
+			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size()-1)*0.5f)*(m_size*0.7 + m_offset);
+			position += selectionSpace;
 			Vector3 right = m_growth.Cross(m_direction);
 			m_itemList[i].selector->setPosition(position + extraHeight);
 			m_itemList[i].selector->setSize(m_size*3);
