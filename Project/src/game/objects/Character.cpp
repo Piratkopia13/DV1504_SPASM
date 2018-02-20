@@ -304,6 +304,11 @@ void Character::update(float dt) {
 	}
 	//--------------------------------
 
+	Moveable::updateVelocity(dt);
+	collHandler->resolveLevelCollisionWith(this, dt);
+	Moveable::move(dt, false);
+	collHandler->resolveUpgradeCollisionWith(this);
+
 	//----Weapon aim animation----
 	if (m_weapon) {
 		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
@@ -315,12 +320,6 @@ void Character::update(float dt) {
 		}
 	}
 	//----------------------------
-
-	Moveable::updateVelocity(dt);
-	collHandler->resolveLevelCollisionWith(this, dt);
-	Moveable::move(dt, false);
-	collHandler->resolveUpgradeCollisionWith(this);
-
 }
 
 
