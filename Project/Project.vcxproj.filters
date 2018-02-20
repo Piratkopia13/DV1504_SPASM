@@ -16,6 +16,7 @@
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
@@ -101,6 +102,7 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

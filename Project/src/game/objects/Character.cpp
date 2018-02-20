@@ -344,7 +344,7 @@ void Character::draw() {
 	m_leftArm->setTransform(&armTransform);
 	m_head->setTransform(&bodyTransform);
 
-	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
+	float colorGrad = m_playerHealth.healthPercent * 3 + 0.5f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/
@@ -360,7 +360,7 @@ void Character::draw() {
 		m_weapon->draw();
 	}
 	if (m_hook) { // && !m_movement.inCover) 
-		m_hook->setLightColor(color);
+		m_hook->setLightColor(lightColor);
 		m_hook->draw();
 	}
 

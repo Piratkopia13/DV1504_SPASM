@@ -7,7 +7,7 @@
 #include "stages/HGaussianBlurStage.h"
 #include "stages/VGaussianBlurStage.h"
 #include "stages/BrightnessCutoffStage.h"
-//#include "../shader/postprocess/GaussianBlurCShader.h"
+#include "stages/ToneMapHackStage.h"
 #include "../shader/postprocess/PostProcessFlushShader.h"
 
 class PostProcessPass {
@@ -27,12 +27,16 @@ private:
 	std::unique_ptr<VGaussianBlurStage> m_vGaussStage;
 	std::unique_ptr<HGaussianBlurStage> m_hGaussStage2;
 	std::unique_ptr<VGaussianBlurStage> m_vGaussStage2;
+	std::unique_ptr<HGaussianBlurStage> m_hGaussStage3;
+	std::unique_ptr<VGaussianBlurStage> m_vGaussStage3;
 	std::unique_ptr<BrightnessCutoffStage> m_brightnessCutoffStage;
+	std::unique_ptr<ToneMapHackStage> m_toneMapHackStage;
 
 	PostProcessFlushShader m_flushShader;
 
 	float m_gaussPass1Scale;
 	float m_gaussPass2Scale;
+	float m_gaussPass3Scale;
 	float m_brightnessCutoffScale;
 
 	// TODO make enableEffect(enum) and disableEffect(enum) and a map that binds the enums to enabled/disabled bool
