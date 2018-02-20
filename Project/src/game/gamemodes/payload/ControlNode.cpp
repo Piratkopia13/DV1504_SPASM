@@ -7,7 +7,7 @@ ControlNode::ControlNode(Model* model) {
 
 	m_beingCaptured = false;
 	m_timeTillCapture = 5.f;
-	m_timeTillScore = 3.f;
+	m_maxTimeCaptured = 10.f;
 	m_timeCaptured = 0.f;
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f);
@@ -245,31 +245,44 @@ bool ControlNode::updateNodeTimer(float dt) {
 			setTeam(m_teamOne.id);
 			m_timeCaptured = 0.f;
 		}
-		else {
-			m_timeCaptured += dt;
-			if (m_timeCaptured >= m_timeTillScore) {
-				m_timeCaptured = 0.f;
-				return true;
-			}
-		}
+		m_timeCaptured += dt;
 	}
 	if (m_teamTwo.isOwner) {
 		if (m_team != m_teamTwo.id) {
 			setTeam(m_teamTwo.id);
 			m_timeCaptured = 0.f;
 		}
-		else {
-			m_timeCaptured += dt;
-			if (m_timeCaptured >= m_timeTillScore) {
-				m_timeCaptured = 0.f;
-				return true;
-			}
-		}
+		m_timeCaptured += dt;
+	}
+
+	if (m_timeCaptured >= m_maxTimeCaptured) {
+		reset();
+		return true;
 	}
 
 
 
 	return false;
+}
+
+void ControlNode::reset() {
+	m_team = 0;
+
+	m_beingCaptured = false;
+	m_timeCaptured = 0.f;
+
+	m_teamOne.ownershipTime = 0.f;
+	m_teamOne.capturing = false;
+	m_teamOne.isOwner = false;
+	m_teamOne.timeCapturing = 0.f;
+
+
+	m_teamTwo.ownershipTime = 0.f;
+	m_teamTwo.capturing = false;
+	m_teamTwo.isOwner = false;
+	m_teamTwo.timeCapturing = 0.f;
+
+	m_ownershipColor = m_teamZeroColor;
 }
 
 std::string ControlNode::getAsString() {

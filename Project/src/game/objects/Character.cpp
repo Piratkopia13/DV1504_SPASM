@@ -294,15 +294,20 @@ void Character::update(float dt) {
 
 	//----Character turn animation----
 	float tempRotation = getTransform().getRotations().y;
-	if (std::signbit(m_input.aim.x) && tempRotation > -1.57f) {
+	if (std::signbit(m_input.aim.x) && tempRotation < 4.71f) {
 		m_movement.xDirection = -1.0f;
-		getTransform().rotateAroundY(max(-15.7f * dt, -1.57f));
+		getTransform().setRotations(Vector3(0.0f, min(tempRotation + 15.7f * dt, 4.71f), 0.0f));
 	}
-	else if (!std::signbit(m_input.aim.x) && tempRotation < 1.57f) {
+	else if (!std::signbit(m_input.aim.x) && tempRotation > 1.57f) {
 		m_movement.xDirection = 1.0f;
-		getTransform().rotateAroundY(min(15.7f * dt, 1.57f));
+		getTransform().setRotations(Vector3(0.0f, max(tempRotation - 15.7f * dt, 1.57f), 0.0f));
 	}
 	//--------------------------------
+
+	Moveable::updateVelocity(dt);
+	collHandler->resolveLevelCollisionWith(this, dt);
+	Moveable::move(dt, false);
+	collHandler->resolveUpgradeCollisionWith(this);
 
 	//----Weapon aim animation----
 	if (m_weapon) {
@@ -315,12 +320,6 @@ void Character::update(float dt) {
 		}
 	}
 	//----------------------------
-
-	Moveable::updateVelocity(dt);
-	collHandler->resolveLevelCollisionWith(this, dt);
-	Moveable::move(dt, false);
-	collHandler->resolveUpgradeCollisionWith(this);
-
 }
 
 
@@ -344,15 +343,16 @@ void Character::draw() {
 	m_leftArm->setTransform(&armTransform);
 	m_head->setTransform(&bodyTransform);
 
-	model->getMaterial()->setColor(lightColor*(m_playerHealth.healthPercent + 1.f));
-	m_leftArm->getMaterial()->setColor(lightColor*(m_playerHealth.healthPercent + 1.f));
-	m_head->getMaterial()->setColor(lightColor*(m_playerHealth.healthPercent + 1.f));
+	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
+	model->getMaterial()->setColor(lightColor*(colorGrad));
+	m_leftArm->getMaterial()->setColor(lightColor*(colorGrad));
+	m_head->getMaterial()->setColor(lightColor*(colorGrad));
 
 	model->draw();
 	m_leftArm->draw();
 	m_head->draw();
 	if (m_weapon->getHeld()) {
-		m_weapon->setLightColor(lightColor*(m_playerHealth.healthPercent + 1.f));
+		m_weapon->setLightColor(lightColor*(colorGrad));
 		m_weapon->draw();
 	}
 	if (m_hook) { // && !m_movement.inCover) 
