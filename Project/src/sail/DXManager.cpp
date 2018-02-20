@@ -199,7 +199,6 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 	rasterDesc.DepthBiasClamp = 0.f;
 	rasterDesc.DepthClipEnable = true;
 	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON;
 	//rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
 	m_CW = false;
 	rasterDesc.FrontCounterClockwise = m_CW;
@@ -208,6 +207,18 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 	rasterDesc.SlopeScaledDepthBias = 0.f;
 
 	// Create rasterizer state
+
+	//D3D_FEATURE_LEVEL fl = m_device->GetFeatureLevel();
+	D3D11_FEATURE_DATA_D3D11_OPTIONS2 options2Support;
+	m_device3->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS2, &options2Support, sizeof(options2Support));
+
+	if (options2Support.ConservativeRasterizationTier == D3D11_CONSERVATIVE_RASTERIZATION_NOT_SUPPORTED) {
+		Logger::Warning("Conservative rasterization not supported on this hardware, running without.");
+		rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+	} else {
+		rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON;
+	}
+
 	ThrowIfFailed(m_device3->CreateRasterizerState2(&rasterDesc, &m_rasterStateBackfaceCulling));
 	rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 	ThrowIfFailed(m_device3->CreateRasterizerState2(&rasterDesc, &m_rasterStateBackfaceCullingNoConservative));

@@ -345,7 +345,7 @@ void Character::draw() {
 	m_head->setTransform(&bodyTransform);
 
 	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
-	DirectX::SimpleMath::Vector4 color = lightColor;
+	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/
 	model->getMaterial()->setColor(color);
