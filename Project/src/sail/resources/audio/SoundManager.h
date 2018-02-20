@@ -27,22 +27,23 @@ class SoundManager {
 public:
 	enum SoundEffect {
 		Explosion,
-		Windows95,
 		Shock,
 		Laser,
-		Loop1,
-		Loop2,
 		Male_Death,
 		Goblin_Death,
 		NumOfSoundEffects
 	};
 
 	enum AmbientSound {
-		Night,
+		Loop1,
+		Loop2,
+		Windows95,
 		NumOfAmbientSounds
 	};
 
 	const static int NUMBER_OF_CHANNELS = 1024;
+	const static float MAX_PITCH;
+	const static float MIN_PITCH;
 
 
 public:
@@ -51,7 +52,14 @@ public:
 
 	void update(const float dt);
 
-	void playSoundEffect(const SoundEffect soundID);
+	/*
+		Plays a sound effect
+
+		@param soundID - ID of the sound effect that should be played
+		@param volume - Optional volume of the sound
+		@param pitch - Optional pitch of the sound
+	*/
+	void playSoundEffect(const SoundEffect soundID, float volume = 1.f, float pitch = 1.f);
 	void playAmbientSound(const AmbientSound soundID, bool looping = false);
 
 	void pauseAmbientSound(const AmbientSound soundID);
@@ -70,42 +78,16 @@ private:
 	IXAudio2* m_audioEngine;
 	IXAudio2MasteringVoice* m_masterVoice;
 	std::vector<IXAudio2SourceVoice*> m_sourceVoices;
-	std::vector<IXAudio2SubmixVoice*> m_submixVoices;
 
 	std::vector<std::unique_ptr<Sound>> m_sounds;
+	std::vector<std::unique_ptr<Sound>> m_ambientSounds;
 
 	bool m_retryAudio;
 	int	m_currSVIndex;
 
-};
+	const float MIN_PITCH = 0.0009765625f;
+	const float MAX_PITCH = 1024.f;
 
-
-
-
-/////////////////////////////////
-///////    SOUND CLASS    ///////
-/////////////////////////////////
-
-class Sound {
-
-public:
-	Sound();
-	~Sound();
-
-	HRESULT Initialize(IXAudio2* audioEngine, wchar_t* file);
-
-	HRESULT Play();
-	XAUDIO2_BUFFER getBuffer();
-	WAVEFORMATEXTENSIBLE getWFX();
-
-private:
-	HRESULT FindChunk(HANDLE hFile, DWORD fourcc, DWORD & dwChunkSize, DWORD & dwChunkDataPosition);
-	HRESULT ReadChunkData(HANDLE hFile, void * buffer, DWORD buffersize, DWORD bufferoffset);
-
-private:
-	XAUDIO2_BUFFER m_buffer;
-	WAVEFORMATEXTENSIBLE m_WFX;
-	
-	float m_playtime;
+	bool m_playSound;
 
 };

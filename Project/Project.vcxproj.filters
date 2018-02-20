@@ -104,6 +104,8 @@
     <ClCompile Include="src\sail\graphics\Particle.cpp" />
     <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
     <ClCompile Include="src\game\ParticleHandler.cpp" />
+    <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
+    <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -204,6 +206,8 @@
     <ClInclude Include="src\sail\graphics\Particle.h" />
     <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
     <ClInclude Include="src\game\ParticleHandler.h" />
+    <ClInclude Include="src\sail\resources\audio\Sound.h" />
+    <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
