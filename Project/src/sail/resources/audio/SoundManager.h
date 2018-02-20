@@ -22,6 +22,7 @@
 #endif
 
 class Sound;
+class AmbientSound;
 class SoundManager {
 
 public:
@@ -34,16 +35,15 @@ public:
 		NumOfSoundEffects
 	};
 
-	enum AmbientSound {
+	enum Ambient {
 		Loop1,
 		Loop2,
 		Windows95,
+		Theme,
 		NumOfAmbientSounds
 	};
 
 	const static int NUMBER_OF_CHANNELS = 1024;
-	const static float MAX_PITCH;
-	const static float MIN_PITCH;
 
 
 public:
@@ -60,16 +60,17 @@ public:
 		@param pitch - Optional pitch of the sound
 	*/
 	void playSoundEffect(const SoundEffect soundID, float volume = 1.f, float pitch = 1.f);
-	void playAmbientSound(const AmbientSound soundID, bool looping = false);
+	void playAmbientSound(const Ambient soundID, const bool looping = false);
 
-	void pauseAmbientSound(const AmbientSound soundID);
-	void resumeAmbientSound(const AmbientSound soundID);
+	void pauseAmbientSound(const Ambient soundID);
+	void resumeAmbientSound(const Ambient soundID);
+	void stopAmbientSound(const Ambient soundID);
 
 	void suspendAllSound();
 	void resumeAllSound();
 
 	bool loadSoundEffect(const SoundEffect soundID, wchar_t* file);
-	bool loadAmbientSound(const AmbientSound soundID, wchar_t* file);
+	bool loadAmbientSound(const Ambient soundID, wchar_t* file);
 
 	void setVolume(const float& volume);
 	float getVolume();
@@ -80,7 +81,7 @@ private:
 	std::vector<IXAudio2SourceVoice*> m_sourceVoices;
 
 	std::vector<std::unique_ptr<Sound>> m_sounds;
-	std::vector<std::unique_ptr<Sound>> m_ambientSounds;
+	std::vector<std::unique_ptr<AmbientSound>> m_ambientSounds;
 
 	bool m_retryAudio;
 	int	m_currSVIndex;

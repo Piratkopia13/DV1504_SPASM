@@ -11,9 +11,11 @@ HRESULT AmbientSound::Initialize(IXAudio2* audioEngine, wchar_t* file) {
 
 	m_playing = false;
 	m_state = SoundState::Stopped;
+
+	return S_OK;
 }
 
-void AmbientSound::Play() {
+void AmbientSound::Play(const bool looped) {
 	//m_sourceVoice->SetVolume(vol);
 	//m_sourceVoice->SetFrequencyRatio(pit);
 	switch (m_state) {
@@ -25,6 +27,8 @@ void AmbientSound::Play() {
 
 	case SoundState::Stopped:
 		XAUDIO2_BUFFER buffer = Sound::getBuffer();
+		if (looped)
+			buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
 		m_sourceVoice->SubmitSourceBuffer(&buffer);
 		m_sourceVoice->Start();
 		m_state = SoundState::Playing;

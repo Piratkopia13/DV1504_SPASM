@@ -42,7 +42,7 @@ SoundManager::SoundManager() {
 		m_currSVIndex = 0;
 
 		m_sounds.resize(SoundEffect::NumOfSoundEffects);
-		m_ambientSounds.resize(AmbientSound::NumOfAmbientSounds);
+		m_ambientSounds.resize(Ambient::NumOfAmbientSounds);
 
 		loadSoundEffect(SoundEffect::Explosion, L"res/sounds/effect/explosion.wav");
 		loadSoundEffect(SoundEffect::Laser, L"res/sounds/effect/laser.wav");
@@ -50,9 +50,10 @@ SoundManager::SoundManager() {
 		loadSoundEffect(SoundEffect::Male_Death, L"res/sounds/effect/death/male_death.wav");
 		loadSoundEffect(SoundEffect::Goblin_Death, L"res/sounds/effect/death/goblin_death.wav");
 
-		loadAmbientSound(AmbientSound::Windows95, L"res/sounds/ambient/windows95.wav");
-		loadAmbientSound(AmbientSound::Loop1, L"res/sounds/ambient/loop1.wav");
-		loadAmbientSound(AmbientSound::Loop2, L"res/sounds/ambient/loop2.wav");
+		loadAmbientSound(Ambient::Loop1, L"res/sounds/ambient/loop1.wav");
+		loadAmbientSound(Ambient::Loop2, L"res/sounds/ambient/loop2.wav");
+		loadAmbientSound(Ambient::Windows95, L"res/sounds/ambient/windows95.wav");
+		loadAmbientSound(Ambient::Theme, L"res/sounds/ambient/theme.wav");
 	}
 }
 
@@ -65,25 +66,9 @@ SoundManager::~SoundManager() {
 }
 
 void SoundManager::update(const float dt) {
-
 	if (!m_playSound)
 		return;
 
-	//if (m_retryAudio) {
-	//	if (m_audioEngine->Reset()) {
-	//		m_retryAudio = false;
-	//		// Restart the soundloops here
-	//	}
-	//	else {
-	//		Logger::Warning("Audio Engine did not manage to reset!");
-	//	}
-	//}
-	//else if (!m_audioEngine->Update()) {
-	//	if (m_audioEngine->IsCriticalError()) {
-	//		Logger::Warning("Critical error in the DX Audio Engine!");
-	//		m_retryAudio = true;
-	//	}
-	//}
 }
 
 void SoundManager::playSoundEffect(const SoundEffect soundID, float volume, float pitch) {
@@ -114,62 +99,57 @@ void SoundManager::playSoundEffect(const SoundEffect soundID, float volume, floa
 	m_currSVIndex = m_currSVIndex % NUMBER_OF_CHANNELS;
 }
 
-void SoundManager::playAmbientSound(const AmbientSound soundID, bool looping) {
+void SoundManager::playAmbientSound(const Ambient soundID, const bool looping) {
 	if (!m_playSound)
 		return;
 
-		if (soundID < 0 || soundID >= AmbientSound::NumOfAmbientSounds) {
-			Logger::Warning("Failed to play ambient sound since sound id was out of bounds. ID tried: " + soundID);
-			return;
-		}
+	if (soundID < 0 || soundID >= Ambient::NumOfAmbientSounds) {
+		Logger::Warning("Failed to play ambient sound since sound id was out of bounds. ID tried: " + soundID);
+		return;
+	}
 
-		if (m_sourceVoices[m_currSVIndex])
-			m_sourceVoices[m_currSVIndex]->DestroyVoice();
-
-		WAVEFORMATEXTENSIBLE wfx = m_ambientSounds[soundID]->getWFX();
-		XAUDIO2_BUFFER buffer = m_ambientSounds[soundID]->getBuffer();
-		m_audioEngine->CreateSourceVoice(&m_sourceVoices[m_currSVIndex], (WAVEFORMATEX*)&wfx);
-		if (soundID == SoundManager::SoundEffect::Laser)
-			m_sourceVoices[m_currSVIndex]->SetVolume(0.2f);
-		else
-			m_sourceVoices[m_currSVIndex]->SetVolume(1.0f);
-
-		m_sourceVoices[m_currSVIndex]->SubmitSourceBuffer(&buffer);
-		float pitch = Utils::rnd() * 0.4f + 0.5f;
-
-		// Random stuff
-		m_sourceVoices[m_currSVIndex]->SetFrequencyRatio(pitch);
-
-		m_sourceVoices[m_currSVIndex]->Start(0);
-
-		m_currSVIndex++;
-		m_currSVIndex = m_currSVIndex % NUMBER_OF_CHANNELS;
+	m_ambientSounds[soundID]->Play(looping);
 	
 	
 }
 
-void SoundManager::pauseAmbientSound(const AmbientSound soundID) {
+void SoundManager::pauseAmbientSound(const Ambient soundID) {
 	if (!m_playSound)
 		return;
 
-	if (soundID < 0 || soundID >= AmbientSound::NumOfAmbientSounds) {
+	if (soundID < 0 || soundID >= Ambient::NumOfAmbientSounds) {
 		Logger::Warning("Failed to pause ambient sound since sound id was out of bounds. ID tried: " + soundID);
 		return;
 	}
 
+	m_ambientSounds[soundID]->Pause();
+
 }
 
-void SoundManager::resumeAmbientSound(const AmbientSound soundID) {
+void SoundManager::resumeAmbientSound(const Ambient soundID) {
 	if (!m_playSound)
 		return;
 
-		if (soundID < 0 || soundID >= AmbientSound::NumOfAmbientSounds) {
-			Logger::Warning("Failed to resume ambient sound since sound id was out of bounds. ID tried: " + soundID);
-			return;
-		}
-	/*if (m_ambientSoundInstances[soundID])
-		if (m_ambientSoundInstances[soundID]->GetState() == DirectX::SoundState::PAUSED)
-			m_ambientSoundInstances[soundID]->Resume();*/
+	if (soundID < 0 || soundID >= Ambient::NumOfAmbientSounds) {
+		Logger::Warning("Failed to resume ambient sound since sound id was out of bounds. ID tried: " + soundID);
+		return;
+	}
+
+	m_ambientSounds[soundID]->Play();
+
+}
+
+void SoundManager::stopAmbientSound(const Ambient soundID) {
+	if (!m_playSound)
+		return;
+
+	if (soundID < 0 || soundID >= Ambient::NumOfAmbientSounds) {
+		Logger::Warning("Failed to resume ambient sound since sound id was out of bounds. ID tried: " + soundID);
+		return;
+	}
+
+	m_ambientSounds[soundID]->Stop();
+
 }
 
 void SoundManager::suspendAllSound() {
@@ -186,7 +166,7 @@ void SoundManager::resumeAllSound() {
 
 bool SoundManager::loadSoundEffect(const SoundEffect soundID, wchar_t* file) {
 	if (!m_playSound)
-		return;
+		return false;
 
 	if (soundID < 0 || soundID >= SoundEffect::NumOfSoundEffects) {
 		Logger::Warning("Failed to load sound effect since sound id was out of bounds. ID tried: " + soundID);
@@ -203,26 +183,17 @@ bool SoundManager::loadSoundEffect(const SoundEffect soundID, wchar_t* file) {
 	return true;
 }
 
-bool SoundManager::loadAmbientSound(const AmbientSound soundID, wchar_t* file) {
+bool SoundManager::loadAmbientSound(const Ambient soundID, wchar_t* file) {
 	if (!m_playSound)
-		return;
+		return false;
 	
-	if (soundID < 0 || soundID >= AmbientSound::NumOfAmbientSounds) {
+	if (soundID < 0 || soundID >= Ambient::NumOfAmbientSounds) {
 		Logger::Warning("Failed to load ambient sound since sound id was out of bounds. ID tried: " + soundID);
 		return false;
 	}
 
-	//m_ambientSound[soundID] = std::make_unique<DirectX::SoundEffect>(m_audioEngine.get(), file);
-	//if (!m_ambientSound[soundID]) {
-	//	Logger::Warning("Failed to load ambient sound with id: " + soundID);
-	//	return false;
-	//}
-
-	//m_ambientSoundInstances[soundID] = m_ambientSound[soundID]->CreateInstance();
-	//if (!m_ambientSoundInstances[soundID]) {
-	//	Logger::Warning("Failed to create an instance of soundID: " + soundID);
-	//	return false;
-	//}
+	m_ambientSounds[soundID] = std::make_unique<AmbientSound>();
+	m_ambientSounds[soundID]->Initialize(m_audioEngine, file);
 
 	return true;
 }
@@ -236,7 +207,7 @@ void SoundManager::setVolume(const float& volume) {
 
 float SoundManager::getVolume() {
 	if (!m_playSound)
-		return;
+		return 0.f;
 
 	float volume;
 	m_masterVoice->GetVolume(&volume);
