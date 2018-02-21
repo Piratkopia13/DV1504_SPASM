@@ -134,6 +134,8 @@ const Upgrade UpgradeHandler::UpgradeSpawn::take() {
 	
 	m_online = false;
 	m_timeLeft = m_respawnTime;
+	float rnd = Utils::rnd() * 0.2f + 0.8f;
+	Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Pickup, 0.2f, rnd);
 	return Upgrade(m_onlineType);
 }
 

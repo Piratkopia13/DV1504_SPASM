@@ -229,5 +229,6 @@
     <Media Include="res\sounds\effect\death\male_death.wav" />
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\ambient\theme.wav" />
+    <Media Include="res\sounds\effect\pickup.wav" />
   </ItemGroup>
 </Project>
