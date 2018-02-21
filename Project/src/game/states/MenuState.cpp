@@ -575,7 +575,7 @@ bool MenuState::processInput(float dt) {
 								if (spot > -1) {
 									if (!m_playerz[spot]->ready) {
 										size_t option = m_characterMenu[spot]->getActive();
-										if (Application::getInstance()->getGameSettings().gamemode == DEATHMATCH) {
+										if (m_info->gameSettings.gameMode == DEATHMATCH) {
 
 											if (option == 1) {
 												m_playerz[spot]->player.color = m_characterMenu[spot]->getOptionAt(option);
@@ -605,7 +605,7 @@ bool MenuState::processInput(float dt) {
 											}
 
 										}
-										else if (Application::getInstance()->getGameSettings().gamemode != DEATHMATCH) {
+										else if (m_info->gameSettings.gameMode != DEATHMATCH) {
 
 											if (option == 1) {
 												m_playerz[spot]->player.team = m_characterMenu[spot]->getOptionAt(option);
@@ -617,7 +617,7 @@ bool MenuState::processInput(float dt) {
 											if (option == 2) {
 												size_t team = m_playerz[spot]->player.team;
 												size_t color = m_characterMenu[spot]->getOptionAt(option);
-												m_app->getGameSettings().teamColors[team] = color;
+												m_info->gameSettings.teams[team].color = color;
 
 												for (size_t p = 0; p < m_playerz.size(); p++) {
 													if (m_playerz[p]) {
@@ -846,12 +846,19 @@ void MenuState::initGamemode() {
 	m_gamemodeMenu->addMenuSelectorItem("none");
 	m_gamemodeMenu->setStaticSelection(true, 0);
 
+	m_gamemodeMenu->addMenuSelector("player Health");
+	m_gamemodeMenu->addMenuSelectorItem("100");
+	m_gamemodeMenu->addMenuSelectorItem("200");
+	m_gamemodeMenu->addMenuSelectorItem("10");
+	m_gamemodeMenu->addMenuSelectorItem("50");
+	m_gamemodeMenu->setStaticSelection(true, 0);
+
 
 	m_gamemodeMenu->setStep(0.0);
 
 	m_gamemodeMenu->setOnColor(m_onColor*2);
 	
-	m_gamemodeMenu->setPosition(Vector3(5, 0, 0));
+	m_gamemodeMenu->setPosition(Vector3(5, -0.5, 0));
 	m_gamemodeMenu->setFacingDirection(Vector3(-1, 0, 0));
 
 
@@ -866,11 +873,20 @@ void MenuState::initCharacterModels() {
 		Vector3 charMid = Vector3(0, 0, -1.0f)*((float)i - 1.5f) * 3.5f + charMenuMid;
 		PlayerMenuModel temp;
 
-		temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
-		temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.3f, 0));
-		temp.legs = new MenuItem(m_playerLegModels[0] , charMid - Vector3(0, 0.9f, 0));
-		temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, -0.1f));
-		temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
+		if (m_info->gameSettings.gameMode == DEATHMATCH) {
+			temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 1.1f, 0));
+			temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.6f, 0));
+			temp.legs = new MenuItem(m_playerLegModels[0] , charMid - Vector3(0, 1.1f, 0));
+			temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.0f, -0.1f));
+			temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.0f, 0.1f));
+		}
+		else {
+			temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
+			temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.3f, 0));
+			temp.legs = new MenuItem(m_playerLegModels[0],  charMid - Vector3(0, 0.9f, 0));
+			temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, -0.1f));
+			temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
+		}
 
 		temp.head->getTransform().setRotations(Vector3(0, -1.55, 0));
 		temp.body->getTransform().setRotations(Vector3(0, -1.55, 0));
@@ -899,6 +915,18 @@ void MenuState::initCharacterModels() {
 }
 
 void MenuState::initCharacterModel(size_t spot) {
+	Vector3 charMenuMid(7, -2, -9);
+	if (m_info->gameSettings.gameMode == DEATHMATCH)
+		charMenuMid = Vector3(7,-1.3,-9);
+
+	Vector3 charMid = Vector3(0, 0, -1.0f)*((float)spot - 1.5f) * 3.5f + charMenuMid;
+	m_playerMenuModelz[spot].head->setPosition( charMid + Vector3(0, 0.8f, 0));
+	m_playerMenuModelz[spot].body->setPosition( charMid + Vector3(0, 0.3f, 0));
+	m_playerMenuModelz[spot].legs->setPosition (charMid - Vector3(0, 0.9f, 0));
+	m_playerMenuModelz[spot].armL->setPosition( charMid + Vector3(0, 0.2f, -0.1f));
+	m_playerMenuModelz[spot].armR->setPosition( charMid + Vector3(0, 0.2f, 0.1f));
+
+
 
 	m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[0]);
 	m_playerMenuModelz[spot].body->setModel(m_playerBodyModels[0]);
@@ -928,12 +956,16 @@ void MenuState::initCharacter(size_t spot) {
 	temp->setSize(0.7f);
 	temp->setFacingDirection(Vector3(-1.0, 0, 0));
 	temp->setStep(0.4f);
+
+	//PROFILE
 	temp->addMenuSelector("profile");
 	temp->addMenuSelectorItem(m_info->getProfiles()[0].getName());
 	for (size_t p = 1; p < m_info->getProfiles().size(); p++) {
 		temp->addMenuSelectorItem(m_info->getProfiles()[p].getName());
 	}
 	temp->setStaticSelection(true, 0);
+
+	//TEAMS & COLORS
 	if (m_info->gameSettings.gameMode == DEATHMATCH) {
 		temp->addMenuSelector("Color");
 		
@@ -956,6 +988,8 @@ void MenuState::initCharacter(size_t spot) {
 		}
 		temp->setStaticSelection(true, 0);
 	}
+
+	// COLOR HUE
 	temp->addMenuSelector("hue");
 	for (size_t i = 0; i < m_info->colorHues.size(); i++) {
 		temp->addMenuSelectorItem(m_info->colorHues[i]);
@@ -984,8 +1018,8 @@ void MenuState::initCharacter(size_t spot) {
 	//for (size_t i = 0; i < m_info->botArmNames.size(); i++) {
 	//	temp->addMenuSelectorItem("i           i");
 	//}
+	//temp->setStaticSelection(true, 0);
 
-	temp->setStaticSelection(true, 0);
 
 }
 
