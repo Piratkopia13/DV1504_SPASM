@@ -14,7 +14,7 @@ Weapon::Weapon() {
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team) 
+Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, Character* owner) 
 	: Weapon()
 {
 	model = armModel;
@@ -24,7 +24,7 @@ Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHa
 	m_laser.dotTransform.setScale(0.1f);
 
 	m_projectileHandler = projHandler;
-	m_team = team;
+	m_owner = owner;
 	m_held = true;
 	m_upgrade = new Upgrade();
 }
@@ -77,7 +77,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			extraDamage = m_upgrade->damageMultiplier();
 		}
 
-		float pitch = Utils::rnd() * 0.3f + 0.8f;
+		float pitch = Utils::rnd() * 0.4f + 0.8f;
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.4f, pitch);
 
 		//Create projectile with inputs; startPos, direction, speed/force etc.
@@ -85,14 +85,13 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			m_nozzlePos,
 			direction * baseSpeed * extraSpeed, 
 			baseDamage * extraDamage, 
-			m_team);
+			m_owner);
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
 		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
 		m_projectileHandler->addProjectile(temp);
-
 
 		if (m_upgrade->multiActive()) {
 			
@@ -106,7 +105,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();
-				pitch = Utils::rnd() * 0.2f + 0.9f;
+				pitch = Utils::rnd() * 0.4f + 0.8f;
 				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 
@@ -114,12 +113,12 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 					m_nozzlePos,
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
-					m_team);
+					m_owner);
 				Projectile* temp2 = new Projectile(
 					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
-					m_team);
+					m_owner);
 				if (m_upgrade->gravActive()) {
 					temp1->setGravScale(0);
 					temp2->setGravScale(0);

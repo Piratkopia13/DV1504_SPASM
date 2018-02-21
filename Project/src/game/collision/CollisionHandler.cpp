@@ -165,7 +165,7 @@ bool CollisionHandler::resolveProjectileCollisionWith(Character* chara) {
 
 	bool hit = false;
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
-		if (projectiles.at(i)->getTeam() != chara->getTeam()) {
+		if (projectiles.at(i)->getOwner()->getTeam() != chara->getTeam()) {
 			auto* proj = projectiles.at(i);
 			if (chara->getBoundingBox()->containsOrIntersects(*proj->getBoundingBox())) {
 				chara->damage(proj->getDamage());

@@ -19,9 +19,9 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Model* cModel3 = app->getResourceManager().getFBXModel("fisk/fisk_head").getModel();
 
 	for (size_t i = 0; i < settings->players.size(); i++) {
-		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, settings->players[i].team);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(settings->players[i].color);
@@ -41,25 +41,25 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 
 #ifdef _DEBUG
 	if (settings->players.size() == 0) {
-		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, 1);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, tempChar);
+		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(settings->teamOneColor);
 		tempChar->setTeam(1);
 		tempChar->setHook(tempHook);
-		tempChar->setWeapon(tempWeapon);
 		tempChar->setControllerPort(0);
 		tempChar->setController(true);
 		addPlayer(tempChar);
 	}
 	if (settings->players.size() < 4) {
-		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, 2);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, tempChar);
+		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(settings->teamTwoColor);
 		tempChar->setTeam(2);
 		tempChar->setHook(tempHook);
-		tempChar->setWeapon(tempWeapon);
 		tempChar->setControllerPort(1);
 		tempChar->setController(false);
 		addPlayer(tempChar);
@@ -92,16 +92,14 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		m_characters[index]->dead();
 		m_characters[index]->setPosition(Vector3(0, 0, -100));
 		m_respawnTimers[index] = 0.01f;
-		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
+		int rnd = static_cast<int>(floor(Utils::rnd() * 2.f));
+		float fRnd = Utils::rnd() * 0.4f + 0.8f;
 		switch (rnd) {
 		case 0:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Male_Death);
-			break;
-		case 1:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Goblin_Death);
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion2, 3.f, fRnd);
 			break;
 		default:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion);
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.f, fRnd);
 			break;
 		}
 	}

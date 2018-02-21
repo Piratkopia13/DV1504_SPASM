@@ -106,6 +106,7 @@
     <ClCompile Include="src\game\ParticleHandler.cpp" />
     <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
     <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
+    <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="src\game\ParticleHandler.h" />
     <ClInclude Include="src\sail\resources\audio\Sound.h" />
     <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
+    <ClInclude Include="src\game\gamemodes\deathmatch\Deathmatch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -230,5 +232,6 @@
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\ambient\theme.wav" />
     <Media Include="res\sounds\effect\pickup.wav" />
+    <Media Include="res\sounds\effect\explosion2.wav" />
   </ItemGroup>
 </Project>
