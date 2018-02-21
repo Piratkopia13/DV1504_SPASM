@@ -1,9 +1,11 @@
 #include "Moveable.h"
 
+using namespace DirectX::SimpleMath;
+
 Moveable::Moveable() {
-	m_velocity = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
-	m_gravity = DirectX::SimpleMath::Vector3(0.f, -9.82f, 0.f);
-	m_acceleration = DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f);
+	m_velocity = Vector3::Zero;
+	m_gravity = Vector3(0.f, -9.82f, 0.f);
+	m_acceleration = Vector3::Zero;
 	m_gravScale = 1;
 	m_grounded = true;
 }
@@ -21,12 +23,12 @@ void Moveable::updateVelocity(const float dt) {
 		m_velocity += m_acceleration * dt;
 }
 
-void Moveable::move(DirectX::SimpleMath::Vector3& toMove, bool includeBoundingBoxRotation) {
+void Moveable::move(Vector3& toMove, bool includeBoundingBoxRotation) {
 	this->getTransform().translate(toMove);
 	this->updateBoundingBox(includeBoundingBoxRotation);
 }
 
-void Moveable::setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity) {
+void Moveable::setVelocity(const Vector3 &newVelocity) {
 	m_velocity = newVelocity;
 }
 
@@ -34,14 +36,14 @@ void Moveable::setGravScale(float scale) {
 	m_gravScale = scale;
 }
 
-const DirectX::SimpleMath::Vector3& Moveable::getVelocity() {
+const Vector3& Moveable::getVelocity() {
 	return m_velocity;
 }
-void Moveable::setAcceleration(const DirectX::SimpleMath::Vector3 &newAcceleration) {
+void Moveable::setAcceleration(const Vector3 &newAcceleration) {
 	m_acceleration = newAcceleration;
 }
 
-void Moveable::addAcceleration(const DirectX::SimpleMath::Vector3& accel) {
+void Moveable::addAcceleration(const Vector3& accel) {
 	this->m_acceleration += accel;
 }
 

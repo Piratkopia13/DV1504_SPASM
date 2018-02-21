@@ -24,6 +24,7 @@ public:
 	void resize(int width, int height);
 	void renderToBackBuffer() const;
 	void enableDepthBuffer() const;
+	void enableDepthBufferWithWriteMask() const;
 	void disableDepthBuffer() const;
 	void enableAlphaBlending();
 	void disableAlphaBlending();
@@ -52,6 +53,7 @@ private:
 	ID3D11Texture2D* m_depthStencilBuffer;
 	ID3D11DepthStencilState* m_depthStencilStateEnabled;
 	ID3D11DepthStencilState* m_depthStencilStateDisabled;
+	ID3D11DepthStencilState* m_depthStencilStateEnabledNoWrite;
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11ShaderResourceView* m_depthStencilSRV;
 	ID3D11RasterizerState2* m_rasterStateBackfaceCulling;

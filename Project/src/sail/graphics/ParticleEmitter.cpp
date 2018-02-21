@@ -8,9 +8,8 @@ using namespace SimpleMath;
 
 ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector3& velocityRndAdd, const Vector3& velocityVariety, 
 	float spawnsPerSecond, UINT maxParticles, float scale, float lifetime, const Vector4& color, float gravityScale, UINT initialSpawnCount, 
-	bool useAdditiveBlending, const Camera* cam)
-	: m_cam(cam)
-	, m_useAdditiveBlending(useAdditiveBlending)
+	bool useAdditiveBlending, bool singleUse)
+	: m_useAdditiveBlending(useAdditiveBlending)
 	, m_velocityVariety(velocityVariety)
 	, m_velocityRndAdd(velocityRndAdd)
 	, m_spawnsPerSecond(spawnsPerSecond)
@@ -19,6 +18,7 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 	, m_gravityScale(gravityScale)
 	, m_lifetime(lifetime)
 	, m_emitPosition(emitPos)
+	, m_singleUse(singleUse)
 {
 
 	auto* m_app = Application::getInstance();
@@ -65,7 +65,7 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 ParticleEmitter::~ParticleEmitter() {
 }
 
-void ParticleEmitter::update(float dt) {
+bool ParticleEmitter::update(float dt) {
 
 	static float spawnTimer = 0.f;
 	spawnTimer += dt;
@@ -117,13 +117,18 @@ void ParticleEmitter::update(float dt) {
 		}
 	}
 
-#ifndef _DEBUG
+	if (m_singleUse && m_particles.size() == 0)
+		return true;
+
+//#ifndef _DEBUG
 	// Only sort if neccessary
 	//if (!m_useAdditiveBlending)
 		// TOOD: try different sorting algorithms
-		std::sort(m_instanceData.begin(), m_instanceData.begin() + m_particles.size(), Compare(*this));
+		//std::sort(m_instanceData.begin(), m_instanceData.begin() + m_particles.size(), Compare(*this));
 	//insertionSort();
-#endif
+//#endif
+
+	return false;
 
 }
 
@@ -171,15 +176,16 @@ void ParticleEmitter::updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& v
 	m_velocityRndAdd = velRndAdd;
 }
 
-
 void ParticleEmitter::draw() {
 	m_shader->updateSpriteData(m_spritesPerRow, m_scale);
 	m_shader->updateInstanceData(&m_instanceData[0], m_instanceData.size() * sizeof(m_instanceData[0]), m_instancedModel->getInstanceBuffer());
-	if (m_useAdditiveBlending)
+	if (m_useAdditiveBlending) {
 		Application::getInstance()->getDXManager()->enableAdditiveBlending();
-	else
+		Application::getInstance()->getDXManager()->enableDepthBufferWithWriteMask();
+	} else
 		Application::getInstance()->getDXManager()->enableAlphaBlending();
 	m_shader->draw(*m_instancedModel, true, m_particles.size());
+	Application::getInstance()->getDXManager()->enableDepthBuffer();
 }
 
 UINT ParticleEmitter::getParticleCount() const {

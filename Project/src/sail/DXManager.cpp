@@ -19,6 +19,7 @@ DXManager::~DXManager() {
 	Memory::safeRelease(m_device3);
 	Memory::safeRelease(m_depthStencilBuffer);
 	Memory::safeRelease(m_depthStencilStateEnabled);
+	Memory::safeRelease(m_depthStencilStateEnabledNoWrite);
 	Memory::safeRelease(m_depthStencilStateDisabled);
 	Memory::safeRelease(m_depthStencilView);
 	Memory::safeRelease(m_rasterStateBackfaceCulling);
@@ -152,6 +153,9 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 
 	// Create the enabled depth stencil state
 	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabled));
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabledNoWrite));
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 
 	// Create the depth stencil state with disbled depth testing
 	depthStencilDesc.DepthEnable = false;
@@ -336,6 +340,9 @@ void DXManager::resize(int width, int height) {
 
 void DXManager::enableDepthBuffer() const {
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilStateEnabled, 1);
+}
+void DXManager::enableDepthBufferWithWriteMask() const {
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilStateEnabledNoWrite, 1);
 }
 void DXManager::disableDepthBuffer() const {
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilStateDisabled, 1);

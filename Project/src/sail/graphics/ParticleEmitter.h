@@ -11,10 +11,11 @@ public:
 	};
 	ParticleEmitter(Type type, const DirectX::SimpleMath::Vector3& emitPos, const DirectX::SimpleMath::Vector3& velocityRndAdd, const DirectX::SimpleMath::Vector3& velocityVariety, float spawnsPerSecond, UINT maxParticles, float scale = 1.f,
 		float lifetime = 10.f, const DirectX::SimpleMath::Vector4& color = DirectX::SimpleMath::Vector4::One, float gravityScale = 0.f, UINT initialSpawnCount = 0,
-		bool useAdditiveBlending = false, const Camera* cam = nullptr);
+		bool useAdditiveBlending = false, bool singleUse = true);
 	~ParticleEmitter();
 
-	void update(float dt);
+	// Updates particles, returns true if singleUse emitter is finished
+	bool update(float dt);
 	void draw();
 	UINT getParticleCount() const;
 	void setCamera(const Camera* cam);
@@ -49,6 +50,7 @@ private:
 	UINT m_spritesPerRow;
 	UINT m_spritesPerColumn;
 	bool m_useAdditiveBlending;
+	bool m_singleUse;
 
 	// Particle settings
 	DirectX::SimpleMath::Vector3 m_emitPosition;

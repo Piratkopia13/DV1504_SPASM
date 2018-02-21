@@ -17,8 +17,17 @@ void ParticleHandler::removeEmitter(std::shared_ptr<ParticleEmitter>& emitter) {
 
 void ParticleHandler::update(float dt) {
 	/*if (Application::getInstance()->getGameSettings().particles != 0)*/ {
-		for (auto& emitter : m_emitters)
-			emitter->update(dt);
+
+		auto& it = m_emitters.begin();
+		while (it != m_emitters.end()) {
+			bool remove = (*it)->update(dt);
+
+			if (remove)
+				it = m_emitters.erase(it);
+			else
+				++it;
+		}
+
 		/*double time = m_timer.getFrameTime();
 		std::cout << "Particle updates took: " << time * 1000.f << "ms" << std::endl << std::endl;*/
 	}

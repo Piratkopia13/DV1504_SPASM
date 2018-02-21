@@ -142,16 +142,24 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 }
 
-bool CollisionHandler::checkLevelCollisionWith(Projectile* proj, DirectX::SimpleMath::Vector3& hit) {
+bool CollisionHandler::checkLevelCollisionWith(Projectile* proj, DirectX::SimpleMath::Vector3& hit, float dt) {
 
-	proj->getTransform().getTranslation();
 	auto& collisionIndices = m_level->getGrid()->getCurrentCollisionIndices(*proj->getBoundingBox());
 
-	// TODO: calculate the exact hit point using the velocity and backtracking, and set hit to this point
+	if (collisionIndices.size() > 0) {
+		// TODO: calculate the exact hit point using the velocity and backtracking, and set hit to this point
+		
+		auto& currentPos = proj->getTransform().getTranslation();
+		auto dir = proj->getVelocity();
+		dir.Normalize();
 
-	if (collisionIndices.size() > 0)
+		hit = rayTraceLevel(currentPos - proj->getVelocity() * dt, dir);
+
+		// return hit
 		return true;
+	}
 
+	// return no hit
 	return false;
 }
 

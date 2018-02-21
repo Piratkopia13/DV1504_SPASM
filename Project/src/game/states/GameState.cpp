@@ -33,8 +33,8 @@ GameState::GameState(StateStack& stack)
 	}
 
 	// Set up handlers
-	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_particleHandler = std::make_unique<ParticleHandler>(&m_cam);
+	m_projHandler = std::make_unique<ProjectileHandler>(m_particleHandler.get());
 	m_characterHandler = std::make_unique<CharacterHandler>(m_particleHandler.get(), m_projHandler.get());
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());

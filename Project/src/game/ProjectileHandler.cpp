@@ -1,7 +1,11 @@
 #include "ProjectileHandler.h"
 #include "collision/CollisionHandler.h"
+#include "ParticleHandler.h"
 
-ProjectileHandler::ProjectileHandler() {
+using namespace DirectX::SimpleMath;
+
+ProjectileHandler::ProjectileHandler(ParticleHandler* particleHandler)
+: m_particleHandler(particleHandler) {
 	m_projectileModel = Application::getInstance()->getResourceManager().getFBXModel("projectile").getModel();
 }
 
@@ -18,7 +22,7 @@ std::vector<Projectile*>& ProjectileHandler::getProjectiles() {
 void ProjectileHandler::addProjectile(Projectile* newProjectile) {
 	newProjectile->setModel(m_projectileModel);
 	m_projectiles.push_back(newProjectile);
-	m_projectileLifeSpan.push_back(2.0f);
+	m_projectileLifeSpan.push_back(10.0f);
 }
 
 void ProjectileHandler::removeAt(int index) {
@@ -36,7 +40,12 @@ void ProjectileHandler::update(float dt) {
 		m_projectileLifeSpan.at(i) -= dt;
 
 		DirectX::SimpleMath::Vector3 hitPos;
-		bool hit = CollisionHandler::getInstance()->checkLevelCollisionWith(m_projectiles.at(i), hitPos);
+		bool hit = CollisionHandler::getInstance()->checkLevelCollisionWith(m_projectiles.at(i), hitPos, dt);
+
+		if (hit) {
+			m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+				ParticleEmitter::FIREBALL, hitPos, Vector3(-0.5f), Vector3(5.f, 5.f, 2.f), 0.f, 50, 0.8f, 0.5f, Vector4::One, 1.f, 50U, true, true)));
+		}
 
 		if (hit || m_projectileLifeSpan.at(i) < 0) {
 			removeAt(i);
