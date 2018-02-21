@@ -234,5 +234,19 @@
     <None Include="res\models\box.fbx" />
     <None Include="res\models\capture_point.fbx" />
     <None Include="res\models\monkey.fbx" />
+    <None Include="res\models\capture_point.fbx" />
+    <None Include="res\levels\symmetric.level" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sounds\effect\laser.wav" />
+    <Media Include="res\sounds\effect\shock.wav" />
+    <Media Include="res\sounds\effect\explosion.wav" />
+    <Media Include="res\sounds\ambient\windows95.wav" />
+    <Media Include="res\sounds\ambient\loop1.wav" />
+    <Media Include="res\sounds\ambient\loop2.wav" />
+    <Media Include="res\sounds\effect\death\male_death.wav" />
+    <Media Include="res\sounds\effect\death\goblin_death.wav" />
+    <Media Include="res\sounds\ambient\theme.wav" />
+    <Media Include="res\sounds\effect\pickup.wav" />
   </ItemGroup>
 </Project>

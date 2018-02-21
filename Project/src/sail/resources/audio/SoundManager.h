@@ -32,6 +32,7 @@ public:
 		Laser,
 		Male_Death,
 		Goblin_Death,
+		Pickup,
 		NumOfSoundEffects
 	};
 

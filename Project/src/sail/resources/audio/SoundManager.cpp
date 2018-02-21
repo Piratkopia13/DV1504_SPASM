@@ -49,6 +49,7 @@ SoundManager::SoundManager() {
 		loadSoundEffect(SoundEffect::Shock, L"res/sounds/effect/shock.wav");
 		loadSoundEffect(SoundEffect::Male_Death, L"res/sounds/effect/death/male_death.wav");
 		loadSoundEffect(SoundEffect::Goblin_Death, L"res/sounds/effect/death/goblin_death.wav");
+		loadSoundEffect(SoundEffect::Pickup, L"res/sounds/effect/pickup.wav");
 
 		loadAmbientSound(Ambient::Loop1, L"res/sounds/ambient/loop1.wav");
 		loadAmbientSound(Ambient::Loop2, L"res/sounds/ambient/loop2.wav");

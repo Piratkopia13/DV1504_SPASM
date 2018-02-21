@@ -459,6 +459,7 @@
     <Media Include="res\sounds\effect\death\male_death.wav" />
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\effect\laser.wav" />
+    <Media Include="res\sounds\effect\pickup.wav" />
     <Media Include="res\sounds\effect\shock.wav" />
     <Media Include="res\sounds\effect\explosion.wav" />
     <Media Include="res\sounds\ambient\windows95.wav" />
