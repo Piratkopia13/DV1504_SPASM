@@ -22,6 +22,7 @@ public:
 	void setController(bool usingController);
 	void setControllerPort(unsigned int port);
 	void setTeam(unsigned int team);
+	void setParticleHandler(ParticleHandler* particleHandler);
 	bool isUsingController();
 	unsigned int getPort();
 	unsigned int getTeam();
@@ -46,6 +47,8 @@ public:
 private:
 	Weapon* m_weapon;
 	Hook* m_hook;
+
+	ParticleHandler* m_particleHandler;
 
 	std::shared_ptr<ParticleEmitter> m_thrusterEmitter;
 

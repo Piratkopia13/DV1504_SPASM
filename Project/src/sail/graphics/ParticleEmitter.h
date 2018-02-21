@@ -51,6 +51,7 @@ private:
 	UINT m_spritesPerColumn;
 	bool m_useAdditiveBlending;
 	bool m_singleUse;
+	float m_spawnTimer;
 
 	// Particle settings
 	DirectX::SimpleMath::Vector3 m_emitPosition;

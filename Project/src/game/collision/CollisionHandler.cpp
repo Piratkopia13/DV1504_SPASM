@@ -167,7 +167,7 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
-bool CollisionHandler::resolveProjectileCollisionWith(Character* chara) {
+bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
 
@@ -176,7 +176,11 @@ bool CollisionHandler::resolveProjectileCollisionWith(Character* chara) {
 		if (projectiles.at(i)->getTeam() != chara->getTeam()) {
 			auto* proj = projectiles.at(i);
 			if (chara->getBoundingBox()->containsOrIntersects(*proj->getBoundingBox())) {
-				chara->damage(proj->getDamage());
+
+				hitDmg = proj->getDamage();
+				knockbackDir = proj->getVelocity();
+				knockbackDir.Normalize();
+
 				m_projectileHandler->removeAt(i);
 				hit = true;
 			}

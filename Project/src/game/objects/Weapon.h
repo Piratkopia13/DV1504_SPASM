@@ -7,7 +7,7 @@
 class Weapon : public Moveable {
 public:
 	Weapon();
-	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team);
+	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, ParticleHandler* particleHandler, int team);
 	virtual ~Weapon();
 
 	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
@@ -26,7 +26,8 @@ public:
 
 	virtual void draw();
 private:
-	ProjectileHandler * m_projectileHandler;
+	ProjectileHandler* m_projectileHandler;
+	ParticleHandler* m_particleHandler;
 	bool m_held;
 	int m_team;
 

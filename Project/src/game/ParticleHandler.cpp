@@ -48,3 +48,7 @@ UINT ParticleHandler::getParticleCount() const {
 		count += emitter->getParticleCount();
 	return count;
 }
+
+UINT ParticleHandler::getEmitterCount() const {
+	return m_emitters.size();
+}

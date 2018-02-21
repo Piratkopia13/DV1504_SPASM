@@ -44,7 +44,7 @@ void ProjectileHandler::update(float dt) {
 
 		if (hit) {
 			m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-				ParticleEmitter::FIREBALL, hitPos, Vector3(-0.5f), Vector3(5.f, 5.f, 2.f), 0.f, 50, 0.8f, 0.5f, Vector4::One, 1.f, 50U, true, true)));
+				ParticleEmitter::FIREBALL, hitPos, Vector3(-0.5f), Vector3(5.f, 5.f, 2.f), 0.f, 25, 0.4f, 0.5f, Vector4::One, 1.f, 25U, true, true)));
 		}
 
 		if (hit || m_projectileLifeSpan.at(i) < 0) {

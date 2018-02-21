@@ -113,6 +113,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	}
 	for (Object* m : m_objects)
 		m->draw();
+
+	// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	dxm->disableConservativeRasterizer();
+
 	if (particles) {
 		particles->draw();
 	}
@@ -127,9 +131,6 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	else {
 		dxm->renderToBackBuffer();
 	}
-
-	// Disable conservatiec rasterization to avoid wierd graphical artifacts
-	dxm->disableConservativeRasterizer();
 
 	// Do the light pass (using additive blending)
 	m_deferredRenderer.doLightPass(m_lights, cam, (m_doShadows) ? &m_dirLightShadowMap : nullptr);

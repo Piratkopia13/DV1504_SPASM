@@ -19,7 +19,8 @@ Character::Character()
 
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 
-	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
+	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
+		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
 	setLightColor(Vector4(1, 1, 1, 1));
 }
 
@@ -271,7 +272,20 @@ void Character::update(float dt) {
 			m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 		}
 
-		collHandler->resolveProjectileCollisionWith(this);
+
+		// Check for and handle if a projectile collides with this character
+		Vector3 knockBackDir;
+		float dmgTaken;
+		bool hit = collHandler->resolveProjectileCollisionWith(this, knockBackDir, dmgTaken);
+		if (hit) {
+			damage(dmgTaken);
+			addAcceleration(knockBackDir * 300.f);
+
+			// Hit particle effet
+			m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+				ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockBackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
+				0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
+		}
 	}
 
 	//Going in and out of cover
@@ -344,7 +358,7 @@ void Character::draw() {
 	m_leftArm->setTransform(&armTransform);
 	m_head->setTransform(&bodyTransform);
 
-	float colorGrad = m_playerHealth.healthPercent * 3 + 0.5f;
+	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/
@@ -426,6 +440,10 @@ void Character::addVibration(unsigned int index, float strength, float time) {
 
 void Character::setTeam(unsigned int team) {
 	m_currentTeam = team;
+}
+
+void Character::setParticleHandler(ParticleHandler* particleHandler) {
+	m_particleHandler = particleHandler;
 }
 
 void Character::setWeapon(Weapon * weapon) {

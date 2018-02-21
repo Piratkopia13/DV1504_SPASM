@@ -153,9 +153,11 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 
 	// Create the enabled depth stencil state
 	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabled));
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabledNoWrite));
+
+	// Create the depth stencil state with write masking
 	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabledNoWrite));
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
 	// Create the depth stencil state with disbled depth testing
 	depthStencilDesc.DepthEnable = false;

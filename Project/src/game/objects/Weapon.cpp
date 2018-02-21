@@ -1,6 +1,6 @@
 #include "Weapon.h"
 #include "../collision/CollisionHandler.h"
-
+#include "../ParticleHandler.h"
 #include "../../sail/resources/audio/SoundManager.h"
 
 using namespace DirectX::SimpleMath;
@@ -14,9 +14,10 @@ Weapon::Weapon() {
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team) 
+Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, ParticleHandler* particleHandler, int team)
 	: Weapon()
 {
+	m_particleHandler = particleHandler;
 	model = armModel;
 
 	m_laser.laserModel = laserModel;
@@ -65,7 +66,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 	static float baseSpeed = 20.0f;
 	static float baseDamage = 10.0f;
 	static Vector3 zVec(0, 0, 1);
-	static float diff = 0.2;
+	static float diff = 0.2f;
 
 	if (m_projectileHandler) {
 		float extraSpeed = 1;
@@ -79,6 +80,11 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser);
 
+		// Muzzle flash particles
+		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+			ParticleEmitter::EXPLOSION, m_nozzlePos, direction - Vector3(0.5f), Vector3(15.f, 15.f, 4.f),
+			0.f, 25, 0.3f, 0.1f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 25U, true, true)));
+
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
 			m_nozzlePos,
@@ -88,7 +94,8 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
-		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
+		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
+		temp->getTransform().scaleUniformly(2.f);
 		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
 		m_projectileHandler->addProjectile(temp);
 
@@ -99,9 +106,9 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			changeVec.Normalize();
 
 			
-			for (size_t i = 0; i < (size_t)m_upgrade->multiCount()*0.5; i++) {
-				Vector3 tempVec1 = direction + changeVec * diff*(i+1);
-				Vector3 tempVec2 = direction - changeVec * diff*(i+1);
+			for (int i = 0; i < m_upgrade->multiCount() * 0.5; i++) {
+				Vector3 tempVec1 = direction + changeVec * diff * (i + 1.f);
+				Vector3 tempVec2 = direction - changeVec * diff * (i + 1.f);
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();

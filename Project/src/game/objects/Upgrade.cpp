@@ -108,7 +108,7 @@ bool Upgrade::multiActive()
 	return m_extraProj.active;
 }
 
-float Upgrade::multiCount()
+unsigned int Upgrade::multiCount()
 {
 	return m_extraProj.nr;
 }

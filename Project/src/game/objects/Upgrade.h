@@ -25,7 +25,7 @@ public:
 	float damageTime();
 
 	bool multiActive();
-	float multiCount();
+	unsigned int multiCount();
 	float multiTime();
 
 	bool gravActive();
