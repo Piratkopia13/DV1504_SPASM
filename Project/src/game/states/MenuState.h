@@ -31,7 +31,6 @@ private:
 	Scene m_scene;
 
 	// Models
-	std::vector<Model*> m_playerModels;
 
 	std::vector<Model*> m_playerHeadModels;
 	std::vector<Model*> m_playerBodyModels;
@@ -39,13 +38,7 @@ private:
 	std::vector<Model*> m_playerArmLModels;
 	std::vector<Model*> m_playerArmRModels;
 
-	Model* m_playerModel;
-	Model* m_menuStartModel;
 
-	Model* m_menuOptionsModel;
-	Model* m_menuExitModel;
-
-	Model* m_menuBlockModel;
 	Model* m_backGroundModel;
 
 	Model* m_block;
@@ -65,21 +58,6 @@ private:
 
 
 	DirectX::SimpleMath::Vector4 m_orangeColor;
-
-
-	std::vector<MenuItem*> m_area;
-
-
-	struct Profile {
-		size_t name[5];
-
-	};
-
-
-	struct Teams {
-		DirectX::SimpleMath::Vector4 color;
-	};
-	
 	
 	// MENU 0
 
@@ -142,29 +120,10 @@ private:
 
 	int m_activeMenu;
 	int m_activeSubMenu;
-	int m_selector;
-	int m_menu;
-	int m_startMenu;
-	int m_maxChoices;
 
-
-	int m_gamemode;
-	int m_map;
-	int players[4];
-	int playersReady[4];
-	int m_playerModelIndex[4];
-	int m_playerTeam[4];
-
-	DirectX::SimpleMath::Vector4 playerColor[4];
 
 	MenuItem* background;
-	std::vector<MenuItem*> menuList;
-	std::vector<MenuItem*> playerMenu;
-	std::vector<MenuItem*> mapMenu;
-
-	std::vector<MenuItem*> optionsMenuList;
-
-	std::vector<MenuText*> m_menuText;
+	
 
 	//MAIN MENU
 	MenuHandler* m_mainMenu;
@@ -255,11 +214,7 @@ private:
 	void updateCamera();
 	void startGame();
 
-	void changeMenu(int change, int active);
-	void setColor(int player, DirectX::SimpleMath::Vector4 color) {
-		this->playerColor[player] = color;
-		this->playerMenu[player]->setLightColor(this->playerColor[player]);
-	}
+
 	
 };
 

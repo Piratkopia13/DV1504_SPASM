@@ -34,9 +34,7 @@ MenuState::MenuState(StateStack& stack)
 
 
 	auto& resMan = m_app->getResourceManager();
-	m_playerModels.push_back(resMan.getFBXModel("fisk").getModel());
-	m_playerModels.push_back(resMan.getFBXModel("trashbot").getModel());
-	m_playerModels.push_back(resMan.getFBXModel("unibot").getModel());
+
 
 
 	for(size_t i = 0; i < m_info->botHeadNames.size();i++) 
@@ -56,12 +54,6 @@ MenuState::MenuState(StateStack& stack)
 
 
 	m_block = resMan.getFBXModel("block").getModel();
-	m_menuBlockModel = resMan.getFBXModel("block").getModel();
-	m_menuStartModel = resMan.getFBXModel("startButton").getModel();
-	m_menuOptionsModel = resMan.getFBXModel("optionsButton").getModel();
-	m_menuExitModel = resMan.getFBXModel("exitButton").getModel();
-	m_playerModel = resMan.getFBXModel("fisk").getModel();
-	m_backGroundModel = resMan.getFBXModel("menu_screen").getModel();
 	
 
 
@@ -83,9 +75,7 @@ MenuState::MenuState(StateStack& stack)
 
 	m_activeMenu = 0;
 	m_activeSubMenu = 0;
-	m_selector = 0;
-
-	m_menu = -1;
+	
 	
 	this->background = new MenuItem(m_backGroundModel, Vector3(0.f, -2.3f, 0.5f));
 	this->background->m_useColor = 1;
@@ -105,75 +95,8 @@ MenuState::MenuState(StateStack& stack)
 	initOptions();
 
 
-	MenuItem* start = new MenuItem(m_menuStartModel, Vector3(0.f, 1.1f, 7.f));
-	MenuItem* options = new MenuItem(m_menuOptionsModel, Vector3(0.f, 0.f, 7.f));
-	MenuItem* exit = new MenuItem(m_menuExitModel, Vector3(0.f, -1.1f, 7.f));
-
-	MenuItem* player1 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 2.25f ));
-	MenuItem* player2 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, 0.75f ));
-	MenuItem* player3 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, -0.75f));
-	MenuItem* player4 = new MenuItem(m_playerModel, Vector3(4.0f, 0.0f, -2.25f));
-		
-	MenuItem* option1 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, 1.5f, 0.f));
-	MenuItem* option2 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, 0.f, 0.f));
-	MenuItem* option3 = new MenuItem(m_menuOptionsModel, Vector3(-7.0f, -1.5f, 0.f));
-
-
-	MenuItem* maps[5];
-	int extraY = 0;
-	for (size_t i = 0; i < 5; i++) {
-
-		maps[i] = new MenuItem(m_menuBlockModel, Vector3(3.f - float(i) * 1.5f, 0.f, -7.f));
-		maps[i]->setLightColor(m_offColor);
-		
-		this->mapMenu.push_back(maps[i]);
-	}
-
-
-	this->menuList.push_back(start);
-	this->menuList.push_back(options);
-	this->menuList.push_back(exit);
-
-	this->playerMenu.push_back(player1);
-	this->playerMenu.push_back(player2);
-	this->playerMenu.push_back(player3);
-	this->playerMenu.push_back(player4);
-
-	this->optionsMenuList.push_back(option1);
-	this->optionsMenuList.push_back(option2);
-	this->optionsMenuList.push_back(option3);
-
-	for (size_t i = 0; i < 4; i++) {
-		//m_player[i] = { false, false, 0, i, {{0,0,0,0,0},0,0} };
-		this->players[i] = OFFLINE;
-		this->setColor(i, m_offColor);
-	}
-
-	for (size_t i = 0; i < this->menuList.size(); i++) {
-		menuList[i]->setLightColor(m_offColor);
-		//m_scene.addObject(menuList[i]);
-	}
-	for (size_t i = 0; i < this->playerMenu.size(); i++) {
-		this->playerMenu[i]->setLightColor(m_offColor);
-		this->playerMenu[i]->getTransform().setRotations(Vector3(0.0f, -1.62f, 0.0f));
-		//m_scene.addObject(playerMenu[i]);
-	}
-	for (size_t i = 0; i < this->mapMenu.size(); i++) {
-		
-		//m_scene.addObject(mapMenu[i]);
-	}
-
-	for (size_t i = 0; i < 3; i++) {
-		this->optionsMenuList[i]->getTransform().setRotations(Vector3(0.0f, -1.62f, 0.0f));
-		this->optionsMenuList[i]->setLightColor(m_offColor);
-		//m_scene.addObject(this->optionsMenuList[i]);
-	}
-
-
-	this->changeMenu(0, MAINMENU);
-
 	m_playerCamController->setUseExtraZ(false);
-	m_playerCamController->setTargets(this->menuList[0]);
+	m_playerCamController->setTargets(m_mainMenu);
 	m_playerCamController->setOffset(Vector3(0,0,0));
 	m_playerCamController->setMoving(false);
 	m_playerCamController->setPosition(Vector3(0,0,0));
@@ -205,23 +128,6 @@ MenuState::~MenuState()
 
 
 	delete this->background;
-	for (size_t i = 0; i < this->menuList.size(); i++) {
-		delete this->menuList[i];
-	}
-	for (size_t i = 0; i < this->playerMenu.size(); i++) {
-		delete this->playerMenu[i];
-	}
-	for (size_t i = 0; i < this->mapMenu.size(); i++) {
-		delete this->mapMenu[i];
-	}
-	for (size_t i = 0; i < this->optionsMenuList.size(); i++) {
-		delete this->optionsMenuList[i];
-	}
-	for (size_t i = 0; i < m_menuText.size(); i++) {
-		Memory::safeDelete(m_menuText[i]);
-	}
-	
-
 }
 
 
@@ -717,17 +623,14 @@ bool MenuState::processInput(float dt) {
 
 				case OPTIONSMENU: {
 					if (b) {
-						this->m_activeMenu= MAINMENU;
-						this->optionsMenuList[m_selector]->setLightColor(m_offColor);
-						m_selector = 0;
-						this->changeMenu(0, MAINMENU);
+						
 
 					}
 					if (down) {
-						this->changeMenu(1, OPTIONSMENU);
+						
 					}
 					if (up) {
-						this->changeMenu(-1, OPTIONSMENU);
+						
 					}
 
 				}break;
@@ -1225,177 +1128,7 @@ void MenuState::startGame() {
 			m_info->addPlayer(m_playerz[i]->player);
 	}
 
-
-	//for (size_t i = 0; i < m_players.size(); i++) {
-	//	if (m_players[i]) {
-	//		settings.players.push_back(Application::GameSettings::player(*m_players[i]));
-	//		if (m_players[i]->team == 0) {
-	//			settings.teamOneColor = m_players[i]->color;
-	//		}if (m_players[i]->team == 1) {
-	//			settings.teamTwoColor = m_players[i]->color;
-	//		}
-	//	}
-	//}
-
-
 	requestStackPop();
 	requestStackPush(States::Game);
 }
 
-
-
-void MenuState::changeMenu(int change, int active)
-{
-	int max = 0;
-	if (active == MAINMENU) {
-		this->menuList[m_selector]->setLightColor(m_offColor);
-		max = (int)this->menuList.size()-1;
-	}
-	if (active == OPTIONSMENU) {
-		this->optionsMenuList[m_selector]->setLightColor(m_offColor);
-		max = (int)this->menuList.size() - 1;
-	}
-	if (active == STARTMENU && m_activeSubMenu == MAPSELECT) {
-
-		this->mapMenu[m_selector]->setLightColor(m_offColor);
-		max = (int)this->mapMenu.size() - 1;
-	}
-
-
-	m_selector += change;
-	if (m_selector < 0)
-		m_selector = max;
-	if (m_selector > max)
-		m_selector = 0;
-	if (active == MAINMENU) {
-		this->menuList[m_selector]->setLightColor(m_onColor);
-		m_playerCamController->setTargets(
-			this->menuList[m_selector],
-			nullptr,
-			nullptr,
-			nullptr
-		);
-	}
-	if (active == OPTIONSMENU) {
-		this->optionsMenuList[m_selector]->setLightColor(m_onColor);
-		m_playerCamController->setTargets(
-			this->optionsMenuList[m_selector],
-			nullptr,
-			nullptr,
-			nullptr
-		);
-	}
-	if (active == STARTMENU && m_activeSubMenu == MAPSELECT) {
-
-		this->mapMenu[m_selector]->setLightColor(m_onColor);
-		m_playerCamController->setTargets(
-			this->mapMenu[m_selector],
-			nullptr,
-			nullptr,
-			nullptr
-		);
-	}
-	
-}
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-switch (this->players[i]) {
-	case OFFLINE:
-		if (a) {
-			this->players[i] = ONLINE;
-			this->setColor(i, m_orangeColor);
-			m_playerTeam[i] = 1;
-		}
-		if (b) {
-			for (size_t u = 0; u < 4; u++) {
-				this->players[u] = OFFLINE;
-				m_playerTeam[u] = 0;
-				this->setColor(u, m_offColor);
-				this->m_playerCamController->setTargets(this->menuList[0]);
-
-				m_activeMenu = MAINMENU;
-				m_selector = 0;
-				this->changeMenu(0, MAINMENU);
-			}
-			m_playerCamController->setPosition(Vector3(0,0,0));
-
-			setCharacterSelect(false);
-			setGamemodeSelect(true);
-		}
-
-
-
-		break;
-	case ONLINE:
-		switch (this->playersReady[i]) {
-			case NOTREADY:
-				if(a) {
-					this->playersReady[i] = READY;
-					int nrOnline = 0;
-					int nrReady = 0;
-					for (size_t u = 0; u < 4; u++) {
-						if (this->players[u] == ONLINE) 
-							nrOnline++;
-						if (this->playersReady[u] == READY) 
-							nrReady++;
-					}
-					if (nrReady == nrOnline) {
-						m_activeSubMenu = MAPSELECT;
-						m_selector = 0;
-						this->changeMenu(0, STARTMENU);
-						this->m_playerCamController->setTargets(this->mapMenu[0]);				
-						break;
-					}
-				}
-				if (b) {
-				this->players[i] = OFFLINE;
-				this->setColor(i, m_offColor);
-				}
-
-				if (right || left) {
-					m_playerTeam[i] = (m_playerTeam[i] % 2) + 1;
-					if (m_playerTeam[i] == 1) {
-						this->setColor(i, m_orangeColor);
-					}
-					else if (m_playerTeam[i] == 2) {
-						this->setColor(i, m_blueColor);
-					}
-					else {
-						this->setColor(i, m_offColor);
-					}
-				}
-
-
-
-				break;
-			case READY:
-				if (b) {
-					this->players[i] = OFFLINE;
-					this->setColor(i, m_offColor);
-					m_playerTeam[i] = 0;
-				}
-												
-
-											
-				break;
-
-		}
-
-		break;
-	}
-	break;
-
-
-
-*/
