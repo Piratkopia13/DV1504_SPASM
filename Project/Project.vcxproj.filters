@@ -99,6 +99,7 @@
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
     <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -56,7 +56,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 	if (m_doPostProcessing) {
 		// Render skybox to the prePostTex
-		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
+		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
 		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
 	}
 
