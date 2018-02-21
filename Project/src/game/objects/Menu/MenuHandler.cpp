@@ -180,6 +180,8 @@ void MenuHandler::next() {
 		item->setLightColor(m_offColor);
 	if(text)
 		m_itemList[m_activeItem].text->setColor(m_offColor);
+	if (selector)
+		selector->setSelectionColor(m_onColor*0.7);
 
 	m_activeItem++;
 	if (m_activeItem == m_itemList.size())
@@ -193,7 +195,8 @@ void MenuHandler::next() {
 		item->setLightColor(m_onColor);
 	if (text)
 		text->setColor(m_onColor);
-
+	if (selector)
+		selector->setSelectionColor(m_onColor);
 	updateTransform();
 
 
@@ -208,7 +211,8 @@ void MenuHandler::back() {
 		item->setLightColor(m_offColor);
 	if (text)
 		text->setColor(m_offColor);
-
+	if (selector)
+		selector->setSelectionColor(m_onColor*0.7);
 
 	if (m_activeItem == 0) {
 		m_activeItem = m_itemList.size() - 1;
@@ -225,7 +229,8 @@ void MenuHandler::back() {
 		item->setLightColor(m_onColor);
 	if (text)
 		text->setColor(m_onColor);
-
+	if (selector)
+		selector->setSelectionColor(m_onColor);
 
 	updateTransform();
 }
@@ -333,13 +338,13 @@ void MenuHandler::updateTransform() {
 
 	for (size_t i = 0; i < m_itemList.size(); i++) {
 		if ((int)((int)i - (int)m_activeItem) > 0) {
-			selectionSpace = m_growth * m_size * 0.2;
+			selectionSpace = m_growth * m_size * 0.1;
 		}
 		if ((int)((int)i - (int)m_activeItem) == 0) {
 			selectionSpace = Vector3(0,0,0);
 		}
 		if ((int)((int)i - (int)m_activeItem) < 0) {
-			selectionSpace = m_growth * -1 * m_size * 0.2;
+			selectionSpace = m_growth * -1 * m_size * 0.1;
 		}
 
 		if (m_itemList[i].item) {

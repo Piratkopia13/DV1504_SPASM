@@ -17,10 +17,13 @@ MenuItem::MenuItem(Model* model, const Vector3& pos)
 
 
 void MenuItem::draw() {
-	this->getModel()->setTransform(&this->getTransform());
-	if(m_useColor)
-		this->getModel()->getMaterial()->setColor(this->lightColor);
-	this->getModel()->draw();
+	if (getModel()) {
+		this->getModel()->setTransform(&this->getTransform());
+		if(m_useColor)
+			this->getModel()->getMaterial()->setColor(this->lightColor);
+
+		this->getModel()->draw();
+	}
 }
 
 MenuItem::~MenuItem() {

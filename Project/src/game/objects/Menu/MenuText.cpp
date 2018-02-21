@@ -137,7 +137,12 @@ void MenuText::updateLetterPosition() {
 		Vector3 _pos = (shifting - startPos)*(spacing*m_size*0.5) + m_position;
 
 		m_letters[i]->setPosition(_pos);
-		m_letters[i]->getTransform().setRotations(Vector3(0.0f, -atan2(m_facing.z, m_facing.x)+1.55,0.0f));
+		
+		m_letters[i]->getTransform().setRotations(Vector3(0.0f, -atan2(m_facing.z, m_facing.x)+1.57f,0.0f));
+
+		if (m_letters[i]->m_letter == 62) {
+			m_letters[i]->getTransform().setRotations(Vector3(0.0f, -atan2(m_facing.z, m_facing.x)- 1.57f, 0.0f));
+		}
 		m_letters[i]->getTransform().setScale(m_size);
 	}
 
@@ -161,9 +166,13 @@ MenuText::TextLetter::TextLetter(char _letter) {
 		m_letter = _letter - 21;
 		setModel(Application::getInstance()->getResourceManager().getFBXModel("letters/Alphabet-" + std::to_string(m_letter)).getModel());
 	}
-
-
-	//m_letter = _letter;
+	//<   >
+	else if (_letter == 60 || _letter == 62) {
+		m_letter = _letter;
+		setModel(Application::getInstance()->getResourceManager().getFBXModel("arrow").getModel());
+	}
+	
+	
 
 
 }

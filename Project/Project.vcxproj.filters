@@ -7,6 +7,7 @@
     <FxCompile Include="res\shaders\deferred\PointLightShader.hlsl" />
     <FxCompile Include="res\shaders\DepthShader.hlsl" />
     <FxCompile Include="res\shaders\DirectionalLightShader.hlsl" />
+    <FxCompile Include="res\shaders\instanced\ParticleShader.hlsl" />
     <FxCompile Include="res\shaders\MaterialShader.hlsl" />
     <FxCompile Include="res\shaders\Phong.hlsl" />
     <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl" />
@@ -15,12 +16,19 @@
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
-    <FxCompile Include="res\shaders\instanced\ParticleShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\game\GameInfo.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
     <ClCompile Include="src\game\CharacterHandler.cpp" />
+    <ClCompile Include="src\game\ParticleHandler.cpp" />
     <ClCompile Include="src\game\states\PauseState.cpp" />
     <ClCompile Include="src\game\objects\menu\MenuItem.cpp" />
     <ClCompile Include="src\game\states\MenuState.cpp" />
@@ -47,6 +55,8 @@
     <ClCompile Include="src\sail\graphics\geometry\spatial\Quadtree.cpp" />
     <ClCompile Include="src\sail\graphics\Lights.cpp" />
     <ClCompile Include="src\sail\graphics\models\FbxModel.cpp" />
+    <ClCompile Include="src\sail\graphics\Particle.cpp" />
+    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
@@ -56,6 +66,7 @@
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\ComputeShader.cpp" />
@@ -80,6 +91,10 @@
     <ClCompile Include="src\sail\graphics\shader\ShaderSet.cpp" />
     <ClCompile Include="src\sail\graphics\shader\VertexShader.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
+    <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
     <ClCompile Include="src\sail\resources\DXCubeMap.cpp" />
     <ClCompile Include="src\sail\resources\DXTexture.cpp" />
     <ClCompile Include="src\sail\resources\loaders\TGALoader.cpp" />
@@ -92,29 +107,21 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
-    <ClCompile Include="src\game\CharacterHandler.cpp" />
-    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
-    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
-    <ClCompile Include="src\sail\Input.cpp" />
-    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
-    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
-    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
-    <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
-    <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
-    <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
-    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
-    <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
-    <ClCompile Include="src\sail\graphics\Particle.cpp" />
-    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
-    <ClCompile Include="src\game\ParticleHandler.cpp" />
-    <ClCompile Include="src\game\GameInfo.cpp" />
-    <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
-    <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\GameInfo.h" />
+    <ClInclude Include="src\game\GameInfo\Profile.h" />
+    <ClInclude Include="src\game\GameInfo\Score.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuText.h" />
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
     <ClInclude Include="src\game\objects\upgrades\AutoFireUpgrade.h" />
     <ClInclude Include="src\game\CharacterHandler.h" />
     <ClInclude Include="src\game\collision\CollisionHandler.h" />
+    <ClInclude Include="src\game\ParticleHandler.h" />
     <ClInclude Include="src\game\states\PauseState.h" />
     <ClInclude Include="src\game\objects\menu\MenuItem.h" />
     <ClInclude Include="src\game\states\MenuState.h" />
@@ -137,6 +144,7 @@
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\SphereModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
@@ -148,6 +156,8 @@
     <ClInclude Include="src\sail\graphics\models\FbxModel.h" />
     <ClInclude Include="src\sail\graphics\camera\OrthographicCamera.h" />
     <ClInclude Include="src\sail\graphics\camera\PerspectiveCamera.h" />
+    <ClInclude Include="src\sail\graphics\Particle.h" />
+    <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
@@ -156,6 +166,7 @@
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
     <ClInclude Include="src\sail\graphics\shader\ComputeShader.h" />
@@ -182,6 +193,10 @@
     <ClInclude Include="src\sail\graphics\shader\ShaderSet.h" />
     <ClInclude Include="src\sail\graphics\shader\VertexShader.h" />
     <ClInclude Include="src\sail\graphics\text\Text.h" />
+    <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
+    <ClInclude Include="src\sail\resources\audio\Sound.h" />
+    <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
     <ClInclude Include="src\sail\resources\DXCubeMap.h" />
     <ClInclude Include="src\sail\resources\DXTexture.h" />
     <ClInclude Include="src\sail\resources\loaders\TGALoader.h" />
@@ -198,48 +213,26 @@
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
-    <ClInclude Include="src\game\collision\CollisionHandler.h" />
-    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
-    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
-    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
-    <ClInclude Include="src\game\CharacterHandler.h" />
-    <ClInclude Include="src\sail\Input.h" />
-    <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
-    <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
-    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
-    <ClInclude Include="src\sail\graphics\Particle.h" />
-    <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
-    <ClInclude Include="src\game\ParticleHandler.h" />
-    <ClInclude Include="src\sail\resources\audio\Sound.h" />
-    <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
-    <ClInclude Include="src\game\objects\Menu\MenuText.h" />
-    <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
-    <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
-    <ClInclude Include="src\game\GameInfo.h" />
-    <ClInclude Include="src\game\GameInfo\Profile.h" />
-    <ClInclude Include="src\game\GameInfo\Score.h" />
-    <ClInclude Include="src\game\GameInfo\PlayerModels.h" />
-    <ClInclude Include="src\game\GameInfo\Maps.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="res\sounds\ambient\loop1.wav" />
+    <Media Include="res\sounds\ambient\loop2.wav" />
+    <Media Include="res\sounds\ambient\theme.wav" />
+    <Media Include="res\sounds\effect\death\male_death.wav" />
+    <Media Include="res\sounds\effect\death\goblin_death.wav" />
+    <Media Include="res\sounds\effect\laser.wav" />
+    <Media Include="res\sounds\effect\shock.wav" />
+    <Media Include="res\sounds\effect\explosion.wav" />
+    <Media Include="res\sounds\ambient\windows95.wav" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />
+    <None Include="res\levels\symmetric.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
-    <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
-    <None Include="res\levels\symmetric.level" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="res\sounds\effect\laser.wav" />
-    <Media Include="res\sounds\effect\shock.wav" />
-    <Media Include="res\sounds\effect\explosion.wav" />
-    <Media Include="res\sounds\ambient\windows95.wav" />
-    <Media Include="res\sounds\ambient\loop1.wav" />
-    <Media Include="res\sounds\ambient\loop2.wav" />
-    <Media Include="res\sounds\effect\death\male_death.wav" />
-    <Media Include="res\sounds\effect\death\goblin_death.wav" />
-    <Media Include="res\sounds\ambient\theme.wav" />
+    <None Include="res\models\monkey.fbx" />
   </ItemGroup>
 </Project>

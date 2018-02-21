@@ -2,6 +2,7 @@
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuHandler.h"
+#include "../GameInfo.h"
 
 class MenuState : public State {
 public:
@@ -19,6 +20,7 @@ public:
 
 private:
 	Application * m_app;
+	GameInfo* m_info;
 
 	// Camera
 	PerspectiveCamera m_cam;
@@ -30,6 +32,12 @@ private:
 
 	// Models
 	std::vector<Model*> m_playerModels;
+
+	std::vector<Model*> m_playerHeadModels;
+	std::vector<Model*> m_playerBodyModels;
+	std::vector<Model*> m_playerLegModels;
+	std::vector<Model*> m_playerArmLModels;
+	std::vector<Model*> m_playerArmRModels;
 
 	Model* m_playerModel;
 	Model* m_menuStartModel;
@@ -67,14 +75,7 @@ private:
 
 	};
 
-	struct MenuPlayer {
-		bool online;
-		bool ready;
-		size_t modelIndex;
-		size_t team;
-		Profile profile;
 
-	};
 	struct Teams {
 		DirectX::SimpleMath::Vector4 color;
 	};
@@ -172,8 +173,56 @@ private:
 	MenuHandler* m_gamemodeMenu;
 
 	std::vector<MenuHandler*> m_characterMenu;
-	std::vector<Application::GameSettings::player*> m_players;
-	std::vector<MenuItem*> m_playerMenuModels;
+
+	struct MenuPlayer {
+		GameInfo::Player player;
+		bool ready;
+
+	};
+	std::vector<MenuPlayer*> m_playerz;
+	//std::vector<MenuItem*> m_playerMenuModels;
+
+	struct PlayerMenuModel {
+		MenuItem* head;
+		MenuItem* body;
+		MenuItem* legs;
+		MenuItem* armL;
+		MenuItem* armR;
+
+		void setLight(const DirectX::SimpleMath::Vector4& color) {
+			if (head) 
+				head->setLightColor(color);
+			if (body)
+				body->setLightColor(color);
+			if (legs)
+				legs->setLightColor(color);
+			if (armL)
+				armL->setLightColor(color);
+			if (armR)
+				armR->setLightColor(color);
+		}
+		void clear() {
+			Memory::safeDelete(head);
+			Memory::safeDelete(body);
+			Memory::safeDelete(legs);
+			Memory::safeDelete(armL);
+			Memory::safeDelete(armR);
+		}
+		void reset() {
+			if(head)
+				head->setModel(nullptr);
+			if(body)
+				body->setModel(nullptr);
+			if(legs)
+				legs->setModel(nullptr);
+			if(armL)
+				armL->setModel(nullptr);
+			if(armR)
+				armR->setModel(nullptr);
+		}
+
+	};
+	std::vector<PlayerMenuModel> m_playerMenuModelz;
 
 	MenuHandler* m_mapMenu;
 
@@ -184,6 +233,7 @@ private:
 	void initMain();
 	void initGamemode();
 	void initCharacterModels();
+	void initCharacterModel(size_t spot);
 	void initCharacter(size_t spot);
 	void removeCharacter(size_t spot);
 	void initMap();

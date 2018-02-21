@@ -236,8 +236,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
-    <ClInclude Include="src\game\GameInfo\Maps.h" />
-    <ClInclude Include="src\game\GameInfo\PlayerModels.h" />
     <ClInclude Include="src\game\GameInfo\Profile.h" />
     <ClInclude Include="src\game\GameInfo\Score.h" />
     <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />

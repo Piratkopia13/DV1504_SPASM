@@ -15,24 +15,29 @@ public:
 
 	GameInfo();
 	~GameInfo();
+	static GameInfo* getInstance();
+
 
 	void resetScore();
 
 
 	std::vector<Profile>& getProfiles();
 	Score& getScore();
-
+	std::vector<Player>& getPlayers();
+	const DirectX::SimpleMath::Vector4& getDefaultColor(size_t color, size_t hue);
 
 	void addPlayer(Player player);
 	void addProfile(std::string name, size_t preOrdered);
 
 	struct Player {
 		Profile* currentProfile;
+		size_t port;
 		size_t team;
 		size_t color;
+		size_t hue;
 		size_t headModel;
 		size_t bodyModel;
-		size_t legs;
+		size_t legModel;
 		size_t armModel;
 
 	};
@@ -63,6 +68,7 @@ public:
 		std::vector<Team> teams;
 
 	};
+	
 	struct SoundSettings {
 		float masterVolume;
 		float backGroundSoundVolume;
@@ -76,10 +82,15 @@ public:
 	SoundSettings soundSettings;
 
 	std::vector<DirectX::SimpleMath::Vector4> defaultColors;
-
+	std::vector<std::string> colorNames;
+	std::vector<std::string> colorHues;
+	std::vector<std::string> botHeadNames;
+	std::vector<std::string> botBodyNames;
+	std::vector<std::string> botLegNames;
+	std::vector<std::string> botArmNames;
 
 private:
-
+	static GameInfo* m_infoInstance;
 
 	Score m_gameScore;
 	std::vector<Profile> m_profiles;

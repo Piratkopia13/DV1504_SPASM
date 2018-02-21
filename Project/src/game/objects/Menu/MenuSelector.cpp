@@ -14,6 +14,7 @@ MenuSelector::MenuSelector() {
 	m_offset = 0.12f;
 	m_onColor = Vector4(1, 1, 1, 1);
 	m_offColor = Vector4(0.5f, 0.5f, 0.5f, 1);
+	m_selectionColor = Vector4(1, 1, 1, 1);
 }
 
 
@@ -44,7 +45,7 @@ void MenuSelector::update() {
 void MenuSelector::addOption(std::string text) {
 	MenuText* temp = new MenuText(text);
 	if (m_options.size() == 0) {
-		temp->setColor(m_onColor);
+		temp->setColor(m_selectionColor);
 	}
 	else
 		temp->setColor(m_offColor);
@@ -115,6 +116,12 @@ void MenuSelector::setActiveOption(size_t option) {
 	}
 }
 
+void MenuSelector::setSelectionColor(const DirectX::SimpleMath::Vector4 & color) {
+	m_selectionColor = color;
+	next();
+	back();
+}
+
 void MenuSelector::next() {
 
 	if (m_options.size() > 0) {
@@ -123,7 +130,7 @@ void MenuSelector::next() {
 		m_selector++;
 		if (m_selector == m_options.size())
 			m_selector = 0;
-		m_options[m_selector]->setColor(m_onColor);
+		m_options[m_selector]->setColor(m_selectionColor);
 		m_options[m_selector]->setSize(m_size*0.5f*m_targetSize);
 	}
 
@@ -143,7 +150,7 @@ void MenuSelector::back() {
 		else 
 			m_selector--;
 
-		m_options[m_selector]->setColor(m_onColor);
+		m_options[m_selector]->setColor(m_selectionColor);
 		m_options[m_selector]->setSize(m_size*0.5f*m_targetSize);
 	}
 }

@@ -21,6 +21,8 @@ public:
 	void setDirection(const DirectX::SimpleMath::Vector3& direction);
 	void setSize(float size);
 	void setActiveOption(size_t option);
+	void setSelectionColor(const DirectX::SimpleMath::Vector4& color);
+
 
 	void next();
 	void back();
@@ -34,6 +36,7 @@ private:
 	size_t m_selector;
 
 	DirectX::SimpleMath::Vector4 m_onColor;
+	DirectX::SimpleMath::Vector4 m_selectionColor;
 	DirectX::SimpleMath::Vector4 m_offColor;
 
 	bool m_stat;

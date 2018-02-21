@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../sail/Sail.h"
+#include "GameInfo.h"
 
 class Game : public Application {
 
@@ -19,6 +20,6 @@ private:
 	void registerStates();
 
 	StateStack m_stateStack;
-	
+	GameInfo m_info;
 
 };
