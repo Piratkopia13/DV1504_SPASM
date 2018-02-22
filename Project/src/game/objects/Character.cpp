@@ -16,11 +16,16 @@ Character::Character()
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
 	m_vibration[0] = { 0, 0};
+	m_vibFreq = 1.f / 30.f;
+	m_vibDeltaAcc = 0;
 
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 
-	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
+	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
+		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
 	setLightColor(Vector4(1, 1, 1, 1));
+
+	//addVibration(0, 1.f, 2.f);
 }
 
 Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel) : Character() {
@@ -99,7 +104,6 @@ void Character::processInput() {
 
 			// ON BUTTON CLICK
 			if (padTracker.a == GamePad::ButtonStateTracker::PRESSED) {
-				this->addVibration(1, 1);
 				this->jump();
 			}
 			if (padTracker.b == GamePad::ButtonStateTracker::PRESSED) {
@@ -112,7 +116,7 @@ void Character::processInput() {
 			}
 			if (padTracker.x == GamePad::ButtonStateTracker::PRESSED) {
 				m_playerHealth.addHealth(-10);
-				this->addVibration(0, 1);
+				//this->addVibration(0, 1);
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::PRESSED) {
 				m_playerHealth.addHealth(10);
@@ -129,7 +133,7 @@ void Character::processInput() {
 				
 			}
 			if (padTracker.y == GamePad::ButtonStateTracker::RELEASED) {
-				this->addVibration(0, 1);
+				//this->addVibration(0, 1);
 			}		
 
 			// ON BUTTON HOLD
@@ -176,7 +180,7 @@ void Character::processInput() {
 				padState.thumbSticks.rightY,
 				0);
 
-			if (tempVec.LengthSquared() > 0.3) {			
+			if (tempVec.LengthSquared() > 0.1) {
 				tempVec.Normalize();
 				m_input.aim = tempVec;
 			}
@@ -189,10 +193,15 @@ void Character::update(float dt) {
 	CollisionHandler* collHandler = CollisionHandler::getInstance();
 	auto& gamePad = Application::getInstance()->getInput().getGamePad();
 
-	if (updateVibration(dt))
+	if (updateVibration(dt)) {
+
 		gamePad.SetVibration(m_inputDevice.controllerPort,
 			m_vibration[0].currentStrength,
 			m_vibration[1].currentStrength);
+		/*Logger::log("0: " + std::to_string(m_vibration[0].currentStrength));
+		Logger::log("1: " + std::to_string(m_vibration[1].currentStrength));*/
+
+	}
 
 
 	if (!m_playerHealth.alive) {
@@ -246,8 +255,12 @@ void Character::update(float dt) {
 		}
 		else {
 			if (!m_movement.hooked) {//Movement in the air
-				float velX = m_input.movement.x * m_movement.speed * 0.1f + getVelocity().x;
-				velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
+				float velX = getVelocity().x;
+				if ((m_input.movement.x > 0.f && velX <= m_movement.speed * 0.8f) || 
+					(m_input.movement.x < 0.f && velX >= -m_movement.speed * 0.8f)) {
+					velX += m_input.movement.x * m_movement.speed * 0.1f;
+				}
+				//velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
 				this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
 				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
 			}
@@ -271,7 +284,24 @@ void Character::update(float dt) {
 			m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 		}
 
-		collHandler->resolveProjectileCollisionWith(this);
+
+		// Check for and handle if a projectile collides with this character
+		Vector3 knockbackDir;
+		float dmgTaken;
+		float knockbackAmount;
+		bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount);
+		if (hit) {
+			damage(dmgTaken);
+			addVelocity(knockbackDir * knockbackAmount);
+			setGrounded(false);
+
+			// Hit particle effet
+			m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+				ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockbackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
+				0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
+
+			VibrateController(0, 1.f, 1.f);
+		}
 	}
 
 	//Going in and out of cover
@@ -344,19 +374,22 @@ void Character::draw() {
 	m_head->setTransform(&bodyTransform);
 
 	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
-	model->getMaterial()->setColor(lightColor*(colorGrad));
-	m_leftArm->getMaterial()->setColor(lightColor*(colorGrad));
-	m_head->getMaterial()->setColor(lightColor*(colorGrad));
+	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
+	/*color.w = 3.f;
+	color.w *= colorGrad;*/
+	model->getMaterial()->setColor(color);
+	m_leftArm->getMaterial()->setColor(color);
+	m_head->getMaterial()->setColor(color);
 
 	model->draw();
 	m_leftArm->draw();
 	m_head->draw();
 	if (m_weapon->getHeld()) {
-		m_weapon->setLightColor(lightColor*(colorGrad));
+		m_weapon->setLightColor(color);
 		m_weapon->draw();
 	}
 	if (m_hook) { // && !m_movement.inCover) 
-		m_hook->setLightColor(lightColor*m_playerHealth.healthPercent);
+		m_hook->setLightColor(lightColor);
 		m_hook->draw();
 	}
 
@@ -411,17 +444,20 @@ void Character::damage(float dmg) {
 	m_playerHealth.addHealth(-dmg);
 }
 
-void Character::setVibration(unsigned int index, float strength, float time) {
-	m_vibration[index] = { strength, time };
-}
+void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {
+	m_vibration[index].currentStrength = strength;
+	if (m_vibration[index].currentStrength > strength) m_vibration[index].currentStrength = strength;
+	if (m_vibration[index].currentStrength > 1.f) m_vibration[index].currentStrength = 1.f;
 
-void Character::addVibration(unsigned int index, float strength, float time) {
-	m_vibration[index].currentStrength += strength;
-	m_vibration[index].timeLeft += time;
+	m_vibration[index].decreaseMul = timeDecreaseMul;
 }
 
 void Character::setTeam(unsigned int team) {
 	m_currentTeam = team;
+}
+
+void Character::setParticleHandler(ParticleHandler* particleHandler) {
+	m_particleHandler = particleHandler;
 }
 
 void Character::setWeapon(Weapon * weapon) {
@@ -452,7 +488,12 @@ void Character::dead() {
 	m_playerHealth.current = 0;
 	m_playerHealth.updatePercent();
 	m_playerHealth.alive = false;
+	m_weapon->triggerRelease();
+	stopHook();
+	setVelocity(Vector3::Zero);
 	m_weapon->setHeld(false);
+	VibrateController(0, 1.f, 0.3f);
+	VibrateController(1, 1.f, 0.3f);
 }
 
 void Character::setLightColor(const Vector4& color) {
@@ -464,8 +505,11 @@ void Character::setLightColor(const Vector4& color) {
 
 void Character::jump() {
 	//this->jumping = true;
-	if(grounded())
-		this->setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
+	if (grounded()) {
+		setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
+		VibrateController(1, 0.5f, 1);
+	}
+
 	//this->getTransform().translate(Vector3(0,10,0));
 }
 
@@ -491,18 +535,24 @@ void Character::stopHook() {
 }
 
 bool Character::updateVibration(float dt) {
-	static float freq = 1.f / 30.f;
-	static float deltaAcc = 0;
-	int upd = 0;
-	deltaAcc += dt;
-	if(deltaAcc >= freq)
+	
+	bool update = false;
+	m_vibDeltaAcc += dt;
+	if (m_vibDeltaAcc >= m_vibFreq) {
+
 		for (int i = 0; i < 2; i++) {
 			
+			//if (m_vibration[i].timeLeft > 0) {
+				m_vibration[i].currentStrength -= m_vibFreq * m_vibration[i].decreaseMul;
+				//m_vibration[i].timeLeft -= dt;
+			//}
+			if (m_vibration[i].currentStrength < 0.f)
+				m_vibration[i].currentStrength = 0.f;
 				
 		}
-	if (upd > 0)
-		return true;
-	else
-		return false;
+		update = true;
+	}
+
+	return update;
 }
 

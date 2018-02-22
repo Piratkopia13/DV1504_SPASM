@@ -46,30 +46,30 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	}
 
 #ifdef _DEBUG
-	//if (settings->players.size() == 0) {
-	//	Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, 1);
-	//	Hook* tempHook = new Hook(hookModel);
-	//	Character* tempChar = new Character(bodies[0], armLeftModel, headModel);
-	//	tempChar->setLightColor(settings->players[0].color);
-	//	tempChar->setTeam(1);
-	//	tempChar->setHook(tempHook);
-	//	tempChar->setWeapon(tempWeapon);
-	//	tempChar->setControllerPort(0);
-	//	tempChar->setController(true);
-	//	addPlayer(tempChar);
-	//}
-	//if (settings->players.size() < 4) {
-	//	Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, 2);
-	//	Hook* tempHook = new Hook(hookModel);
-	//	Character* tempChar = new Character(bodies[0], armLeftModel, headModel);
-	//	tempChar->setLightColor(settings->players[0].color);
-	//	tempChar->setTeam(2);
-	//	tempChar->setHook(tempHook);
-	//	tempChar->setWeapon(tempWeapon);
-	//	tempChar->setControllerPort(1);
-	//	tempChar->setController(false);
-	//	addPlayer(tempChar);
-	//}
+	if (settings->players.size() == 0) {
+		Hook* tempHook = new Hook(hModel);
+		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
+		tempChar->setLightColor(settings->teamOneColor);
+		tempChar->setTeam(1);
+		tempChar->setHook(tempHook);
+		tempChar->setWeapon(tempWeapon);
+		tempChar->setControllerPort(0);
+		tempChar->setController(true);
+		addPlayer(tempChar);
+	}
+	if (settings->players.size() < 4) {
+		Hook* tempHook = new Hook(hModel);
+		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
+		tempChar->setLightColor(settings->teamTwoColor);
+		tempChar->setTeam(2);
+		tempChar->setHook(tempHook);
+		tempChar->setWeapon(tempWeapon);
+		tempChar->setControllerPort(1);
+		tempChar->setController(false);
+		addPlayer(tempChar);
+	}
 #endif
 
 }
@@ -84,17 +84,24 @@ CharacterHandler::~CharacterHandler() {
 }
 
 void CharacterHandler::addPlayer(Character* player) {
+	player->setParticleHandler(m_particleHandler);
 	m_characters.push_back(player);
 	m_respawnTimers.push_back(0);
 	m_particleHandler->addEmitter(player->m_thrusterEmitter);
 }
 
-void CharacterHandler::addSpawnPoint(unsigned int team, const DirectX::SimpleMath::Vector3& position) {
+void CharacterHandler::addSpawnPoint(unsigned int team, const Vector3& position) {
 	m_spawns[team].push_back(position);
 }
 
 void CharacterHandler::killPlayer(unsigned int index) {
 	if (index < m_characters.size()) {
+
+		// Death explosion
+		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+			ParticleEmitter::EXPLOSION, m_characters[index]->getTransform().getTranslation(), Vector3(-0.5f), Vector3(7.f, 7.f, 4.f), 
+				0.f, 75, 1.0f, 1.0f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 75U, true, true)));
+
 		m_characters[index]->dead();
 		m_characters[index]->setPosition(Vector3(0, 0, -100));
 		m_respawnTimers[index] = 0.01f;
@@ -135,6 +142,7 @@ void CharacterHandler::setRespawnTime(float time)
 void CharacterHandler::update(float dt) {
 	
 	for (size_t i = 0; i < m_characters.size(); i++) {
+		m_characters[i]->update(dt);
 		if (m_respawnTimers[i] > 0) {
 			if (m_respawnTimers[i] >= m_respawnTime) {
 				respawnPlayer(i);
@@ -143,7 +151,6 @@ void CharacterHandler::update(float dt) {
 			m_respawnTimers[i] += dt;
 		}
 		else {
-			m_characters[i]->update(dt);
 			if (m_characters[i]->getHealth() <= 0.0f) {
 				killPlayer(i);
 			}

@@ -11,7 +11,8 @@ public:
 	void move(const float dt, bool includeBoundingBoxRotation = true);
 	void updateVelocity(const float dt);
 	void move(DirectX::SimpleMath::Vector3& toMove, bool includeBoundingBoxRotation = true);
-	void setVelocity(const DirectX::SimpleMath::Vector3 &newVelocity);
+	void setVelocity(const DirectX::SimpleMath::Vector3& newVelocity);
+	void addVelocity(const DirectX::SimpleMath::Vector3& addedVelocity);
 	void setGravScale(float scale);
 
 	const DirectX::SimpleMath::Vector3& getVelocity();

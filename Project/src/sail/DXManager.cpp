@@ -16,12 +16,15 @@ DXManager::~DXManager() {
 	Memory::safeRelease(m_swapChain);
 	Memory::safeRelease(m_deviceContext);
 	Memory::safeRelease(m_device);
+	Memory::safeRelease(m_device3);
 	Memory::safeRelease(m_depthStencilBuffer);
 	Memory::safeRelease(m_depthStencilStateEnabled);
+	Memory::safeRelease(m_depthStencilStateEnabledNoWrite);
 	Memory::safeRelease(m_depthStencilStateDisabled);
 	Memory::safeRelease(m_depthStencilView);
 	Memory::safeRelease(m_rasterStateBackfaceCulling);
 	Memory::safeRelease(m_rasterStateFrontfaceCulling);
+	Memory::safeRelease(m_rasterStateBackfaceCullingNoConservative);
 	Memory::safeRelease(m_rasterStateNoCulling);
 	Memory::safeRelease(m_blendStateEnabled);
 	Memory::safeRelease(m_blendStateDisabled);
@@ -52,6 +55,7 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 	UINT numDriverTypes = ARRAYSIZE(driverTypes);
 
 	D3D_FEATURE_LEVEL featureLevels[] = {
+		D3D_FEATURE_LEVEL_11_1,
 		D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1,
 		D3D_FEATURE_LEVEL_10_0,
@@ -77,11 +81,13 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 
 	HRESULT result;
 	for (UINT i = 0; i < numDriverTypes; i++) {
+		
 		result = D3D11CreateDeviceAndSwapChain(0, driverTypes[i], NULL, createDeviceFlags, featureLevels,
 			numFeatureLevels, D3D11_SDK_VERSION, &swapDesc, &m_swapChain, &m_device, &m_featureLevel, &m_deviceContext);
 		ThrowIfFailed(result);
 		if (SUCCEEDED(result)) {
 			m_driverType = driverTypes[i];
+			ThrowIfFailed(m_device->QueryInterface(__uuidof (ID3D11Device3), (void **)&m_device3));
 			break;
 		}
 	}
@@ -149,6 +155,11 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 	// Create the enabled depth stencil state
 	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabled));
 
+	// Create the depth stencil state with write masking
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateEnabledNoWrite));
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
 	// Create the depth stencil state with disbled depth testing
 	depthStencilDesc.DepthEnable = false;
 	ThrowIfFailed(m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilStateDisabled));
@@ -186,7 +197,7 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 	ThrowIfFailed(m_device->CreateBlendState(&blendStateDesc, &m_blendStateAdditive));
 
 	// Setup rasterizer description
-	D3D11_RASTERIZER_DESC rasterDesc;
+	D3D11_RASTERIZER_DESC2 rasterDesc;
 	ZeroMemory(&rasterDesc, sizeof(rasterDesc));
 	rasterDesc.AntialiasedLineEnable = false;
 	//rasterDesc.CullMode = D3D11_CULL_NONE;
@@ -203,11 +214,25 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 	rasterDesc.SlopeScaledDepthBias = 0.f;
 
 	// Create rasterizer state
-	ThrowIfFailed(m_device->CreateRasterizerState(&rasterDesc, &m_rasterStateBackfaceCulling));
+
+	//D3D_FEATURE_LEVEL fl = m_device->GetFeatureLevel();
+	D3D11_FEATURE_DATA_D3D11_OPTIONS2 options2Support;
+	m_device3->CheckFeatureSupport(D3D11_FEATURE_D3D11_OPTIONS2, &options2Support, sizeof(options2Support));
+
+	if (options2Support.ConservativeRasterizationTier == D3D11_CONSERVATIVE_RASTERIZATION_NOT_SUPPORTED) {
+		Logger::Warning("Conservative rasterization not supported on this hardware, running without.");
+		rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+	} else {
+		rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_ON;
+	}
+
+	ThrowIfFailed(m_device3->CreateRasterizerState2(&rasterDesc, &m_rasterStateBackfaceCulling));
+	rasterDesc.ConservativeRaster = D3D11_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+	ThrowIfFailed(m_device3->CreateRasterizerState2(&rasterDesc, &m_rasterStateBackfaceCullingNoConservative));
 	rasterDesc.CullMode = D3D11_CULL_FRONT;
-	ThrowIfFailed(m_device->CreateRasterizerState(&rasterDesc, &m_rasterStateFrontfaceCulling));
+	ThrowIfFailed(m_device3->CreateRasterizerState2(&rasterDesc, &m_rasterStateFrontfaceCulling));
 	rasterDesc.CullMode = D3D11_CULL_NONE;
-	ThrowIfFailed(m_device->CreateRasterizerState(&rasterDesc, &m_rasterStateNoCulling));
+	ThrowIfFailed(m_device3->CreateRasterizerState2(&rasterDesc, &m_rasterStateNoCulling));
 
 	// Set the rasterizer state
 	m_deviceContext->RSSetState(m_rasterStateBackfaceCulling);
@@ -319,6 +344,9 @@ void DXManager::resize(int width, int height) {
 void DXManager::enableDepthBuffer() const {
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilStateEnabled, 1);
 }
+void DXManager::enableDepthBufferWithWriteMask() const {
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilStateEnabledNoWrite, 1);
+}
 void DXManager::disableDepthBuffer() const {
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilStateDisabled, 1);
 }
@@ -331,6 +359,10 @@ void DXManager::enableBackFaceCulling() const {
 }
 void DXManager::disableFaceCulling() const {
 	m_deviceContext->RSSetState(m_rasterStateNoCulling);
+}
+
+void DXManager::disableConservativeRasterizer() const {
+	m_deviceContext->RSSetState(m_rasterStateBackfaceCullingNoConservative);
 }
 
 ID3D11Device* DXManager::getDevice() const {

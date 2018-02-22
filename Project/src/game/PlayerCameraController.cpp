@@ -10,8 +10,8 @@ PlayerCameraController::PlayerCameraController(Camera* cam, const DirectX::Simpl
 	, m_extraZCurrent(0.f)
 	, m_extraZTarget(0.f)
 	, m_cameraYOffset(1.0f)
-	, m_cameraZOffset(8.0f)
-	, m_followSpeed(5.f)
+	, m_cameraZOffset(0.0f)
+	, m_followSpeed(1.0f)
 	, m_moveSpeed(2)
 	, m_position(DirectX::SimpleMath::Vector3(0, 0, 0))
 	, m_target(DirectX::SimpleMath::Vector3(0, 0, 0))
@@ -118,27 +118,33 @@ void PlayerCameraController::updatePosition(float dt)
 		}
 	}
 
+	const PerspectiveCamera* cam = dynamic_cast<const PerspectiveCamera*>(getCamera());
+	if (!cam) {
+		Logger::Error("CAMERA IS NOT PERSPECTIVE, MAYDAY");
+	}
 
-
-	static float r = 0.04f;
+	static float r = 0.035f;
 	static float r2 = 0.1f;
-	static float z = -1.6f;
-	static float t = 19.0f;
-	static float t2 = 20.0f;
+	static float z = -1.57f;
+	static float t = 50.0f;
+	static float t2 = 52.0f;
 
 	//Calculate extra z
 	if (m_useExtraZ) {
-		float addedDst = maxXDst + maxYDst;
-		float xFac, yFac;
-		if (addedDst != 0.f) {
-			xFac = maxXDst / addedDst;
-			yFac = maxYDst / addedDst;
-		}
-		else {
-			xFac = 0.5f;
-			yFac = 0.5f;
-		}
-		m_extraZTarget = (sin(r*Utils::clamp(maxXDst, 0.f, 78.f) + z) + 1) * t * xFac + (sin(r2*Utils::clamp(maxYDst, 0.f, 41.f) + z) + 1) * t2 * yFac;
+		//float addedDst = maxXDst + maxYDst;
+		//float xFac, yFac;
+		//if (addedDst != 0.f) {
+		//	xFac = maxXDst / addedDst;
+		//	yFac = maxYDst / addedDst;
+		//}
+		//else {
+		//	xFac = 0.5f;
+		//	yFac = 0.5f;
+		//}
+		//float dst = sqrtf(maxXDst * maxXDst + maxYDst * maxYDst);
+		//m_extraZTarget = (sin(r*Utils::clamp(maxXDst, 0.f, 90.f) + z) + 1) * t * xFac + (sin(r2*Utils::clamp(maxYDst, 0.f, 41.f) + z) + 1) * t2 * yFac;
+		//m_extraZTarget = (sin(Utils::clamp(maxXDst + maxYDst * cam->getAspectRatio(), 0.f, 78.f) * r + z) + 1.f) * t;
+		//Logger::log(std::to_string(maxXDst + maxYDst * cam->getAspectRatio()));
 	}
 
 
@@ -150,37 +156,37 @@ void PlayerCameraController::updatePosition(float dt)
 
 
 	if (m_lockToMap) {
-		const PerspectiveCamera* cam = dynamic_cast<const PerspectiveCamera*>(getCamera());
-		if (!cam) {
-			Logger::Error("CAMERA IS NOT PERSPECTIVE, MAYDAY");
-		}
-		else {
+		float aspectRatio = 1.f / cam->getAspectRatio();
+		float VFOVRad = cam->getFOV();
+		float halfVFOVRad = VFOVRad / 2.f;
+		float halfHFOVRad = atan(tan(VFOVRad / 2) / aspectRatio);
 
-			float aspectRatio = 1.f / cam->getAspectRatio();
-			float VFOVRad = cam->getFOV();
-			float halfVFOVRad = VFOVRad / 2.f;
-			float halfHFOVRad = atan(tan(VFOVRad / 2) / aspectRatio);
+		// Clamp to map borders
+		float maxMapSize = (m_mapSize.x < m_mapSize.y) ? m_mapSize.x : m_mapSize.y;
+		float maxZ = (maxMapSize / 2.f) / tan(halfVFOVRad);
+		float minZ = 30.f;
 
-			// Clamp to map borders
-			float maxMapSize = (m_mapSize.x < m_mapSize.y) ? m_mapSize.x : m_mapSize.y;
-			float maxZ = (maxMapSize / 2.f) / tan(halfVFOVRad);
-			if ((m_extraZTarget + m_cameraZOffset) > maxZ) {
-				m_extraZTarget = maxZ - m_cameraZOffset;
-			}
-			m_extraZCurrent += (m_extraZTarget - m_extraZCurrent) * dt * m_followSpeed;
+		// Smoothstepping for very smooth min and max values, max() is used to get rid of "artifact" when maxYDst is close to 0
+		m_extraZTarget = Utils::smootherstep(minZ, maxZ, (maxXDst + max(maxYDst, 5.f) * cam->getAspectRatio()) * 1.3f ) * (maxZ - minZ) + minZ;
+		//m_extraZTarget = maxXDst + maxYDst * cam->getAspectRatio();
 
+		//if ((m_extraZTarget + m_cameraZOffset) > maxZ) {
+		//	m_extraZTarget = maxZ - m_cameraZOffset;
+		//}
+		//if (m_extraZTarget + m_cameraZOffset < minZ) {
+		//	m_extraZTarget = minZ - m_cameraZOffset;
+		//}
+		m_extraZCurrent += (dt * m_followSpeed) * (m_extraZTarget - m_extraZCurrent);
 
-			float camZ = -getCameraPosition().z - 1;
-			Vector3 min = Vector3(camZ * tan(halfHFOVRad), camZ * tan( halfVFOVRad ), -100000000000.f);
-			Vector3 max = Vector3(m_mapSize.x - min.x, m_mapSize.y - min.y, 1000000000.f);
+		float camZ = -getCameraPosition().z - 1;
+		Vector2 min = Vector2(camZ * tan(halfHFOVRad), camZ * tan( halfVFOVRad ));
+		Vector2 max = Vector2(m_mapSize.x - min.x, m_mapSize.y - min.y);
 
-			// Clamp values
-			m_target.x = (m_target.x < min.x) ? min.x : m_target.x;
-			m_target.y = (m_target.y < min.y) ? min.y : m_target.y;
-			m_target.x = (m_target.x > max.x) ? max.x : m_target.x;
-			m_target.y = (m_target.y > max.y) ? max.y : m_target.y;
-		}
-
+		// Clamp values
+		m_target.x = (m_target.x < min.x) ? min.x : m_target.x;
+		m_target.y = (m_target.y < min.y) ? min.y : m_target.y;
+		m_target.x = (m_target.x > max.x) ? max.x : m_target.x;
+		m_target.y = (m_target.y > max.y) ? max.y : m_target.y;
 	}
 
 

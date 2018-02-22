@@ -4,10 +4,12 @@
 #include "../ProjectileHandler.h"
 #include "Upgrade.h"
 
+class Character;
+
 class Weapon : public Moveable {
 public:
 	Weapon();
-	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team);
+	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, ParticleHandler* particleHandler, Character* owner);
 	virtual ~Weapon();
 
 	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
@@ -26,9 +28,10 @@ public:
 
 	virtual void draw();
 private:
-	ProjectileHandler * m_projectileHandler;
+	ProjectileHandler* m_projectileHandler;
+	ParticleHandler* m_particleHandler;
+	Character* m_owner;
 	bool m_held;
-	int m_team;
 
 	bool m_triggerHeld;
 	float m_timeSinceFire;

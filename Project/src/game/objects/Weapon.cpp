@@ -1,7 +1,8 @@
 #include "Weapon.h"
 #include "../collision/CollisionHandler.h"
-
+#include "../ParticleHandler.h"
 #include "../../sail/resources/audio/SoundManager.h"
+#include "Character.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -9,22 +10,24 @@ Weapon::Weapon() {
 	m_held = false;
 	int m_team = -1;
 	m_projectileHandler = nullptr;
+	m_owner = nullptr;
 
 	m_triggerHeld = false;
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, int team) 
+Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, ParticleHandler* particleHandler, Character* owner)
 	: Weapon()
 {
+	m_particleHandler = particleHandler;
 	model = armModel;
+	m_owner = owner;
 
 	m_laser.laserModel = laserModel;
 	m_laser.dotModel = dotModel;
 	m_laser.dotTransform.setScale(0.1f);
 
 	m_projectileHandler = projHandler;
-	m_team = team;
 	m_held = true;
 	m_upgrade = new Upgrade();
 }
@@ -64,14 +67,16 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 	static float baseSpeed = 20.0f;
 	static float baseDamage = 10.0f;
+	static float baseKnockback = 5.0f;
 	static Vector3 zVec(0, 0, 1);
-	static float diff = 0.2;
+	static float diff = 0.2f;
 
 	if (m_projectileHandler) {
 		float extraSpeed = 1;
 		float extraDamage = 1;
-		if (m_upgrade->speedActive()) {
-			extraSpeed = m_upgrade->speedRate();
+		float extraKnockback = 1;
+		if (m_upgrade->knockbackActive()) {
+			extraKnockback = m_upgrade->knockbackRate();
 		}
 		if (m_upgrade->damageActive()) {
 			extraDamage = m_upgrade->damageMultiplier();
@@ -80,16 +85,25 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		float pitch = Utils::rnd() * 0.3f + 0.8f;
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.4f, pitch);
 
+		// Muzzle flash particles
+		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+			ParticleEmitter::EXPLOSION, m_nozzlePos, direction - Vector3(0.5f), Vector3(15.f, 15.f, 4.f),
+			0.f, 25, 0.3f, 0.1f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 25U, true, true)));
+
+		m_owner->VibrateController(1, 0.7f * extraDamage * m_upgrade->multiCount(), min(1.75f / m_upgrade->autoRate(), 1.5f));
+
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
 			m_nozzlePos,
 			direction * baseSpeed * extraSpeed, 
 			baseDamage * extraDamage, 
-			m_team);
+			baseKnockback * extraKnockback,
+			m_owner->getTeam());
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
-		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f,atan2(direction.y, direction.x)));
+		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
+		temp->getTransform().scaleUniformly(2.f);
 		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
 		m_projectileHandler->addProjectile(temp);
 
@@ -100,9 +114,9 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			changeVec.Normalize();
 
 			
-			for (size_t i = 0; i < (size_t)m_upgrade->multiCount()*0.5; i++) {
-				Vector3 tempVec1 = direction + changeVec * diff*(i+1);
-				Vector3 tempVec2 = direction - changeVec * diff*(i+1);
+			for (unsigned int i = 0; i < m_upgrade->multiCount(); i++) {
+				Vector3 tempVec1 = direction + changeVec * diff * (i + 1.f);
+				Vector3 tempVec2 = direction - changeVec * diff * (i + 1.f);
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();
@@ -114,12 +128,14 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 					m_nozzlePos,
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
-					m_team);
+					baseKnockback * extraKnockback,
+					m_owner->getTeam());
 				Projectile* temp2 = new Projectile(
 					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
-					m_team);
+					baseKnockback * extraKnockback,
+					m_owner->getTeam());
 				if (m_upgrade->gravActive()) {
 					temp1->setGravScale(0);
 					temp2->setGravScale(0);

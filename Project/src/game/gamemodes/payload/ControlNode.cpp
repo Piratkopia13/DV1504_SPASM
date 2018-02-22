@@ -6,7 +6,7 @@ ControlNode::ControlNode(Model* model) {
 	m_team = 0;
 
 	m_beingCaptured = false;
-	m_timeTillCapture = 5.f;
+	m_timeTillCapture = 3.f;
 	m_maxTimeCaptured = 10.f;
 	m_timeCaptured = 0.f;
 
