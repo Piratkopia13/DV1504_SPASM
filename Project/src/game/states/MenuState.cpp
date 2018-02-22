@@ -43,7 +43,7 @@ MenuState::MenuState(StateStack& stack)
 	for (size_t i = 0; i < m_info->botBodyNames.size(); i++)
 		m_playerBodyModels.push_back(resMan.getFBXModel("fisk/" + m_info->botBodyNames[i] + "_body").getModel());
 	for (size_t i = 0; i < m_info->botLegNames.size(); i++)
-		m_playerLegModels.push_back(resMan.getFBXModel("fisk/" + m_info->botLegNames[i] + "_body").getModel());
+		m_playerLegModels.push_back(resMan.getFBXModel("fisk/" + m_info->botLegNames[i] + "_legs").getModel());
 
 	
 	for (size_t i = 0; i < m_info->botArmNames.size(); i++) {
@@ -376,7 +376,7 @@ bool MenuState::processInput(float dt) {
 
 									}
 									else {
-										temp->player.team = spot * 0.5;
+										temp->player.team = (size_t)(spot * 0.5f);
 										temp->player.color = m_info->gameSettings.teams[temp->player.team].color;
 										m_characterMenu[spot]->setOptionAt(1, temp->player.team);
 										m_characterMenu[spot]->setOptionAt(2, temp->player.color);
@@ -757,7 +757,7 @@ void MenuState::initGamemode() {
 	m_gamemodeMenu->setStaticSelection(true, 0);
 
 
-	m_gamemodeMenu->setStep(0.0);
+	m_gamemodeMenu->setStep(0.0f);
 
 	m_gamemodeMenu->setOnColor(m_onColor*2);
 	
@@ -784,11 +784,11 @@ void MenuState::initCharacterModels() {
 		temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
 	
 
-		temp.head->getTransform().setRotations(Vector3(0, -1.55, 0));
-		temp.body->getTransform().setRotations(Vector3(0, -1.55, 0));
-		temp.legs->getTransform().setRotations(Vector3(0, -1.55, 0));
-		temp.armL->getTransform().setRotations(Vector3(0, -1.55, 0));
-		temp.armR->getTransform().setRotations(Vector3(0, -1.55, 0));
+		temp.head->getTransform().setRotations(Vector3(0, -1.55f, 0));
+		temp.body->getTransform().setRotations(Vector3(0, -1.55f, 0));
+		temp.legs->getTransform().setRotations(Vector3(0, -1.55f, 0));
+		temp.armL->getTransform().setRotations(Vector3(0, -1.55f, 0));
+		temp.armR->getTransform().setRotations(Vector3(0, -1.55f, 0));
 
 		temp.head->getTransform().setScale(1.4f);
 		temp.body->getTransform().setScale(1.4f);
@@ -813,12 +813,12 @@ void MenuState::initCharacterModels() {
 void MenuState::initCharacterModel(size_t spot) {
 	Vector3 charMenuMid(7, -2, -9);
 	if (m_info->gameSettings.gameMode == DEATHMATCH)
-		charMenuMid = Vector3(7,-1.3,-9);
+		charMenuMid = Vector3(7,-1.3f,-9);
 
 	Vector3 charMid = Vector3(0, 0, -1.0f)*((float)spot - 1.5f) * 3.5f + charMenuMid;
 	m_playerMenuModelz[spot].head->setPosition( charMid + Vector3(0, 0.8f, 0));
 	m_playerMenuModelz[spot].body->setPosition( charMid + Vector3(0, 0.3f, 0));
-	m_playerMenuModelz[spot].legs->setPosition (charMid - Vector3(0, 0.9f, 0));
+	m_playerMenuModelz[spot].legs->setPosition (charMid - Vector3(0, 0.2f, 0));
 	m_playerMenuModelz[spot].armL->setPosition( charMid + Vector3(0, 0.3f, -0.0f));
 	m_playerMenuModelz[spot].armR->setPosition( charMid + Vector3(0, 0.3f, 0.0f));
 
@@ -850,7 +850,7 @@ void MenuState::initCharacter(size_t spot) {
 	temp->reset();
 	temp->setPosition(charMid + Vector3(0.0f, 0.0f, -1.0f)*((float)spot - 1.5f) * 3.5f);
 	temp->setSize(0.7f);
-	temp->setFacingDirection(Vector3(-1.0, 0, 0));
+	temp->setFacingDirection(Vector3(-1.0f, 0, 0));
 	temp->setStep(0.4f);
 
 	//PROFILE
@@ -960,7 +960,7 @@ void MenuState::initMap() {
 
 	m_mapMenu->setPosition(Vector3(0,0,-12));
 	m_mapMenu->setFacingDirection(Vector3(0,0,1));
-	m_mapMenu->setStep(0.1);
+	m_mapMenu->setStep(0.1f);
 	
 
 }
@@ -972,7 +972,7 @@ void MenuState::initProfile() {
 	m_profileMenu->addMenuBox("kjasd test");
 	m_profileMenu->addMenuBox("asdsad test");
 	m_profileMenu->addMenuBox("team test");
-	m_profileMenu->setPosition(Vector3(-5, -0.5, 0));
+	m_profileMenu->setPosition(Vector3(-5, -0.5f, 0));
 	m_profileMenu->setFacingDirection(Vector3(1, 0, 0));
 
 
