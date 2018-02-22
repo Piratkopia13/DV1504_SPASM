@@ -105,6 +105,8 @@ private:
 	Movement m_movement;
 	Health m_playerHealth;
 	ControllerVibration m_vibration[2];
+	float m_vibFreq;
+	float m_vibDeltaAcc;
 	
 	unsigned int m_currentTeam;
 

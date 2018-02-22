@@ -19,9 +19,9 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Model* cModel3 = app->getResourceManager().getFBXModel("fisk/fisk_head").getModel();
 
 	for (size_t i = 0; i < settings->players.size(); i++) {
-		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, settings->players[i].team);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(settings->players[i].color);
@@ -41,9 +41,9 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 
 #ifdef _DEBUG
 	if (settings->players.size() == 0) {
-		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, 1);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
 		tempChar->setLightColor(settings->teamOneColor);
 		tempChar->setTeam(1);
 		tempChar->setHook(tempHook);
@@ -53,9 +53,9 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		addPlayer(tempChar);
 	}
 	if (settings->players.size() < 4) {
-		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, 2);
 		Hook* tempHook = new Hook(hModel);
 		Character* tempChar = new Character(cModel1, cModel2, cModel3);
+		Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
 		tempChar->setLightColor(settings->teamTwoColor);
 		tempChar->setTeam(2);
 		tempChar->setHook(tempHook);

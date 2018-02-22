@@ -89,7 +89,7 @@ GameState::GameState(StateStack& stack)
 	}
 	else {
 		m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
-		m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
+		m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_KNOCKBACK, 10);
 		m_upgradeHandler->addSpawn(Vector3(7, 1.0f, 0), Upgrade::EXTRA_DAMAGE, 10);
 		m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
 		m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);

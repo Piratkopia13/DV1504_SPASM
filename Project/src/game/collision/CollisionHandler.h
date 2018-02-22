@@ -13,7 +13,7 @@ public:
 	~CollisionHandler();
 
 	void resolveLevelCollisionWith(Character* chara, float dt);
-	bool resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg);
+	bool resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount);
 	bool resolveCoverCollision(const DirectX::SimpleMath::Vector3& playerPos);
 	bool checkLevelCollisionWith(Projectile* proj, DirectX::SimpleMath::Vector3& hit, float dt = 0.f);
 	bool resolveUpgradeCollisionWith(Character* character);

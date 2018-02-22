@@ -16,9 +16,9 @@ public:
 	float autoRate();
 	float autoTime();
 
-	bool speedActive();
-	float speedRate();
-	float speedTime();
+	bool knockbackActive();
+	float knockbackRate();
+	float knockbackTime();
 
 	bool damageActive();
 	float damageMultiplier();
@@ -36,7 +36,7 @@ public:
 		RANDOM = -1,
 		NONE,
 		AUTO_FIRE,
-		PROJECTILE_SPEED,
+		PROJECTILE_KNOCKBACK,
 		EXTRA_DAMAGE,
 		EXTRA_PROJECTILES,
 		NO_GRAVITY,
@@ -116,11 +116,11 @@ private:
 		}
 	};
 	
-	struct ProjectileSpeed {
+	struct ProjectileKnockback {
 	public:
 		bool active;
-		float speed;
-		float baseSpeed;
+		float amount;
+		float baseAmount;
 		UpgradeTimer time;
 
 		void update(float dt) {
@@ -133,10 +133,10 @@ private:
 
 			
 		}
-		void operator+=(const ProjectileSpeed& other) {
+		void operator+=(const ProjectileKnockback& other) {
 			if (other.active) {
 				if (active)
-					speed += other.speed;
+					amount += other.amount;
 				time.addTime(other.time.remaining);
 				active = true;
 			}
@@ -144,18 +144,18 @@ private:
 		void reset() {
 			time.reset();
 			active = false;
-			speed = baseSpeed;
+			amount = baseAmount;
 		}
-		ProjectileSpeed() {
+		ProjectileKnockback() {
 			active = false;
-			speed = 2;
-			baseSpeed = 2;
+			amount = 2;
+			baseAmount = 2;
 			time.setCap(10);
 			time.reset();
 		}
-		ProjectileSpeed(float _speed, float _time) : ProjectileSpeed() {
-			speed = _speed;
-			baseSpeed = _speed;
+		ProjectileKnockback(float _amount, float _time) : ProjectileKnockback() {
+			amount = _amount;
+			baseAmount = _amount;
 			time.setCap(_time);
 		}
 	};
@@ -219,7 +219,7 @@ private:
 		void operator+=(const ExtraProjectiles& other) {
 			if (other.active) {
 				if (active)
-					nr += 2;
+					nr += 1;
 				time.addTime(other.time.remaining);
 				active = true;
 			}
@@ -231,8 +231,8 @@ private:
 		}
 		ExtraProjectiles() {
 			active = false;
-			nr = 2;
-			baseNr = 2;
+			baseNr = 1;
+			nr = baseNr;
 			time.setCap(10);
 		}
 		ExtraProjectiles(unsigned int multi, float _time) : ExtraProjectiles() {
@@ -287,7 +287,7 @@ private:
 	};
 
 	AutoFire m_auto;
-	ProjectileSpeed m_speed;
+	ProjectileKnockback m_knockback;
 	ExtraDamage m_damage;
 	ExtraProjectiles m_extraProj;
 	NoGravity m_grav;

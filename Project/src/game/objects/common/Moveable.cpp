@@ -32,6 +32,10 @@ void Moveable::setVelocity(const Vector3 &newVelocity) {
 	m_velocity = newVelocity;
 }
 
+void Moveable::addVelocity(const DirectX::SimpleMath::Vector3 & addedVelocity) {
+	m_velocity += addedVelocity;
+}
+
 void Moveable::setGravScale(float scale) {
 	m_gravScale = scale;
 }

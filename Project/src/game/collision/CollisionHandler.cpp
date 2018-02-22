@@ -167,7 +167,7 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
-bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg) {
+bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
 
@@ -180,6 +180,7 @@ bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX:
 				hitDmg = proj->getDamage();
 				knockbackDir = proj->getVelocity();
 				knockbackDir.Normalize();
+				knockbackAmount = proj->getKnockbackAmount();
 
 				m_projectileHandler->removeAt(i);
 				hit = true;
