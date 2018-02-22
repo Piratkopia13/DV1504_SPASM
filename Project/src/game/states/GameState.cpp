@@ -25,12 +25,14 @@ GameState::GameState(StateStack& stack)
 	// Set up handlers
 
 
+	GameInfo * info = GameInfo::getInstance();
+
 	m_level = std::make_unique<Level>("symmetric.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
-		gamemode->setTeamColor(1, m_app->getGameSettings().teamOneColor);
-		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
+		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
 	}
 
 	// Set up handlers

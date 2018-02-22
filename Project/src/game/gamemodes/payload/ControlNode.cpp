@@ -21,7 +21,6 @@ ControlNode::ControlNode(Model* model) {
 	m_teamOne.isOwner = false;
 	m_teamOne.timeCapturing = 0.f;
 
-
 	m_teamTwo.color = m_teamTwoColor;
 	m_teamTwo.ownershipTime = 0.f;
 	m_teamTwo.id = 2;

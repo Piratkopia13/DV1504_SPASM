@@ -21,6 +21,9 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_teamOneColor = info->getDefaultColor(info->gameSettings.teams[0].color, 0);
 	m_teamTwoColor = info->getDefaultColor(info->gameSettings.teams[1].color, 0);
 
+	setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+	setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
+
 	// Add default scores
 	addScore(50, 1);
 	addScore(50, 2);
@@ -90,7 +93,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 						playerColliding = true;
 
 		if (playerColliding) {
-			if (charHandler->getCharacter(i)->getTeam() == 1)
+			if (charHandler->getCharacter(i)->getTeam() == 0)
 				numOfTeam.x += 1;
 			else
 				numOfTeam.y += 1;
