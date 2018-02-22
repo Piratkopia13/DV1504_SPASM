@@ -16,8 +16,10 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
-	m_teamOneColor = Application::getInstance()->getGameSettings().teamOneColor;
-	m_teamTwoColor = Application::getInstance()->getGameSettings().teamTwoColor;
+	GameInfo * info = GameInfo::getInstance();
+	
+	m_teamOneColor = info->getDefaultColor(info->gameSettings.teams[0].color, 0);
+	m_teamTwoColor = info->getDefaultColor(info->gameSettings.teams[1].color, 0);
 
 	// Add default scores
 	addScore(50, 1);
