@@ -25,7 +25,7 @@ Character::Character()
 		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
 	setLightColor(Vector4(1, 1, 1, 1));
 
-	addVibration(0, 1.f, 2.f);
+	//addVibration(0, 1.f, 2.f);
 }
 
 Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel) : Character() {
@@ -300,7 +300,7 @@ void Character::update(float dt) {
 				ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockbackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
 				0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
 
-			addVibration(0, 1.f, 1.f);
+			VibrateController(0, 1.f, 1.f);
 		}
 	}
 
@@ -445,17 +445,12 @@ void Character::damage(float dmg) {
 	m_playerHealth.addHealth(-dmg);
 }
 
-void Character::setVibration(unsigned int index, float strength, float time) {
-	if (strength > 1.f) strength = 1.f;
-	m_vibration[index] = { strength, time };
-}
-
-void Character::addVibration(unsigned int index, float strength, float time) {
+void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {
 	m_vibration[index].currentStrength = strength;
 	if (m_vibration[index].currentStrength > strength) m_vibration[index].currentStrength = strength;
 	if (m_vibration[index].currentStrength > 1.f) m_vibration[index].currentStrength = 1.f;
 
-	m_vibration[index].timeLeft = time;
+	m_vibration[index].decreaseMul = timeDecreaseMul;
 }
 
 void Character::setTeam(unsigned int team) {
@@ -498,6 +493,8 @@ void Character::dead() {
 	stopHook();
 	setVelocity(Vector3::Zero);
 	m_weapon->setHeld(false);
+	VibrateController(0, 1.f, 0.3f);
+	VibrateController(1, 1.f, 0.3f);
 }
 
 void Character::setLightColor(const Vector4& color) {
@@ -510,8 +507,8 @@ void Character::setLightColor(const Vector4& color) {
 void Character::jump() {
 	//this->jumping = true;
 	if (grounded()) {
-		this->setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
-		this->addVibration(1, 0.5f, 1);
+		setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
+		VibrateController(1, 0.5f, 1);
 	}
 
 	//this->getTransform().translate(Vector3(0,10,0));
@@ -547,7 +544,7 @@ bool Character::updateVibration(float dt) {
 		for (int i = 0; i < 2; i++) {
 			
 			//if (m_vibration[i].timeLeft > 0) {
-				m_vibration[i].currentStrength -= m_vibFreq * m_vibration[i].timeLeft;
+				m_vibration[i].currentStrength -= m_vibFreq * m_vibration[i].decreaseMul;
 				//m_vibration[i].timeLeft -= dt;
 			//}
 			if (m_vibration[i].currentStrength < 0.f)

@@ -89,7 +89,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			ParticleEmitter::EXPLOSION, m_nozzlePos, direction - Vector3(0.5f), Vector3(15.f, 15.f, 4.f),
 			0.f, 25, 0.3f, 0.1f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 25U, true, true)));
 
-		m_owner->addVibration(1, 0.7f * extraDamage * m_upgrade->multiCount(), min(1.75f / m_upgrade->autoRate(), 1.5f));
+		m_owner->VibrateController(1, 0.7f * extraDamage * m_upgrade->multiCount(), min(1.75f / m_upgrade->autoRate(), 1.5f));
 
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(

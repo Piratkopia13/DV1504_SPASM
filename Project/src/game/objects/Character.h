@@ -31,8 +31,7 @@ public:
 	bool isAlive();
 	void damage(float dmg);
 
-	void setVibration(unsigned int index, float strength = 1, float time = 1);
-	void addVibration(unsigned int index, float strength = 1, float time = 1);
+	void VibrateController(unsigned int index, float strength = 1, float timeDecreaseMul = 1);
 
 	void setWeapon(Weapon* weapon);
 	void setHook(Hook* hook);
@@ -96,7 +95,7 @@ private:
 	};
 	struct ControllerVibration {
 		float currentStrength;
-		float timeLeft;
+		float decreaseMul;
 	};
 
 

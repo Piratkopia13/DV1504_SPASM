@@ -136,6 +136,7 @@ void CharacterHandler::setRespawnTime(float time)
 void CharacterHandler::update(float dt) {
 	
 	for (size_t i = 0; i < m_characters.size(); i++) {
+		m_characters[i]->update(dt);
 		if (m_respawnTimers[i] > 0) {
 			if (m_respawnTimers[i] >= m_respawnTime) {
 				respawnPlayer(i);
@@ -144,7 +145,6 @@ void CharacterHandler::update(float dt) {
 			m_respawnTimers[i] += dt;
 		}
 		else {
-			m_characters[i]->update(dt);
 			if (m_characters[i]->getHealth() <= 0.0f) {
 				killPlayer(i);
 			}
