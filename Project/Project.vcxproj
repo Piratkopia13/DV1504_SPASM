@@ -178,6 +178,7 @@
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
@@ -226,6 +227,7 @@
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />
@@ -271,7 +273,7 @@
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
-    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\SphereModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
@@ -289,6 +291,7 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\RenderableTexture.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
@@ -446,6 +449,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
     </FxCompile>

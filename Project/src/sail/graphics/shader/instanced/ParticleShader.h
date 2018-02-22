@@ -62,9 +62,6 @@ private:
 		float padding[2];
 	};
 
-	UINT m_maxParticles;
-	//std::vector<InstanceData> m_instanceData;
-
 	// Components
 	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cameraDataBuffer;
 	std::unique_ptr<ShaderComponent::ConstantBuffer> m_spriteDataBuffer;
