@@ -759,7 +759,7 @@ void MenuState::initGamemode() {
 
 	m_gamemodeMenu->setStep(0.0);
 
-	m_gamemodeMenu->setOnColor(m_onColor*2);
+	m_gamemodeMenu->setOnColor(m_onColor);
 	
 	m_gamemodeMenu->setPosition(Vector3(5, -0.5, 0));
 	m_gamemodeMenu->setFacingDirection(Vector3(-1, 0, 0));

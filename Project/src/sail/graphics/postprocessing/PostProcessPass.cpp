@@ -94,12 +94,9 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	m_fullscreenQuad.draw();
 
 	// Draw bloom using additive blending
-	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage2->getOutput().getColorSRV(), 1);
-
-
-
-	
+	m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
 	m_fullscreenQuad.draw();
+
 	//m_fullscreenQuad.draw();
 	dxm->disableAlphaBlending();
 
