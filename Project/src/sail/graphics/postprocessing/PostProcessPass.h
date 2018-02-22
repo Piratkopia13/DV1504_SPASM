@@ -37,6 +37,8 @@ private:
 	float m_gaussPass2Scale;
 	float m_brightnessCutoffScale;
 
+	bool m_FXAAPass;
+
 	// TODO make enableEffect(enum) and disableEffect(enum) and a map that binds the enums to enabled/disabled bool
 
 	Model m_fullscreenQuad;
