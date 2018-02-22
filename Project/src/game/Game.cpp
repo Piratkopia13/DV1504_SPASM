@@ -6,12 +6,14 @@
 Game::Game(HINSTANCE hInstance)
 	: Application(1280, 720, "SPASM v0.25", hInstance)
 	, m_stateStack()
+	
 {
 	// Register states
 	registerStates();
 	// Set starting state
 #ifdef _DEBUG
-	m_stateStack.pushState(States::Game);
+	m_stateStack.pushState(States::MainMenu);
+	//m_stateStack.pushState(States::Game);
 #else
 	m_stateStack.pushState(States::MainMenu);
 #endif

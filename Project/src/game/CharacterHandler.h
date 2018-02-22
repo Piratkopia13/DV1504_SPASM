@@ -1,5 +1,6 @@
 #pragma once
 #include "objects/Character.h"
+#include "GameInfo.h"
 
 class CharacterHandler {
 public:
@@ -29,6 +30,6 @@ private:
 	std::vector<DirectX::SimpleMath::Vector3> m_spawns[4];
 
 
-
+	GameInfo* m_info;
 };
 

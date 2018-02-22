@@ -67,6 +67,7 @@ FbxModel& ResourceManager::getFBXModel(const std::string& filename) {
 	if (pos == m_fbxModels.end()) {
 		// Model was not yet loaded, load it and return
 		LoadFBXModel(filename);
+		
 		return *m_fbxModels.find(filename)->second;
 		//Logger::Error("Tried to access an fbx model that was not loaded. (" + filename + ") \n Use Application::getInstance()->getResourceManager().LoadFBXModel(" + filename + ") before accessing it.");
 	}
