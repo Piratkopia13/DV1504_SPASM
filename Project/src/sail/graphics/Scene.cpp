@@ -46,6 +46,7 @@ void Scene::resize(int width, int height) {
 	// Resize textures
 	m_deferredRenderer.resize(width, height);
 	m_deferredOutputTex->resize(width, height);
+	m_postProcessPass.resize(width, height);
 }
 
 // Draws the scene
