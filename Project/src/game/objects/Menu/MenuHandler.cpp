@@ -187,7 +187,7 @@ void MenuHandler::next() {
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
 	}
 	if (selector)
-		selector->setSelectionColor(m_onColor*0.7);
+		selector->setSelectionColor(m_onColor*0.7f);
 
 	m_activeItem++;
 	if (m_activeItem == m_itemList.size())
@@ -224,7 +224,7 @@ void MenuHandler::back() {
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
 	}
 	if (selector)
-		selector->setSelectionColor(m_onColor*0.7);
+		selector->setSelectionColor(m_onColor*0.7f);
 
 	if (m_activeItem == 0) {
 		m_activeItem = m_itemList.size() - 1;
@@ -350,13 +350,13 @@ void MenuHandler::updateTransform() {
 
 	for (size_t i = 0; i < m_itemList.size(); i++) {
 		if ((int)((int)i - (int)m_activeItem) > 0) {
-			selectionSpace = m_growth * m_size * 0.1;
+			selectionSpace = m_growth * m_size * 0.1f;
 		}
 		if ((int)((int)i - (int)m_activeItem) == 0) {
 			selectionSpace = Vector3(0,0,0);
 		}
 		if ((int)((int)i - (int)m_activeItem) < 0) {
-			selectionSpace = m_growth * -1 * m_size * 0.1;
+			selectionSpace = m_growth * -1 * m_size * 0.1f;
 		}
 
 		if (m_itemList[i].item) {
@@ -375,7 +375,7 @@ void MenuHandler::updateTransform() {
 		}
 		if (m_itemList[i].selector) {
 
-			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size()-1)*0.5f)*(m_size*0.7 + m_offset);
+			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size()-1)*0.5f)*(m_size*0.7f + m_offset);
 			position += selectionSpace;
 			Vector3 right = m_growth.Cross(m_direction);
 			m_itemList[i].selector->setPosition(position + extraHeight);

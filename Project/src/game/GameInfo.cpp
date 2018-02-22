@@ -11,9 +11,9 @@ GameInfo::GameInfo()
 	m_profiles.push_back(Profile("Guest 2", 0));
 	loadProfiles();
 	
-	float base = 1.0;
-	float hue1 = 0.2;
-	float hue2 = 0.4;
+	float base = 1.0f;
+	float hue1 = 0.2f;
+	float hue2 = 0.4f;
 
 	//RED
 	defaultColors.push_back(Vector4(base, 0.0f, 0.0f, 1.0f));
@@ -53,22 +53,23 @@ GameInfo::GameInfo()
 
 	// PLAYER MODEL PARTS
 
-	botBodyNames.push_back("fisk");
-	botBodyNames.push_back("unibot");
-	botBodyNames.push_back("trashbot");
-
-	//botHeadNames.push_back("trooper");
 	botHeadNames.push_back("fisk");
 	botHeadNames.push_back("hooded");
+	botHeadNames.push_back("bulb");
+
+	botBodyNames.push_back("fisk");
+	botBodyNames.push_back("stick");
+	botBodyNames.push_back("trash");
+
 	
 	botLegNames.push_back("fisk");
-	botLegNames.push_back("unibot");
-	botLegNames.push_back("trashbot");
+	botLegNames.push_back("uni");
+	botLegNames.push_back("trash");
 
 	botArmNames.push_back("fisk");
 
 
-
+	
 	if (m_infoInstance) {
 		Logger::Warning("wtf you doing");
 		return;
