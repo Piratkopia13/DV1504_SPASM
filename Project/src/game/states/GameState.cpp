@@ -158,14 +158,7 @@ bool GameState::processInput(float dt) {
 
 	const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
 	auto& gamePad = m_app->getInput().getGamePad();
-
-	if (kbTracker.pressed.G) {
-		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-			ParticleEmitter::EXPLOSION, Vector3(2.f, 2.f, 0.f), Vector3(-0.5f), Vector3(1.f, 1.f, 1.f), 10.f, 5000, 1.0f, 20.0f, Vector4::One, 0.f, 0, true, false)));
-		Logger::log("Spawn");
-	}
-
-
+	
 	// Toggle camera controller on 'F' key or 'Y' btn
 	if (kbTracker.pressed.F)
 		m_flyCam = !m_flyCam;
