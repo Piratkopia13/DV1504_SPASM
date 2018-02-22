@@ -21,9 +21,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_teamOneColor = info->getDefaultColor(info->gameSettings.teams[0].color, 0);
 	m_teamTwoColor = info->getDefaultColor(info->gameSettings.teams[1].color, 0);
 
-	setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
-	setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
-
 	// Add default scores
 	addScore(50, 1);
 	addScore(50, 2);
@@ -36,6 +33,10 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 		m_controlNodes.push_back(std::make_unique<ControlNode>(controlpointModel));
 		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
 	}
+
+
+	setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+	setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
 
 	m_currentActivePoint = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
 	replacePoint();
