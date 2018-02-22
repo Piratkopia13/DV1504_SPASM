@@ -102,7 +102,8 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController->setPosition(Vector3(0,0,0));
 	m_playerCamController->setFollowSpeed(8);
 
-	//m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true);
+	// Sound
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true);
 	
 	m_app->getGameSettings().reset();
 }
@@ -284,6 +285,8 @@ bool MenuState::processInput(float dt) {
 								PostQuitMessage(0);
 								break;
 						}
+						// Sound
+						m_app->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Select);
 					}
 				}break;	
 
@@ -1121,6 +1124,8 @@ void MenuState::startGame() {
 			m_info->addPlayer(m_playerz[i]->player);
 	}
 
+	// Sound
+	m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Theme);
 	requestStackPop();
 	requestStackPush(States::Game);
 }
