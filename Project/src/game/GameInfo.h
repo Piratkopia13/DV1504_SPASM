@@ -9,6 +9,7 @@ class GameInfo
 public:
 	struct Player;
 	struct Team;
+	struct Setting;
 	struct GameSettings;
 	struct GraphicsSettings;
 	struct SoundSettings;
@@ -51,12 +52,12 @@ public:
 		bool vSync;
 	};
 
+
 	struct GameSettings {
 		struct Team {
 			size_t color;
 			size_t preOrder;
 		};
-
 		size_t map;
 		size_t gameMode;
 		size_t scoreLimit;
@@ -64,9 +65,12 @@ public:
 		size_t respawnTime;
 		size_t playerLife;
 		size_t gravity;
-
 		std::vector<Team> teams;
-
+	};
+	struct Setting {
+		std::string name;
+		float value;
+		float value2;
 	};
 	
 	struct SoundSettings {
@@ -88,6 +92,11 @@ public:
 	std::vector<std::string> botBodyNames;
 	std::vector<std::string> botLegNames;
 	std::vector<std::string> botArmNames;
+
+	//std::vector<Setting> gameModes;
+
+
+
 
 private:
 	static GameInfo* m_infoInstance;
