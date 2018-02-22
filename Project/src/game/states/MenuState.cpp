@@ -776,20 +776,13 @@ void MenuState::initCharacterModels() {
 		Vector3 charMid = Vector3(0, 0, -1.0f)*((float)i - 1.5f) * 3.5f + charMenuMid;
 		PlayerMenuModel temp;
 
-		if (m_info->gameSettings.gameMode == DEATHMATCH) {
-			temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 1.1f, 0));
-			temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.6f, 0));
-			temp.legs = new MenuItem(m_playerLegModels[0] , charMid - Vector3(0, 1.1f, 0));
-			temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.0f, -0.1f));
-			temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.0f, 0.1f));
-		}
-		else {
-			temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
-			temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.3f, 0));
-			temp.legs = new MenuItem(m_playerLegModels[0],  charMid - Vector3(0, 0.9f, 0));
-			temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, -0.1f));
-			temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
-		}
+		
+		temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
+		temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.3f, 0));
+		temp.legs = new MenuItem(m_playerLegModels[0],  charMid - Vector3(0, 0.9f, 0));
+		temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, -0.1f));
+		temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
+	
 
 		temp.head->getTransform().setRotations(Vector3(0, -1.55, 0));
 		temp.body->getTransform().setRotations(Vector3(0, -1.55, 0));
@@ -826,8 +819,8 @@ void MenuState::initCharacterModel(size_t spot) {
 	m_playerMenuModelz[spot].head->setPosition( charMid + Vector3(0, 0.8f, 0));
 	m_playerMenuModelz[spot].body->setPosition( charMid + Vector3(0, 0.3f, 0));
 	m_playerMenuModelz[spot].legs->setPosition (charMid - Vector3(0, 0.9f, 0));
-	m_playerMenuModelz[spot].armL->setPosition( charMid + Vector3(0, 0.2f, -0.1f));
-	m_playerMenuModelz[spot].armR->setPosition( charMid + Vector3(0, 0.2f, 0.1f));
+	m_playerMenuModelz[spot].armL->setPosition( charMid + Vector3(0, 0.3f, -0.0f));
+	m_playerMenuModelz[spot].armR->setPosition( charMid + Vector3(0, 0.3f, 0.0f));
 
 
 
