@@ -7,6 +7,7 @@
 #include "stages/HGaussianBlurStage.h"
 #include "stages/VGaussianBlurStage.h"
 #include "stages/BrightnessCutoffStage.h"
+#include "stages/FXAAStage.h"
 //#include "../shader/postprocess/GaussianBlurCShader.h"
 #include "../shader/postprocess/PostProcessFlushShader.h"
 
@@ -23,6 +24,7 @@ private:
 
 private:
 	// Post process stages - TODO: make this a map
+	std::unique_ptr<FXAAStage> m_FXAAStage;
 	std::unique_ptr<HGaussianBlurStage> m_hGaussStage;
 	std::unique_ptr<VGaussianBlurStage> m_vGaussStage;
 	std::unique_ptr<HGaussianBlurStage> m_hGaussStage2;
@@ -34,6 +36,8 @@ private:
 	float m_gaussPass1Scale;
 	float m_gaussPass2Scale;
 	float m_brightnessCutoffScale;
+
+	bool m_FXAAPass;
 
 	// TODO make enableEffect(enum) and disableEffect(enum) and a map that binds the enums to enabled/disabled bool
 
