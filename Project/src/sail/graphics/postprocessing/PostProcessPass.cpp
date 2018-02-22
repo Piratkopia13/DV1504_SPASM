@@ -16,6 +16,10 @@ PostProcessPass::PostProcessPass()
 	m_gaussPass2Scale = 1.f / 2;
 	m_brightnessCutoffScale = 1.f / 2;
 
+	m_FXAAPass = false;
+
+	m_FXAAStage = std::make_unique<FXAAStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+
 	m_hGaussStage = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
 	m_vGaussStage = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
 
@@ -27,6 +31,7 @@ PostProcessPass::PostProcessPass()
 }
 
 void PostProcessPass::resize(UINT width, UINT height) {
+	m_FXAAStage->resize(width, height);
 	m_hGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
 	m_vGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
 	m_hGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
@@ -40,10 +45,20 @@ PostProcessPass::~PostProcessPass() {
 void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inputTexture) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
+	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
 	dxm->disableDepthBuffer();
 
+	if (kbState.pressed.H) {
+		m_FXAAPass = !m_FXAAPass;
+	}
+
+
+	if (m_FXAAPass) {
+		m_FXAAStage->run(baseTexture);
+	}
 	m_brightnessCutoffStage->run(inputTexture);
+
 	m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
 	m_vGaussStage->run(m_hGaussStage->getOutput());
 
@@ -54,11 +69,21 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	dxm->renderToBackBuffer();
 
 	dxm->enableAdditiveBlending();
-	m_fullscreenQuad.getMaterial()->setTextures(baseTexture.getColorSRV(), 1);
+	if (m_FXAAPass) {
+		m_fullscreenQuad.getMaterial()->setTextures(m_FXAAStage->getOutput().getColorSRV(), 1);
+	}
+	else
+	{
+		m_fullscreenQuad.getMaterial()->setTextures(baseTexture.getColorSRV(), 1);
+	}
 	m_fullscreenQuad.draw();
 
 	// Draw bloom using additive blending
 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage2->getOutput().getColorSRV(), 1);
+
+
+
+	
 	m_fullscreenQuad.draw();
 	m_fullscreenQuad.draw();
 	dxm->disableAlphaBlending();
