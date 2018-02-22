@@ -236,6 +236,8 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 	currentIndex.y = static_cast<int>(floor(currentPos.y / Level::DEFAULT_BLOCKSIZE));
 
 	bool intersection = false;
+	if (currentIndex.x <= 0.f || currentIndex.x >= m_level->getGridWidth() || currentIndex.y <= 0 || currentIndex.y >= m_level->getGridHeight())
+		intersection = true;
 
 	while (!intersection && currentIndex.x > -1 && currentIndex.x < (m_level->getGridWidth() - 1)) {
 		if (deltaX > 0)

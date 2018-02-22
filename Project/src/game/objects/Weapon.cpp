@@ -185,14 +185,14 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	tempMatrix *= Matrix::CreateTranslation(tempPos);
 
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
-	if (m_nozzlePos.x > 1.0f) {
+	//if (m_nozzlePos.x > 1.0f) {
 		float length = (CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) - m_nozzlePos).Length();
 		m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
 		m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
 		m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
 
 		m_laser.dotTransform.setTranslation(CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
-	}
+	//}
 
 	//move(dt);
 }
