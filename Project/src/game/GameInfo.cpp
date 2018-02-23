@@ -106,16 +106,77 @@ GameInfo::GameInfo()
 	
 	// GRAPHICS SETTINGS
 
+	particles.push_back({ "standard",3,0 });
+	particles.push_back({ "plenty",6,0 });
+	particles.push_back({ "too much",10,0 });
+	particles.push_back({ "none",0,0 });
+
+	bloom.push_back({ "standard",1,0 });
+	bloom.push_back({ "high",2,0 });
+	bloom.push_back({ "none",0,0 });
+
+	antiAliasing.push_back({ "FXAA",1,0 });
+	antiAliasing.push_back({ "none",0,0 });
+
+	background.push_back({ "standard",1,0 });
+	background.push_back({ "something",2,0 });
+	background.push_back({ "none",0,0 });
+
+	fpsCounter.push_back({ "top left",1,0 });
+	fpsCounter.push_back({ "none",0,0 });
+
+	frameRateLock.push_back({ "none", 0, 0 });
+	frameRateLock.push_back({ "60", 1.0f / 60.0f, 0 });
+	frameRateLock.push_back({ "120", 1.0f / 120.0f, 0 });
+	frameRateLock.push_back({ "144", 1.0f / 144.0f, 0 });
+
+	vSync.push_back({ "none",0,0 });
+	vSync.push_back({ "vsync",1,0 });
 
 
+	wtfGraphics.push_back({ "no", 0 ,0 });
+	wtfGraphics.push_back({ "pogchamp", 0 ,0 });
 
 	// SOUND SETTINGS
 	
+	masterVolume.push_back({ "50",0.5f,0 });
+	masterVolume.push_back({ "60",0.6f,0 });
+	masterVolume.push_back({ "70",0.7f,0 });
+	masterVolume.push_back({ "80",0.8f,0 });
+	masterVolume.push_back({ "90",0.9f,0 });
+	masterVolume.push_back({ "100",1.0f,0 });
+	masterVolume.push_back({ "0",0.0f,0 });
+	masterVolume.push_back({ "10",0.1f,0 });
+	masterVolume.push_back({ "20",0.2f,0 });
+	masterVolume.push_back({ "30",0.3f,0 });
+	masterVolume.push_back({ "40",0.4f,0 });
 
+	backgroundVolume.push_back({ "50",0.5f,0 });
+	backgroundVolume.push_back({ "60",0.6f,0 });
+	backgroundVolume.push_back({ "70",0.7f,0 });
+	backgroundVolume.push_back({ "80",0.8f,0 });
+	backgroundVolume.push_back({ "90",0.9f,0 });
+	backgroundVolume.push_back({ "100",1.0f,0 });
+	backgroundVolume.push_back({ "0",0.0f,0 });
+	backgroundVolume.push_back({ "10",0.1f,0 });
+	backgroundVolume.push_back({ "20",0.2f,0 });
+	backgroundVolume.push_back({ "30",0.3f,0 });
+	backgroundVolume.push_back({ "40",0.4f,0 });
 
+	effectVolume.push_back({ "50",0.5f,0 });
+	effectVolume.push_back({ "60",0.6f,0 });
+	effectVolume.push_back({ "70",0.7f,0 });
+	effectVolume.push_back({ "80",0.8f,0 });
+	effectVolume.push_back({ "90",0.9f,0 });
+	effectVolume.push_back({ "100",1.0f,0 });
+	effectVolume.push_back({ "0",0.0f,0 });
+	effectVolume.push_back({ "10",0.1f,0 });
+	effectVolume.push_back({ "20",0.2f,0 });
+	effectVolume.push_back({ "30",0.3f,0 });
+	effectVolume.push_back({ "40",0.4f,0 });
 
-
-
+	wtfVolume.push_back({ "no", 0, 0 });
+	wtfVolume.push_back({ "wtf", 0, 0 });
 
 	if (m_infoInstance) {
 		Logger::Warning("wtf you doing");
@@ -165,12 +226,34 @@ void GameInfo::addProfile(std::string name, size_t preOrdered) {
 	saveProfiles();
 }
 
+void GameInfo::convertGraphics() {
+
+
+
+}
+
+void GameInfo::saveGraphics() {
+
+}
+
+void GameInfo::saveSound() {
+
+}
+
 void GameInfo::loadProfiles() {
 	// read from file
 }
 
 void GameInfo::saveProfiles() {
 	// write to file
+}
+
+void GameInfo::loadGraphics()
+{
+}
+
+void GameInfo::loadSound()
+{
 }
 
 

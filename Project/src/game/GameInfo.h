@@ -44,14 +44,23 @@ public:
 	};
 
 	struct GraphicsSettings {
-		size_t particles = 3;
+		size_t particles = 0;
 		size_t bloom = 1;
 		size_t AA = 0;
 		size_t backGround = 0;
-		bool fpsCounter = 1;
+		size_t fpsCounter = 1;
 		bool vSync = 0;
+		bool wtf = false;
 	};
-
+	struct ConvertedGraphics {
+		float particles = 3;
+		float bloom = 1;
+		float AA = 1;
+		float background = 1;
+		float fpsCounter = 1;
+		float vSync = 0;
+		float wtf = 0;
+	};
 
 	struct GameSettings {
 		struct Team {
@@ -83,6 +92,7 @@ public:
 
 	GameSettings gameSettings;
 	GraphicsSettings graphicsSettings;
+	ConvertedGraphics graphicsConverted;
 	SoundSettings soundSettings;
 
 	std::vector<DirectX::SimpleMath::Vector4> defaultColors;
@@ -105,7 +115,9 @@ public:
 	std::vector<Setting> antiAliasing;
 	std::vector<Setting> background;
 	std::vector<Setting> fpsCounter;
+	std::vector<Setting> frameRateLock;
 	std::vector<Setting> vSync;
+	std::vector<Setting> wtfGraphics;
 
 
 	std::vector<Setting> masterVolume;
@@ -114,7 +126,9 @@ public:
 	std::vector<Setting> wtfVolume;
 
 
-
+	void convertGraphics();
+	void saveGraphics();
+	void saveSound();
 
 private:
 	static GameInfo* m_infoInstance;
@@ -127,9 +141,6 @@ private:
 	void saveProfiles();
 
 	void loadGraphics();
-	void saveGraphics();
-
 	void loadSound();
-	void saveSound();
 
 };

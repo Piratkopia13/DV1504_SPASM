@@ -11,6 +11,10 @@ MenuText::MenuText(std::string text) {
 	m_facing = Vector3(0.0f, 0.0f, -1.0f);
 	m_size = 1;
 	updateLetterPosition();
+
+	m_crazy = false;
+	m_crazyAcc = 0;
+	m_crazyThresh = 1.0f / 3.0f;
 }
 
 MenuText::MenuText(size_t size) {
