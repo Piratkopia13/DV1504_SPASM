@@ -524,8 +524,7 @@ void Character::fire()
 }
 
 void Character::hook() {
-	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
-	m_movement.hooked = true;
+	m_movement.hooked = m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
 }
 
 void Character::stopHook() {
