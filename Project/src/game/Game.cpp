@@ -4,7 +4,7 @@
 #include "states/PauseState.h"
 
 Game::Game(HINSTANCE hInstance)
-	: Application(1280, 720, "SPASM v0.25", hInstance)
+	: Application(1280, 720, "SPASM v0.50", hInstance)
 	, m_stateStack()
 {
 	// Register states
