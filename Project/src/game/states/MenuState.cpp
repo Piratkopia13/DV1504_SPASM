@@ -17,7 +17,7 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
 
 	// Set up the scene
-	m_scene.addSkybox(L"skybox_space_512.dds");
+	//m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
 	Vector3 color(0.9f, 0.9f, 0.9f);
 	Vector3 direction(0.4f, -0.6f, 1.0f);
@@ -301,6 +301,7 @@ bool MenuState::processInput(float dt) {
 								m_info->gameSettings.timelimit = m_gamemodeMenu->getOptionAt(TIMELIMIT);
 								m_info->gameSettings.respawnTime = m_gamemodeMenu->getOptionAt(RESPAWNTIME);
 								m_info->gameSettings.gravity = m_gamemodeMenu->getOptionAt(GRAVITY);
+								m_info->gameSettings.playerLife = m_gamemodeMenu->getOptionAt(PLAYERLIFE);
 								m_info->getPlayers().clear();
 								m_info->gameSettings.teams.clear();
 								
@@ -717,51 +718,43 @@ void MenuState::initGamemode() {
 	m_scene.addObject(m_gamemodeMenu);
 
 	m_gamemodeMenu->addMenuSelector("gamemode");
-	m_gamemodeMenu->addMenuSelectorItem("payload");
-	m_gamemodeMenu->addMenuSelectorItem("deathmatch");
-	m_gamemodeMenu->addMenuSelectorItem("team deathmatch");
+	for (size_t i = 0; i < m_info->gameModes.size(); i++) {
+		m_gamemodeMenu->addMenuSelectorItem(m_info->gameModes[i].name);
 
+	}
+	m_gamemodeMenu->setStaticSelection(true, 0);
 	m_gamemodeMenu->addMenuSelector("time limit");
-	m_gamemodeMenu->addMenuSelectorItem("no limit");
-	m_gamemodeMenu->addMenuSelectorItem("1 min");
-	m_gamemodeMenu->addMenuSelectorItem("2 min");
-	m_gamemodeMenu->addMenuSelectorItem("3 min");
-	m_gamemodeMenu->addMenuSelectorItem("5 min");
-	m_gamemodeMenu->addMenuSelectorItem("10 min");
-	m_gamemodeMenu->setStaticSelection(true, 0);
+	for (size_t i = 0; i < m_info->timeLimit.size(); i++) {
+		m_gamemodeMenu->addMenuSelectorItem(m_info->timeLimit[i].name);
 
+	}
+	m_gamemodeMenu->setStaticSelection(true, 0);
 	m_gamemodeMenu->addMenuSelector("score limit");
-	m_gamemodeMenu->addMenuSelectorItem("50");
-	m_gamemodeMenu->addMenuSelectorItem("75");
-	m_gamemodeMenu->addMenuSelectorItem("100");
-	m_gamemodeMenu->addMenuSelectorItem("150");
-	m_gamemodeMenu->addMenuSelectorItem("250");
-	m_gamemodeMenu->setStaticSelection(true, 0);
+	for (size_t i = 0; i < m_info->scoreLimit.size(); i++) {
+		m_gamemodeMenu->addMenuSelectorItem(m_info->scoreLimit[i].name);
 
-	m_gamemodeMenu->addMenuSelector("respawntime");
-	m_gamemodeMenu->addMenuSelectorItem("2 s");
-	m_gamemodeMenu->addMenuSelectorItem("4 s");
-	m_gamemodeMenu->addMenuSelectorItem("8 s");
-	m_gamemodeMenu->addMenuSelectorItem("instant");
+	}
 	m_gamemodeMenu->setStaticSelection(true, 0);
+	m_gamemodeMenu->addMenuSelector("respawn time");
+	for (size_t i = 0; i < m_info->respawnTime.size(); i++) {
+		m_gamemodeMenu->addMenuSelectorItem(m_info->respawnTime[i].name);
 
-	m_gamemodeMenu->addMenuSelector("Gravity");
-	m_gamemodeMenu->addMenuSelectorItem("earth");
-	m_gamemodeMenu->addMenuSelectorItem("moon");
-	m_gamemodeMenu->addMenuSelectorItem("mars");
-	m_gamemodeMenu->addMenuSelectorItem("none");
+	}
 	m_gamemodeMenu->setStaticSelection(true, 0);
+	m_gamemodeMenu->addMenuSelector("gravity");
+	for (size_t i = 0; i < m_info->gravity.size(); i++) {
+		m_gamemodeMenu->addMenuSelectorItem(m_info->gravity[i].name);
 
+	}
+	m_gamemodeMenu->setStaticSelection(true, 0);
 	m_gamemodeMenu->addMenuSelector("player Health");
-	m_gamemodeMenu->addMenuSelectorItem("100");
-	m_gamemodeMenu->addMenuSelectorItem("200");
-	m_gamemodeMenu->addMenuSelectorItem("10");
-	m_gamemodeMenu->addMenuSelectorItem("50");
-	m_gamemodeMenu->setStaticSelection(true, 0);
+	for (size_t i = 0; i < m_info->playerHealth.size(); i++) {
+		m_gamemodeMenu->addMenuSelectorItem(m_info->playerHealth[i].name);
 
+	}
+	m_gamemodeMenu->setStaticSelection(true, 0);
 
 	m_gamemodeMenu->setStep(0.0f);
-
 	m_gamemodeMenu->setOnColor(m_onColor);
 	
 	m_gamemodeMenu->setPosition(Vector3(5, -0.5, 0));

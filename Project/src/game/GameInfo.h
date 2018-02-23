@@ -44,12 +44,12 @@ public:
 	};
 
 	struct GraphicsSettings {
-		size_t particles;
-		size_t bloom;
-		size_t AA;
-		size_t backGround;
-		bool fpsCounter;
-		bool vSync;
+		size_t particles = 3;
+		size_t bloom = 1;
+		size_t AA = 0;
+		size_t backGround = 0;
+		bool fpsCounter = 1;
+		bool vSync = 0;
 	};
 
 
@@ -58,26 +58,26 @@ public:
 			size_t color;
 			size_t preOrder;
 		};
-		size_t map;
-		size_t gameMode;
-		size_t scoreLimit;
-		size_t timelimit;
-		size_t respawnTime;
-		size_t playerLife;
-		size_t gravity;
+		size_t map = 0;
+		size_t gameMode = 0;
+		size_t scoreLimit = 0;
+		size_t timelimit = 0;
+		size_t respawnTime = 0;
+		size_t playerLife = 0;
+		size_t gravity = 0;
 		std::vector<Team> teams;
 	};
 	struct Setting {
-		std::string name;
-		float value;
-		float value2;
+		std::string name = "";
+		float value = 0;
+		float value2 = 0;
 	};
 	
 	struct SoundSettings {
-		float masterVolume;
-		float backGroundSoundVolume;
-		float effectSoundVolume;
-		bool wtf;
+		float masterVolume = 0.5;
+		float backGroundSoundVolume = 0.5;
+		float effectSoundVolume = 0.5;
+		bool wtf = false;
 	};
 
 
@@ -93,7 +93,25 @@ public:
 	std::vector<std::string> botLegNames;
 	std::vector<std::string> botArmNames;
 
-	//std::vector<Setting> gameModes;
+	std::vector<Setting> gameModes;
+	std::vector<Setting> timeLimit;
+	std::vector<Setting> scoreLimit;
+	std::vector<Setting> respawnTime;
+	std::vector<Setting> gravity;
+	std::vector<Setting> playerHealth;
+
+	std::vector<Setting> particles;
+	std::vector<Setting> bloom;
+	std::vector<Setting> antiAliasing;
+	std::vector<Setting> background;
+	std::vector<Setting> fpsCounter;
+	std::vector<Setting> vSync;
+
+
+	std::vector<Setting> masterVolume;
+	std::vector<Setting> backgroundVolume;
+	std::vector<Setting> effectVolume;
+	std::vector<Setting> wtfVolume;
 
 
 

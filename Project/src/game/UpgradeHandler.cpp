@@ -108,7 +108,7 @@ void UpgradeHandler::UpgradeSpawn::respawn() {
 
 	m_onlineType = m_type;
 	if (m_type == -1) {
-		m_onlineType = (int)(Utils::rnd() * Upgrade::MAX - 1) + 1;
+		m_onlineType = (int)(Utils::rnd() * (Upgrade::MAX - 1));
 	}
 
 	if (m_onlineType == Upgrade::AUTO_FIRE) {

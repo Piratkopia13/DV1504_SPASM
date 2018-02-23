@@ -86,8 +86,9 @@ private:
 		TIMELIMIT,
 		SCORELIMIT,
 		RESPAWNTIME,
+		GRAVITY,
+		PLAYERLIFE
 
-		GRAVITY
 	};
 
 	enum GameModeSelection {
