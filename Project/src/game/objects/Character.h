@@ -30,6 +30,7 @@ public:
 	float getMaxHealth();
 	bool isAlive();
 	void damage(float dmg);
+	const DirectX::SimpleMath::Vector3& getAimDirection() const;
 
 	void VibrateController(unsigned int index, float strength = 1, float timeDecreaseMul = 1);
 

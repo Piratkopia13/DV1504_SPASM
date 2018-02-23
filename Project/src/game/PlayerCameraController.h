@@ -2,12 +2,15 @@
 #include "../sail/Sail.h"
 #include "objects/Character.h"
 
+class CharacterHandler;
+
 class PlayerCameraController : public CameraController {
 public:
 	PlayerCameraController(Camera* cam, const DirectX::SimpleMath::Vector2* mapSize = nullptr);
 
 	void update(float dt);
 	void setTargets(Object* focusObject1, Object* focusObject2 = nullptr, Object* focusObject3 = nullptr, Object* focusObject4 = nullptr);
+	void setCharacterHandler(CharacterHandler* charHandler);
 	void setPosition(DirectX::SimpleMath::Vector3 pos);
 	void setTarget(DirectX::SimpleMath::Vector3 pos);
 	void setOffset(DirectX::SimpleMath::Vector3 offset);
@@ -24,13 +27,13 @@ private:
 	void updatePosition(float dt);
 
 	Object* m_targets[4];
+	CharacterHandler* m_charHandler;
 	
 	DirectX::SimpleMath::Vector3 m_position;
 	DirectX::SimpleMath::Vector3 m_target;
 
 	DirectX::SimpleMath::Vector3 m_back;
 	DirectX::SimpleMath::Vector3 m_up;
-
 
 	bool m_lockToMap;
 	DirectX::SimpleMath::Vector2 m_mapSize;
@@ -43,5 +46,8 @@ private:
 	float m_extraZCurrent;
 	float m_extraZTarget;
 	float m_cameraYOffset;
+
+	float m_timeZoomedIn;
+	DirectX::SimpleMath::Vector3 m_targetLastFrame;
 
 };

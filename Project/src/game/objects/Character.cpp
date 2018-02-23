@@ -444,6 +444,10 @@ void Character::damage(float dmg) {
 	m_playerHealth.addHealth(-dmg);
 }
 
+const DirectX::SimpleMath::Vector3& Character::getAimDirection() const {
+	return m_input.aim;
+}
+
 void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {
 	m_vibration[index].currentStrength = strength;
 	if (m_vibration[index].currentStrength > strength) m_vibration[index].currentStrength = strength;

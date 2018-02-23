@@ -65,6 +65,10 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 
 	if (m_FXAAPass) {
 		m_FXAAStage->run(baseTexture);
+		m_toneMapHackStage->run(m_FXAAStage->getOutput());
+	} else {
+		m_toneMapHackStage->run(baseTexture);
+
 	}
 	m_brightnessCutoffStage->run(inputTexture);
 
@@ -77,24 +81,22 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	m_hGaussStage3->run(m_vGaussStage2->getOutput());
 	m_vGaussStage3->run(m_hGaussStage3->getOutput());
 
-	m_toneMapHackStage->run(m_vGaussStage3->getOutput());
-
 	// Blend last output together with the baseTexture to produce the final image
 	dxm->renderToBackBuffer();
 	//m_toneMapHackStage->getOutput().begin();
 
 	dxm->enableAdditiveBlending();
-	if (m_FXAAPass) {
-		m_fullscreenQuad.getMaterial()->setTextures(m_FXAAStage->getOutput().getColorSRV(), 1);
-	}
-	else
-	{
-		m_fullscreenQuad.getMaterial()->setTextures(baseTexture.getColorSRV(), 1);
-	}
+	//if (m_FXAAPass) {
+		m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
+	//}
+	//else
+	//{
+	//	m_fullscreenQuad.getMaterial()->setTextures(m_FXAAStage->getOutput().getColorSRV(), 1);
+	//}
 	m_fullscreenQuad.draw();
 
 	// Draw bloom using additive blending
-	m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
+	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
 	m_fullscreenQuad.draw();
 
 	//m_fullscreenQuad.draw();
