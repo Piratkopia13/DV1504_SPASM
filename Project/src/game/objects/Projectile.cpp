@@ -6,7 +6,8 @@ Projectile::Projectile(const DirectX::SimpleMath::Vector3& position, const Direc
 	setVelocity(velocity);
 	setPosition(position);
 	m_damage = damage;
-	m_owner = owner;
+	m_team = team;
+	m_knockbackAmount = knockbackAmount;
 }
 
 Projectile::~Projectile() {
@@ -19,6 +20,10 @@ Character* Projectile::getOwner() const {
 
 float Projectile::getDamage() const {
 	return m_damage;
+}
+
+float Projectile::getKnockbackAmount() const {
+	return m_knockbackAmount;
 }
 
 void Projectile::draw() {

@@ -10,11 +10,14 @@ public:
 
 	Character* getOwner() const;
 	float getDamage() const;
+	float getKnockbackAmount() const;
 
 	virtual void draw();
 
 private:
 	float m_damage;
+	float m_knockbackAmount;
+	int m_team;
 	Character* m_owner;
 
 };

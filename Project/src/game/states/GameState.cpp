@@ -1,6 +1,5 @@
 #include "GameState.h"
 #include "../objects/Block.h"
-#include "../../sail/graphics/geometry/factory/InstancedTestModel.h"
 #include "../gamemodes/payload/PayloadGamemode.h"
 
 using namespace DirectX;
@@ -9,7 +8,7 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(60.f, 1280.f / 720.f, 0.1f, 100000.f)
+, m_cam(30.f, 1280.f / 720.f, 0.1f, 100000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
@@ -24,17 +23,21 @@ GameState::GameState(StateStack& stack)
 	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
 
 	// Set up handlers
+
+
+	GameInfo * info = GameInfo::getInstance();
+
 	m_level = std::make_unique<Level>("symmetric.level");
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
-		gamemode->setTeamColor(1, m_app->getGameSettings().teamOneColor);
-		gamemode->setTeamColor(2, m_app->getGameSettings().teamTwoColor);
+		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
 	}
 
 	// Set up handlers
-	m_projHandler = std::make_unique<ProjectileHandler>();
 	m_particleHandler = std::make_unique<ParticleHandler>(&m_cam);
+	m_projHandler = std::make_unique<ProjectileHandler>(m_particleHandler.get());
 	m_characterHandler = std::make_unique<CharacterHandler>(m_particleHandler.get(), m_projHandler.get());
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
@@ -46,7 +49,7 @@ GameState::GameState(StateStack& stack)
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
 	// Set up the scene
-	m_scene.addSkybox(L"skybox_space_512.dds");
+	//m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
 	Vector3 color(0.9f, 0.9f, 0.9f);
  	Vector3 direction(0.4f, -0.6f, 1.0f);
@@ -66,16 +69,16 @@ GameState::GameState(StateStack& stack)
 	if (playerSpawnPoints.size() > 0) {
 		for (Grid::Index index : playerSpawnPoints) {
 			if (float(index.x) <= m_level->getGridWidth() / 2.f)
-				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+				m_characterHandler->addSpawnPoint(0, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
 			else
-				m_characterHandler->addSpawnPoint(2, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
+				m_characterHandler->addSpawnPoint(1, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
 		}
 	}
 	else {
-		m_characterHandler->addSpawnPoint(1, Vector3(2, 2, 0));
-		m_characterHandler->addSpawnPoint(1, Vector3(3, 2, 0));
-		m_characterHandler->addSpawnPoint(2, Vector3(14, 2, 0));
-		m_characterHandler->addSpawnPoint(2, Vector3(15, 2, 0));
+		m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));
+		m_characterHandler->addSpawnPoint(0, Vector3(3, 2, 0));
+		m_characterHandler->addSpawnPoint(1, Vector3(14, 2, 0));
+		m_characterHandler->addSpawnPoint(1, Vector3(15, 2, 0));
 	}
 
 
@@ -90,7 +93,7 @@ GameState::GameState(StateStack& stack)
 	}
 	else {
 		m_upgradeHandler->addSpawn(Vector3(5, 1.0f, 0), Upgrade::AUTO_FIRE, 10);
-		m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_SPEED, 10);
+		m_upgradeHandler->addSpawn(Vector3(6, 1.0f, 0), Upgrade::PROJECTILE_KNOCKBACK, 10);
 		m_upgradeHandler->addSpawn(Vector3(7, 1.0f, 0), Upgrade::EXTRA_DAMAGE, 10);
 		m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
 		m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);
@@ -124,7 +127,7 @@ GameState::GameState(StateStack& stack)
 
 
 	// Set up background infinity planes
-	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f));
+	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
 	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
 	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
 	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile.tga");
@@ -159,7 +162,7 @@ bool GameState::processInput(float dt) {
 
 	const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
 	auto& gamePad = m_app->getInput().getGamePad();
-
+	
 	// Toggle camera controller on 'F' key or 'Y' btn
 	if (kbTracker.pressed.F)
 		m_flyCam = !m_flyCam;
@@ -210,7 +213,7 @@ bool GameState::resize(int width, int height) {
 bool GameState::update(float dt) {
 
 	// Infinity planes color update
-	static float epilepsyAmount = 1.5f;
+	static float epilepsyAmount = 0.7f;
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;
@@ -224,7 +227,8 @@ bool GameState::update(float dt) {
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
 	auto& camPos = m_cam.getPosition();
-	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
+	//m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
+	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Emitters: " + std::to_wstring(m_particleHandler->getEmitterCount()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
 
 	m_characterHandler->update(dt);
 

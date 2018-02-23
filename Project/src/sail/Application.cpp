@@ -37,6 +37,15 @@ Application::Application(int windowWidth, int windowHeight, char* windowTitle, H
 
 	// Load the missing texture texture
 	m_resourceManager.LoadDXTexture("missing.tga");
+
+	Profile temp1 = { "testA",0,0,0,0,0.f};
+	Profile temp2 = { "testB",0,0,0,0,0.f };
+	Profile temp3 = { "testC",0,0,0,0,0.f };
+	Profile temp4 = { "testD",0,0,0,0,0.f };
+	m_profiles.push_back(temp1);
+	m_profiles.push_back(temp2);
+	m_profiles.push_back(temp3);
+	m_profiles.push_back(temp4);
 }
 
 Application::~Application() {	}
@@ -162,5 +171,10 @@ Input& Application::getInput() {
 Application::GameSettings & Application::getGameSettings()
 {
 	return m_gameVariables;
+}
+
+std::vector<Application::Profile>& Application::getProfiles()
+{
+	return m_profiles;
 }
 

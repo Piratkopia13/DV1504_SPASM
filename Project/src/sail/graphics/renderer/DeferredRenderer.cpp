@@ -61,7 +61,7 @@ void DeferredRenderer::beginGeometryPass(Camera& camera, ID3D11RenderTargetView*
 
 	// Clear all gbuffers
 	for (int i = 0; i < NUM_GBUFFERS - 1; i++)
-		m_gBuffers[i]->clear({0.f, 0.f, 0.f, 0.0f});
+		m_gBuffers[i]->clear({0.f, 0.f, 0.0f, 1.0f});
 
 	// Update the camera in the shaders
 	Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>().updateCamera(camera);

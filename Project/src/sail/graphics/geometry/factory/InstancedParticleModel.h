@@ -7,7 +7,7 @@ namespace ModelFactory {
 
 	using namespace DirectX::SimpleMath;
 
-	class InstancedTestModel {
+	class InstancedParticleModel {
 	public:
 		static std::unique_ptr<Model> Create(UINT instances) {
 

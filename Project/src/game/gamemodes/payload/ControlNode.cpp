@@ -6,7 +6,7 @@ ControlNode::ControlNode(Model* model) {
 	m_team = 0;
 
 	m_beingCaptured = false;
-	m_timeTillCapture = 5.f;
+	m_timeTillCapture = 3.f;
 	m_maxTimeCaptured = 10.f;
 	m_timeCaptured = 0.f;
 
@@ -20,7 +20,6 @@ ControlNode::ControlNode(Model* model) {
 	m_teamOne.capturing = false;
 	m_teamOne.isOwner = false;
 	m_teamOne.timeCapturing = 0.f;
-
 
 	m_teamTwo.color = m_teamTwoColor;
 	m_teamTwo.ownershipTime = 0.f;

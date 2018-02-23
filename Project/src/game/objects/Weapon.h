@@ -4,6 +4,8 @@
 #include "../ProjectileHandler.h"
 #include "Upgrade.h"
 
+class Character;
+
 class Weapon : public Moveable {
 public:
 	Weapon();
@@ -26,7 +28,9 @@ public:
 
 	virtual void draw();
 private:
-	ProjectileHandler * m_projectileHandler;
+	ProjectileHandler* m_projectileHandler;
+	ParticleHandler* m_particleHandler;
+	Character* m_owner;
 	bool m_held;
 	Character* m_owner;
 

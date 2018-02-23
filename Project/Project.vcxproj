@@ -135,6 +135,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
+    <ClCompile Include="src\game\GameInfo.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
     <ClCompile Include="src\game\objects\upgrades\AutoFireUpgrade.cpp" />
     <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
     <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
@@ -172,8 +176,10 @@
     <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
@@ -222,6 +228,7 @@
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />
@@ -232,6 +239,12 @@
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\game\GameInfo.h" />
+    <ClInclude Include="src\game\GameInfo\Profile.h" />
+    <ClInclude Include="src\game\GameInfo\Score.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
+    <ClInclude Include="src\game\objects\Menu\MenuText.h" />
     <ClInclude Include="src\game\gamemodes\deathmatch\Deathmatch.h" />
     <ClInclude Include="src\game\gamemodes\Gamemode.h" />
     <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
@@ -262,7 +275,7 @@
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
-    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\SphereModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
@@ -278,7 +291,9 @@
     <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\RenderableTexture.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
@@ -411,6 +426,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
     </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+    </FxCompile>
     <FxCompile Include="res\shaders\postprocess\GaussianBlurCS.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CSHorizontal</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CSHorizontal</EntryPointName>
@@ -428,6 +451,10 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
     </FxCompile>

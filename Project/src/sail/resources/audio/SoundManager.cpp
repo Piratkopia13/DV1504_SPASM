@@ -51,6 +51,8 @@ SoundManager::SoundManager() {
 		loadSoundEffect(SoundEffect::Male_Death, L"res/sounds/effect/death/male_death.wav");
 		loadSoundEffect(SoundEffect::Goblin_Death, L"res/sounds/effect/death/goblin_death.wav");
 		loadSoundEffect(SoundEffect::Pickup, L"res/sounds/effect/pickup.wav");
+		loadSoundEffect(SoundEffect::Switch, L"res/sounds/effect/switch.wav");
+		loadSoundEffect(SoundEffect::Select, L"res/sounds/effect/select.wav");
 
 		loadAmbientSound(Ambient::Loop1, L"res/sounds/ambient/loop1.wav");
 		loadAmbientSound(Ambient::Loop2, L"res/sounds/ambient/loop2.wav");
@@ -101,6 +103,12 @@ void SoundManager::playSoundEffect(const SoundEffect soundID, float volume, floa
 	m_currSVIndex++;
 	m_currSVIndex = m_currSVIndex % NUMBER_OF_CHANNELS;
 }
+
+void SoundManager::playSoundEffectWithRndPitch(const SoundEffect soundID, float min, float max, float volume) {
+	float pitch = Utils::rnd() * (max - min) + min;
+	playSoundEffect(soundID, volume, pitch);
+}
+
 
 void SoundManager::playAmbientSound(const Ambient soundID, const bool looping) {
 	if (!m_playSound)

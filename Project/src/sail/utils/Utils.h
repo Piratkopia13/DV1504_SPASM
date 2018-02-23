@@ -80,9 +80,9 @@ public:
 		SetConsoleTextAttribute(hstdout, csbi.wAttributes);
 
 #ifdef _SAIL_THROW_ON_WARNING
-#ifdef _DEBUG
-		throw std::exception();
-#endif
+//#ifdef _DEBUG
+//		throw std::exception();
+//#endif
 #endif
 	}
 
@@ -116,6 +116,7 @@ public:
 	static float rnd();
 	static DirectX::SimpleMath::Vector4 getRandomColor();
 	static float clamp(float val, float min, float max);
+	static float smootherstep(float edge0, float edge1, float x);
 
 	static std::random_device rd;
 	static std::mt19937 gen;

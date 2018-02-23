@@ -5,7 +5,7 @@
 
 class ProjectileHandler {
 public:
-	ProjectileHandler();
+	ProjectileHandler(ParticleHandler* particleHandler);
 	~ProjectileHandler();
 
 	void addProjectile(Projectile* newProjectile);
@@ -15,6 +15,7 @@ public:
 	void draw();
 
 private:
+	ParticleHandler* m_particleHandler;
 	Model* m_projectileModel;
 	std::vector<Projectile*> m_projectiles;
 	std::vector<float> m_projectileLifeSpan;

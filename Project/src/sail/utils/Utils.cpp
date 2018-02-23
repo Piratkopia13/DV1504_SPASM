@@ -28,6 +28,14 @@ float Utils::clamp(float val, float min, float max) {
 
 }
 
+float Utils::smootherstep(float edge0, float edge1, float x) {
+	// Scale, and clamp x to 0..1 range
+	x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+	// Evaluate polynomial
+	return x * x * x * (x * (x * 6 - 15) + 10);
+}
+
+
 DirectX::SimpleMath::Vector4 Utils::getRandomColor() {
 	return DirectX::SimpleMath::Vector4(Utils::rnd(), Utils::rnd(), Utils::rnd(), 1);
 }
