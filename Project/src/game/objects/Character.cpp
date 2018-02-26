@@ -215,6 +215,10 @@ void Character::update(float dt) {
 		m_playerHealth.current += m_playerHealth.regen * dt;
 	}
 
+	if (collHandler->outOfBounds(this)) {
+		damage(getMaxHealth());
+	}
+
 	m_playerHealth.updatePercent();
 
 	if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {

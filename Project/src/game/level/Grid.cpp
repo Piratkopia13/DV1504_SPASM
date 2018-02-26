@@ -39,7 +39,7 @@ void Grid::addHole(const int x, const int y) {
 
 
 bool Grid::atGrid(const int x, const int y) {
-	if (x < 0 || y < 0 || x > m_gridWidth || y > m_gridHeight)
+	if (x < 0 || y < 0 || x > (m_gridWidth - 1) || y > (m_gridHeight - 1))
 		return false;
 	if (m_cells[x][y])
 		return true;

@@ -167,6 +167,16 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
+bool CollisionHandler::outOfBounds(Character* character) {
+	float x = character->getTransform().getTranslation().x;
+	float y = character->getTransform().getTranslation().y;
+	bool oob = false;
+	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight())
+		oob = true;
+
+	return oob;
+}
+
 bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
@@ -279,7 +289,7 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 		}
 
 
-		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > m_level->getGridWidth() || currentIndex.y > m_level->getGridHeight()) {
+		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > (m_level->getGridWidth() - 1) || currentIndex.y > (m_level->getGridHeight() - 1)) {
 			intersection = true;
 			t *= 10000;
 		}
