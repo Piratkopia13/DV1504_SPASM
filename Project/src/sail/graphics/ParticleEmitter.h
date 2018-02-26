@@ -27,6 +27,8 @@ public:
 	void updateVelocityVariety(const DirectX::SimpleMath::Vector3& velVar);
 	void updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& velRndAdd);
 
+	const DirectX::SimpleMath::Vector3& getEmitterPosition() const;
+
 private:
 	struct Compare {
 		Compare(const ParticleEmitter& c) : myClass(c) {}
