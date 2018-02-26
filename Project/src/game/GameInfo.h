@@ -76,6 +76,22 @@ public:
 		size_t gravity = 0;
 		std::vector<Team> teams;
 	};
+	struct ConvertedGameSettings {
+		struct Team {
+			DirectX::SimpleMath::Vector4 color;
+			size_t preOrder;	
+		};
+		std::string map = "domination/carrot";
+		std::string gamemode = "domination";
+		float scoreLimit = 50;
+		float timeLimit = 0;
+		float respawnTime = 2;
+		float playerLife = 100;
+		float gravity = 1;
+		std::vector<Team> teams;
+	};
+
+
 	struct Setting {
 		std::string name = "";
 		float value = 0;
@@ -91,8 +107,9 @@ public:
 
 
 	GameSettings gameSettings;
+	ConvertedGameSettings convertedGameSettings;
 	GraphicsSettings graphicsSettings;
-	ConvertedGraphics graphicsConverted;
+	ConvertedGraphics convertedGraphics;
 	SoundSettings soundSettings;
 
 	std::vector<DirectX::SimpleMath::Vector4> defaultColors;
@@ -103,6 +120,7 @@ public:
 	std::vector<std::string> botLegNames;
 	std::vector<std::string> botArmNames;
 
+	std::vector<std::vector<std::string>> maps;
 	std::vector<Setting> gameModes;
 	std::vector<Setting> timeLimit;
 	std::vector<Setting> scoreLimit;
@@ -125,6 +143,7 @@ public:
 	std::vector<Setting> effectVolume;
 	std::vector<Setting> wtfVolume;
 
+	void convertGameSettings();
 
 	void convertGraphics();
 	void saveGraphics();
@@ -136,6 +155,10 @@ private:
 	Score m_gameScore;
 	std::vector<Profile> m_profiles;
 	std::vector<Player> m_currentPlayers;
+
+
+
+
 
 	void loadProfiles();
 	void saveProfiles();

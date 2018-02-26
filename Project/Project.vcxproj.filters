@@ -17,6 +17,7 @@
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />
@@ -111,6 +112,7 @@
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -148,7 +150,6 @@
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
-    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\SphereModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
@@ -219,11 +220,12 @@
     <ClInclude Include="src\game\UpgradeHandler.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />
     <Media Include="res\sounds\ambient\loop2.wav" />
-	<Media Include="res\sounds\ambient\theme.wav" />
+    <Media Include="res\sounds\ambient\theme.wav" />
     <Media Include="res\sounds\effect\death\male_death.wav" />
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\effect\laser.wav" />
@@ -240,6 +242,7 @@
     <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
     <None Include="res\levels\symmetric.level" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\effect\laser.wav" />

@@ -26,8 +26,10 @@ GameState::GameState(StateStack& stack)
 
 
 	GameInfo * info = GameInfo::getInstance();
+	std::string map = info->convertedGameSettings.map;
 
-	m_level = std::make_unique<Level>("symmetric.level");
+
+	m_level = std::make_unique<Level>(map);
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {

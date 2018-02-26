@@ -1,6 +1,11 @@
 #include "GameInfo.h"
 
+#include <string>
+#include <iostream>
+#include <filesystem>
+
 using namespace DirectX::SimpleMath;
+using namespace std::experimental::filesystem;
 
 GameInfo* GameInfo::m_infoInstance = nullptr;
 
@@ -178,7 +183,72 @@ GameInfo::GameInfo()
 	wtfVolume.push_back({ "no", 0, 0 });
 	wtfVolume.push_back({ "wtf", 0, 0 });
 
-	if (m_infoInstance) {
+
+	// MAPS
+
+	std::vector<std::string> domination;
+	std::vector<std::string> deathmatch;
+	std::vector<std::string> teamdeathmatch;
+
+
+	std::string s;
+	std::stringstream ss;
+	std::string path = "res/levels/Domination";
+	for (auto & p : directory_iterator(path)) {
+		ss << p;
+		s = ss.str(); 
+		int first = s.find_last_of('\\') + 1;
+		int last = s.find_last_of('.');
+
+		std::string item = s.substr(first, last - first);
+		Logger::log("map " + item + " Loaded for domination");
+		domination.push_back(item);	
+		ss.str("");
+	}
+	
+	path = "res/levels/DM";
+	for (auto & p : directory_iterator(path)) {
+		ss << p;
+		s = ss.str();
+		int first = s.find_last_of('\\') + 1;
+		int last = s.find_last_of('.');
+
+		std::string item = s.substr(first, last-first);
+		deathmatch.push_back(item);
+		Logger::log("map " + item + " Loaded for DM");
+		ss.str("");
+	}
+	path = "res/levels/teamDM";
+	for (auto & p : directory_iterator(path)) {
+		ss << p;
+		s = ss.str();
+		int first = s.find_last_of('\\') + 1;
+		int last = s.find_last_of('.');
+
+		std::string item = s.substr(first, last - first);
+		Logger::log("map " + item + " Loaded for TDM");
+		teamdeathmatch.push_back(item);
+		ss.str("");
+	}
+	
+
+	maps.push_back(domination);
+	maps.push_back(deathmatch);
+	maps.push_back(teamdeathmatch);
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 	if (m_infoInstance) {
 		Logger::Warning("wtf you doing");
 		return;
 	}
@@ -226,10 +296,42 @@ void GameInfo::addProfile(std::string name, size_t preOrdered) {
 	saveProfiles();
 }
 
+void GameInfo::convertGameSettings() {
+	convertedGameSettings = ConvertedGameSettings();
+	std::string preText = "";
+	if (gameSettings.gameMode == 0)
+		preText = "domination/";
+	if (gameSettings.gameMode == 1)
+		preText = "DM/";
+	if (gameSettings.gameMode == 2)
+		preText = "TDM/";
+	convertedGameSettings.map = preText + maps[gameSettings.gameMode][gameSettings.map]+".level";
+	convertedGameSettings.gamemode = gameModes[gameSettings.gameMode].value;
+	convertedGameSettings.scoreLimit = scoreLimit[gameSettings.scoreLimit].value;
+	convertedGameSettings.timeLimit = timeLimit[gameSettings.timelimit].value;
+	convertedGameSettings.respawnTime = respawnTime[gameSettings.respawnTime].value;
+	convertedGameSettings.playerLife = playerHealth[gameSettings.playerLife].value;
+	convertedGameSettings.gravity = gravity[gameSettings.gravity].value;
+
+	for (size_t i = 0; i < gameSettings.teams.size(); i++) {
+		convertedGameSettings.teams.push_back({
+			getDefaultColor(gameSettings.teams[i].color,0),
+			gameSettings.teams[i].preOrder
+			});
+	}
+
+}
+
 void GameInfo::convertGraphics() {
-
-
-
+	convertedGraphics = ConvertedGraphics();
+	convertedGraphics.particles = particles[graphicsSettings.particles].value;
+	convertedGraphics.bloom = bloom[graphicsSettings.bloom].value;
+	convertedGraphics.AA = antiAliasing[graphicsSettings.AA].value;
+	convertedGraphics.background = background[graphicsSettings.backGround].value;
+	convertedGraphics.particles = particles[graphicsSettings.particles].value;
+	convertedGraphics.fpsCounter = fpsCounter[graphicsSettings.fpsCounter].value;
+	convertedGraphics.vSync = fpsCounter[graphicsSettings.fpsCounter].value;
+	convertedGraphics.wtf = wtfGraphics[graphicsSettings.wtf].value;
 }
 
 void GameInfo::saveGraphics() {

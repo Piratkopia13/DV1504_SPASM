@@ -32,10 +32,7 @@ MenuState::MenuState(StateStack& stack)
 	m_scene.addText(&m_debugCamText);
 #endif
 
-
 	auto& resMan = m_app->getResourceManager();
-
-
 
 	for(size_t i = 0; i < m_info->botHeadNames.size();i++) 
 		m_playerHeadModels.push_back(resMan.getFBXModel("fisk/"+m_info->botHeadNames[i] + "_head").getModel());
@@ -45,22 +42,16 @@ MenuState::MenuState(StateStack& stack)
 	for (size_t i = 0; i < m_info->botLegNames.size(); i++)
 		m_playerLegModels.push_back(resMan.getFBXModel("fisk/" + m_info->botLegNames[i] + "_legs").getModel());
 
-	
 	for (size_t i = 0; i < m_info->botArmNames.size(); i++) {
 		m_playerArmLModels.push_back(resMan.getFBXModel("fisk/" + m_info->botArmNames[i] + "_armL").getModel());
 		m_playerArmRModels.push_back(resMan.getFBXModel("fisk/" + m_info->botArmNames[i] + "_armR").getModel());
 	}
 
-
-
 	m_block = resMan.getFBXModel("block").getModel();
 	
-
-
 	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
 	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 	m_orangeColor = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
-
 
 	m_teamColors.push_back(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 	m_teamColors.push_back(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
@@ -96,7 +87,6 @@ MenuState::MenuState(StateStack& stack)
 
 	initGraphics();
 	initSound();
-
 
 	m_playerCamController->setUseExtraZ(false);
 	m_playerCamController->setTargets(m_mainMenu);
@@ -597,7 +587,7 @@ bool MenuState::processInput(float dt) {
 							if (a) {	
 								// START GAME
 								//set map: gamemode * menu selection
-								m_app->getGameSettings().level = m_mapMenu->getOptionAt(0)+m_app->getGameSettings().gamemode*10;
+								m_info->gameSettings.map = m_mapMenu->getOptionAt(0);
 								
 
 								startGame();
@@ -828,15 +818,13 @@ void MenuState::initCharacterModels() {
 	for (size_t i = 0; i < 4; i++) {
 		Vector3 charMid = Vector3(0, 0, -1.0f)*((float)i - 1.5f) * 3.5f + charMenuMid;
 		PlayerMenuModel temp;
-
-		
+	
 		temp.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
 		temp.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.3f, 0));
 		temp.legs = new MenuItem(m_playerLegModels[0],  charMid - Vector3(0, 0.9f, 0));
 		temp.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, -0.1f));
 		temp.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
 	
-
 		temp.head->getTransform().setRotations(Vector3(0, -1.55f, 0));
 		temp.body->getTransform().setRotations(Vector3(0, -1.55f, 0));
 		temp.legs->getTransform().setRotations(Vector3(0, -1.55f, 0));
@@ -859,20 +847,20 @@ void MenuState::initCharacterModels() {
 		m_playerMenuModelz.push_back(temp);
 		
 	}
-	Vector3 charMid(-5, 8, 3);
+	Vector3 charMid(-5, 9, 3);
 	m_graphicsModel.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
 	m_graphicsModel.body = new MenuItem(m_playerBodyModels[0], charMid + Vector3(0, 0.3f, 0));
-	m_graphicsModel.legs = new MenuItem(m_playerLegModels[0], charMid - Vector3(0, 0.9f, 0));
-	m_graphicsModel.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, -0.1f));
-	m_graphicsModel.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, 0.1f));
+	m_graphicsModel.legs = new MenuItem(m_playerLegModels[0], charMid - Vector3(0, 0.2f, 0));
+	m_graphicsModel.armL = new MenuItem(m_playerArmLModels[0], charMid + Vector3(0, 0.2f, 0.1f));
+	m_graphicsModel.armR = new MenuItem(m_playerArmRModels[0], charMid + Vector3(0, 0.2f, -0.1f));
 
 	m_graphicsModel.setLight(m_info->getDefaultColor(1, 0));
 
-	m_graphicsModel.head->getTransform().setRotations(Vector3(0, 0.0f, 0));
-	m_graphicsModel.body->getTransform().setRotations(Vector3(0, 0.0f, 0));
-	m_graphicsModel.legs->getTransform().setRotations(Vector3(0, 0.0f, 0));
-	m_graphicsModel.armL->getTransform().setRotations(Vector3(0, 0.0f, 0));
-	m_graphicsModel.armR->getTransform().setRotations(Vector3(0, 0.0f, 0));
+	m_graphicsModel.head->getTransform().setRotations(Vector3(0, 1.55f, 0));
+	m_graphicsModel.body->getTransform().setRotations(Vector3(0, 1.55f, 0));
+	m_graphicsModel.legs->getTransform().setRotations(Vector3(0, 1.55f, 0));
+	m_graphicsModel.armL->getTransform().setRotations(Vector3(0, 1.55f, 0));
+	m_graphicsModel.armR->getTransform().setRotations(Vector3(0, 1.55f, 0));
 
 	m_graphicsModel.head->getTransform().setScale(1.4f);
 	m_graphicsModel.body->getTransform().setScale(1.4f);
@@ -885,8 +873,6 @@ void MenuState::initCharacterModels() {
 	m_scene.addObject(m_graphicsModel.legs);
 	m_scene.addObject(m_graphicsModel.armL);
 	m_scene.addObject(m_graphicsModel.armR);
-
-	
 }
 
 void MenuState::initCharacterModel(size_t spot) {
@@ -901,15 +887,12 @@ void MenuState::initCharacterModel(size_t spot) {
 	m_playerMenuModelz[spot].armL->setPosition( charMid + Vector3(0, 0.3f, -0.0f));
 	m_playerMenuModelz[spot].armR->setPosition( charMid + Vector3(0, 0.3f, 0.0f));
 
-
-
 	m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[0]);
 	m_playerMenuModelz[spot].body->setModel(m_playerBodyModels[0]);
 	m_playerMenuModelz[spot].legs->setModel(m_playerLegModels[0]);
 	m_playerMenuModelz[spot].armL->setModel(m_playerArmLModels[0]);
 	m_playerMenuModelz[spot].armR->setModel(m_playerArmRModels[0]);
 	m_playerMenuModelz[spot].setLight(m_offColor);
-
 	
 }
 
@@ -1017,24 +1000,12 @@ void MenuState::initMap() {
 
 	m_mapMenu->addMenuSelector("Map");
 
-	if (m_info->gameSettings.gameMode == PAYLOAD) {
-		m_mapMenu->addMenuSelectorItem("Domination 1");
-		m_mapMenu->addMenuSelectorItem("Domination 2");
-		m_mapMenu->addMenuSelectorItem("Domination 3");
-		m_mapMenu->addMenuSelectorItem("Domination 4");
+	for (size_t i = 0; i < m_info->maps[m_info->gameSettings.gameMode].size(); i++) {
+		m_mapMenu->addMenuSelectorItem(m_info->maps[m_info->gameSettings.gameMode][i]);
+
 	}
-	if (m_info->gameSettings.gameMode == DEATHMATCH) {
-		m_mapMenu->addMenuSelectorItem("Deathmatch 1");
-		m_mapMenu->addMenuSelectorItem("Deathmatch 2");
-		m_mapMenu->addMenuSelectorItem("Deathmatch 3");
-		m_mapMenu->addMenuSelectorItem("Deathmatch 4");
-	}
-	if (m_info->gameSettings.gameMode == TEAMDEATHMATCH) {
-		m_mapMenu->addMenuSelectorItem("teamDeath 1");
-		m_mapMenu->addMenuSelectorItem("teamDeath 2");
-		m_mapMenu->addMenuSelectorItem("teamDeath 3");
-		m_mapMenu->addMenuSelectorItem("teamDeath 4");
-	}
+
+
 	m_mapMenu->setStaticSelection(true, 0);
 
 	m_mapMenu->setPosition(Vector3(0,0,-12));
@@ -1053,8 +1024,6 @@ void MenuState::initProfile() {
 	m_profileMenu->addMenuBox("team test");
 	m_profileMenu->setPosition(Vector3(0, 10.5f, 0));
 	m_profileMenu->setFacingDirection(Vector3(0, 0, -1));
-
-
 }
 
 void MenuState::initOptions() {
@@ -1248,9 +1217,7 @@ void MenuState::setOptionsMenu(bool active) {
 	else {
 		m_optionsMenu->deActivate();
 
-
 	}
-
 }
 
 void MenuState::setGraphicsMenu(bool active) {
@@ -1264,8 +1231,6 @@ void MenuState::setGraphicsMenu(bool active) {
 	}
 	else {
 		m_graphicsMenu->deActivate();
-
-
 	}
 }
 
@@ -1280,8 +1245,6 @@ void MenuState::setSoundMenu(bool active) {
 	}
 	else {
 		m_soundMenu->deActivate();
-
-
 	}
 }
 
@@ -1296,7 +1259,6 @@ void MenuState::updateCamera() {
 			m_playerCamController->setTargets(m_gamemodeMenu, m_gamemodeMenu->getTarget(), m_gamemodeMenu->getExtraTarget());
 		}
 		if (m_activeSubMenu == PLAYERSELECT) {
-
 			m_playerCamController->setPosition(Vector3(0, 0, -9));
 			m_playerCamController->setTargets(nullptr);
 			m_playerCamController->setTarget(Vector3(5, 0, -9));
@@ -1308,7 +1270,6 @@ void MenuState::updateCamera() {
 			m_playerCamController->setTargets(m_mapMenu, m_mapMenu->getTarget(), m_mapMenu->getExtraTarget());
 
 		}
-
 	}
 	if (m_activeMenu == PROFILEMENU) {
 
@@ -1326,19 +1287,8 @@ void MenuState::updateCamera() {
 		if (m_activeSubMenu == SOUND) {
 			m_playerCamController->setPosition(Vector3(0, -8, 0));
 			m_playerCamController->setTargets(m_soundMenu, m_soundMenu->getTarget(), m_soundMenu->getExtraTarget());
-
 		}
-
 	}
-
-
-
-
-
-
-
-
-
 }
 
 void MenuState::startGame() {
@@ -1347,6 +1297,7 @@ void MenuState::startGame() {
 		if(m_playerz[i])
 			m_info->addPlayer(m_playerz[i]->player);
 	}
+	m_info->convertGameSettings();
 
 	// Sound
 	m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Theme);
@@ -1364,8 +1315,6 @@ void MenuState::updateGraphics() {
 	m_info->graphicsSettings.wtf = m_graphicsMenu->getOptionAt(6);
 
 	m_info->convertGraphics();
-
-
 }
 
 void MenuState::updateSound() {
