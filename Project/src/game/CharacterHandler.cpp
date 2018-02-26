@@ -40,10 +40,10 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		else
 			tempChar->setController(0);
 
-#ifdef _DEBUG
-		if (i == 1)
-			tempChar->setController(false);
-#endif
+//#ifdef _DEBUG
+//		if (i == 1)
+//			tempChar->setController(false);
+//#endif
 
 		addPlayer(tempChar);
 	}
