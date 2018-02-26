@@ -40,10 +40,13 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		else
 			tempChar->setController(0);
 
-//#ifdef _DEBUG
-//		if (i == 1)
-//			tempChar->setController(false);
-//#endif
+#ifdef _DEBUG
+		static bool keyboardUsed = false;
+		if (!keyboardUsed && !Application::getInstance()->getInput().getGamePadState(i).IsConnected()) {
+			tempChar->setController(false);
+			keyboardUsed = true;
+		}
+#endif
 
 		addPlayer(tempChar);
 	}
