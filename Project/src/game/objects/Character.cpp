@@ -6,8 +6,9 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 Character::Character()
-	: Moveable(),
-	m_currentTeam(0)
+	: Moveable()
+	, m_currentTeam(0)
+	, m_respawnTime(1)
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
@@ -24,6 +25,8 @@ Character::Character()
 	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
 		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true, false));
 	setLightColor(Vector4(1, 1, 1, 1));
+
+	m_nextRespawnPoint = Vector3::Zero;
 
 	//addVibration(0, 1.f, 2.f);
 }
@@ -205,151 +208,159 @@ void Character::update(float dt) {
 
 
 	if (!m_playerHealth.alive) {
+		// PLAYER IS DEAD
+
 		m_thrusterEmitter->updateSpawnsPerSecond(0.f);
-		return;
+
+		// Smoothstep ghost to new spawn position
+		setPosition(Vector3::SmoothStep(m_deathPoint, m_nextRespawnPoint, m_deathInterp));
+		m_deathInterp += dt / m_respawnTime;
+
 	} else {
+		// PLAYER IS ALIVE
+
 		m_thrusterEmitter->updateSpawnsPerSecond(500.f);
-	}
 
-	if (m_playerHealth.current < m_playerHealth.max) {
-		m_playerHealth.current += m_playerHealth.regen * dt;
-	}
+		if (m_playerHealth.current < m_playerHealth.max) {
+			m_playerHealth.current += m_playerHealth.regen * dt;
+		}
 
-	m_playerHealth.updatePercent();
+		m_playerHealth.updatePercent();
 
-	if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
-		if (grounded()) {
-			if (!m_movement.hooked) {//Movement while on the ground
-				if(m_input.movement.x > 0)
-					this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
-				else if(m_input.movement.x < 0)
-					this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x - 1.0f, -m_movement.speed), this->getVelocity().y, 0.f));
-				else
-					this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
-
-				if (fabs(this->getVelocity().x) > 5)
-					this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
-				else if (this->getVelocity().x < -1)
-					this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
-				else if (this->getVelocity().x > 1)
-					this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
-				else if (fabs(this->getVelocity().x) < 1.f) {
-					this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-					this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
-				}
-			}
-			else//Movement on the ground while using grappling hook
-			{	
-				if (fabs(this->getVelocity().x) <(m_movement.speed / 2.f)) {
-					if (m_hook->getDirection().x >= 0) {
-						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
-					}
+		if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
+			if (grounded()) {
+				if (!m_movement.hooked) {//Movement while on the ground
+					if(m_input.movement.x > 0)
+						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
+					else if(m_input.movement.x < 0)
+						this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x - 1.0f, -m_movement.speed), this->getVelocity().y, 0.f));
 					else
-					{
-						this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (-m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+						this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
+
+					if (fabs(this->getVelocity().x) > 5)
+						this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
+					else if (this->getVelocity().x < -1)
+						this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
+					else if (this->getVelocity().x > 1)
+						this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
+					else if (fabs(this->getVelocity().x) < 1.f) {
+						this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+						this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
 					}
 				}
-				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, fabs(m_hook->getDirection().y) * 20.0f, 0.f));
-			}
-
-		}
-		else {
-			if (!m_movement.hooked) {//Movement in the air
-				float velX = getVelocity().x;
-				if ((m_input.movement.x > 0.f && velX <= m_movement.speed * 0.8f) || 
-					(m_input.movement.x < 0.f && velX >= -m_movement.speed * 0.8f)) {
-					velX += m_input.movement.x * m_movement.speed * 0.1f;
-				}
-				//velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
-				this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
-				this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-			}
-			else {//Movement in the air while using grappling hook
-				DirectX::SimpleMath::Vector3 currVelocity = this->getVelocity();
-				currVelocity.Normalize();
-				if (m_hook->getDirection().Dot(currVelocity) < 0.f) {
-					DirectX::SimpleMath::Vector3 tempVec = m_hook->getDirection().Cross(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f));
-
-					tempVec = (this->getVelocity().Dot(tempVec) / tempVec.LengthSquared()) * tempVec;
-					this->setVelocity(tempVec);
+				else//Movement on the ground while using grappling hook
+				{	
+					if (fabs(this->getVelocity().x) <(m_movement.speed / 2.f)) {
+						if (m_hook->getDirection().x >= 0) {
+							this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+						}
+						else
+						{
+							this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x + m_hook->getDirection().x * m_movement.speed, (-m_movement.speed / 2.f)), this->getVelocity().y, 0.f));
+						}
+					}
+					this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, fabs(m_hook->getDirection().y) * 20.0f, 0.f));
 				}
 
-				this->setAcceleration(m_hook->getDirection() * 20.0f);
 			}
-		}
+			else {
+				if (!m_movement.hooked) {//Movement in the air
+					float velX = getVelocity().x;
+					if ((m_input.movement.x > 0.f && velX <= m_movement.speed * 0.8f) || 
+						(m_input.movement.x < 0.f && velX >= -m_movement.speed * 0.8f)) {
+						velX += m_input.movement.x * m_movement.speed * 0.1f;
+					}
+					//velX = max(min(velX, m_movement.speed * 0.8f), -m_movement.speed * 0.8f);
+					this->setVelocity(DirectX::SimpleMath::Vector3(velX, this->getVelocity().y, 0.f));
+					this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+				}
+				else {//Movement in the air while using grappling hook
+					DirectX::SimpleMath::Vector3 currVelocity = this->getVelocity();
+					currVelocity.Normalize();
+					if (m_hook->getDirection().Dot(currVelocity) < 0.f) {
+						DirectX::SimpleMath::Vector3 tempVec = m_hook->getDirection().Cross(DirectX::SimpleMath::Vector3(0.f, 0.f, 1.f));
+
+						tempVec = (this->getVelocity().Dot(tempVec) / tempVec.LengthSquared()) * tempVec;
+						this->setVelocity(tempVec);
+					}
+
+					this->setAcceleration(m_hook->getDirection() * 20.0f);
+				}
+			}
 
 		
-		if (m_hook) {
-			//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
-			m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
+			if (m_hook) {
+				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
+				m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
+			}
+
+
+			// Check for and handle if a projectile collides with this character
+			Vector3 knockbackDir;
+			float dmgTaken;
+			float knockbackAmount;
+			bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount);
+			if (hit) {
+				damage(dmgTaken);
+				addVelocity(knockbackDir * knockbackAmount);
+				setGrounded(false);
+
+				// Hit particle effet
+				m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+					ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockbackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
+					0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
+
+				VibrateController(0, 1.f, 1.f);
+			}
+		}
+
+		//Going in and out of cover
+		if (getTransform().getTranslation().z == 0.f && m_movement.inCover) {
+			this->setVelocity(DirectX::SimpleMath::Vector3((((floor(getTransform().getTranslation().x)) - getTransform().getTranslation().x) + 0.5f) * m_movement.speed, 0.f, m_movement.speed));
+		}
+		else if (getTransform().getTranslation().z > 1.f && m_movement.inCover) {
+			this->setVelocity(DirectX::SimpleMath::Vector3((((floor(getTransform().getTranslation().x)) - getTransform().getTranslation().x) + 0.5f) * m_movement.speed, 0.f, 0.f));
+		}
+		else if (getTransform().getTranslation().z > 0.f && !m_movement.inCover)
+			this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, -m_movement.speed));
+		else if (getTransform().getTranslation().z < 0.f && !m_movement.inCover){
+			this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+		}
+		if (getTransform().getTranslation().z < 0.f) {
+			getTransform().setTranslation(DirectX::SimpleMath::Vector3(getTransform().getTranslation().x, getTransform().getTranslation().y, 0.f));
+			m_movement.inCover = false;
 		}
 
 
-		// Check for and handle if a projectile collides with this character
-		Vector3 knockbackDir;
-		float dmgTaken;
-		float knockbackAmount;
-		bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount);
-		if (hit) {
-			damage(dmgTaken);
-			addVelocity(knockbackDir * knockbackAmount);
-			setGrounded(false);
-
-			// Hit particle effet
-			m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-				ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockbackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
-				0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
-
-			VibrateController(0, 1.f, 1.f);
+		//----Character turn animation----
+		float tempRotation = getTransform().getRotations().y;
+		if (std::signbit(m_input.aim.x) && tempRotation < 4.71f) {
+			m_movement.xDirection = -1.0f;
+			getTransform().setRotations(Vector3(0.0f, min(tempRotation + 15.7f * dt, 4.71f), 0.0f));
 		}
-	}
-
-	//Going in and out of cover
-	if (getTransform().getTranslation().z == 0.f && m_movement.inCover) {
-		this->setVelocity(DirectX::SimpleMath::Vector3((((floor(getTransform().getTranslation().x)) - getTransform().getTranslation().x) + 0.5f) * m_movement.speed, 0.f, m_movement.speed));
-	}
-	else if (getTransform().getTranslation().z > 1.f && m_movement.inCover) {
-		this->setVelocity(DirectX::SimpleMath::Vector3((((floor(getTransform().getTranslation().x)) - getTransform().getTranslation().x) + 0.5f) * m_movement.speed, 0.f, 0.f));
-	}
-	else if (getTransform().getTranslation().z > 0.f && !m_movement.inCover)
-		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, -m_movement.speed));
-	else if (getTransform().getTranslation().z < 0.f && !m_movement.inCover){
-		this->setVelocity(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-	}
-	if (getTransform().getTranslation().z < 0.f) {
-		getTransform().setTranslation(DirectX::SimpleMath::Vector3(getTransform().getTranslation().x, getTransform().getTranslation().y, 0.f));
-		m_movement.inCover = false;
-	}
-
-
-	//----Character turn animation----
-	float tempRotation = getTransform().getRotations().y;
-	if (std::signbit(m_input.aim.x) && tempRotation < 4.71f) {
-		m_movement.xDirection = -1.0f;
-		getTransform().setRotations(Vector3(0.0f, min(tempRotation + 15.7f * dt, 4.71f), 0.0f));
-	}
-	else if (!std::signbit(m_input.aim.x) && tempRotation > 1.57f) {
-		m_movement.xDirection = 1.0f;
-		getTransform().setRotations(Vector3(0.0f, max(tempRotation - 15.7f * dt, 1.57f), 0.0f));
-	}
-	//--------------------------------
-
-	Moveable::updateVelocity(dt);
-	collHandler->resolveLevelCollisionWith(this, dt);
-	Moveable::move(dt, false);
-	collHandler->resolveUpgradeCollisionWith(this);
-
-	//----Weapon aim animation----
-	if (m_weapon) {
-		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
-		Matrix tempMatrix;
-		tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
-		m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
-		if (!m_movement.inCover) {
-			m_weapon->update(dt, m_input.aim);
+		else if (!std::signbit(m_input.aim.x) && tempRotation > 1.57f) {
+			m_movement.xDirection = 1.0f;
+			getTransform().setRotations(Vector3(0.0f, max(tempRotation - 15.7f * dt, 1.57f), 0.0f));
 		}
+		//--------------------------------
+
+		Moveable::updateVelocity(dt);
+		collHandler->resolveLevelCollisionWith(this, dt);
+		Moveable::move(dt, false);
+		collHandler->resolveUpgradeCollisionWith(this);
+
+		//----Weapon aim animation----
+		if (m_weapon) {
+			m_weapon->getTransform().setTranslation(getTransform().getTranslation());
+			Matrix tempMatrix;
+			tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
+			m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
+			if (!m_movement.inCover) {
+				m_weapon->update(dt, m_input.aim);
+			}
+		}
+		//----------------------------
 	}
-	//----------------------------
 }
 
 
@@ -482,11 +493,22 @@ void Character::addUpgrade(const Upgrade & upgrade){
 	m_weapon->addUpgrade(upgrade);
 }
 
+void Character::setRespawnTime(float time) {
+	m_respawnTime = time;
+}
+
+float Character::getRespawnTime() const {
+	return m_respawnTime;
+}
+
 void Character::living() {
 	m_playerHealth.current = m_playerHealth.max;
 	m_playerHealth.alive = true;
 	m_weapon->setHeld(true);
-	
+	Object::setLightColor(m_lightColor);
+}
+void Character::setRespawnPoint(const DirectX::SimpleMath::Vector3& respawnPoint) {
+	m_nextRespawnPoint = respawnPoint;
 }
 void Character::dead() {
 	m_playerHealth.current = 0;
@@ -498,11 +520,19 @@ void Character::dead() {
 	m_weapon->setHeld(false);
 	VibrateController(0, 1.f, 0.3f);
 	VibrateController(1, 1.f, 0.3f);
+
+	// Ghost setup
+	Vector4 color(0.8f, 0.8f, 0.8f, 1.f);
+	Object::setLightColor(color);
+	m_deathPoint = getTransform().getTranslation();
+	m_deathInterp = 0.f;
 }
 
 void Character::setLightColor(const Vector4& color) {
+	m_lightColor = color;
 	Object::setLightColor(color);
 	Vector4 colorCpy = color * 0.8f;
+	colorCpy.Clamp(Vector4::Zero, Vector4::One * 2.f, colorCpy);
 	//colorCpy.Clamp(color, Vector4::One);
 	m_thrusterEmitter->updateColor(colorCpy);
 }

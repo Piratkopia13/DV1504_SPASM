@@ -131,14 +131,14 @@ void PlayerCameraController::updatePosition(float dt)
 
 		for (unsigned int i = 0; i < m_charHandler->getNrOfPlayers(); i++) {
 			auto* chara = m_charHandler->getCharacter(i);
-			if (!chara->isAlive()) continue;
+			//if (!chara->isAlive()) continue;
 			newTarget += chara->getTransform().getTranslation();
 			nr++;
 			Vector3 target1 = chara->getTransform().getTranslation() + chara->getAimDirection() * 3.f;
 
 			for (unsigned int i = 0; i < m_charHandler->getNrOfPlayers(); i++) {
 				auto* otherChara = m_charHandler->getCharacter(i);
-				if (!otherChara->isAlive()) continue;
+				//if (!otherChara->isAlive()) continue;
 				Vector3 target2 = otherChara->getTransform().getTranslation() + otherChara->getAimDirection() * 3.f;
 
 				float xDst = abs(target1.x - target2.x);

@@ -3,8 +3,7 @@
 using namespace DirectX::SimpleMath;
 
 CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileHandler* projHandler)
-	: m_respawnTime(1)
-	, m_particleHandler(particleHandler)
+	: m_particleHandler(particleHandler)
 {
 
 	Application* app = Application::getInstance();
@@ -67,6 +66,15 @@ void CharacterHandler::addPlayer(Character* player) {
 	m_particleHandler->addEmitter(player->m_thrusterEmitter);
 }
 
+Vector3 CharacterHandler::getRandomSpawnPoint(UINT team) const {
+	Vector3 respawnPos(0, 0, 0);
+	if (m_spawns[team].size() > 0) {
+		unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
+		respawnPos = m_spawns[team][spawn];
+	}
+	return respawnPos + Vector3(0.f, 1.f, 0.f);
+}
+
 void CharacterHandler::addSpawnPoint(unsigned int team, const Vector3& position) {
 	m_spawns[team].push_back(position);
 }
@@ -79,8 +87,10 @@ void CharacterHandler::killPlayer(unsigned int index) {
 			ParticleEmitter::EXPLOSION, m_characters[index]->getTransform().getTranslation(), Vector3(-0.5f), Vector3(7.f, 7.f, 4.f), 
 				0.f, 75, 1.0f, 1.0f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 75U, true, true)));
 
+		
+		m_characters[index]->setRespawnPoint(getRandomSpawnPoint(m_characters[index]->getTeam()));
 		m_characters[index]->dead();
-		m_characters[index]->setPosition(Vector3(0, 0, -100));
+
 		m_respawnTimers[index] = 0.01f;
 		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
 		switch (rnd) {
@@ -100,20 +110,19 @@ void CharacterHandler::killPlayer(unsigned int index) {
 void CharacterHandler::respawnPlayer(unsigned int id) {
 	if (m_characters.size() > id) {
 		m_respawnTimers[id] = 0;
-		Vector3 respawnPos(0, 0, 0);
-		unsigned int team = m_characters[id]->getTeam();
-		if (m_spawns[team].size() > 0) {
-			unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
-			respawnPos = m_spawns[team][spawn];
-		}
-		m_characters[id]->setPosition(respawnPos + Vector3(0.0f, 1.0f, 0.0f));
+		// Set spawn for new players
+		if (m_characters[id]->m_nextRespawnPoint == Vector3::Zero)
+			m_characters[id]->setPosition(getRandomSpawnPoint(m_characters[id]->getTeam()));
+
 		m_characters[id]->living();
 	}
 }
 
-void CharacterHandler::setRespawnTime(float time)
-{
-	m_respawnTime = time < 0 ? 0 : time;
+void CharacterHandler::setRespawnTime(float time) {
+
+	for (Character* chara : m_characters) {
+		chara->setRespawnTime(time < 0 ? 0 : time);
+	}
 }
 
 void CharacterHandler::update(float dt) {
@@ -121,7 +130,7 @@ void CharacterHandler::update(float dt) {
 	for (size_t i = 0; i < m_characters.size(); i++) {
 		m_characters[i]->update(dt);
 		if (m_respawnTimers[i] > 0) {
-			if (m_respawnTimers[i] >= m_respawnTime) {
+			if (m_respawnTimers[i] >= m_characters[i]->getRespawnTime()) {
 				respawnPlayer(i);
 				continue;
 			}
