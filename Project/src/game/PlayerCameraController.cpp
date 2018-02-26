@@ -12,7 +12,7 @@ PlayerCameraController::PlayerCameraController(Camera* cam, const DirectX::Simpl
 	, m_extraZTarget(0.f)
 	, m_cameraYOffset(1.0f)
 	, m_cameraZOffset(0.0f)
-	, m_followSpeed(2.0f)
+	, m_followSpeed(5.0f)
 	, m_moveSpeed(2)
 	, m_position(DirectX::SimpleMath::Vector3(0, 0, 0))
 	, m_target(DirectX::SimpleMath::Vector3(0, 0, 0))

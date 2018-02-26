@@ -79,7 +79,7 @@
     <IntDir>$(SolutionDir)Intermediates\$(Configuration)\$(ProjectName)\</IntDir>
     <LibraryPath>$(SolutionDir)libraries\FBX_SDK\libs\$(PlatformShortName)\$(Configuration);$(LibraryPath)</LibraryPath>
     <IncludePath>$(SolutionDir)\libraries\FBX_SDK\include;$(IncludePath)</IncludePath>
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
