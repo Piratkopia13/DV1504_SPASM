@@ -199,10 +199,11 @@ GameInfo::GameInfo()
 		s = ss.str(); 
 		int first = s.find_last_of('\\') + 1;
 		int last = s.find_last_of('.');
-
-		std::string item = s.substr(first, last - first);
-		Logger::log("map " + item + " Loaded for domination");
-		domination.push_back(item);	
+		if (s.substr() == ".level") {
+			std::string item = s.substr(first, last - first);
+			Logger::log("map " + item + " Loaded for domination");
+			domination.push_back(item);	
+		}
 		ss.str("");
 	}
 	
