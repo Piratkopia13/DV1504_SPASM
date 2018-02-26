@@ -111,7 +111,7 @@ Level::Level(const std::string& filename)
 					switch (c) {
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
-						m_models.at(1)->getModel()->getMaterial()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
+						//m_blocks.back()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						break;
@@ -131,7 +131,6 @@ Level::Level(const std::string& filename)
 					switch (c) {
 					case '1':
 						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
-						m_models.at(1)->getModel()->getMaterial()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
 						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE));
 						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
 						break;

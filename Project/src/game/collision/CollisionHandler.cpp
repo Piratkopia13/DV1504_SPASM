@@ -167,6 +167,16 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
+bool CollisionHandler::outOfBounds(Character* character) {
+	float x = character->getTransform().getTranslation().x;
+	float y = character->getTransform().getTranslation().y;
+	bool oob = false;
+	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight())
+		oob = true;
+
+	return oob;
+}
+
 bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
@@ -249,10 +259,10 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 	currentIndex.y = static_cast<int>(floor(currentPos.y / Level::DEFAULT_BLOCKSIZE));
 
 	bool intersection = false;
-	if (currentIndex.x <= 0.f || currentIndex.x >= m_level->getGridWidth() || currentIndex.y <= 0 || currentIndex.y >= m_level->getGridHeight())
+	if (m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y))
 		intersection = true;
 
-	while (!intersection && currentIndex.x > -1 && currentIndex.x < (m_level->getGridWidth() - 1)) {
+	while (!intersection) {
 		if (deltaX > 0)
 			nextIntersectX = float(deltaX + currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
 		else
@@ -278,7 +288,14 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 			currentIndex.x += deltaX;
 		}
 
-		intersection = m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y);
+
+		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > (m_level->getGridWidth() - 1) || currentIndex.y > (m_level->getGridHeight() - 1)) {
+			intersection = true;
+			t *= 10000;
+		}
+		else {
+			intersection = m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y);
+		}
 
 		currentPos = currentPos + direction * t;
 	}

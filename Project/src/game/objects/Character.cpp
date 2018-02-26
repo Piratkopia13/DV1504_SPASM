@@ -225,7 +225,11 @@ void Character::update(float dt) {
 			m_playerHealth.current += m_playerHealth.regen * dt;
 		}
 
-		m_playerHealth.updatePercent();
+	if (collHandler->outOfBounds(this)) {
+		damage(getMaxHealth());
+	}
+
+	m_playerHealth.updatePercent();
 
 		if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
 			if (grounded()) {
@@ -558,8 +562,7 @@ void Character::fire()
 }
 
 void Character::hook() {
-	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
-	m_movement.hooked = true;
+	m_movement.hooked = m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
 }
 
 void Character::stopHook() {

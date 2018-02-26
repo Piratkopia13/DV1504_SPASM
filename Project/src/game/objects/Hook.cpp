@@ -22,12 +22,16 @@ void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 	}
 }
 
-void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
+bool Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
 	m_triggerHeld = true;
 	m_position = CollisionHandler::getInstance()->rayTraceLevel(position, direction);
 	m_direction = (m_position - position);
 	m_direction.z = 0.f;
 	m_distance = m_direction.Length();
+	if (m_distance > 1000) {
+		m_triggerHeld = false;
+	}
+	return m_triggerHeld;
 }
 
 void Hook::triggerRelease() {
