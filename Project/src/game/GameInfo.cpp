@@ -7,6 +7,7 @@ GameInfo* GameInfo::m_infoInstance = nullptr;
 GameInfo::GameInfo() 
 	:m_gameScore(0) 
 {
+
 	m_profiles.push_back(Profile("Guest 1", 0));
 	m_profiles.push_back(Profile("Guest 2", 0));
 	loadProfiles();

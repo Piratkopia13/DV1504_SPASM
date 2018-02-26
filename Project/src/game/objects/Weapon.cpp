@@ -71,6 +71,9 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2f;
 
+	static Vector4 projColor(2.f);
+	static float projScale = 4.f;
+
 	if (m_projectileHandler) {
 		float extraSpeed = 1;
 		float extraDamage = 1;
@@ -103,8 +106,8 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			temp->setGravScale(0);
 		}
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
-		temp->getTransform().scaleUniformly(2.f);
-		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
+		temp->getTransform().scaleUniformly(projScale);
+		temp->setLightColor(projColor);
 		m_projectileHandler->addProjectile(temp);
 
 
@@ -143,6 +146,10 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				temp1->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(tempVec1.y, tempVec1.x)));
 				temp2->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(tempVec2.y, tempVec2.x)));
+				temp1->setLightColor(projColor);
+				temp2->setLightColor(projColor);
+				temp1->getTransform().scaleUniformly(projScale);
+				temp2->getTransform().scaleUniformly(projScale);
 				m_projectileHandler->addProjectile(temp1);
 				m_projectileHandler->addProjectile(temp2);
 			}

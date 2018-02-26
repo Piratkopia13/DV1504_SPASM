@@ -22,7 +22,7 @@ Character::Character()
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 
 	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
-		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true));
+		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true, false));
 	setLightColor(Vector4(1, 1, 1, 1));
 
 	//addVibration(0, 1.f, 2.f);
@@ -442,6 +442,10 @@ bool Character::isAlive() {
 
 void Character::damage(float dmg) {
 	m_playerHealth.addHealth(-dmg);
+}
+
+const DirectX::SimpleMath::Vector3& Character::getAimDirection() const {
+	return m_input.aim;
 }
 
 void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {
