@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+#include <fstream>
 #include "GameInfo/Profile.h"
 #include "GameInfo/Score.h"
 #include "../sail/Sail.h"
