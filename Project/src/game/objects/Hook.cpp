@@ -11,7 +11,7 @@ Hook::~Hook() {
 }
 
 void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
-	if (m_triggerHeld) {
+	if (m_triggerHeld && !m_outOfBounds) {
 		m_direction = (m_position - position);
 		m_direction.z = 0.f;
 		m_distance = m_direction.Length();
@@ -24,14 +24,15 @@ void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 
 bool Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
 	m_triggerHeld = true;
+	m_outOfBounds = false;
 	m_position = CollisionHandler::getInstance()->rayTraceLevel(position, direction);
 	m_direction = (m_position - position);
 	m_direction.z = 0.f;
 	m_distance = m_direction.Length();
-	if (m_distance > 1000) {
-		m_triggerHeld = false;
+	if (m_distance > 10000) {
+		m_outOfBounds = true;
 	}
-	return m_triggerHeld;
+	return !m_outOfBounds;
 }
 
 void Hook::triggerRelease() {

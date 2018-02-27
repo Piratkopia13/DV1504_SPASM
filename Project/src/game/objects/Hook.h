@@ -7,6 +7,7 @@
 class Hook : public Object{
 private:
 	bool m_triggerHeld;
+	bool m_outOfBounds;
 	float m_distance;
 	DirectX::SimpleMath::Vector3 m_position;
 	DirectX::SimpleMath::Vector3 m_direction;
