@@ -31,14 +31,15 @@ Character::Character()
 	//addVibration(0, 1.f, 2.f);
 }
 
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel) : Character() {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, int index) : Character() {
 	this->setModel(bodyModel);
 	this->updateBoundingBox();
 	m_leftArm = lArmModel;
 	m_head = headModel;
+	m_playerIndex = index;
 }
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port)
-	: Character(bodyModel, lArmModel, headModel) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, int index, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, headModel, index) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -303,7 +304,7 @@ void Character::update(float dt) {
 			Vector3 knockbackDir;
 			float dmgTaken;
 			float knockbackAmount;
-			bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount);
+			bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount, m_lastAttackerIndex);
 			if (hit) {
 				damage(dmgTaken);
 				addVelocity(knockbackDir * knockbackAmount);
@@ -593,3 +594,10 @@ bool Character::updateVibration(float dt) {
 	return update;
 }
 
+int Character::getLastAttacker() const {
+	return m_lastAttackerIndex;
+}
+
+int Character::getIndex() const {
+	return m_playerIndex;
+}

@@ -98,10 +98,11 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
 			m_nozzlePos,
-			direction * baseSpeed * extraSpeed, 
-			baseDamage * extraDamage, 
+			direction * baseSpeed * extraSpeed,
+			baseDamage * extraDamage,
 			baseKnockback * extraKnockback,
-			m_owner->getTeam());
+			m_owner->getTeam(),
+			m_owner->getIndex());
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
@@ -132,13 +133,15 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				Projectile* temp2 = new Projectile(
 					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				if (m_upgrade->gravActive()) {
 					temp1->setGravScale(0);
 					temp2->setGravScale(0);

@@ -11,8 +11,8 @@ class Character : public Moveable {
 friend CharacterHandler;
 public:
 	Character();
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel);
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, int index);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, int index, unsigned int usingController, unsigned int port);
 	virtual ~Character();
 
 	void processInput();
@@ -43,7 +43,8 @@ public:
 	void living();
 	void setRespawnPoint(const DirectX::SimpleMath::Vector3& respawnPoint);
 	void dead();
-
+	int getLastAttacker() const;
+	int getIndex() const;
 	void setLightColor(const DirectX::SimpleMath::Vector4& color);
 
 private:
@@ -126,6 +127,9 @@ private:
 	void fire();
 	void hook();
 	void stopHook();
+
+	int m_playerIndex;
+	int m_lastAttackerIndex;
 
 	bool updateVibration(float dt);
 	float sinDegFromVec(DirectX::SimpleMath::Vector3 vec) {

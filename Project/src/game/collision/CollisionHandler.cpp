@@ -177,7 +177,7 @@ bool CollisionHandler::outOfBounds(Character* character) {
 	return oob;
 }
 
-bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount) {
+bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount, int& attacker) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
 
@@ -191,6 +191,7 @@ bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX:
 				knockbackDir = proj->getVelocity();
 				knockbackDir.Normalize();
 				knockbackAmount = proj->getKnockbackAmount();
+				attacker = proj->getOwner();
 
 				m_projectileHandler->removeAt(i);
 				hit = true;

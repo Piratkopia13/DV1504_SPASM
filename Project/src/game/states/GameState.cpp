@@ -172,6 +172,12 @@ GameState::GameState(StateStack& stack)
 }
 
 GameState::~GameState() {
+	GameInfo* info = GameInfo::getInstance();
+	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+		std::cout << "Player " << (i + 1) << std::endl;
+		std::cout << "Deaths: " << info->getScore().getPlayerStats(i).deaths << std::endl;
+		std::cout << "Kills: " <<info->getScore().getPlayerStats(i).kills << std::endl << std::endl;
+	}
 
 }
 
