@@ -34,7 +34,6 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		tempChar->setLightColor(m_info->getDefaultColor(m_info->getPlayers()[i].color, m_info->getPlayers()[i].hue));
 		tempChar->setTeam(m_info->getPlayers()[i].team);
 
-
 		if (m_info->getPlayers()[i].port >= 0) {
 			tempChar->setController(1);
 			tempChar->setControllerPort(m_info->getPlayers()[i].port);
@@ -42,35 +41,13 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		else
 			tempChar->setController(0);
 
+#ifdef _DEBUG
+		if (i == 1)
+			tempChar->setController(false);
+#endif
+
 		addPlayer(tempChar);
 	}
-
-#ifdef _DEBUG
-	//if (settings->players.size() == 0) {
-	//	Hook* tempHook = new Hook(hModel);
-	//	Character* tempChar = new Character(cModel1, cModel2, cModel3);
-	//	Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
-	//	tempChar->setLightColor(settings->teamOneColor);
-	//	tempChar->setTeam(1);
-	//	tempChar->setHook(tempHook);
-	//	tempChar->setWeapon(tempWeapon);
-	//	tempChar->setControllerPort(0);
-	//	tempChar->setController(true);
-	//	addPlayer(tempChar);
-	//}
-	//if (settings->players.size() < 4) {
-	//	Hook* tempHook = new Hook(hModel);
-	//	Character* tempChar = new Character(cModel1, cModel2, cModel3);
-	//	Weapon* tempWeapon = new Weapon(wModel, lModel, dModel, projHandler, particleHandler, tempChar);
-	//	tempChar->setLightColor(settings->teamTwoColor);
-	//	tempChar->setTeam(2);
-	//	tempChar->setHook(tempHook);
-	//	tempChar->setWeapon(tempWeapon);
-	//	tempChar->setControllerPort(1);
-	//	tempChar->setController(false);
-	//	addPlayer(tempChar);
-	//}
-#endif
 
 }
 
