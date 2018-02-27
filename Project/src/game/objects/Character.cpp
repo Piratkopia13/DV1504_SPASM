@@ -449,16 +449,18 @@ const DirectX::SimpleMath::Vector3& Character::getAimDirection() const {
 }
 
 void Character::hitByProjectile(const CollisionHandler::CharacterHitResult& hitResult) {
-	damage(hitResult.hitDmg);
-	addVelocity(hitResult.knockbackDir * hitResult.knockbackAmount);
-	setGrounded(false);
+	if (isAlive()) {
+		damage(hitResult.hitDmg);
+		addVelocity(hitResult.knockbackDir * hitResult.knockbackAmount);
+		setGrounded(false);
 
-	// Hit particle effet
-	m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-		ParticleEmitter::EXPLOSION, hitResult.hitPos, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
-		0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
+		// Hit particle effet
+		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+			ParticleEmitter::EXPLOSION, hitResult.hitPos, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
+			0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
 
-	VibrateController(0, 1.f, 1.f);
+		VibrateController(0, 1.f, 1.f);
+	}
 }
 
 void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {

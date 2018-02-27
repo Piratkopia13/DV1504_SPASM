@@ -17,7 +17,9 @@ bool Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 		m_direction.z = 0.f;
 		m_distance = m_direction.Length();
 		m_direction.Normalize();
-		DirectX::SimpleMath::Vector3 tempPos = CollisionHandler::getInstance()->rayTraceLevel(position, m_direction);
+		DirectX::SimpleMath::Vector3 tempPos;
+		float t;
+		CollisionHandler::getInstance()->rayTraceLevel({ position, m_direction }, tempPos, t);
 		float tempDistance = (tempPos - position).Length();
 		if (m_distance > tempDistance) {
 			m_position = tempPos;
@@ -45,6 +47,7 @@ void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const Direc
 	m_triggerHeld = true;
 	m_outOfBounds = false;
 	m_timeHooked = 0.0f;
+	DirectX::SimpleMath::Vector3 hitPos;
 	float t;
 	if (CollisionHandler::getInstance()->rayTraceLevel({ position, direction }, hitPos, t)) {
 		m_position = hitPos;
