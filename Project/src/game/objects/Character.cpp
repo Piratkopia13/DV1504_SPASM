@@ -31,14 +31,15 @@ Character::Character()
 	//addVibration(0, 1.f, 2.f);
 }
 
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel) : Character() {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel) : Character() {
 	this->setModel(bodyModel);
 	this->updateBoundingBox();
 	m_leftArm = lArmModel;
 	m_head = headModel;
+	m_legs = legsModel;
 }
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port)
-	: Character(bodyModel, lArmModel, headModel) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, headModel, legsModel) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -295,7 +296,7 @@ void Character::update(float dt) {
 		
 			if (m_hook) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
-				m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
+				m_movement.hooked = m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 			}
 		}
 
@@ -368,6 +369,7 @@ void Character::draw() {
 	model->setTransform(&bodyTransform);
 	m_leftArm->setTransform(&armTransform);
 	m_head->setTransform(&bodyTransform);
+	m_legs->setTransform(&bodyTransform);
 
 	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
@@ -376,10 +378,12 @@ void Character::draw() {
 	model->getMaterial()->setColor(color);
 	m_leftArm->getMaterial()->setColor(color);
 	m_head->getMaterial()->setColor(color);
+	m_legs->getMaterial()->setColor(color);
 
 	model->draw();
 	m_leftArm->draw();
 	m_head->draw();
+	m_legs->draw();
 	if (m_weapon->getHeld()) {
 		m_weapon->setLightColor(color);
 		m_weapon->draw();
@@ -556,7 +560,7 @@ void Character::fire()
 }
 
 void Character::hook() {
-	m_movement.hooked = m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
+	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
 }
 
 void Character::stopHook() {

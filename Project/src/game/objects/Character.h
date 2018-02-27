@@ -12,8 +12,8 @@ class Character : public Moveable {
 friend CharacterHandler;
 public:
 	Character();
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel);
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, unsigned int usingController, unsigned int port);
 	virtual ~Character();
 
 	void processInput();
@@ -122,6 +122,7 @@ private:
 
 	Model * m_leftArm;
 	Model * m_head;
+	Model * m_legs;
 	
 	void jump();
 	void stopJump();

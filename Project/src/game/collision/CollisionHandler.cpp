@@ -283,6 +283,8 @@ bool CollisionHandler::rayTraceLevel(const Ray& ray, DirectX::SimpleMath::Vector
 	float tY, tX, t;
 	float tTotal = 0.f;
 
+	DirectX::SimpleMath::Vector3 test;
+
 	if (direction.x > 0.f)
 		deltaX = 1;
 	else if (direction.x < 0.f)
@@ -313,14 +315,14 @@ bool CollisionHandler::rayTraceLevel(const Ray& ray, DirectX::SimpleMath::Vector
 			nextIntersectX = float(deltaX + currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
 		else
 			nextIntersectX = float(currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
-		tX = DirectX::XMMax(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
+		tX = max(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
 
 		if (deltaY > 0)
 			nextIntersectY = float(deltaY + currentIndex.y) * Level::DEFAULT_BLOCKSIZE;
 		else
 			nextIntersectY = float(currentIndex.y) * Level::DEFAULT_BLOCKSIZE;
 
-		tY = DirectX::XMMax(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
+		tY = max(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
 
 		tX = fabs(tX);
 		tY = fabs(tY);
@@ -334,10 +336,7 @@ bool CollisionHandler::rayTraceLevel(const Ray& ray, DirectX::SimpleMath::Vector
 			currentIndex.x += deltaX;
 		}
 
-
-		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > (m_level->getGridWidth() - 1) || currentIndex.y > (m_level->getGridHeight() - 1)) {
-			intersection = true;
-			t *= 10000;
+		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > m_level->getGridWidth() || currentIndex.y > m_level->getGridHeight()) {
 			return false;
 		}
 		else {
