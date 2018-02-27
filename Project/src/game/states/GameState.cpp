@@ -26,14 +26,24 @@ GameState::GameState(StateStack& stack)
 
 
 	GameInfo * info = GameInfo::getInstance();
+	std::string map = info->convertedGameSettings.map;
 
-	m_level = std::make_unique<Level>("symmetric.level");
-	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
-	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
-	if (gamemode) {
-		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
-		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
+	if (info->gameSettings.teams.size() == 0) {
+		info->gameSettings.teams.push_back({ 0, 0 });
+		info->gameSettings.teams.push_back({ 1, 0 });
 	}
+
+#ifdef _DEBUG
+	if (info->getPlayers().size() == 0) {
+		info->addPlayer({ nullptr, 0, 0, 0, 0, 0, 0, 0, 0 });
+		info->addPlayer({ nullptr, 1, 1, 1, 0, 0, 0, 0, 0 });
+	} else if (info->getPlayers().size() == 1) {
+		info->addPlayer({ nullptr, 1, 1, 1, 0, 0, 0, 0, 0 });
+	}
+#endif
+
+	m_level = std::make_unique<Level>(map);
+	
 
 	// Set up handlers
 	m_particleHandler = std::make_unique<ParticleHandler>(&m_cam);
@@ -42,6 +52,13 @@ GameState::GameState(StateStack& stack)
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
 
+	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
+	if (gamemode) {
+		gamemode->setParticleHandler(m_particleHandler.get());
+		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
+	}
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
@@ -116,12 +133,13 @@ GameState::GameState(StateStack& stack)
 	}
 
 	// Give the cam controller targets to follow
-	m_playerCamController->setTargets(
+	/*m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
 		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
 		m_characterHandler->useableTarget(2) ? m_characterHandler->getCharacter(2) : nullptr,
 		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
-	);
+	);*/
+	m_playerCamController->setCharacterHandler(m_characterHandler.get());
 
 	m_playerCamController->setPosition(Vector3(10, 10, 0));
 
@@ -230,6 +248,10 @@ bool GameState::update(float dt) {
 	//m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Emitters: " + std::to_wstring(m_particleHandler->getEmitterCount()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
 
+	// Projectiles needs to be updated before characters, otherwise projectiles will hit characters through blocks
+	m_projHandler->update(dt);
+	m_upgradeHandler->update(dt);
+
 	m_characterHandler->update(dt);
 
 	m_level->update(dt, m_characterHandler.get());
@@ -246,16 +268,13 @@ bool GameState::update(float dt) {
 
 	if(!m_flyCam)
 		m_playerCamController->update(dt);
-	
-	m_projHandler->update(dt);
-	m_upgradeHandler->update(dt);
 
-	m_playerCamController->setTargets(
+	/*m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
 		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
 		m_characterHandler->useableTarget(2) ? m_characterHandler->getCharacter(2) : nullptr,
 		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
-	);
+	);*/
 
 	// Update camera in shaders
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
@@ -264,6 +283,9 @@ bool GameState::update(float dt) {
 
 	// Update particles
 	m_particleHandler->update(dt);
+
+	// Resolve collisions
+	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
 
 	return true;
 }

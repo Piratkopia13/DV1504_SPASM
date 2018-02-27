@@ -3,7 +3,9 @@
 #include "../objects/common/Moveable.h"
 #include "../level/Grid.h"
 #include "../UpgradeHandler.h"
+#include "../CharacterHandler.h"
 
+using namespace DirectX::SimpleMath;
 
 CollisionHandler* CollisionHandler::m_instance = nullptr;
 
@@ -142,19 +144,52 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 }
 
-bool CollisionHandler::checkLevelCollisionWith(Projectile* proj, DirectX::SimpleMath::Vector3& hit, float dt) {
+bool CollisionHandler::rayTraceAABB(const Ray& ray, const AABB& bb, Vector3& hitPoint, float& hitT) {
 
-	auto& collisionIndices = m_level->getGrid()->getCurrentCollisionIndices(*proj->getBoundingBox());
+	auto& min = bb.getMinPos();
+	auto& max = bb.getMaxPos();
 
-	if (collisionIndices.size() > 0) {
-		// TODO: calculate the exact hit point using the velocity and backtracking, and set hit to this point
-		
-		auto& currentPos = proj->getTransform().getTranslation();
-		auto dir = proj->getVelocity();
-		dir.Normalize();
+	static float EPS = 0.0000000000001f;
 
-		hit = rayTraceLevel(currentPos - proj->getVelocity() * dt, dir);
+	float tmin = (min.x - ray.o.x) / ( ray.d.x + EPS );
+	float tmax = (max.x - ray.o.x) / ( ray.d.x + EPS );
+	if (tmin > tmax) std::swap(tmin, tmax);
 
+	float tymin = (min.y - ray.o.y) / ( ray.d.y + EPS );
+	float tymax = (max.y - ray.o.y) / ( ray.d.y + EPS );
+	if (tymin > tymax) std::swap(tymin, tymax);
+
+	if (tmin > tymax || tymin > tmax) return false;
+
+	if (tymin > tmin) tmin = tymin;
+	if (tymax < tmax) tmax = tymax;
+
+	float tzmin = (min.z - ray.o.z) / ( ray.d.z + EPS );
+	float tzmax = (max.z - ray.o.z) / ( ray.d.z + EPS );
+	if (tzmin > tzmax) std::swap(tzmin, tzmax);
+
+	if (tmin > tzmax || tzmin > tmax) return false;
+
+	if (tzmin > tmin) tmin = tzmin;
+	if (tzmax > tmax) tmax = tzmax;
+	
+	if (tmin < 0.f) return false;
+
+	hitPoint = ray.o + ray.d * tmin;
+	hitT = tmin;
+	return true;
+}
+
+bool CollisionHandler::checkLevelCollisionWith(Projectile* proj, float dt, float& t, Vector3& hitPos) {
+
+	Vector3 normalizedVel = proj->getVelocity();
+	normalizedVel.Normalize();
+	Vector3 projPos = proj->getTransform().getTranslation();
+	projPos.z = 0.f;
+
+	// Ray trace the distance the projectile will travel this frame
+	bool rayHit = rayTraceLevel({ projPos, normalizedVel }, hitPos, t);
+	if (rayHit && t <= proj->getVelocity().Length() * dt) {
 		// return hit
 		return true;
 	}
@@ -167,23 +202,44 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
-bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount) {
+bool CollisionHandler::outOfBounds(Character* character) {
+	float x = character->getTransform().getTranslation().x;
+	float y = character->getTransform().getTranslation().y;
+	bool oob = false;
+	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight())
+		oob = true;
 
-	auto& projectiles = m_projectileHandler->getProjectiles();
+	return oob;
+}
+
+bool CollisionHandler::checkCharacterCollisionWith(Projectile* proj, float dt, float& t, Character** hitCharacter, CharacterHitResult& hitResult) {
 
 	bool hit = false;
-	for (unsigned int i = 0; i < projectiles.size(); i++) {
-		if (projectiles.at(i)->getOwner()->getTeam() != chara->getTeam()) {
-			auto* proj = projectiles.at(i);
-			if (chara->getBoundingBox()->containsOrIntersects(*proj->getBoundingBox())) {
+	
+	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+		Character* chara = m_characterHandler->getCharacter(i);
+		if (proj->getTeam() != chara->getTeam()) {
 
-				hitDmg = proj->getDamage();
-				knockbackDir = proj->getVelocity();
-				knockbackDir.Normalize();
-				knockbackAmount = proj->getKnockbackAmount();
+			Vector3 normalizedVel = proj->getVelocity();
+			normalizedVel.Normalize();
+			Vector3 projPos = proj->getTransform().getTranslation();
+			projPos.z = 0.f;
+			// Ray trace the distance the projectile will travel this frame
+			Vector3 hitPoint;
+			bool rayHit = rayTraceAABB({ projPos, normalizedVel }, *chara->getBoundingBox(), hitPoint, t);
 
-				m_projectileHandler->removeAt(i);
+			if (rayHit && t <= proj->getVelocity().Length() * dt) {
+				hitResult.hitDmg = proj->getDamage();
+				hitResult.knockbackDir = proj->getVelocity();
+				hitResult.knockbackDir.Normalize();
+				hitResult.hitPos = hitPoint;
+				hitResult.knockbackAmount = proj->getKnockbackAmount();
+				*hitCharacter = chara;
+				
+				//chara->hitByProjectile(hitResult);
+
 				hit = true;
+				break;
 			}
 		}
 	}
@@ -192,7 +248,7 @@ bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX:
 
 }
 
-bool CollisionHandler::resolveUpgradeCollisionWith(Character * character) {
+bool CollisionHandler::resolveUpgradeCollisionWith(Character* character) {
 
 	size_t t = m_upgradeHandler->getNrOfSpawners();
 
@@ -217,15 +273,17 @@ bool CollisionHandler::resolveUpgradeCollisionWith(Character * character) {
 
 
 
-DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& dir) {
+bool CollisionHandler::rayTraceLevel(const Ray& ray, DirectX::SimpleMath::Vector3& hitPos, float& hitT) {
 	
-	DirectX::SimpleMath::Vector2 currentPos = origin;
-	DirectX::SimpleMath::Vector2 direction = dir;
-	DirectX::SimpleMath::Vector3 hitPos;
+	DirectX::SimpleMath::Vector2 currentPos = ray.o;
+	DirectX::SimpleMath::Vector2 direction = ray.d;
 	int deltaX, deltaY;
 	Grid::Index currentIndex;
 	float nextIntersectY, nextIntersectX;
 	float tY, tX, t;
+	float tTotal = 0.f;
+
+	DirectX::SimpleMath::Vector3 test;
 
 	if (direction.x > 0.f)
 		deltaX = 1;
@@ -249,22 +307,22 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 	currentIndex.y = static_cast<int>(floor(currentPos.y / Level::DEFAULT_BLOCKSIZE));
 
 	bool intersection = false;
-	if (currentIndex.x <= 0.f || currentIndex.x >= m_level->getGridWidth() || currentIndex.y <= 0 || currentIndex.y >= m_level->getGridHeight())
+	if (m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y))
 		intersection = true;
 
-	while (!intersection && currentIndex.x > -1 && currentIndex.x < (m_level->getGridWidth() - 1)) {
+	while (!intersection) {
 		if (deltaX > 0)
 			nextIntersectX = float(deltaX + currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
 		else
 			nextIntersectX = float(currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
-		tX = DirectX::XMMax(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
+		tX = max(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
 
 		if (deltaY > 0)
 			nextIntersectY = float(deltaY + currentIndex.y) * Level::DEFAULT_BLOCKSIZE;
 		else
 			nextIntersectY = float(currentIndex.y) * Level::DEFAULT_BLOCKSIZE;
 
-		tY = DirectX::XMMax(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
+		tY = max(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
 
 		tX = fabs(tX);
 		tY = fabs(tY);
@@ -278,14 +336,65 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 			currentIndex.x += deltaX;
 		}
 
-		intersection = m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y);
+		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > m_level->getGridWidth() || currentIndex.y > m_level->getGridHeight()) {
+			return false;
+		}
+		else {
+			intersection = m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y);
+		}
 
 		currentPos = currentPos + direction * t;
+		tTotal += t;
 	}
 
 	hitPos = DirectX::SimpleMath::Vector3(currentPos.x, currentPos.y, 0.0f);
+	hitT = tTotal;
 
-	return hitPos;
+	return true;
+}
+
+bool CollisionHandler::resolveProjectileCollision(float dt) {
+
+	auto& projectiles = m_projectileHandler->getProjectiles();
+
+	for (unsigned int i = 0; i < projectiles.size(); i++) {
+		auto& proj = projectiles.at(i);
+		bool hit = false;
+
+		float tLevel = -1.f;
+		float tCharacter = -1.f;
+		Vector3 levelHitPos;
+		Character* hitCharacter = nullptr;
+		CharacterHitResult charaHitRes;
+		bool levelHit = checkLevelCollisionWith(proj, dt, tLevel, levelHitPos);
+		bool characterHit = checkCharacterCollisionWith(proj, dt, tCharacter, &hitCharacter, charaHitRes);
+
+		if (levelHit && characterHit) {
+
+			// Only the closest should be hit
+			if (tLevel < tCharacter)
+				characterHit = false;
+			else
+				levelHit = false;
+
+		}
+		
+		if (levelHit) {
+			m_projectileHandler->projectileHitLevel(levelHitPos);
+		} else if (characterHit) {
+			hitCharacter->hitByProjectile(charaHitRes);
+		}
+
+
+		if (levelHit || characterHit) {
+			m_projectileHandler->removeAt(i);
+			i--;
+		}
+
+	}
+
+
+	return false;
 }
 
 CollisionHandler* CollisionHandler::getInstance() {

@@ -7,6 +7,7 @@
 #include "../../game/gamemodes/Gamemode.h"
 #include "../../game/objects/Block.h"
 #include "../../game/level/Grid.h"
+#include "../../game/GameInfo.h"
 
 using namespace std;
 

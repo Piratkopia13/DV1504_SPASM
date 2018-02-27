@@ -66,14 +66,17 @@ DirectX::SimpleMath::Vector3 Weapon::getNozzlePos() const {
 
 void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
-	static float baseSpeed = 20.0f;
+	static float baseSpeed = 10.0f;
 	static float baseDamage = 10.0f;
 	static float baseKnockback = 5.0f;
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2f;
 
+	static Vector4 projColor(2.f);
+	static float projScale = 4.f;
+
 	if (m_projectileHandler) {
-		float extraSpeed = 1;
+		float extraSpeed = 10.f;
 		float extraDamage = 1;
 		float extraKnockback = 1;
 		if (m_upgrade->knockbackActive()) {
@@ -105,8 +108,8 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			temp->setGravScale(0);
 		}
 		temp->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
-		temp->getTransform().scaleUniformly(2.f);
-		temp->setLightColor(DirectX::SimpleMath::Vector4(5.f));
+		temp->getTransform().scaleUniformly(projScale);
+		temp->setLightColor(projColor);
 		m_projectileHandler->addProjectile(temp);
 
 		if (m_upgrade->multiActive()) {
@@ -146,6 +149,10 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				temp1->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(tempVec1.y, tempVec1.x)));
 				temp2->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(tempVec2.y, tempVec2.x)));
+				temp1->setLightColor(projColor);
+				temp2->setLightColor(projColor);
+				temp1->getTransform().scaleUniformly(projScale);
+				temp2->getTransform().scaleUniformly(projScale);
 				m_projectileHandler->addProjectile(temp1);
 				m_projectileHandler->addProjectile(temp2);
 			}
@@ -204,21 +211,22 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	tempMatrix *= Matrix::CreateTranslation(tempPos);
 
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
-	//if (m_nozzlePos.x > 1.0f) {
-		float length = (CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) - m_nozzlePos).Length();
-		m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
-		m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
-		m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
+	Vector3 hitPos;
+	float t;
+	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
+	float length = (hitPos - m_nozzlePos).Length();
+	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
+	m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
+	m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
 
-		m_laser.dotTransform.setTranslation(CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
-	//}
+	m_laser.dotTransform.setTranslation(hitPos + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
 
 	//move(dt);
 }
 
 void Weapon::draw() {
 	model->setTransform(&getTransform());
-	if (this->getTransform().getTranslation().z < 0.5f && m_nozzlePos.x > 1.0f) {
+	if (this->getTransform().getTranslation().z < 0.5f && m_owner->isAlive()) {
 		m_laser.laserModel->setTransform(&m_laser.laserTransform);
 		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
 

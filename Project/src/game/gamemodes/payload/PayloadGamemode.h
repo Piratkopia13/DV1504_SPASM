@@ -16,6 +16,7 @@ public:
 	virtual void draw();
 
 	void setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color);
+	void setParticleHandler(ParticleHandler* newParticleHandler);
 
 	virtual int checkWin();
 
@@ -24,6 +25,12 @@ private:
 
 private:
 	std::vector<std::unique_ptr<ControlNode>> m_controlNodes;
+
+	ParticleHandler* m_particleHandler;
+	std::shared_ptr<ParticleEmitter> m_pointEmitter, m_pointEmitter2;
+	DirectX::SimpleMath::Vector3 m_emitterPos;
+
+	float m_emitterRotation;
 
 	std::vector<Grid::Index> m_indices;
 

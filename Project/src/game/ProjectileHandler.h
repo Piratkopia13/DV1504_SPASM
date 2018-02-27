@@ -13,6 +13,7 @@ public:
 	void removeAt(int index);
 	void update(float dt);
 	void draw();
+	void projectileHitLevel(const DirectX::SimpleMath::Vector3& hitPos);
 
 private:
 	ParticleHandler* m_particleHandler;

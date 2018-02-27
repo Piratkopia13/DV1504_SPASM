@@ -8,6 +8,7 @@ Projectile::Projectile(const DirectX::SimpleMath::Vector3& position, const Direc
 	m_damage = damage;
 	m_team = team;
 	m_knockbackAmount = knockbackAmount;
+	setGrounded(false);
 }
 
 Projectile::~Projectile() {
