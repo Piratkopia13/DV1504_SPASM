@@ -81,8 +81,8 @@ public:
 			DirectX::SimpleMath::Vector4 color;
 			size_t preOrder;	
 		};
-		std::string map = "domination/carrot";
-		std::string gamemode = "domination";
+		std::string map = "Domination/carrot.level";
+		size_t gamemode = 0;
 		float scoreLimit = 50;
 		float timeLimit = 0;
 		float respawnTime = 2;
@@ -105,6 +105,11 @@ public:
 		bool wtf = false;
 	};
 
+	enum Modes {
+		DOMINATION,
+		DEATHMATCH,
+		TEAMDEATHMATCH
+	};
 
 	GameSettings gameSettings;
 	ConvertedGameSettings convertedGameSettings;

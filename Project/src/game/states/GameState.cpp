@@ -32,6 +32,7 @@ GameState::GameState(StateStack& stack)
 		info->gameSettings.teams.push_back({ 0, 0 });
 		info->gameSettings.teams.push_back({ 1, 0 });
 	}
+
 #ifdef _DEBUG
 	if (info->getPlayers().size() == 0) {
 		info->addPlayer({ nullptr, 0, 0, 0, 0, 0, 0, 0, 0 });
@@ -41,7 +42,7 @@ GameState::GameState(StateStack& stack)
 	}
 #endif
 
-	m_level = std::make_unique<Level>("symmetric.level");
+	m_level = std::make_unique<Level>(map);
 	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {

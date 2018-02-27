@@ -78,8 +78,8 @@ GameInfo::GameInfo()
 	// GAME SETTINGS
 
 	gameModes.push_back({ "domination", 0, 0});
-	gameModes.push_back({ "deathMatch", 0, 0 });
-	gameModes.push_back({ "team Deathmatch", 0, 0 });
+	gameModes.push_back({ "deathMatch", 1, 0 });
+	gameModes.push_back({ "team Deathmatch", 2, 0 });
 
 	timeLimit.push_back({ "no Limit", 0.0f, 0 });
 	timeLimit.push_back({ "1 min", 60.0f, 0 });
@@ -104,10 +104,10 @@ GameInfo::GameInfo()
 	gravity.push_back({ "mars",0.38f,0 });
 	gravity.push_back({ "none",0,0 });
 
-	playerHealth.push_back({"100",0,0});
-	playerHealth.push_back({ "200",0,0 });
-	playerHealth.push_back({ "10",0,0 });
-	playerHealth.push_back({ "50",0,0 });
+	playerHealth.push_back({"50",50,0});
+	playerHealth.push_back({ "100",100,0 });
+	playerHealth.push_back({ "10",10,0 });
+	playerHealth.push_back({ "30",30,0 });
 	
 	// GRAPHICS SETTINGS
 
@@ -190,7 +190,6 @@ GameInfo::GameInfo()
 	std::vector<std::string> deathmatch;
 	std::vector<std::string> teamdeathmatch;
 
-
 	std::string s;
 	std::stringstream ss;
 	std::string path = "res/levels/Domination";
@@ -199,7 +198,7 @@ GameInfo::GameInfo()
 		s = ss.str(); 
 		int first = s.find_last_of('\\') + 1;
 		int last = s.find_last_of('.');
-		if (s.substr() == ".level") {
+		if (s.substr(last,6) == ".level") {
 			std::string item = s.substr(first, last - first);
 			Logger::log("map " + item + " Loaded for domination");
 			domination.push_back(item);	
@@ -236,17 +235,6 @@ GameInfo::GameInfo()
 	maps.push_back(domination);
 	maps.push_back(deathmatch);
 	maps.push_back(teamdeathmatch);
-
-
-
-
-
-
-
-
-
-
-
 
 
  	if (m_infoInstance) {
@@ -300,11 +288,11 @@ void GameInfo::addProfile(std::string name, size_t preOrdered) {
 void GameInfo::convertGameSettings() {
 	convertedGameSettings = ConvertedGameSettings();
 	std::string preText = "";
-	if (gameSettings.gameMode == 0)
+	if (gameSettings.gameMode == DOMINATION)
 		preText = "domination/";
-	if (gameSettings.gameMode == 1)
+	if (gameSettings.gameMode == DEATHMATCH)
 		preText = "DM/";
-	if (gameSettings.gameMode == 2)
+	if (gameSettings.gameMode == TEAMDEATHMATCH)
 		preText = "TDM/";
 	convertedGameSettings.map = preText + maps[gameSettings.gameMode][gameSettings.map]+".level";
 	convertedGameSettings.gamemode = gameModes[gameSettings.gameMode].value;

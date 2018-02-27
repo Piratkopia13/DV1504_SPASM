@@ -757,6 +757,7 @@ void MenuState::initMain() {
 	m_mainMenu->setOffColor(m_offColor);
 	m_mainMenu->setOnColor(m_onColor);
 	m_mainMenu->activate();
+	Logger::log("main menu loaded");
 }
 
 void MenuState::initGamemode() {
@@ -810,6 +811,7 @@ void MenuState::initGamemode() {
 
 
 
+	Logger::log("gamesettings menu loaded");
 }
 
 void MenuState::initCharacterModels() {
@@ -873,6 +875,9 @@ void MenuState::initCharacterModels() {
 	m_scene.addObject(m_graphicsModel.legs);
 	m_scene.addObject(m_graphicsModel.armL);
 	m_scene.addObject(m_graphicsModel.armR);
+
+
+	Logger::log("player models loaded");
 }
 
 void MenuState::initCharacterModel(size_t spot) {
@@ -1013,6 +1018,7 @@ void MenuState::initMap() {
 	m_mapMenu->setStep(0.1f);
 	
 
+	Logger::log("maps loaded");
 }
 
 void MenuState::initProfile() {
@@ -1036,6 +1042,8 @@ void MenuState::initOptions() {
 	m_optionsMenu->setPosition(Vector3(-5, -0.5f, 0));
 	m_optionsMenu->setFacingDirection(Vector3(1, 0, 0));
 
+
+	Logger::log("options menu loaded");
 }
 
 void MenuState::initGraphics() {
@@ -1087,6 +1095,8 @@ void MenuState::initGraphics() {
 	m_graphicsMenu->setPosition(Vector3(-5,8,0));
 	m_graphicsMenu->setFacingDirection(Vector3(1, 0, 0));
 
+
+	Logger::log("graphics menu loaded");
 }
 
 void MenuState::initSound() {
@@ -1119,6 +1129,8 @@ void MenuState::initSound() {
 	m_soundMenu->setPosition(Vector3(-5,-8,0));
 	m_soundMenu->setFacingDirection(Vector3(1,0,0));
 
+
+	Logger::log("sound menu loaded");
 }
 
 
