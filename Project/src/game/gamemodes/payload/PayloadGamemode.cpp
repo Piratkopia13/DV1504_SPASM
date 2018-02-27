@@ -46,10 +46,10 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_emitterPos = m_controlNodes[m_currentActivePoint]->getTransform().getTranslation();
 
 	m_pointEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, m_emitterPos,
-		Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f), 400.f, 800, 0.1f, 1.5f, Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, 0U, false));
+		Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f), 400.f, 800, 0.1f, 1.5f, Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, 0U, true));
 
 	m_pointEmitter2 = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, m_emitterPos,
-		Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f), 400.f, 800, 0.1f, 1.5f, Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, 0U, false));
+		Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f), 400.f, 800, 0.1f, 1.5f, Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, 0U, true));
 
 
 	m_emitterRotation = 0.0f;
