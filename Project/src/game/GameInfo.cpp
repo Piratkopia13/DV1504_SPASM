@@ -344,9 +344,6 @@ void GameInfo::loadProfiles() {
 			while (getline(l, tempString, ':')) {
 				tempList.push_back(tempString);
 			}
-			for (unsigned int i = 0; i < tempList.size(); i++) {
-				std::cout << tempList[i] + "\n";
-			}	
 			m_profiles.push_back(Profile(tempList[0], std::stoul(tempList[1]), {std::stoul(tempList[2]), std::stoul(tempList[3]), std::stoul(tempList[4]), std::stoul(tempList[5])}));
 		}
 	}
