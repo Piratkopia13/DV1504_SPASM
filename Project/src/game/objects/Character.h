@@ -5,6 +5,7 @@
 #include "Weapon.h"
 #include "Hook.h"
 #include "../ParticleHandler.h"
+#include "../collision/CollisionHandler.h"
 
 
 class Character : public Moveable {
@@ -31,6 +32,7 @@ public:
 	bool isAlive();
 	void damage(float dmg);
 	const DirectX::SimpleMath::Vector3& getAimDirection() const;
+	void hitByProjectile(const CollisionHandler::CharacterHitResult& hitResult);
 
 	void VibrateController(unsigned int index, float strength = 1, float timeDecreaseMul = 1);
 

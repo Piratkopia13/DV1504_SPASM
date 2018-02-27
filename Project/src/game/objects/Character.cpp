@@ -225,11 +225,11 @@ void Character::update(float dt) {
 			m_playerHealth.current += m_playerHealth.regen * dt;
 		}
 
-	if (collHandler->outOfBounds(this)) {
-		damage(getMaxHealth());
-	}
+		if (collHandler->outOfBounds(this)) {
+			damage(getMaxHealth());
+		}
 
-	m_playerHealth.updatePercent();
+		m_playerHealth.updatePercent();
 
 		if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
 			if (grounded()) {
@@ -296,25 +296,6 @@ void Character::update(float dt) {
 			if (m_hook) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
 				m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
-			}
-
-
-			// Check for and handle if a projectile collides with this character
-			Vector3 knockbackDir;
-			float dmgTaken;
-			float knockbackAmount;
-			bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount);
-			if (hit) {
-				damage(dmgTaken);
-				addVelocity(knockbackDir * knockbackAmount);
-				setGrounded(false);
-
-				// Hit particle effet
-				m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-					ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockbackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
-					0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
-
-				VibrateController(0, 1.f, 1.f);
 			}
 		}
 
@@ -461,6 +442,19 @@ void Character::damage(float dmg) {
 
 const DirectX::SimpleMath::Vector3& Character::getAimDirection() const {
 	return m_input.aim;
+}
+
+void Character::hitByProjectile(const CollisionHandler::CharacterHitResult& hitResult) {
+	damage(hitResult.hitDmg);
+	addVelocity(hitResult.knockbackDir * hitResult.knockbackAmount);
+	setGrounded(false);
+
+	// Hit particle effet
+	m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+		ParticleEmitter::EXPLOSION, hitResult.hitPos, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
+		0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
+
+	VibrateController(0, 1.f, 1.f);
 }
 
 void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {

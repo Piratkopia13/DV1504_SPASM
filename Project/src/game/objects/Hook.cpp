@@ -24,7 +24,10 @@ void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 
 bool Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
 	m_triggerHeld = true;
-	m_position = CollisionHandler::getInstance()->rayTraceLevel(position, direction);
+	DirectX::SimpleMath::Vector3 hitPos;
+	float t;
+	if (CollisionHandler::getInstance()->rayTraceLevel({ position, direction }, hitPos, t))
+		m_position = hitPos;
 	m_direction = (m_position - position);
 	m_direction.z = 0.f;
 	m_distance = m_direction.Length();

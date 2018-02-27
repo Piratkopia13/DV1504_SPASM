@@ -4,6 +4,7 @@
 
 class Projectile : public Moveable {
 public:
+	friend class ProjectileHandler;
 	Projectile(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& velocity, float damage, float knockbackAmount, int team);
 	virtual ~Projectile();
 

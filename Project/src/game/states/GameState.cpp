@@ -244,6 +244,10 @@ bool GameState::update(float dt) {
 	//m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Emitters: " + std::to_wstring(m_particleHandler->getEmitterCount()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
 
+	// Projectiles needs to be updated before characters, otherwise projectiles will hit characters through blocks
+	m_projHandler->update(dt);
+	m_upgradeHandler->update(dt);
+
 	m_characterHandler->update(dt);
 
 	m_level->update(dt, m_characterHandler.get());
@@ -260,9 +264,6 @@ bool GameState::update(float dt) {
 
 	if(!m_flyCam)
 		m_playerCamController->update(dt);
-	
-	m_projHandler->update(dt);
-	m_upgradeHandler->update(dt);
 
 	/*m_playerCamController->setTargets(
 		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
@@ -278,6 +279,9 @@ bool GameState::update(float dt) {
 
 	// Update particles
 	m_particleHandler->update(dt);
+
+	// Resolve collisions
+	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
 
 	return true;
 }

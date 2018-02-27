@@ -1,4 +1,5 @@
 #include "CharacterHandler.h"
+#include "collision/CollisionHandler.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -129,6 +130,17 @@ void CharacterHandler::setRespawnTime(float time) {
 }
 
 void CharacterHandler::update(float dt) {
+	
+	//if (m_characters[0]->m_inputDevice.controllerPort == 0) {
+	//	Vector3 hitPoint;
+	//	float t;
+	//	Vector3 middleMuzzlePos = m_characters[0]->m_weapon->getNozzlePos();
+	//	middleMuzzlePos.z = 0.f;
+	//	bool hit = CollisionHandler::getInstance()->rayTraceAABB({ middleMuzzlePos, m_characters[0]->m_input.aim }, *m_characters[1]->getBoundingBox(), hitPoint, t);
+	//	if (hit) {
+	//		Logger::log("HIT @ " + Utils::vec3ToStr(hitPoint));
+	//	}
+	//}
 	
 	for (size_t i = 0; i < m_characters.size(); i++) {
 		m_characters[i]->update(dt);
