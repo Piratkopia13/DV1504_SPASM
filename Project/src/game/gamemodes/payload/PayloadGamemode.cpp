@@ -3,6 +3,8 @@
 #include "../../CharacterHandler.h"
 #include "../../objects/Block.h"
 
+using namespace DirectX::SimpleMath;
+
 PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<Block*>> & blocks, const int levelWidth, const int levelHeight)
 : Gamemode()
 , m_blocks(blocks) 
@@ -16,8 +18,10 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
-	m_teamOneColor = Application::getInstance()->getGameSettings().teamOneColor;
-	m_teamTwoColor = Application::getInstance()->getGameSettings().teamTwoColor;
+	GameInfo * info = GameInfo::getInstance();
+	
+	m_teamOneColor = info->getDefaultColor(info->gameSettings.teams[0].color, 0);
+	m_teamTwoColor = info->getDefaultColor(info->gameSettings.teams[1].color, 0);
 
 	// Add default scores
 	addScore(50, 1);
@@ -29,11 +33,26 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
 		float y = Level::DEFAULT_BLOCKSIZE * (index.y);
 		m_controlNodes.push_back(std::make_unique<ControlNode>(controlpointModel));
-		m_controlNodes.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(x, y, 0.f));
+		m_controlNodes.back()->getTransform().setTranslation(Vector3(x, y, 0.f));
 	}
+
+
+	setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+	setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
 
 	m_currentActivePoint = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
 	replacePoint();
+
+	m_emitterPos = m_controlNodes[m_currentActivePoint]->getTransform().getTranslation();
+
+	m_pointEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, m_emitterPos,
+		Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f), 400.f, 800, 0.1f, 1.5f, Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, 0U, true));
+
+	m_pointEmitter2 = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, m_emitterPos,
+		Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f), 400.f, 800, 0.1f, 1.5f, Vector4(1.0f, 1.0f, 1.0f, 1.0f), 0.f, 0U, true));
+
+
+	m_emitterRotation = 0.0f;
 }
 
 PayloadGamemode::~PayloadGamemode() {}
@@ -88,7 +107,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 						playerColliding = true;
 
 		if (playerColliding) {
-			if (charHandler->getCharacter(i)->getTeam() == 1)
+			if (charHandler->getCharacter(i)->getTeam() == 0)
 				numOfTeam.x += 1;
 			else
 				numOfTeam.y += 1;
@@ -107,6 +126,38 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 		Gamemode::addScore(dt, owningTeam);
 		Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
 	}
+
+
+	Vector3 newEmitterPos = m_controlNodes[m_currentActivePoint]->getTransform().getTranslation();
+	Vector3 distanceVector = m_emitterPos - m_controlNodes[m_currentActivePoint]->getTransform().getTranslation();
+	float tempLength = distanceVector.Length();
+	distanceVector.Normalize();
+	if (tempLength > 0.5f) {
+		newEmitterPos = m_controlNodes[m_currentActivePoint]->getTransform().getTranslation() + distanceVector * (tempLength - 20.0f * dt);
+	}
+
+	m_emitterRotation += 6.28f * dt;
+	m_emitterRotation = fmod(m_emitterRotation, 6.28f);
+	Matrix rotationMatrix = Matrix::CreateRotationY(m_emitterRotation);
+
+	m_emitterPos = newEmitterPos;
+
+	m_pointEmitter->updateEmitPosition(m_emitterPos
+		+ Vector3(XMVector4Transform(Vector4((float)m_radius, 0.0f, 0.0f, 1.0f), rotationMatrix)) + Vector3(0.0f, m_controlNodes[m_currentActivePoint]->getCapturePercentage() * 2.0f + 0.2f, 0.0f));
+
+	m_pointEmitter2->updateEmitPosition(m_emitterPos
+		+ Vector3(XMVector4Transform(Vector4((float)-m_radius, 0.0f, 0.0f, 1.0f), rotationMatrix)) + Vector3(0.0f, m_controlNodes[m_currentActivePoint]->getCapturePercentage() * 2.0f + 0.2f, 0.0f));
+
+	Vector4 tempColor(1.0f, 1.0f, 1.0f, 1.0f);
+	int tempTeam = m_controlNodes[m_currentActivePoint]->getTeam();
+	if (tempTeam == 1) {
+		tempColor = m_teamOneColor;
+	}
+	else if (tempTeam == 2) {
+		tempColor = m_teamTwoColor;
+	}
+	m_pointEmitter->updateColor(tempColor);
+	m_pointEmitter2->updateColor(tempColor);
 }
 
 void PayloadGamemode::draw() {
@@ -118,6 +169,12 @@ void PayloadGamemode::draw() {
 void PayloadGamemode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
 	for (const auto& cn : m_controlNodes)
 		cn->setTeamColor(team, color);
+}
+
+void PayloadGamemode::setParticleHandler(ParticleHandler* newParticleHandler) {
+	m_particleHandler = newParticleHandler;
+	m_particleHandler->addEmitter(m_pointEmitter);
+	m_particleHandler->addEmitter(m_pointEmitter2);
 }
 
 int PayloadGamemode::checkWin() {

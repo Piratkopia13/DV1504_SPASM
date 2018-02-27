@@ -176,10 +176,16 @@ void MenuHandler::next() {
 	MenuText* text = m_itemList[m_activeItem].text;
 	MenuSelector* selector = m_itemList[m_activeItem].selector;
 
-	if(item)
+	if (item) {
 		item->setLightColor(m_offColor);
-	if(text)
-		m_itemList[m_activeItem].text->setColor(m_offColor);
+		// Sound
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+	}
+	if(text) {
+		text->setColor(m_offColor);
+		// Sound
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+	}
 	if (selector)
 		selector->setSelectionColor(m_onColor*0.7f);
 
@@ -207,10 +213,16 @@ void MenuHandler::back() {
 	MenuText* text = m_itemList[m_activeItem].text;
 	MenuSelector* selector = m_itemList[m_activeItem].selector;
 
-	if(item)
+	if(item) {
 		item->setLightColor(m_offColor);
-	if (text)
+		// Sound
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+	}
+	if (text) {
 		text->setColor(m_offColor);
+		// Sound
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+	}
 	if (selector)
 		selector->setSelectionColor(m_onColor*0.7f);
 

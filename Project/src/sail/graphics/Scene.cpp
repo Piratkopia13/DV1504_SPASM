@@ -46,6 +46,7 @@ void Scene::resize(int width, int height) {
 	// Resize textures
 	m_deferredRenderer.resize(width, height);
 	m_deferredOutputTex->resize(width, height);
+	m_postProcessPass.resize(width, height);
 }
 
 // Draws the scene
@@ -113,6 +114,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	}
 	for (Object* m : m_objects)
 		m->draw();
+
+	// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	dxm->disableConservativeRasterizer();
+
 	if (particles) {
 		particles->draw();
 	}
@@ -138,6 +143,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 		m_postProcessPass.run(*m_deferredOutputTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 	}
+
+	// Re-enable conservative rasterization
+	dxm->enableBackFaceCulling();
+
 	// Change active depth buffer to the one used in the deferred geometry pass
 	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
 }

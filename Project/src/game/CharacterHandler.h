@@ -21,8 +21,7 @@ public:
 
 private:
 	void addPlayer(Character* player);
-
-	float m_respawnTime;
+	DirectX::SimpleMath::Vector3 getRandomSpawnPoint(UINT team) const;
 
 	ParticleHandler* m_particleHandler;
 	std::vector<Character*> m_characters;

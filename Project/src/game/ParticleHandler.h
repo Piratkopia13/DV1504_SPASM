@@ -12,6 +12,7 @@ public:
 	void update(float dt);
 	void draw();
 	UINT getParticleCount() const;
+	UINT getEmitterCount() const;
 
 private:
 	const Camera* m_cam;

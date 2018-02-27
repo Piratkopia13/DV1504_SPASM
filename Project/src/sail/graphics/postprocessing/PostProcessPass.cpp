@@ -12,8 +12,9 @@ PostProcessPass::PostProcessPass()
 	UINT windowWidth = app->getWindow()->getWindowWidth();
 	UINT windowHeight = app->getWindow()->getWindowHeight();
 
-	m_gaussPass1Scale = 1.f / 1;
-	m_gaussPass2Scale = 1.f / 2;
+	m_gaussPass1Scale = 1.f / 1.f;
+	m_gaussPass2Scale = 1.f / 1.5f;
+	m_gaussPass3Scale = 1.f / 2.f;
 	m_brightnessCutoffScale = 1.f / 2;
 
 	m_FXAAPass = false;
@@ -22,11 +23,14 @@ PostProcessPass::PostProcessPass()
 
 	m_hGaussStage = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
 	m_vGaussStage = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
-
 	m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
 	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
+	m_hGaussStage3 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
+	m_vGaussStage3 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
 
 	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(UINT(windowWidth * m_brightnessCutoffScale), UINT(windowHeight * m_brightnessCutoffScale), &m_fullscreenQuad);
+
+	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(UINT(windowWidth), UINT(windowHeight), &m_fullscreenQuad);
 
 }
 
@@ -36,7 +40,10 @@ void PostProcessPass::resize(UINT width, UINT height) {
 	m_vGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
 	m_hGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
 	m_vGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
+	m_hGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
+	m_vGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
 	m_brightnessCutoffStage->resize(UINT(width * m_brightnessCutoffScale), UINT(height * m_brightnessCutoffScale));
+	m_toneMapHackStage->resize(UINT(width), UINT(height));
 }
 
 PostProcessPass::~PostProcessPass() {
@@ -48,6 +55,8 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
 	dxm->disableDepthBuffer();
+	//// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	//dxm->disableConservativeRasterizer();
 
 	if (kbState.pressed.H) {
 		m_FXAAPass = !m_FXAAPass;
@@ -56,6 +65,10 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 
 	if (m_FXAAPass) {
 		m_FXAAStage->run(baseTexture);
+		m_toneMapHackStage->run(m_FXAAStage->getOutput());
+	} else {
+		m_toneMapHackStage->run(baseTexture);
+
 	}
 	m_brightnessCutoffStage->run(inputTexture);
 
@@ -65,30 +78,33 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	m_hGaussStage2->run(m_vGaussStage->getOutput());
 	m_vGaussStage2->run(m_hGaussStage2->getOutput());
 
+	m_hGaussStage3->run(m_vGaussStage2->getOutput());
+	m_vGaussStage3->run(m_hGaussStage3->getOutput());
+
 	// Blend last output together with the baseTexture to produce the final image
 	dxm->renderToBackBuffer();
+	//m_toneMapHackStage->getOutput().begin();
 
 	dxm->enableAdditiveBlending();
-	if (m_FXAAPass) {
-		m_fullscreenQuad.getMaterial()->setTextures(m_FXAAStage->getOutput().getColorSRV(), 1);
-	}
-	else
-	{
-		m_fullscreenQuad.getMaterial()->setTextures(baseTexture.getColorSRV(), 1);
-	}
+	//if (m_FXAAPass) {
+		m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
+	//}
+	//else
+	//{
+	//	m_fullscreenQuad.getMaterial()->setTextures(m_FXAAStage->getOutput().getColorSRV(), 1);
+	//}
 	m_fullscreenQuad.draw();
 
 	// Draw bloom using additive blending
-	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage2->getOutput().getColorSRV(), 1);
-
-
-
-	
+	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
 	m_fullscreenQuad.draw();
-	m_fullscreenQuad.draw();
+
+	//m_fullscreenQuad.draw();
 	dxm->disableAlphaBlending();
 
 	dxm->enableDepthBuffer();
+	//// Re-enable conservative rasterization
+	//dxm->enableBackFaceCulling();
 
 }
 

@@ -32,7 +32,9 @@ public:
 		Laser,
 		Male_Death,
 		Goblin_Death,
-		Pickup,
+		Pickup, 
+		Switch,
+		Select,
 		NumOfSoundEffects
 	};
 
@@ -61,6 +63,7 @@ public:
 		@param pitch - Optional pitch of the sound
 	*/
 	void playSoundEffect(const SoundEffect soundID, float volume = 1.f, float pitch = 1.f);
+	void playSoundEffectWithRndPitch(const SoundEffect soundID, float low, float high, float volume = 1.f);
 	void playAmbientSound(const Ambient soundID, const bool looping = false);
 
 	void pauseAmbientSound(const Ambient soundID);

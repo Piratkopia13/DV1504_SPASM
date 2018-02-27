@@ -16,6 +16,9 @@
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleColorShader.hlsl" />
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
+    <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />
@@ -92,6 +95,8 @@
     <ClCompile Include="src\sail\graphics\shader\VertexShader.cpp" />
     <ClCompile Include="src\sail\graphics\text\Text.cpp" />
     <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
     <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
     <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
     <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
@@ -107,6 +112,8 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -144,7 +151,6 @@
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
-    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedTestModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\SphereModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\Material.h" />
@@ -213,6 +219,9 @@
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />
@@ -229,13 +238,12 @@
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />
-    <None Include="res\levels\symmetric.level" />
     <None Include="res\levels\the_void.level" />
     <None Include="res\models\box.fbx" />
-    <None Include="res\models\capture_point.fbx" />
     <None Include="res\models\monkey.fbx" />
     <None Include="res\models\capture_point.fbx" />
     <None Include="res\levels\symmetric.level" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\effect\laser.wav" />

@@ -3,15 +3,15 @@
 using namespace DirectX::SimpleMath;
 Upgrade::Upgrade(){
 	m_auto = AutoFire();
-	m_speed = ProjectileSpeed();
+	m_knockback = ProjectileKnockback();
 
 }
 Upgrade::Upgrade(int type) : Upgrade(){
 	if (type == AUTO_FIRE) {
 		m_auto.active = true;
 	}
-	if (type == PROJECTILE_SPEED) {
-		m_speed.active = true;
+	if (type == PROJECTILE_KNOCKBACK) {
+		m_knockback.active = true;
 	}
 	if (type == EXTRA_DAMAGE) {
 		m_damage.active = true;
@@ -31,8 +31,8 @@ void Upgrade::update(float dt) {
 	if (m_auto.active) {
 		m_auto.update(dt);
 	}
-	if (m_speed.active) {
-		m_speed.update(dt);
+	if (m_knockback.active) {
+		m_knockback.update(dt);
 	}
 	if (m_damage.active) {
 		m_damage.update(dt);
@@ -47,7 +47,7 @@ void Upgrade::update(float dt) {
 
 void Upgrade::combine(const Upgrade & other) {
 	m_auto += other.m_auto;
-	m_speed += other.m_speed;
+	m_knockback += other.m_knockback;
 	m_damage += other.m_damage;
 	m_extraProj += other.m_extraProj;
 	m_grav += other.m_grav;
@@ -73,19 +73,19 @@ float Upgrade::autoTime()
 	return m_auto.time.getPercent();
 }
 
-bool Upgrade::speedActive()
+bool Upgrade::knockbackActive()
 {
-	return m_speed.active;
+	return m_knockback.active;
 }
 
-float Upgrade::speedRate()
+float Upgrade::knockbackRate()
 {
-	return m_speed.speed;
+	return m_knockback.amount;
 }
 
-float Upgrade::speedTime()
+float Upgrade::knockbackTime()
 {
-	return m_speed.time.getPercent();
+	return m_knockback.time.getPercent();
 }
 
 bool Upgrade::damageActive()
@@ -108,7 +108,7 @@ bool Upgrade::multiActive()
 	return m_extraProj.active;
 }
 
-float Upgrade::multiCount()
+unsigned int Upgrade::multiCount()
 {
 	return m_extraProj.nr;
 }
