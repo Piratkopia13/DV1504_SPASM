@@ -48,11 +48,11 @@ public:
 		return m_preOrder;
 	}
 	const std::string getAsString() {
-		return m_name + ": " +
-			std::to_string(m_preOrder) + " " +
-			std::to_string(m_stats.kills) + " " +
-			std::to_string(m_stats.deaths) + " " +
-			std::to_string(m_stats.wins) + " " +
+		return m_name + ":" +
+			std::to_string(m_preOrder) + ":" +
+			std::to_string(m_stats.kills) + ":" +
+			std::to_string(m_stats.deaths) + ":" +
+			std::to_string(m_stats.wins) + ":" +
 			std::to_string(m_stats.losses);
 	}
 
