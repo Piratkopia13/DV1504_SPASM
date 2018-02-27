@@ -8,7 +8,6 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 
 	Application* app = Application::getInstance();
 	m_info = GameInfo::getInstance();
-	m_respawnTime = m_info->convertedGameSettings.respawnTime;
 
 	std::vector<Model*> bodies;
 
@@ -47,7 +46,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 			keyboardUsed = true;
 		}
 #endif
-		
+		tempChar->setRespawnTime(m_info->convertedGameSettings.respawnTime);
 		tempChar->m_playerHealth.setMax(m_info->convertedGameSettings.playerLife);
 		tempChar->setGravScale(m_info->convertedGameSettings.gravity);
 		addPlayer(tempChar);
