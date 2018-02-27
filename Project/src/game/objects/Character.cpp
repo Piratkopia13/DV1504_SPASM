@@ -334,19 +334,19 @@ void Character::update(float dt) {
 		collHandler->resolveLevelCollisionWith(this, dt);
 		Moveable::move(dt, false);
 		collHandler->resolveUpgradeCollisionWith(this);
-
-		//----Weapon aim animation----
-		if (m_weapon) {
-			m_weapon->getTransform().setTranslation(getTransform().getTranslation());
-			Matrix tempMatrix;
-			tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
-			m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
-			if (!m_movement.inCover) {
-				m_weapon->update(dt, m_input.aim);
-			}
-		}
-		//----------------------------
 	}
+
+	//----Weapon aim animation----
+	if (m_weapon) {
+		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
+		Matrix tempMatrix;
+		tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
+		m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
+		if (!m_movement.inCover) {
+			m_weapon->update(dt, m_input.aim);
+		}
+	}
+	//----------------------------
 }
 
 
@@ -521,7 +521,7 @@ void Character::dead() {
 	m_weapon->triggerRelease();
 	stopHook();
 	setVelocity(Vector3::Zero);
-	m_weapon->setHeld(false);
+	m_weapon->setHeld(true);
 	VibrateController(0, 1.f, 0.3f);
 	VibrateController(1, 1.f, 0.3f);
 
