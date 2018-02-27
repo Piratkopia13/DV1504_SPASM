@@ -179,6 +179,10 @@ void ParticleEmitter::updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& v
 	m_velocityRndAdd = velRndAdd;
 }
 
+const DirectX::SimpleMath::Vector3& ParticleEmitter::getEmitterPosition() const {
+	return m_emitPosition;
+}
+
 void ParticleEmitter::draw() {
 	m_shader->updateSpriteData(m_spritesPerRow, m_scale);
 	m_shader->updateInstanceData(&m_instanceData[0], m_instanceData.size() * sizeof(m_instanceData[0]), m_instancedModel->getInstanceBuffer());

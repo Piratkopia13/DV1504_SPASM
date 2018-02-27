@@ -41,12 +41,6 @@ GameState::GameState(StateStack& stack)
 #endif
 
 	m_level = std::make_unique<Level>("symmetric.level");
-	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
-	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
-	if (gamemode) {
-		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
-		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
-	}
 
 	// Set up handlers
 	m_particleHandler = std::make_unique<ParticleHandler>(&m_cam);
@@ -55,6 +49,13 @@ GameState::GameState(StateStack& stack)
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
 
+	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
+	if (gamemode) {
+		gamemode->setParticleHandler(m_particleHandler.get());
+		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
+	}
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
