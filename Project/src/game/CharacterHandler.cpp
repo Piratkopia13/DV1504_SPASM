@@ -18,14 +18,15 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Model* bodyModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botBodyNames[0] + "_body").getModel();
 	Model* armLeftModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botArmNames[0] +"_armL").getModel();
 	Model* armRightModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botArmNames[0] + "_armR").getModel();
+	Model* legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[0] + "_legs").getModel();
 
 	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
 		headModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botHeadNames[m_info->getPlayers()[i].headModel] + "_head").getModel();
 		bodyModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botBodyNames[m_info->getPlayers()[i].bodyModel] + "_body").getModel();
-
+		legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[m_info->getPlayers()[i].legModel] + "_legs").getModel();
 
 		Hook* tempHook = new Hook(hookModel);
-		Character* tempChar = new Character(bodyModel, armLeftModel, headModel);
+		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel);
 		Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
