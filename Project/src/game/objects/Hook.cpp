@@ -50,7 +50,6 @@ void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const Direc
 	if (m_distance > 10000) {
 		m_outOfBounds = true;
 	}
-	return !m_outOfBounds;
 }
 
 void Hook::triggerRelease() {
