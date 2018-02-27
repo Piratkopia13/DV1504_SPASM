@@ -108,7 +108,7 @@ void UpgradeHandler::UpgradeSpawn::respawn() {
 
 	m_onlineType = m_type;
 	if (m_type == -1) {
-		m_onlineType = (int)(Utils::rnd() * Upgrade::MAX - 1) + 1;
+		m_onlineType = (int)(Utils::rnd() * (Upgrade::MAX - 1))+1;
 	}
 
 	if (m_onlineType == Upgrade::AUTO_FIRE) {
@@ -157,6 +157,10 @@ void UpgradeHandler::UpgradeSpawn::reset() {
 UpgradeHandler::UpgradeSpawn::UpgradeObject::UpgradeObject(const DirectX::SimpleMath::Vector3& pos) {
 	setPosition(pos);
 	m_spawnPosition = pos;
+	m_offset[0] = 0;
+	m_offset[1] = 0;
+	m_rotationOffset[0] = 0;
+	m_rotationOffset[1] = 0;
 
 }
 
@@ -165,31 +169,28 @@ UpgradeHandler::UpgradeSpawn::UpgradeObject::~UpgradeObject() {
 }
 
 void UpgradeHandler::UpgradeSpawn::UpgradeObject::update(float dt) {
-	static Vector3 directionVec(0, 1, 0);
-	static float offset = 0;
-	static int direction = 0;
-	static float rotationOffset = 0;
+	static Vector3 directionVec(0, 0, 0);
+	static float speed = 10;
 
-	if (direction == 0) {
-		offset += 0.2f*dt;
-		if (offset > 0.3) {
-			direction = 1;
-		}
-	}
-	else if(direction == 1) {
-		offset -= 0.2f*dt;
-		if (offset < -0.3f) {
-			direction = 0;
-		}
-	}
+	m_offset[0] += dt * Utils::rnd() * speed;
+	m_offset[1] += dt * Utils::rnd() * speed;
 
-	rotationOffset = (rotationOffset + 0.2f*dt);
-	if (rotationOffset > 6.28f)
-		rotationOffset = 0;
+	directionVec.x = sin(m_offset[0])*0.1;
+	directionVec.y = sin(m_offset[1])*0.2;
+
+
+
+
+	m_rotationOffset[0] = (m_rotationOffset[0] + 0.2f*dt*Utils::rnd()*speed);
+	if (m_rotationOffset[0] > 6.28f)
+		m_rotationOffset[0] = 0;
+	m_rotationOffset[1] = (m_rotationOffset[1] + 0.2f*dt*Utils::rnd()*speed);
+	if (m_rotationOffset[1] > 6.28f)
+		m_rotationOffset[1] = 0;
 	
 
-	setPosition(m_spawnPosition + directionVec * offset);
-	getTransform().setRotations(Vector3(0, rotationOffset, 0));
+	setPosition(m_spawnPosition + directionVec);
+	getTransform().setRotations(Vector3(m_rotationOffset[1], m_rotationOffset[0], 0));
 }
 
 void UpgradeHandler::UpgradeSpawn::UpgradeObject::draw() {

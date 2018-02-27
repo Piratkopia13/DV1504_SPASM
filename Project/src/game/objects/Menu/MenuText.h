@@ -37,6 +37,9 @@ private:
 	DirectX::SimpleMath::Vector3 m_facing;
 	DirectX::SimpleMath::Vector3 m_angles;
 	float m_size;
+	bool m_crazy;
+	float m_crazyAcc;
+	float m_crazyThresh;
 
 	void updateLetterPosition();
 };

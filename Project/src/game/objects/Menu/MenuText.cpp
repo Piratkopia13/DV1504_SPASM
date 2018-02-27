@@ -11,6 +11,10 @@ MenuText::MenuText(std::string text) {
 	m_facing = Vector3(0.0f, 0.0f, -1.0f);
 	m_size = 1;
 	updateLetterPosition();
+
+	m_crazy = false;
+	m_crazyAcc = 0;
+	m_crazyThresh = 1.0f / 3.0f;
 }
 
 MenuText::MenuText(size_t size) {
@@ -98,7 +102,7 @@ void MenuText::setColor(const DirectX::SimpleMath::Vector4 & color, int index) {
 			m_letters[i]->setLightColor(color);
 		}
 	}
-	else if(index < m_letters.size() && index >= 0){
+	else if((size_t)index < m_letters.size() && index >= 0){
 		m_letters[index]->setLightColor(color);
 	}
 	
@@ -131,10 +135,10 @@ void MenuText::updateLetterPosition() {
 	
 
 	for (size_t i = 0; i < m_letters.size(); i++) {
-		Vector3 shifting = m_growth * i;
+		Vector3 shifting = m_growth * (float)i;
 		Vector3 startPos = (float)(m_letters.size()-1)*0.5f*m_growth;
 
-		Vector3 _pos = (shifting - startPos)*(spacing*m_size*0.5) + m_position;
+		Vector3 _pos = (shifting - startPos)*(spacing*m_size*0.5f) + m_position;
 
 		m_letters[i]->setPosition(_pos);
 		

@@ -26,11 +26,13 @@ GameState::GameState(StateStack& stack)
 
 
 	GameInfo * info = GameInfo::getInstance();
+	std::string map = info->convertedGameSettings.map;
 
 	if (info->gameSettings.teams.size() == 0) {
 		info->gameSettings.teams.push_back({ 0, 0 });
 		info->gameSettings.teams.push_back({ 1, 0 });
 	}
+
 #ifdef _DEBUG
 	if (info->getPlayers().size() == 0) {
 		info->addPlayer({ nullptr, 0, 0, 0, 0, 0, 0, 0, 0 });
@@ -40,7 +42,8 @@ GameState::GameState(StateStack& stack)
 	}
 #endif
 
-	m_level = std::make_unique<Level>("symmetric.level");
+	m_level = std::make_unique<Level>(map);
+	
 
 	// Set up handlers
 	m_particleHandler = std::make_unique<ParticleHandler>(&m_cam);

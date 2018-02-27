@@ -38,10 +38,14 @@ public:
 			~UpgradeObject();
 			void update(float dt);
 			void draw();
+
 			
 
 		private:
 			DirectX::SimpleMath::Vector3 m_spawnPosition;
+			float m_offset[2];
+			float m_rotationOffset[2];
+
 		};
 
 
