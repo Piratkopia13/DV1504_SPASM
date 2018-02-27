@@ -295,7 +295,7 @@ void Character::update(float dt) {
 		
 			if (m_hook) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
-				m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
+				m_movement.hooked = m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 			}
 
 
@@ -562,7 +562,7 @@ void Character::fire()
 }
 
 void Character::hook() {
-	m_movement.hooked = m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
+	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
 }
 
 void Character::stopHook() {
