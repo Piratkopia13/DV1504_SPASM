@@ -43,7 +43,6 @@ private:
 
 	Model* m_block;
 
-	Model* m_letters[26];
 
 
 	// Texts
@@ -86,8 +85,9 @@ private:
 		TIMELIMIT,
 		SCORELIMIT,
 		RESPAWNTIME,
+		GRAVITY,
+		PLAYERLIFE
 
-		GRAVITY
 	};
 
 	enum GameModeSelection {
@@ -104,10 +104,27 @@ private:
 	};
 
 	enum OptionsMenu {
-		CHOICE0,
-		CHOICE1,
-		CHOICE2
+		MAIN,
+		GRAPHICS,
+		SOUND
 	};
+
+	enum GraphicsMenu {
+		PARTICLES,
+		BLOOM,
+		ANTIALIASING,
+		BACKGROUND,
+		FPSCOUNTER,
+		VSYNC,
+		WTFG
+	};
+	enum SoundMenu {
+		MASTERVOLUME,
+		BACKGROUNDVOLUME,
+		EFFECTVOLUME,
+		WTFS
+	};
+
 
 	enum PlayerSelect {
 		OFFLINE,
@@ -182,12 +199,15 @@ private:
 
 	};
 	std::vector<PlayerMenuModel> m_playerMenuModelz;
+	PlayerMenuModel m_graphicsModel;
 
 	MenuHandler* m_mapMenu;
 
 	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;
 	MenuHandler* m_optionsMenu;
+	MenuHandler* m_graphicsMenu;
+	MenuHandler* m_soundMenu;
 
 	void initMain();
 	void initGamemode();
@@ -198,8 +218,10 @@ private:
 	void initMap();
 
 	void initProfile();
-	void initOptions();
 
+	void initOptions();
+	void initGraphics();
+	void initSound();
 
 
 
@@ -210,10 +232,14 @@ private:
 
 	void setProfileMenu(bool active);
 	void setOptionsMenu(bool active);
+	void setGraphicsMenu(bool active);
+	void setSoundMenu(bool active);
 
 	void updateCamera();
+	
 	void startGame();
-
+	void updateGraphics();
+	void updateSound();
 
 	
 };

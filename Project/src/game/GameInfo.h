@@ -44,45 +44,77 @@ public:
 	};
 
 	struct GraphicsSettings {
-		size_t particles;
-		size_t bloom;
-		size_t AA;
-		size_t backGround;
-		bool fpsCounter;
-		bool vSync;
+		size_t particles = 0;
+		size_t bloom = 1;
+		size_t AA = 0;
+		size_t backGround = 0;
+		size_t fpsCounter = 1;
+		bool vSync = 0;
+		bool wtf = false;
 	};
-
+	struct ConvertedGraphics {
+		float particles = 3;
+		float bloom = 1;
+		float AA = 1;
+		float background = 1;
+		float fpsCounter = 1;
+		float vSync = 0;
+		float wtf = 0;
+	};
 
 	struct GameSettings {
 		struct Team {
 			size_t color;
 			size_t preOrder;
 		};
-		size_t map;
-		size_t gameMode;
-		size_t scoreLimit;
-		size_t timelimit;
-		size_t respawnTime;
-		size_t playerLife;
-		size_t gravity;
+		size_t map = 0;
+		size_t gameMode = 0;
+		size_t scoreLimit = 0;
+		size_t timelimit = 0;
+		size_t respawnTime = 0;
+		size_t playerLife = 0;
+		size_t gravity = 0;
 		std::vector<Team> teams;
 	};
+	struct ConvertedGameSettings {
+		struct Team {
+			DirectX::SimpleMath::Vector4 color;
+			size_t preOrder;	
+		};
+		std::string map = "Domination/carrot.level";
+		size_t gamemode = 0;
+		float scoreLimit = 50;
+		float timeLimit = 0;
+		float respawnTime = 2;
+		float playerLife = 100;
+		float gravity = 1;
+		std::vector<Team> teams;
+	};
+
+
 	struct Setting {
-		std::string name;
-		float value;
-		float value2;
+		std::string name = "";
+		float value = 0;
+		float value2 = 0;
 	};
 	
 	struct SoundSettings {
-		float masterVolume;
-		float backGroundSoundVolume;
-		float effectSoundVolume;
-		bool wtf;
+		float masterVolume = 0.5;
+		float backGroundSoundVolume = 0.5;
+		float effectSoundVolume = 0.5;
+		bool wtf = false;
 	};
 
+	enum Modes {
+		DOMINATION,
+		DEATHMATCH,
+		TEAMDEATHMATCH
+	};
 
 	GameSettings gameSettings;
+	ConvertedGameSettings convertedGameSettings;
 	GraphicsSettings graphicsSettings;
+	ConvertedGraphics convertedGraphics;
 	SoundSettings soundSettings;
 
 	std::vector<DirectX::SimpleMath::Vector4> defaultColors;
@@ -93,10 +125,34 @@ public:
 	std::vector<std::string> botLegNames;
 	std::vector<std::string> botArmNames;
 
-	//std::vector<Setting> gameModes;
+	std::vector<std::vector<std::string>> maps;
+	std::vector<Setting> gameModes;
+	std::vector<Setting> timeLimit;
+	std::vector<Setting> scoreLimit;
+	std::vector<Setting> respawnTime;
+	std::vector<Setting> gravity;
+	std::vector<Setting> playerHealth;
+
+	std::vector<Setting> particles;
+	std::vector<Setting> bloom;
+	std::vector<Setting> antiAliasing;
+	std::vector<Setting> background;
+	std::vector<Setting> fpsCounter;
+	std::vector<Setting> frameRateLock;
+	std::vector<Setting> vSync;
+	std::vector<Setting> wtfGraphics;
 
 
+	std::vector<Setting> masterVolume;
+	std::vector<Setting> backgroundVolume;
+	std::vector<Setting> effectVolume;
+	std::vector<Setting> wtfVolume;
 
+	void convertGameSettings();
+
+	void convertGraphics();
+	void saveGraphics();
+	void saveSound();
 
 private:
 	static GameInfo* m_infoInstance;
@@ -105,13 +161,14 @@ private:
 	std::vector<Profile> m_profiles;
 	std::vector<Player> m_currentPlayers;
 
+
+
+
+
 	void loadProfiles();
 	void saveProfiles();
 
 	void loadGraphics();
-	void saveGraphics();
-
 	void loadSound();
-	void saveSound();
 
 };
