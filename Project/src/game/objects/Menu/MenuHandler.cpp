@@ -16,6 +16,9 @@ MenuHandler::MenuHandler() {
 	m_offColor = Vector4(0.4f, 0.4f, 0.4f, 1);
 
 	m_crazy = false;
+	m_crazyAcc = 0;
+	m_crazyThresh = 1.0f / 3.0f;
+
 	updateTransform();
 }
 
@@ -45,7 +48,12 @@ void MenuHandler::draw() {
 
 void MenuHandler::update(float dt) {
 	if (m_crazy) {
-		// wtf
+		m_crazyAcc += dt;
+		if (dt >= m_crazyThresh) {
+			
+
+
+		}
 	}
 
 
@@ -277,21 +285,18 @@ void MenuHandler::down() {
 
 
 
-size_t MenuHandler::getActive()
-{
+size_t MenuHandler::getActive() {
 	return m_activeItem;
 }
 
-size_t MenuHandler::getActiveOption()
-{
+size_t MenuHandler::getActiveOption() {
 	if (m_itemList[m_activeItem].selector) {
 		return m_itemList[m_activeItem].selector->getOption();
 	}
 	return 0;
 }
 
-size_t MenuHandler::getOptionAt(size_t index)
-{
+size_t MenuHandler::getOptionAt(size_t index) {
 	if (m_itemList[index].selector) {
 		return m_itemList[index].selector->getOption();
 	}
@@ -299,8 +304,7 @@ size_t MenuHandler::getOptionAt(size_t index)
 }
 
 
-Object* MenuHandler::getTarget()
-{
+Object* MenuHandler::getTarget() {
 	if (m_itemList[m_activeItem].selector) {
 		return m_itemList[m_activeItem].text;
 	}

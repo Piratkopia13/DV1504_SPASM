@@ -57,6 +57,7 @@ private:
 		MenuItem* item;
 		MenuSelector* selector;
 		MenuText* text;
+		MenuText* extraText;
 		bool editable;
 	};
 
@@ -77,6 +78,8 @@ private:
 	std::vector<MenuIndex> m_itemList;
 
 	bool m_crazy;
+	float m_crazyAcc;
+	float m_crazyThresh;
 
 
 	void updateTransform();
