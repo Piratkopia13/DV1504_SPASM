@@ -44,6 +44,8 @@ public:
 
 	std::string getAsString();
 
+	float getCapturePercentage();
+
 private:
 	struct Team {
 		unsigned int id;
