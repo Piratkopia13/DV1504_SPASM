@@ -7,6 +7,7 @@
 class Hook : public Object{
 private:
 	bool m_triggerHeld;
+	bool m_outOfBounds;
 	float m_distance;
 	DirectX::SimpleMath::Vector3 m_position;
 	DirectX::SimpleMath::Vector3 m_direction;
@@ -16,7 +17,7 @@ public:
 	~Hook();
 
 	void update(float dt, const DirectX::SimpleMath::Vector3& position);
-	void triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction);
+	bool triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction);
 	void triggerRelease();
 	void draw();
 	float getLength(DirectX::SimpleMath::Vector3 playerPos);

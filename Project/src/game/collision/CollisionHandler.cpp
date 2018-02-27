@@ -167,6 +167,16 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 	return m_level->getGrid()->checkHoles(Grid::convertToIndexed(playerPos));
 }
 
+bool CollisionHandler::outOfBounds(Character* character) {
+	float x = character->getTransform().getTranslation().x;
+	float y = character->getTransform().getTranslation().y;
+	bool oob = false;
+	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight())
+		oob = true;
+
+	return oob;
+}
+
 bool CollisionHandler::resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount) {
 
 	auto& projectiles = m_projectileHandler->getProjectiles();
@@ -227,6 +237,8 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 	float nextIntersectY, nextIntersectX;
 	float tY, tX, t;
 
+	DirectX::SimpleMath::Vector3 test;
+
 	if (direction.x > 0.f)
 		deltaX = 1;
 	else if (direction.x < 0.f)
@@ -249,22 +261,22 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 	currentIndex.y = static_cast<int>(floor(currentPos.y / Level::DEFAULT_BLOCKSIZE));
 
 	bool intersection = false;
-	if (currentIndex.x <= 0.f || currentIndex.x >= m_level->getGridWidth() || currentIndex.y <= 0 || currentIndex.y >= m_level->getGridHeight())
+	if (m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y))
 		intersection = true;
 
-	while (!intersection && currentIndex.x > -1 && currentIndex.x < (m_level->getGridWidth() - 1)) {
+	while (!intersection) {
 		if (deltaX > 0)
 			nextIntersectX = float(deltaX + currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
 		else
 			nextIntersectX = float(currentIndex.x) * Level::DEFAULT_BLOCKSIZE;
-		tX = DirectX::XMMax(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
+		tX = max(fabs((nextIntersectX - currentPos.x)), 0.0001f) / direction.x;
 
 		if (deltaY > 0)
 			nextIntersectY = float(deltaY + currentIndex.y) * Level::DEFAULT_BLOCKSIZE;
 		else
 			nextIntersectY = float(currentIndex.y) * Level::DEFAULT_BLOCKSIZE;
 
-		tY = DirectX::XMMax(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
+		tY = max(fabs((nextIntersectY - currentPos.y)), 0.0001f) / direction.y;
 
 		tX = fabs(tX);
 		tY = fabs(tY);
@@ -278,12 +290,25 @@ DirectX::SimpleMath::Vector3 CollisionHandler::rayTraceLevel(const DirectX::Simp
 			currentIndex.x += deltaX;
 		}
 
-		intersection = m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y);
+		if (currentIndex.x < 0 || currentIndex.y < 0 || currentIndex.x > m_level->getGridWidth() || currentIndex.y > m_level->getGridHeight()) {
+			intersection = true;
+			t *= max(m_level->getGridHeight(), m_level->getGridWidth()) * 10000000;
+		}
+		else {
+			intersection = m_level->getGrid()->atGrid(currentIndex.x, currentIndex.y);
+		}
 
 		currentPos = currentPos + direction * t;
+
+		test = (currentPos - origin);
+		float test2 = test.Length();
+		if (test2 > 25.f && test2 < 100)
+			int asd = 2;
 	}
 
 	hitPos = DirectX::SimpleMath::Vector3(currentPos.x, currentPos.y, 0.0f);
+	
+
 
 	return hitPos;
 }

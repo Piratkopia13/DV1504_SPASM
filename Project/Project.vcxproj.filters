@@ -18,6 +18,7 @@
     <FxCompile Include="res\shaders\SimpleTextureShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl" />
     <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
+    <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />

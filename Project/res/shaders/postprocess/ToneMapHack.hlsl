@@ -1,3 +1,5 @@
+#include "../noiseSimplex.hlsl"
+
 struct VSIn {
   float4 position : POSITION0;
 };
@@ -28,6 +30,9 @@ float4 PSMain(PSIn input) : SV_Target0 {
   float4 color = tex.Sample(ss, input.texCoord);
   float multipier = 1.f / max(max(color.r, max(color.g, color.b)), 1.f);
   //multipier = 1.f;
+  //float n = snoise(input.texCoord * 500.f) * 0.03f;
+  //float3 noise = float3(n, n, n);
+  //return float4(color.rgb * multipier + noise, color.a);
   return float4(color.rgb * multipier, color.a);
 
 }

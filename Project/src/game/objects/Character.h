@@ -30,6 +30,7 @@ public:
 	float getMaxHealth();
 	bool isAlive();
 	void damage(float dmg);
+	const DirectX::SimpleMath::Vector3& getAimDirection() const;
 
 	void VibrateController(unsigned int index, float strength = 1, float timeDecreaseMul = 1);
 
@@ -37,8 +38,10 @@ public:
 	void setHook(Hook* hook);
 	void addUpgrade(const Upgrade& upgrade);
 
-
+	void setRespawnTime(float time);
+	float getRespawnTime() const;
 	void living();
+	void setRespawnPoint(const DirectX::SimpleMath::Vector3& respawnPoint);
 	void dead();
 
 	void setLightColor(const DirectX::SimpleMath::Vector4& color);
@@ -48,8 +51,13 @@ private:
 	Hook* m_hook;
 
 	ParticleHandler* m_particleHandler;
-
 	std::shared_ptr<ParticleEmitter> m_thrusterEmitter;
+
+	DirectX::SimpleMath::Vector3 m_nextRespawnPoint;
+	DirectX::SimpleMath::Vector4 m_lightColor;
+	// Ghost vars
+	DirectX::SimpleMath::Vector3 m_deathPoint;
+	float m_deathInterp;
 
 	struct InputDevice {
 		bool controller;
@@ -106,6 +114,7 @@ private:
 	ControllerVibration m_vibration[2];
 	float m_vibFreq;
 	float m_vibDeltaAcc;
+	float m_respawnTime;
 	
 	unsigned int m_currentTeam;
 
@@ -119,7 +128,7 @@ private:
 	void stopHook();
 
 	bool updateVibration(float dt);
-	float sinDegFromVec(DirectX::SimpleMath:: Vector3 vec) {
+	float sinDegFromVec(DirectX::SimpleMath::Vector3 vec) {
 
 		return atan2(vec.y, vec.x);
 	}
