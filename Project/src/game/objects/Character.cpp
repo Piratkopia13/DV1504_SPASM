@@ -459,6 +459,8 @@ void Character::hitByProjectile(const CollisionHandler::CharacterHitResult& hitR
 		damage(hitResult.hitDmg);
 		addVelocity(hitResult.knockbackDir * hitResult.knockbackAmount);
 		setGrounded(false);
+		m_lastAttackerIndex = hitResult.attacker;
+		m_resetAttacker = 0.0f;
 
 		// Hit particle effet
 		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
