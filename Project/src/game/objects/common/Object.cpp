@@ -11,7 +11,6 @@ Object::Object()
 
 Object::~Object() {
 	Memory::safeDelete(this->boundingBox);
-	
 }
 
 void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {

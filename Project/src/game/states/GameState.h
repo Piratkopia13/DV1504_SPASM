@@ -10,6 +10,7 @@
 #include "../UpgradeHandler.h"
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
+#include "../background/ScoreVisualization.h"
 
 class GameState : public State {
 public:
@@ -59,4 +60,6 @@ private:
 
 	// The current gamemode
 	std::unique_ptr<Gamemode> m_gamemode;
+
+	std::unique_ptr<ScoreVisualization> m_scoreVisualization;
 };
