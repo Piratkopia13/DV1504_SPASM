@@ -26,7 +26,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		bodyModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botBodyNames[m_info->getPlayers()[i].bodyModel] + "_body").getModel();
 		legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[m_info->getPlayers()[i].legModel] + "_legs").getModel();
 
-		Hook* tempHook = new Hook(hookModel);
+		Hook* tempHook = new Hook(hookModel, particleHandler);
 		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel, i);
 		Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
