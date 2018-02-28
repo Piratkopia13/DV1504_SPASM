@@ -24,8 +24,8 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_teamTwoColor = info->getDefaultColor(info->gameSettings.teams[1].color, 0);
 
 	// Add default scores
+	addScore(50, 0);
 	addScore(50, 1);
-	addScore(50, 2);
 
 	Gamemode::setGametime(60000000000000000.f);
 
@@ -37,8 +37,8 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	}
 
 
-	setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
-	setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
+	setTeamColor(0, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
+	setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
 
 	m_currentActivePoint = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
 	replacePoint();
@@ -61,8 +61,8 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 	Gamemode::update(nullptr, dt);
 
-	float redScore = Gamemode::getScore(1);
-	float blueScore = Gamemode::getScore(2);
+	float redScore = Gamemode::getScore(0);
+	float blueScore = Gamemode::getScore(1);
 
 	float totScore = redScore + blueScore;
 	
@@ -122,9 +122,9 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	}
 
 	int owningTeam = m_controlNodes[m_currentActivePoint]->getTeam();
-	if (owningTeam != 0) {
+	if (owningTeam != -1) {
 		Gamemode::addScore(dt, owningTeam);
-		Gamemode::addScore(-dt, (owningTeam == 1) ? 2 : 1);
+		Gamemode::addScore(-dt, (owningTeam == 0) ? 1 : 0);
 	}
 
 
@@ -150,10 +150,10 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 	Vector4 tempColor(1.0f, 1.0f, 1.0f, 1.0f);
 	int tempTeam = m_controlNodes[m_currentActivePoint]->getTeam();
-	if (tempTeam == 1) {
+	if (tempTeam == 0) {
 		tempColor = m_teamOneColor;
 	}
-	else if (tempTeam == 2) {
+	else if (tempTeam == 1) {
 		tempColor = m_teamTwoColor;
 	}
 	m_pointEmitter->updateColor(tempColor);
@@ -178,15 +178,15 @@ void PayloadGamemode::setParticleHandler(ParticleHandler* newParticleHandler) {
 }
 
 int PayloadGamemode::checkWin() {
-	float redScore = Gamemode::getScore(1);
-	float blueScore = Gamemode::getScore(2);
+	float redScore = Gamemode::getScore(0);
+	float blueScore = Gamemode::getScore(1);
 
-	m_teamWin = 0;
+	m_teamWin = -1;
 	if (redScore > m_scoreToWin)
-		m_teamWin = 1;
+		m_teamWin = 0;
 	if (blueScore > m_scoreToWin)
-		m_teamWin = 2;
-	if (m_teamWin != 0 && blueScore == redScore)
+		m_teamWin = 1;
+	if (m_teamWin != -1 && blueScore == redScore)
 		m_teamWin = -1;
 
 	return m_teamWin;

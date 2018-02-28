@@ -3,7 +3,7 @@
 
 ControlNode::ControlNode(Model* model) {
 	setModel(model);
-	m_team = 0;
+	m_team = -1;
 
 	m_beingCaptured = false;
 	m_timeTillCapture = 3.f;
@@ -16,14 +16,14 @@ ControlNode::ControlNode(Model* model) {
 
 	m_teamOne.color = m_teamOneColor;
 	m_teamOne.ownershipTime = 0.f;
-	m_teamOne.id = 1;
+	m_teamOne.id = 0;
 	m_teamOne.capturing = false;
 	m_teamOne.isOwner = false;
 	m_teamOne.timeCapturing = 0.f;
 
 	m_teamTwo.color = m_teamTwoColor;
 	m_teamTwo.ownershipTime = 0.f;
-	m_teamTwo.id = 2;
+	m_teamTwo.id = 1;
 	m_teamTwo.capturing = false;
 	m_teamTwo.isOwner = false;
 	m_teamTwo.timeCapturing = 0.f;
@@ -59,7 +59,7 @@ void ControlNode::setTeamColor(const int team, const DirectX::SimpleMath::Vector
 
 void ControlNode::setTeam(const int team) {
 	m_team = team;
-	if (team == 1) {
+	if (team == 0) {
 		m_teamOne.isOwner = true;
 		m_teamOne.timeCapturing = m_timeTillCapture;
 		m_teamTwo.isOwner = false;
@@ -206,7 +206,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 	if (m_teamOne.timeCapturing <= 0.f && m_teamOne.isOwner) {
 		m_teamOne.capturing = false;
 		m_teamOne.isOwner = false;
-		m_team = 0;
+		m_team = -1;
 		m_teamOne.timeCapturing = 0.f;
 		m_ownershipColor = m_teamZeroColor;
 	}
@@ -222,7 +222,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 	if (m_teamTwo.timeCapturing <= 0.f && m_teamTwo.isOwner) {
 		m_teamTwo.capturing = false;
 		m_teamTwo.isOwner = false;
-		m_team = 0;
+		m_team = -1;
 		m_teamTwo.timeCapturing = 0.f;
 		m_ownershipColor = m_teamZeroColor;
 	}
@@ -265,7 +265,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 }
 
 void ControlNode::reset() {
-	m_team = 0;
+	m_team = -1;
 
 	m_beingCaptured = false;
 	m_timeCaptured = 0.f;
