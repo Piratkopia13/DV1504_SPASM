@@ -6,7 +6,7 @@
 #include "../gamemodes/Gamemode.h"
 #include "../objects/Block.h"
 
-class ScoreVisualization {
+class ScoreVisualization : public Object {
 public:
 	ScoreVisualization(Level* level, Gamemode* currentGamemode);
 	~ScoreVisualization();

@@ -31,6 +31,7 @@ GameState::GameState(StateStack& stack)
 	if (info->gameSettings.teams.size() == 0) {
 		info->gameSettings.teams.push_back({ 0, 0 });
 		info->gameSettings.teams.push_back({ 1, 0 });
+		info->convertGameSettings();
 	}
 
 #ifdef _DEBUG
@@ -61,6 +62,7 @@ GameState::GameState(StateStack& stack)
 	}
 
 	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
+	m_scene.addObject(m_scoreVisualization.get());
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
@@ -282,6 +284,8 @@ bool GameState::update(float dt) {
 	// Update particles
 	m_particleHandler->update(dt);
 
+	m_scoreVisualization->update(dt);
+
 	return true;
 }
 
@@ -293,8 +297,6 @@ bool GameState::render(float dt) {
 
 	// Draw the scene using deferred rendering
 	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
-
-	m_scoreVisualization->draw();
 
 	//m_particleHandler->draw();
 
