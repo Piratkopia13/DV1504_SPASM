@@ -1,4 +1,5 @@
 #include "CharacterHandler.h"
+#include "collision/CollisionHandler.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -18,14 +19,15 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Model* bodyModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botBodyNames[0] + "_body").getModel();
 	Model* armLeftModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botArmNames[0] +"_armL").getModel();
 	Model* armRightModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botArmNames[0] + "_armR").getModel();
+	Model* legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[0] + "_legs").getModel();
 
 	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
 		headModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botHeadNames[m_info->getPlayers()[i].headModel] + "_head").getModel();
 		bodyModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botBodyNames[m_info->getPlayers()[i].bodyModel] + "_body").getModel();
-
+		legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[m_info->getPlayers()[i].legModel] + "_legs").getModel();
 
 		Hook* tempHook = new Hook(hookModel);
-		Character* tempChar = new Character(bodyModel, armLeftModel, headModel);
+		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel, i);
 		Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
@@ -88,13 +90,15 @@ void CharacterHandler::killPlayer(unsigned int index) {
 
 		// Death explosion
 		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-			ParticleEmitter::EXPLOSION, m_characters[index]->getTransform().getTranslation(), Vector3(-0.5f), Vector3(7.f, 7.f, 4.f), 
-				0.f, 75, 1.0f, 1.0f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 75U, true, true)));
+			ParticleEmitter::EXPLOSION, m_characters[index]->getTransform().getTranslation(), Vector3(-0.5f), Vector3(7.f, 7.f, 4.f),
+			0.f, 75, 1.0f, 1.0f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 75U, true, true)));
 
-		
+
 		m_characters[index]->setRespawnPoint(getRandomSpawnPoint(m_characters[index]->getTeam()));
 		m_characters[index]->dead();
-
+		m_info->getScore().addDeath(index);
+		if(m_characters[index]->getLastAttacker() != -1)
+			m_info->getScore().addKill(m_characters[index]->getLastAttacker());
 		m_respawnTimers[index] = 0.01f;
 		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
 		switch (rnd) {
@@ -130,6 +134,17 @@ void CharacterHandler::setRespawnTime(float time) {
 }
 
 void CharacterHandler::update(float dt) {
+	
+	//if (m_characters[0]->m_inputDevice.controllerPort == 0) {
+	//	Vector3 hitPoint;
+	//	float t;
+	//	Vector3 middleMuzzlePos = m_characters[0]->m_weapon->getNozzlePos();
+	//	middleMuzzlePos.z = 0.f;
+	//	bool hit = CollisionHandler::getInstance()->rayTraceAABB({ middleMuzzlePos, m_characters[0]->m_input.aim }, *m_characters[1]->getBoundingBox(), hitPoint, t);
+	//	if (hit) {
+	//		Logger::log("HIT @ " + Utils::vec3ToStr(hitPoint));
+	//	}
+	//}
 	
 	for (size_t i = 0; i < m_characters.size(); i++) {
 		m_characters[i]->update(dt);

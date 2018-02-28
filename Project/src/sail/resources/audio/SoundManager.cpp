@@ -20,6 +20,9 @@ SoundManager::SoundManager() {
 	CoInitializeEx( NULL, COINIT_MULTITHREADED );
 
 	m_playSound = true;
+	m_masterVolume = 1.f;
+	m_effectsVolume = 1.f;
+	m_ambientVolume = 1.f;
 
 	HRESULT hr;
 	if (FAILED(hr = XAudio2Create(&m_audioEngine, 0, XAUDIO2_DEFAULT_PROCESSOR))) {
@@ -35,6 +38,8 @@ SoundManager::SoundManager() {
 	if (m_playSound) {
 
 		m_audioEngine->StartEngine();
+
+		m_masterVoice->SetVolume(m_masterVolume);
 
 		m_sourceVoices.resize(NUMBER_OF_CHANNELS);
 		for (int i = 0; i < NUMBER_OF_CHANNELS; i++)
@@ -87,7 +92,7 @@ void SoundManager::playSoundEffect(const SoundEffect soundID, float volume, floa
 		m_sourceVoices[m_currSVIndex]->DestroyVoice();
 
 	float pit = min(MAX_PITCH, max(MIN_PITCH, pitch));
-	float vol = min(XAUDIO2_MAX_VOLUME_LEVEL, max(-XAUDIO2_MAX_VOLUME_LEVEL, volume));
+	float vol = min(XAUDIO2_MAX_VOLUME_LEVEL, max(-XAUDIO2_MAX_VOLUME_LEVEL, volume * m_effectsVolume));
 
 	WAVEFORMATEXTENSIBLE wfx = m_sounds[soundID]->getWFX();
 	XAUDIO2_BUFFER buffer = m_sounds[soundID]->getBuffer();
@@ -108,7 +113,7 @@ void SoundManager::playSoundEffectWithRndPitch(const SoundEffect soundID, float 
 }
 
 
-void SoundManager::playAmbientSound(const Ambient soundID, const bool looping) {
+void SoundManager::playAmbientSound(const Ambient soundID, const bool looping, float volume) {
 	if (!m_playSound)
 		return;
 
@@ -117,7 +122,8 @@ void SoundManager::playAmbientSound(const Ambient soundID, const bool looping) {
 		return;
 	}
 
-	m_ambientSounds[soundID]->Play(looping);
+	float vol = min(XAUDIO2_MAX_VOLUME_LEVEL, max(-XAUDIO2_MAX_VOLUME_LEVEL, volume * m_ambientVolume));
+	m_ambientSounds[soundID]->Play(looping, vol);
 	
 	
 }
@@ -207,14 +213,28 @@ bool SoundManager::loadAmbientSound(const Ambient soundID, wchar_t* file) {
 	return true;
 }
 
-void SoundManager::setVolume(const float& volume) {
+void SoundManager::setMasterVolume(const float& volume) {
 	if (!m_playSound)
 		return;
 
 	m_masterVoice->SetVolume(volume);
 }
 
-float SoundManager::getVolume() {
+void SoundManager::setAmbientVolume(const float& volume) {
+	if (!m_playSound)
+		return;
+
+	m_ambientVolume = volume;
+}
+
+void SoundManager::setEffectsVolume(const float& volume) {
+	if (!m_playSound)
+		return;
+
+	m_effectsVolume = volume;
+}
+
+float SoundManager::getMasterVolume() {
 	if (!m_playSound)
 		return 0.f;
 

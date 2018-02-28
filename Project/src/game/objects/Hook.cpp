@@ -3,6 +3,7 @@
 
 Hook::Hook(Model *drawModel) {
 	model = drawModel;
+	m_hookVelocity = 60.f;
 	setLightColor(DirectX::SimpleMath::Vector4(3.f));
 }
 
@@ -10,35 +11,54 @@ Hook::~Hook() {
 
 }
 
-void Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
-	if (m_triggerHeld && !m_outOfBounds) {
+bool Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
+	if (m_triggerHeld) {
 		m_direction = (m_position - position);
 		m_direction.z = 0.f;
 		m_distance = m_direction.Length();
 		m_direction.Normalize();
-		DirectX::SimpleMath::Vector3 tempPos = CollisionHandler::getInstance()->rayTraceLevel(position, m_direction);
+		DirectX::SimpleMath::Vector3 tempPos;
+		float t;
+		CollisionHandler::getInstance()->rayTraceLevel({ position, m_direction }, tempPos, t);
 		float tempDistance = (tempPos - position).Length();
 		if (m_distance > tempDistance) {
 			m_position = tempPos;
 			m_distance = tempDistance;
 		}
-		this->setPosition(position + (m_direction * m_distance * 0.5f));
+		m_timeHooked += dt;
+
+	
+		float hookPos;
+		if (m_outOfBounds && m_timeHooked > 0.2f)
+			hookPos = 0.0f;
+		else
+			hookPos = m_hookVelocity * m_timeHooked;
+		hookPos = min(hookPos / m_distance, 0.5f);
+		this->setPosition(position + (m_direction * m_distance * hookPos));
 		this->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(m_direction.y, m_direction.x)));
-		this->getTransform().setNonUniScale(m_distance*10.0f, 1.0f, 1.0f);
+		this->getTransform().setNonUniScale(m_distance*hookPos*20.0f, 1.0f, 1.0f);
+		if (hookPos == 0.5f)
+			return true;
 	}
+	return false;
 }
 
-bool Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
+void Hook::triggerPull(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& direction) {
 	m_triggerHeld = true;
 	m_outOfBounds = false;
-	m_position = CollisionHandler::getInstance()->rayTraceLevel(position, direction);
+	m_timeHooked = 0.0f;
+	DirectX::SimpleMath::Vector3 hitPos;
+	float t;
+	if (CollisionHandler::getInstance()->rayTraceLevel({ position, direction }, hitPos, t)) {
+		m_position = hitPos;
+
+	}
+	else {
+		m_outOfBounds = true;
+	}
 	m_direction = (m_position - position);
 	m_direction.z = 0.f;
 	m_distance = m_direction.Length();
-	if (m_distance > 10000) {
-		m_outOfBounds = true;
-	}
-	return !m_outOfBounds;
 }
 
 void Hook::triggerRelease() {

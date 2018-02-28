@@ -65,7 +65,7 @@ DirectX::SimpleMath::Vector3 Weapon::getNozzlePos() const {
 
 void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
-	static float baseSpeed = 20.0f;
+	static float baseSpeed = 10.0f;
 	static float baseDamage = 10.0f;
 	static float baseKnockback = 5.0f;
 	static Vector3 zVec(0, 0, 1);
@@ -75,7 +75,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 	static float projScale = 4.f;
 
 	if (m_projectileHandler) {
-		float extraSpeed = 1;
+		float extraSpeed = 10.f;
 		float extraDamage = 1;
 		float extraKnockback = 1;
 		if (m_upgrade->knockbackActive()) {
@@ -98,10 +98,11 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
 			m_nozzlePos,
-			direction * baseSpeed * extraSpeed, 
-			baseDamage * extraDamage, 
+			direction * baseSpeed * extraSpeed,
+			baseDamage * extraDamage,
 			baseKnockback * extraKnockback,
-			m_owner->getTeam());
+			m_owner->getTeam(),
+			m_owner->getIndex());
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
@@ -132,13 +133,15 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				Projectile* temp2 = new Projectile(
 					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				if (m_upgrade->gravActive()) {
 					temp1->setGravScale(0);
 					temp2->setGravScale(0);
@@ -208,19 +211,22 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	tempMatrix *= Matrix::CreateTranslation(tempPos);
 
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
-	float length = (CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) - m_nozzlePos).Length();
+	Vector3 hitPos;
+	float t;
+	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
+	float length = (hitPos - m_nozzlePos).Length();
 	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
 	m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
 	m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
 
-	m_laser.dotTransform.setTranslation(CollisionHandler::getInstance()->rayTraceLevel(m_nozzlePos, direction) + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
+	m_laser.dotTransform.setTranslation(hitPos + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
 
 	//move(dt);
 }
 
 void Weapon::draw() {
 	model->setTransform(&getTransform());
-	if (this->getTransform().getTranslation().z < 0.5f) {
+	if (this->getTransform().getTranslation().z < 0.5f && m_owner->isAlive()) {
 		m_laser.laserModel->setTransform(&m_laser.laserTransform);
 		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
 

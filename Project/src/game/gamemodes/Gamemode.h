@@ -11,7 +11,8 @@ public:
 	virtual void update(CharacterHandler* charHandler, float delta);
 	virtual void draw();
 
-	float getScore(const int team);
+	const std::vector<float> & getScore();
+	const float & getScore(const int team);
 	float getGametime();
 
 	virtual int checkWin() = 0;
@@ -22,6 +23,6 @@ protected:
 	void addGametime(const float& seconds);
 
 private:
-	float m_scoreTeamOne, m_scoreTeamTwo;
+	std::vector<float> m_teamScore;
 	float m_gametime;
 };

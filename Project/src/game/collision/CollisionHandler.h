@@ -9,16 +9,31 @@ class UpgradeHandler;
 
 class CollisionHandler {
 public:
+	struct Ray {
+		DirectX::SimpleMath::Vector3 o;
+		DirectX::SimpleMath::Vector3 d;
+	};
+	struct CharacterHitResult {
+		float hitDmg;
+		int attacker;
+		DirectX::SimpleMath::Vector3 knockbackDir;
+		DirectX::SimpleMath::Vector3 hitPos;
+		float knockbackAmount;
+	};
+public:
 	CollisionHandler(Level* level, CharacterHandler* charHandler, ProjectileHandler* projHandler, UpgradeHandler* upHandler);
 	~CollisionHandler();
 
 	void resolveLevelCollisionWith(Character* chara, float dt);
-	bool resolveProjectileCollisionWith(Character* chara, DirectX::SimpleMath::Vector3& knockbackDir, float& hitDmg, float& knockbackAmount);
+	bool rayTraceAABB(const Ray& ray, const AABB& bb, DirectX::SimpleMath::Vector3& hitPos, float& hitT);
+	bool checkCharacterCollisionWith(Projectile* proj, float dt, float& t, Character** hitCharacter, CharacterHitResult& hitResult);
+	bool checkLevelCollisionWith(Projectile* proj, float dt, float& t, DirectX::SimpleMath::Vector3& hitPos);
 	bool resolveCoverCollision(const DirectX::SimpleMath::Vector3& playerPos);
-	bool checkLevelCollisionWith(Projectile* proj, DirectX::SimpleMath::Vector3& hit, float dt = 0.f);
 	bool resolveUpgradeCollisionWith(Character* character);
 	bool outOfBounds(Character* character);
-	DirectX::SimpleMath::Vector3 rayTraceLevel(const DirectX::SimpleMath::Vector3& origin, const DirectX::SimpleMath::Vector3& dir);
+	bool rayTraceLevel(const Ray& ray, DirectX::SimpleMath::Vector3& hitPos, float& hitT);
+
+	bool resolveProjectileCollision(float dt);
 
 	static CollisionHandler* getInstance();
 

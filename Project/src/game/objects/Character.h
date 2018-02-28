@@ -5,14 +5,15 @@
 #include "Weapon.h"
 #include "Hook.h"
 #include "../ParticleHandler.h"
+#include "../collision/CollisionHandler.h"
 
 
 class Character : public Moveable {
 friend CharacterHandler;
 public:
 	Character();
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel);
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, int index);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, int index, unsigned int usingController, unsigned int port);
 	virtual ~Character();
 
 	void processInput();
@@ -31,6 +32,7 @@ public:
 	bool isAlive();
 	void damage(float dmg);
 	const DirectX::SimpleMath::Vector3& getAimDirection() const;
+	void hitByProjectile(const CollisionHandler::CharacterHitResult& hitResult);
 
 	void VibrateController(unsigned int index, float strength = 1, float timeDecreaseMul = 1);
 
@@ -43,7 +45,8 @@ public:
 	void living();
 	void setRespawnPoint(const DirectX::SimpleMath::Vector3& respawnPoint);
 	void dead();
-
+	int getLastAttacker() const;
+	int getIndex() const;
 	void setLightColor(const DirectX::SimpleMath::Vector4& color);
 
 private:
@@ -120,12 +123,17 @@ private:
 
 	Model * m_leftArm;
 	Model * m_head;
+	Model * m_legs;
 	
 	void jump();
 	void stopJump();
 	void fire();
 	void hook();
 	void stopHook();
+
+	int m_playerIndex;
+	int m_lastAttackerIndex;
+	float m_resetAttacker;
 
 	bool updateVibration(float dt);
 	float sinDegFromVec(DirectX::SimpleMath::Vector3 vec) {

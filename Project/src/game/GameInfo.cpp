@@ -335,10 +335,35 @@ void GameInfo::saveSound() {
 
 void GameInfo::loadProfiles() {
 	// read from file
+	std::string filePath = "res/data/data.profiles";
+	std::ifstream profilesFile(filePath);
+	std::string line;
+	if (profilesFile.is_open()) {
+		while (getline(profilesFile, line)) {
+			std::istringstream l(line);
+			std::string tempString;
+			std::vector<std::string> tempList;
+			while (getline(l, tempString, ':')) {
+				tempList.push_back(tempString);
+			}
+			m_profiles.push_back(Profile(tempList[0], std::stoul(tempList[1]), {std::stoul(tempList[2]), std::stoul(tempList[3]), std::stoul(tempList[4]), std::stoul(tempList[5])}));
+		}
+	}
 }
 
 void GameInfo::saveProfiles() {
 	// write to file
+	std::string filePath = "res/data/data.profiles";
+	std::ofstream profilesFile(filePath);
+	if (profilesFile.is_open()) {
+		for (unsigned int i = 2; i < m_profiles.size(); i++) {
+			profilesFile << m_profiles[i].getAsString() << "\n";
+		}
+		profilesFile.close();
+	}
+	else {
+		Logger::Error("Could not open profiles file - no profiles loaded");
+	}
 }
 
 void GameInfo::loadGraphics()
