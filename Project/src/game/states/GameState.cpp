@@ -60,6 +60,8 @@ GameState::GameState(StateStack& stack)
 		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
 	}
 
+	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
+
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
 	Vector2 mapSize = m_level->getGridWorldSize();
@@ -298,6 +300,8 @@ bool GameState::render(float dt) {
 
 	// Draw the scene using deferred rendering
 	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
+
+	m_scoreVisualization->draw();
 
 	//m_particleHandler->draw();
 
