@@ -20,6 +20,7 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 	, m_emitPosition(emitPos)
 	, m_singleUse(singleUse)
 	, m_spawnTimer(0.f)
+	//, m_isBeam(false)
 {
 
 	auto* m_app = Application::getInstance();
@@ -181,6 +182,23 @@ void ParticleEmitter::updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& v
 
 const DirectX::SimpleMath::Vector3& ParticleEmitter::getEmitterPosition() const {
 	return m_emitPosition;
+}
+
+void ParticleEmitter::spawnBeamParticles(const DirectX::SimpleMath::Vector3& startPos, const DirectX::SimpleMath::Vector3& endPos, float step, float minDuration, float maxDuration) {
+
+	float dst = Vector3::Distance(startPos, endPos);
+	Vector3 dir = endPos - startPos;
+	dir.Normalize();
+
+	Vector3 rndAdd = -dir - Vector3(0.5f);
+
+	// Step along the beam and spawn particles with different lifetimes
+	for (float i = 0.f; i < dst; i += step) {
+		addParticle(Particle(startPos + dir * i,
+							 Vector3((Utils::rnd() + rndAdd.x) * m_velocityVariety.x, (Utils::rnd() + rndAdd.y) * m_velocityVariety.y, (Utils::rnd() + rndAdd.z) * m_velocityVariety.z),
+							 1.f, m_gravityScale, minDuration + maxDuration * (i / dst)));
+	}
+
 }
 
 void ParticleEmitter::draw() {

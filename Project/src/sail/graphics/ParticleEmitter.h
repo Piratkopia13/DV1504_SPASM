@@ -26,8 +26,15 @@ public:
 	void updateGravityScale(float gravityScale);
 	void updateVelocityVariety(const DirectX::SimpleMath::Vector3& velVar);
 	void updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& velRndAdd);
-
 	const DirectX::SimpleMath::Vector3& getEmitterPosition() const;
+
+	// try this
+	void spawnBeamParticles(const DirectX::SimpleMath::Vector3& startPos, const DirectX::SimpleMath::Vector3& endPos, float step, float minDuration, float maxDuration);
+
+	// probably not this
+	/*void setAsBeam();
+	void setNextBeamPos(const DirectX::SimpleMath::Vector3& nextPos);*/
+
 
 private:
 	struct Compare {
@@ -54,6 +61,14 @@ private:
 	bool m_useAdditiveBlending;
 	bool m_singleUse;
 	float m_spawnTimer;
+
+	// dont think i need these
+	// Beam settings
+	/*bool m_isBeam;
+	DirectX::SimpleMath::Vector3 m_beamStartPos;
+	DirectX::SimpleMath::Vector3 m_beamEndPos;
+	float m_beamMinDuration;
+	float m_beamMaxDuration;*/
 
 	// Particle settings
 	DirectX::SimpleMath::Vector3 m_emitPosition;

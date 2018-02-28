@@ -381,8 +381,10 @@ bool CollisionHandler::resolveProjectileCollision(float dt) {
 		
 		if (levelHit) {
 			m_projectileHandler->projectileHitLevel(levelHitPos);
+			m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
 		} else if (characterHit) {
 			hitCharacter->hitByProjectile(charaHitRes);
+			m_projectileHandler->projectileHitSomething(proj, charaHitRes.hitPos, dt);
 		}
 
 
