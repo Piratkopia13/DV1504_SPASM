@@ -223,7 +223,7 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 
 void Weapon::draw() {
 	model->setTransform(&getTransform());
-	if (this->getTransform().getTranslation().z < 0.5f) {
+	if (this->getTransform().getTranslation().z < 0.5f && m_owner->isAlive()) {
 		m_laser.laserModel->setTransform(&m_laser.laserTransform);
 		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
 

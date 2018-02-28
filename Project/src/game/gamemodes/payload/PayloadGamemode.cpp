@@ -193,10 +193,12 @@ int PayloadGamemode::checkWin() {
 }
 
 void PayloadGamemode::replacePoint() {
-	int newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
-	while (newIndex == m_currentActivePoint) {
-		newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
-	}
+	if (m_controlNodes.size() > 1) {
+		int newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
+		while (newIndex == m_currentActivePoint) {
+			newIndex = static_cast<int>(floor(Utils::rnd() * m_controlNodes.size()));
+		}
 
-	m_currentActivePoint = newIndex;
+		m_currentActivePoint = newIndex;
+	}
 }
