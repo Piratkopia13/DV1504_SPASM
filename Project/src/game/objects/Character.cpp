@@ -33,15 +33,16 @@ Character::Character()
 	//addVibration(0, 1.f, 2.f);
 }
 
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, int index) : Character() {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, int index) : Character() {
 	this->setModel(bodyModel);
 	this->updateBoundingBox();
 	m_leftArm = lArmModel;
 	m_head = headModel;
+	m_legs = legsModel;
 	m_playerIndex = index;
 }
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, int index, unsigned int usingController, unsigned int port)
-	: Character(bodyModel, lArmModel, headModel, index) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel,int index, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, headModel, legsModel, index) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -303,26 +304,6 @@ void Character::update(float dt) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
 				m_movement.hooked = m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 			}
-
-
-			// Check for and handle if a projectile collides with this character
-			Vector3 knockbackDir;
-			float dmgTaken;
-			float knockbackAmount;
-			bool hit = collHandler->resolveProjectileCollisionWith(this, knockbackDir, dmgTaken, knockbackAmount, m_lastAttackerIndex);
-			if (hit) {
-				damage(dmgTaken);
-				addVelocity(knockbackDir * knockbackAmount);
-				setGrounded(false);
-				m_resetAttacker = 0.0f;
-
-				// Hit particle effet
-				m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-					ParticleEmitter::EXPLOSION, getTransform().getTranslation() - knockbackDir * 0.35f, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
-					0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
-
-				VibrateController(0, 1.f, 1.f);
-			}
 		}
 
 		//Going in and out of cover
@@ -359,19 +340,19 @@ void Character::update(float dt) {
 		collHandler->resolveLevelCollisionWith(this, dt);
 		Moveable::move(dt, false);
 		collHandler->resolveUpgradeCollisionWith(this);
-
-		//----Weapon aim animation----
-		if (m_weapon) {
-			m_weapon->getTransform().setTranslation(getTransform().getTranslation());
-			Matrix tempMatrix;
-			tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
-			m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
-			if (!m_movement.inCover) {
-				m_weapon->update(dt, m_input.aim);
-			}
-		}
-		//----------------------------
 	}
+
+	//----Weapon aim animation----
+	if (m_weapon) {
+		m_weapon->getTransform().setTranslation(getTransform().getTranslation());
+		Matrix tempMatrix;
+		tempMatrix *= Matrix::CreateRotationX(-m_movement.xDirection * (sinDegFromVec(m_input.aim) + 0.785f) + std::signbit(m_movement.xDirection) * 1.57f);
+		m_weapon->getTransform().setMatrix(tempMatrix * getTransform().getMatrix());
+		if (!m_movement.inCover) {
+			m_weapon->update(dt, m_input.aim);
+		}
+	}
+	//----------------------------
 }
 
 
@@ -394,6 +375,7 @@ void Character::draw() {
 	model->setTransform(&bodyTransform);
 	m_leftArm->setTransform(&armTransform);
 	m_head->setTransform(&bodyTransform);
+	m_legs->setTransform(&bodyTransform);
 
 	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
@@ -402,10 +384,12 @@ void Character::draw() {
 	model->getMaterial()->setColor(color);
 	m_leftArm->getMaterial()->setColor(color);
 	m_head->getMaterial()->setColor(color);
+	m_legs->getMaterial()->setColor(color);
 
 	model->draw();
 	m_leftArm->draw();
 	m_head->draw();
+	m_legs->draw();
 	if (m_weapon->getHeld()) {
 		m_weapon->setLightColor(color);
 		m_weapon->draw();
@@ -470,6 +454,21 @@ const DirectX::SimpleMath::Vector3& Character::getAimDirection() const {
 	return m_input.aim;
 }
 
+void Character::hitByProjectile(const CollisionHandler::CharacterHitResult& hitResult) {
+	if (isAlive()) {
+		damage(hitResult.hitDmg);
+		addVelocity(hitResult.knockbackDir * hitResult.knockbackAmount);
+		setGrounded(false);
+
+		// Hit particle effet
+		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
+			ParticleEmitter::EXPLOSION, hitResult.hitPos, Vector3(-0.5f), Vector3(15.f, 15.f, 4.f),
+			0.f, 10, 0.4f, 0.3f, Vector4(0.5f, 0.5f, 0.5f, 1.0f), 0.2f, 10U, true, true)));
+
+		VibrateController(0, 1.f, 1.f);
+	}
+}
+
 void Character::VibrateController(unsigned int index, float strength, float timeDecreaseMul) {
 	m_vibration[index].currentStrength = strength;
 	if (m_vibration[index].currentStrength > strength) m_vibration[index].currentStrength = strength;
@@ -528,7 +527,7 @@ void Character::dead() {
 	m_weapon->triggerRelease();
 	stopHook();
 	setVelocity(Vector3::Zero);
-	m_weapon->setHeld(false);
+	m_weapon->setHeld(true);
 	VibrateController(0, 1.f, 0.3f);
 	VibrateController(1, 1.f, 0.3f);
 
