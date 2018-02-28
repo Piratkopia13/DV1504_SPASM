@@ -24,9 +24,10 @@ public:
 	void setStaticSelection(bool active, size_t sides);
 	void setStep(float step);
 	void setOptionAt(size_t index, size_t option);
-
+	void editing(bool active);
+	bool getEditing();
 	void addMenuBox(std::string text);
-	void addTextItem(std::string text);
+	void addTextItem(std::string text, std::string def = "");
 	void addMenuSelector(std::string text);
 	void addMenuSelectorItem(std::string text);
 	void addMenuSlider(std::string text, int min, int max);
@@ -45,6 +46,7 @@ public:
 	Object* getTarget();
 	Object* getExtraTarget();
 
+	std::string getEditorText();
 
 	void activate();
 	void deActivate();
@@ -59,8 +61,9 @@ private:
 		MenuText* text;
 		MenuText* extraText;
 		bool editable;
+		size_t index;
 	};
-
+	MenuItem* m_pointers[2];
 
 	size_t m_activeItem;
 	bool m_active;

@@ -82,17 +82,20 @@ void MenuText::changeLetter(size_t index, bool direction) {
 		if (direction) {
 			m_letters[index]->m_letter++;
 			if (m_letters[index]->m_letter > 36) {
-				m_letters[index]->m_letter = 1;
+				m_letters[index]->m_letter = 0;
 			}
-
 		}
 		else {
-			if (m_letters[index]->m_letter == 1) {
+			if (m_letters[index]->m_letter == 0) {
 				m_letters[index]->m_letter = 36;
 			}
-
+			else {
+				m_letters[index]->m_letter--;
+			}
 		}
-		m_letters[index]->setModel(Application::getInstance()->getResourceManager().getFBXModel("letters/Alphabet-" + std::to_string(m_letters[index]->m_letter)).getModel());
+		if (m_letters[index]->m_letter > 0  && m_letters[index]->m_letter < 37) {
+			m_letters[index]->setModel(Application::getInstance()->getResourceManager().getFBXModel("letters/Alphabet-" + std::to_string(m_letters[index]->m_letter)).getModel());
+		}
 	}
 }
 
@@ -128,6 +131,24 @@ void MenuText::setText(std::string text) {
 
 size_t MenuText::getLetterNr() {
 	return m_letters.size();
+}
+
+std::string MenuText::getString()
+{
+	// 1 - 26 letters  ||  27 - 36 numbers
+	std::string text = "";
+	for (size_t i = 0; i < m_letters.size(); i++) {
+		if (m_letters[i]->m_letter == 0)
+			text += " ";
+		if (m_letters[i]->m_letter > 0 && m_letters[i]->m_letter < 27) {
+			text += (char)(m_letters[i]->m_letter+64);
+		}
+		if (m_letters[i]->m_letter >= 27 && m_letters[i]->m_letter < 37) {
+			text += (char)(m_letters[i]->m_letter + 21);
+		}
+	}
+
+	return text;
 }
 
 void MenuText::updateLetterPosition() {
@@ -175,7 +196,8 @@ MenuText::TextLetter::TextLetter(char _letter) {
 		m_letter = _letter;
 		setModel(Application::getInstance()->getResourceManager().getFBXModel("arrow").getModel());
 	}
-	
+	else 
+		m_letter = 0;
 	
 
 
