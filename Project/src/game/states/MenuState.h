@@ -218,7 +218,7 @@ private:
 	void initGamemode();
 	void initCharacterModels();
 	void initCharacterModel(size_t spot);
-	void initCharacter(size_t spot);
+	void initCharacter(size_t spot, bool online);
 	void removeCharacter(size_t spot);
 	void initMap();
 

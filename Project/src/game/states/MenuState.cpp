@@ -79,6 +79,11 @@ MenuState::MenuState(StateStack& stack)
 	//STARTMENU
 	initGamemode();
 	initCharacterModels();
+	for (size_t i = 0; i < 4; i++) {
+		initCharacter(i, false);
+	}
+
+
 	m_mapMenu = nullptr;
 	m_profileCreator = nullptr;
 	m_profileViewer = nullptr;
@@ -99,7 +104,7 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController->setFollowSpeed(8);
 
 	// Sound
-	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true);
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true, 0.2f);
 	
 	m_app->getGameSettings().reset();
 }
@@ -354,7 +359,7 @@ bool MenuState::processInput(float dt) {
 										m_playerz.push_back(temp);
 
 									}
-									initCharacter(spot);
+									initCharacter(spot, true);
 									m_characterMenu[spot]->activate();
 
 									temp->player.port = i;
@@ -804,9 +809,23 @@ bool MenuState::processInput(float dt) {
 							}
 							if (right) {
 								m_soundMenu->right();
+								
+								updateSound();
+								if (m_soundMenu->getActive() == 2) {
+									float pitch = Utils::rnd() * 0.3f + 0.8f;
+									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 0.4f, pitch);
+								}
+
+
+
 							}
 							if (left) {
 								m_soundMenu->left();
+								updateSound();
+								if (m_soundMenu->getActive() == 2) {
+									float pitch = Utils::rnd() * 0.3f + 0.8f;
+									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 0.4f, pitch);
+								}
 							}
 							updateCamera();
 						} break;
@@ -969,7 +988,6 @@ void MenuState::initCharacterModels() {
 		temp.setLight(m_offColor);
 		temp.reset();
 		m_playerMenuModelz.push_back(temp);
-		
 	}
 	Vector3 charMid(-5, 9, 3);
 	m_graphicsModel.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
@@ -998,6 +1016,7 @@ void MenuState::initCharacterModels() {
 	m_scene.addObject(m_graphicsModel.armL);
 	m_scene.addObject(m_graphicsModel.armR);
 
+	
 
 	Logger::log("player models loaded");
 }
@@ -1023,15 +1042,17 @@ void MenuState::initCharacterModel(size_t spot) {
 	
 }
 
-void MenuState::initCharacter(size_t spot) {
+void MenuState::initCharacter(size_t spot, bool online) {
 	static Vector3 charMid(7, 1, -9);
-
 	if (m_characterMenu.size() == 0) {
 		for (size_t i = 0; i < 4; i++) {
 			m_characterMenu.push_back(new MenuHandler());
 			m_scene.addObject(m_characterMenu[i]);
+			m_characterMenu[i]->addMenuSelector("Offline");
+
 		}
 	}
+	
 	
 
 	
@@ -1042,62 +1063,75 @@ void MenuState::initCharacter(size_t spot) {
 	temp->setFacingDirection(Vector3(-1.0f, 0, 0));
 	temp->setStep(0.4f);
 
-	//PROFILE
-	temp->addMenuSelector("profile");
-	temp->addMenuSelectorItem(m_info->getProfiles()[0].getName());
-	for (size_t p = 1; p < m_info->getProfiles().size(); p++) {
-		temp->addMenuSelectorItem(m_info->getProfiles()[p].getName());
-	}
-	temp->setStaticSelection(true, 0);
+	if (online) {
+		//PROFILE
+		temp->addMenuSelector("profile");
+		temp->addMenuSelectorItem(m_info->getProfiles()[0].getName());
+		for (size_t p = 1; p < m_info->getProfiles().size(); p++) {
+			temp->addMenuSelectorItem(m_info->getProfiles()[p].getName());
+		}
+		temp->setStaticSelection(true, 0);
 
-	//TEAMS & COLORS
-	if (m_info->gameSettings.gameMode == DEATHMATCH) {
-		temp->addMenuSelector("Color");
+		//TEAMS & COLORS
+		if (m_info->gameSettings.gameMode == DEATHMATCH) {
+			temp->addMenuSelector("Color");
 		
-		for (size_t i = 0; i < m_info->colorNames.size(); i++) {
-			temp->addMenuSelectorItem(m_info->colorNames[i]);
+			for (size_t i = 0; i < m_info->colorNames.size(); i++) {
+				temp->addMenuSelectorItem(m_info->colorNames[i]);
 
+			}
+			temp->setStaticSelection(true, 0);
+
+		}
+		else {
+			temp->addMenuSelector("team");
+			temp->addMenuSelectorItem("1");
+			temp->addMenuSelectorItem("2");
+			temp->setStaticSelection(true, 0);
+
+			temp->addMenuSelector("Team Color");
+			for (size_t i = 0; i < m_info->colorNames.size(); i++) {
+				temp->addMenuSelectorItem(m_info->colorNames[i]);
+			}
+			temp->setStaticSelection(true, 0);
+		}
+
+		// COLOR HUE
+		temp->addMenuSelector("hue");
+		for (size_t i = 0; i < m_info->colorHues.size(); i++) {
+			temp->addMenuSelectorItem(m_info->colorHues[i]);
+		}
+		temp->setStaticSelection(true, 0);
+
+		temp->addMenuSelector("<         >");
+		for (size_t i = 0; i < m_info->botHeadNames.size(); i++) {
+			temp->addMenuSelectorItem("            ");
+		}
+		temp->setStaticSelection(true, 0);
+
+		temp->addMenuSelector("<         >");
+		for (size_t i = 0; i < m_info->botBodyNames.size(); i++) {
+			temp->addMenuSelectorItem("            ");
+		}
+		temp->setStaticSelection(true, 0);
+
+		temp->addMenuSelector("<         >");
+		for (size_t i = 0; i < m_info->botLegNames.size(); i++) {
+			temp->addMenuSelectorItem("            ");
 		}
 		temp->setStaticSelection(true, 0);
 
 	}
 	else {
-		temp->addMenuSelector("team");
-		temp->addMenuSelectorItem("1");
-		temp->addMenuSelectorItem("2");
-		temp->setStaticSelection(true, 0);
+		//temp->addMenuSelector("press");
+		//temp->addMenuSelector("jump");
+		//temp->addMenuSelector("to");
+		//temp->addMenuSelector("join");
 
-		temp->addMenuSelector("Team Color");
-		for (size_t i = 0; i < m_info->colorNames.size(); i++) {
-			temp->addMenuSelectorItem(m_info->colorNames[i]);
-		}
-		temp->setStaticSelection(true, 0);
-	}
+		temp->addMenuSelector("player " + std::to_string(spot+1));
+		temp->addMenuSelector("offline");
 
-	// COLOR HUE
-	temp->addMenuSelector("hue");
-	for (size_t i = 0; i < m_info->colorHues.size(); i++) {
-		temp->addMenuSelectorItem(m_info->colorHues[i]);
 	}
-	temp->setStaticSelection(true, 0);
-
-	temp->addMenuSelector("<         >");
-	for (size_t i = 0; i < m_info->botHeadNames.size(); i++) {
-		temp->addMenuSelectorItem("            ");
-	}
-	temp->setStaticSelection(true, 0);
-
-	temp->addMenuSelector("<         >");
-	for (size_t i = 0; i < m_info->botBodyNames.size(); i++) {
-		temp->addMenuSelectorItem("            ");
-	}
-	temp->setStaticSelection(true, 0);
-
-	temp->addMenuSelector("<         >");
-	for (size_t i = 0; i < m_info->botLegNames.size(); i++) {
-		temp->addMenuSelectorItem("            ");
-	}
-	temp->setStaticSelection(true, 0);
 
 	//temp->addMenuSelector("bot arms");
 	//for (size_t i = 0; i < m_info->botArmNames.size(); i++) {
@@ -1111,6 +1145,7 @@ void MenuState::initCharacter(size_t spot) {
 void MenuState::removeCharacter(size_t spot) {
 	m_characterMenu[spot]->reset();
 	m_playerMenuModelz[spot].reset();
+	initCharacter(spot, false);
 	
 }
 
@@ -1584,5 +1619,15 @@ void MenuState::updateGraphics() {
 
 void MenuState::updateSound() {
 
+	m_info->soundSettings.masterVolume = m_info->masterVolume[m_soundMenu->getOptionAt(0)].value;
+	m_info->soundSettings.backGroundSoundVolume = m_info->backgroundVolume[m_soundMenu->getOptionAt(1)].value;
+	m_info->soundSettings.effectSoundVolume = m_info->effectVolume[m_soundMenu->getOptionAt(2)].value;
+
+
+
+
+	m_app->getResourceManager().getSoundManager()->setMasterVolume(m_info->soundSettings.masterVolume);
+	m_app->getResourceManager().getSoundManager()->setAmbientVolume(m_info->soundSettings.backGroundSoundVolume);
+	m_app->getResourceManager().getSoundManager()->setEffectsVolume(m_info->soundSettings.effectSoundVolume);
 }
 
