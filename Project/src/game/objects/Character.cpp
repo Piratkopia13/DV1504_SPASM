@@ -19,6 +19,8 @@ Character::Character()
 	m_vibration[0] = { 0, 0};
 	m_vibFreq = 1.f / 30.f;
 	m_vibDeltaAcc = 0;
+	m_resetAttacker = 0.0f;
+	m_lastAttackerIndex = -1;
 
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 
@@ -221,7 +223,7 @@ void Character::update(float dt) {
 		// PLAYER IS ALIVE
 
 		m_thrusterEmitter->updateSpawnsPerSecond(500.f);
-
+		m_resetAttacker += dt;
 		if (m_playerHealth.current < m_playerHealth.max) {
 			m_playerHealth.current += m_playerHealth.regen * dt;
 		}
@@ -229,6 +231,9 @@ void Character::update(float dt) {
 	if (collHandler->outOfBounds(this)) {
 		damage(getMaxHealth());
 	}
+	
+	if (m_resetAttacker >= 1.f)
+		m_lastAttackerIndex = -1;
 
 	m_playerHealth.updatePercent();
 
@@ -309,6 +314,7 @@ void Character::update(float dt) {
 				damage(dmgTaken);
 				addVelocity(knockbackDir * knockbackAmount);
 				setGrounded(false);
+				m_resetAttacker = 0.0f;
 
 				// Hit particle effet
 				m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(

@@ -130,6 +130,7 @@ private:
 
 	int m_playerIndex;
 	int m_lastAttackerIndex;
+	float m_resetAttacker;
 
 	bool updateVibration(float dt);
 	float sinDegFromVec(DirectX::SimpleMath::Vector3 vec) {

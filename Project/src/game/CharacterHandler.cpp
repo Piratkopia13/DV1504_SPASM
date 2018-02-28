@@ -95,7 +95,8 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		m_characters[index]->setRespawnPoint(getRandomSpawnPoint(m_characters[index]->getTeam()));
 		m_characters[index]->dead();
 		m_info->getScore().addDeath(index);
-		m_info->getScore().addKill(m_characters[index]->getLastAttacker());
+		if(m_characters[index]->getLastAttacker() != -1)
+			m_info->getScore().addKill(m_characters[index]->getLastAttacker());
 		m_respawnTimers[index] = 0.01f;
 		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
 		switch (rnd) {
