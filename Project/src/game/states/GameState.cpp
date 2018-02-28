@@ -135,12 +135,6 @@ GameState::GameState(StateStack& stack)
 	}
 
 	// Give the cam controller targets to follow
-	/*m_playerCamController->setTargets(
-		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
-		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
-		m_characterHandler->useableTarget(2) ? m_characterHandler->getCharacter(2) : nullptr,
-		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
-	);*/
 	m_playerCamController->setCharacterHandler(m_characterHandler.get());
 
 	m_playerCamController->setPosition(Vector3(10, 10, 0));
@@ -174,6 +168,12 @@ GameState::GameState(StateStack& stack)
 }
 
 GameState::~GameState() {
+	/*GameInfo* info = GameInfo::getInstance();
+	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
+		std::cout << "Player " << (i + 1) << std::endl;
+		std::cout << "Deaths: " << info->getScore().getPlayerStats(i).deaths << std::endl;
+		std::cout << "Kills: " <<info->getScore().getPlayerStats(i).kills << std::endl << std::endl;
+	}*/
 
 }
 
@@ -258,8 +258,8 @@ bool GameState::update(float dt) {
 
 	m_level->update(dt, m_characterHandler.get());
 	m_gamemode->update(m_characterHandler.get(), dt);
-	if (m_gamemode->checkWin()) {
-		if (m_gamemode->checkWin() > 0)
+	if (m_gamemode->checkWin() > -1) {
+		if (m_gamemode->checkWin() > -1)
 			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
 		else
 			std::cout << "DRAW!" << std::endl;
@@ -271,23 +271,16 @@ bool GameState::update(float dt) {
 	if(!m_flyCam)
 		m_playerCamController->update(dt);
 
-	/*m_playerCamController->setTargets(
-		m_characterHandler->useableTarget(0) ? m_characterHandler->getCharacter(0) : nullptr,
-		m_characterHandler->useableTarget(1) ? m_characterHandler->getCharacter(1) : nullptr,
-		m_characterHandler->useableTarget(2) ? m_characterHandler->getCharacter(2) : nullptr,
-		m_characterHandler->useableTarget(3) ? m_characterHandler->getCharacter(3) : nullptr
-	);*/
-
 	// Update camera in shaders
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
 
+	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
+	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
+
 	// Update particles
 	m_particleHandler->update(dt);
-
-	// Resolve collisions
-	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
 
 	return true;
 }
