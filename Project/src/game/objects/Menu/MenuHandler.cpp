@@ -19,6 +19,14 @@ MenuHandler::MenuHandler() {
 	m_crazyAcc = 0;
 	m_crazyThresh = 1.0f / 3.0f;
 
+	m_pointers[0] = new MenuItem(Application::getInstance()->getResourceManager().getFBXModel("arrow").getModel(),Vector3(0,0,0));
+	m_pointers[0]->setLightColor(m_onColor);
+	m_pointers[0]->getTransform().setRotations(Vector3(0, 0,1.57f));
+
+
+	m_pointers[1] = new MenuItem(Application::getInstance()->getResourceManager().getFBXModel("arrow").getModel(),Vector3(0,0,0));
+	m_pointers[1]->setLightColor(m_onColor);
+	m_pointers[1]->getTransform().setRotations(Vector3(3.14f, 0, -1.57f));
 	updateTransform();
 }
 
@@ -42,6 +50,16 @@ void MenuHandler::draw() {
 		}
 		if (m_itemList[i].selector) {
 			m_itemList[i].selector->draw();
+		}
+		if (m_itemList[i].extraText){
+			m_itemList[i].extraText->draw();
+			if (m_itemList[i].editable) {
+				if (m_pointers[0])
+					m_pointers[0]->draw();
+				if (m_pointers[1])
+					m_pointers[1]->draw();
+			}
+			
 		}
 	}
 }
@@ -129,6 +147,17 @@ void MenuHandler::setOptionAt(size_t index, size_t option) {
 
 }
 
+void MenuHandler::editing(bool active) {
+	if (m_itemList[m_activeItem].extraText) {
+		m_itemList[m_activeItem].editable = active;
+	}
+}
+
+bool MenuHandler::getEditing()
+{
+	return m_itemList[m_activeItem].editable;
+}
+
 void MenuHandler::addMenuBox(std::string text) {
 	MenuIndex temp;
 
@@ -141,29 +170,42 @@ void MenuHandler::addMenuBox(std::string text) {
 	else 
 		temp.text = nullptr;
 	temp.selector = nullptr;
-
+	temp.extraText = nullptr;
 	temp.editable = false;
+	temp.index = 0;
 
 	m_itemList.push_back(temp);
 	updateTransform();
 }
 
-void MenuHandler::addTextItem(std::string text) {
+void MenuHandler::addTextItem(std::string text, std::string def) {
+	MenuIndex temp;
 
+	temp.item = nullptr;
+	temp.selector = nullptr;
+	temp.text = new MenuText(text);
+	temp.extraText = new MenuText(def.substr(0,8));
+	temp.editable = false;
+	temp.index = 0;
+	
+	m_itemList.push_back(temp);
+	updateTransform();
 }
 
 void MenuHandler::addMenuSelector(std::string text) {
 	MenuIndex temp;
 
 	temp.item = nullptr;
+	temp.selector = new MenuSelector();
 	if (text.size() > 0) {
 		temp.text = new MenuText(text);
 		temp.text->setColor(m_offColor);
 	}
 	else
 		temp.text = nullptr;
-	temp.selector = new MenuSelector();
+	temp.extraText = nullptr;
 	temp.editable = false;
+	temp.index = 0;
 
 	m_itemList.push_back(temp);
 	updateTransform();
@@ -256,27 +298,52 @@ void MenuHandler::back() {
 }
 
 void MenuHandler::right() {
-	if (m_itemList[m_activeItem].selector) {
-		m_itemList[m_activeItem].selector->next();
+	MenuIndex* active = &m_itemList[m_activeItem];
+
+	if (active->selector) {
+		active->selector->next();
 	}
-
-
+	if (active->editable) {
+		active->index++;
+		if (active->index >= active->extraText->getLetterNr()) {
+			active->index = 0;
+		}
+		
+	}
+	updateTransform();
 }
 
 void MenuHandler::left() {
-	if (m_itemList[m_activeItem].selector) {
-		m_itemList[m_activeItem].selector->back();
+	MenuIndex* active = &m_itemList[m_activeItem];
+
+	if (active->selector) {
+		active->selector->back();
 	}
+	if (active->editable) {
+		if (active->index == 0) {
+			active->index = active->extraText->getLetterNr();
+		}
+		else
+			active->index--;
+	}
+	updateTransform();
 }
 
 void MenuHandler::up() {
-	if (m_itemList[m_activeItem].editable) {
+	MenuIndex* active = &m_itemList[m_activeItem];
+	if (active->editable) {
+		active->extraText->changeLetter(active->index,true);
+
 
 	}
 }
 
 void MenuHandler::down() {
-	if (m_itemList[m_activeItem].editable) {
+	MenuIndex* active = &m_itemList[m_activeItem];
+	if (active->editable) {
+		active->extraText->changeLetter(active->index, false);
+
+
 
 	}
 }
@@ -321,6 +388,14 @@ Object * MenuHandler::getExtraTarget() {
 	else 
 		return nullptr;
 }
+
+std::string MenuHandler::getEditorText() {
+	if (m_itemList[m_activeItem].editable) 
+		return m_itemList[m_activeItem].extraText->getString();
+	return "";
+}
+
+
 
 void MenuHandler::activate() {
 	m_active = true;
@@ -399,6 +474,38 @@ void MenuHandler::updateTransform() {
 
 
 		}
+		if (m_itemList[i].extraText) {
+			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size() - 1)*0.5f)*(m_size*0.7f + m_offset);
+			position += selectionSpace;
+			Vector3 right = m_growth.Cross(m_direction);
+
+			m_itemList[i].extraText->setPosition(position + extraHeight + m_growth*m_size*0.1);
+			m_itemList[i].extraText->setSize(m_size * 2);
+			m_itemList[i].extraText->setDirection(right);
+			m_itemList[i].extraText->setFacingDirection(m_direction);
+			if (m_itemList[i].editable) {
+				
+				Vector3 textHeight(0, 0.3f*m_size, 0);
+				m_pointers[0]->setPosition(position+textHeight + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1);
+				m_pointers[1]->setPosition(position-textHeight*0.5 + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1);
+
+			}
+
+
+
+			if (m_itemList[i].text) {
+				m_itemList[i].text->setPosition(position - m_growth * 0.3f*m_size + extraHeight);
+				m_itemList[i].text->setDirection(right);
+				m_itemList[i].text->setSize(m_size * 3);
+				m_itemList[i].text->setFacingDirection(m_direction);
+
+			}
+			extraHeight += m_growth * m_step * 2;
+		}
+
+
+
+
 	}
 
 }
