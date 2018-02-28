@@ -44,11 +44,11 @@ void ControlNode::draw() {
 
 void ControlNode::setTeamColor(const int team, const DirectX::SimpleMath::Vector4 & color) {
 	switch (team) {
-	case 1: 
+	case 0: 
 		m_teamOneColor = color;
 		m_teamOne.color = color;
 		break;
-	case 2:
+	case 1:
 		m_teamTwoColor = color;
 		m_teamTwo.color = color;
 		break;

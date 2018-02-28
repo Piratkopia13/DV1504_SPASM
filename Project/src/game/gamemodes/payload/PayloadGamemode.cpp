@@ -13,7 +13,7 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_indices = indices;
 	m_numOfNodes = indices.size();
 	m_radius = 2;
-	m_teamWin = 0;
+	m_teamWin = -1;
 	m_scoreToWin = 100.f;
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
