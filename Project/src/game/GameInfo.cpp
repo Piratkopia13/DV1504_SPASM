@@ -15,6 +15,8 @@ GameInfo::GameInfo()
 
 	m_profiles.push_back(Profile("Guest 1", 0));
 	m_profiles.push_back(Profile("Guest 2", 0));
+	m_profiles.push_back(Profile("asdasd", 0));
+	m_profiles.push_back(Profile("fdsfsdf", 0));
 	loadProfiles();
 	
 	float base = 1.0f;

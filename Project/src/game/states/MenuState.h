@@ -98,9 +98,9 @@ private:
 
 
 	enum ProfileMenu {
-		sak0,
-		sak1,
-		sak2
+		PMAIN,
+		PCREATE,
+		PVIEW
 	};
 
 	enum OptionsMenu {
@@ -205,6 +205,11 @@ private:
 
 	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;
+	MenuHandler* m_profileCreator;
+	MenuHandler* m_profileViewer;
+	MenuHandler* m_profileViewerStats;
+	
+
 	MenuHandler* m_optionsMenu;
 	MenuHandler* m_graphicsMenu;
 	MenuHandler* m_soundMenu;
@@ -218,6 +223,8 @@ private:
 	void initMap();
 
 	void initProfile();
+	void initProfileCreator();
+	void initProfileViewer();
 
 	void initOptions();
 	void initGraphics();
@@ -231,6 +238,9 @@ private:
 	void setMapSelect(bool active);
 
 	void setProfileMenu(bool active);
+	void setProfileCreator(bool active);
+	void setProfileViewer(bool active);
+
 	void setOptionsMenu(bool active);
 	void setGraphicsMenu(bool active);
 	void setSoundMenu(bool active);
