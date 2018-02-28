@@ -27,7 +27,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 		legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[m_info->getPlayers()[i].legModel] + "_legs").getModel();
 
 		Hook* tempHook = new Hook(hookModel);
-		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel);
+		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel, i);
 		Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
@@ -90,13 +90,15 @@ void CharacterHandler::killPlayer(unsigned int index) {
 
 		// Death explosion
 		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
-			ParticleEmitter::EXPLOSION, m_characters[index]->getTransform().getTranslation(), Vector3(-0.5f), Vector3(7.f, 7.f, 4.f), 
-				0.f, 75, 1.0f, 1.0f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 75U, true, true)));
+			ParticleEmitter::EXPLOSION, m_characters[index]->getTransform().getTranslation(), Vector3(-0.5f), Vector3(7.f, 7.f, 4.f),
+			0.f, 75, 1.0f, 1.0f, Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.2f, 75U, true, true)));
 
-		
+
 		m_characters[index]->setRespawnPoint(getRandomSpawnPoint(m_characters[index]->getTeam()));
 		m_characters[index]->dead();
-
+		m_info->getScore().addDeath(index);
+		if(m_characters[index]->getLastAttacker() != -1)
+			m_info->getScore().addKill(m_characters[index]->getLastAttacker());
 		m_respawnTimers[index] = 0.01f;
 		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
 		switch (rnd) {
