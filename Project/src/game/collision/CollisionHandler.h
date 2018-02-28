@@ -15,6 +15,7 @@ public:
 	};
 	struct CharacterHitResult {
 		float hitDmg;
+		int attacker;
 		DirectX::SimpleMath::Vector3 knockbackDir;
 		DirectX::SimpleMath::Vector3 hitPos;
 		float knockbackAmount;
