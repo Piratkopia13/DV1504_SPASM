@@ -116,9 +116,12 @@ MenuState::~MenuState()
 	Memory::safeDelete(m_gamemodeMenu);
 	for (size_t i = 0; i < m_characterMenu.size(); i++)
 		Memory::safeDelete(m_characterMenu[i]);
-	Memory::safeDelete(m_profileMenu);
-	Memory::safeDelete(m_optionsMenu);
 	Memory::safeDelete(m_mapMenu);
+	Memory::safeDelete(m_profileMenu);
+	Memory::safeDelete(m_profileCreator);
+	Memory::safeDelete(m_profileViewer);
+	Memory::safeDelete(m_profileViewerStats);
+	Memory::safeDelete(m_optionsMenu);
 	Memory::safeDelete(m_graphicsMenu);
 	Memory::safeDelete(m_soundMenu);
 

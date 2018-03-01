@@ -37,7 +37,10 @@ MenuHandler::~MenuHandler() {
 		Memory::safeDelete(m_itemList[i].item);
 		Memory::safeDelete(m_itemList[i].text);
 		Memory::safeDelete(m_itemList[i].selector);
+		Memory::safeDelete(m_itemList[i].extraText);
 	}
+	Memory::safeDelete(m_pointers[0]);
+	Memory::safeDelete(m_pointers[1]);
 }
 
 void MenuHandler::draw() {

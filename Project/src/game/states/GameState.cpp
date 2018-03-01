@@ -263,7 +263,8 @@ bool GameState::update(float dt) {
 			std::cout << "DRAW!" << std::endl;
 
 		requestStackClear();
-		requestStackPush(States::ID::MainMenu);
+		requestStackPush(States::MainMenu);
+		//requestStackPush(States::ID::Score);
 	}
 
 	if(!m_flyCam)

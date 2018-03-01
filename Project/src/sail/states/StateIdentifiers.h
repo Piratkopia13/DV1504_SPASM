@@ -8,7 +8,8 @@ namespace States {
 		None,
 		MainMenu,
 		Game,
-		Pause
+		Pause,
+		Score
 	};
 
 }

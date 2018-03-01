@@ -15,7 +15,7 @@ public:
 
 	}
 	void addPlayer() {
-		m_gameScore.push_back({ 0,0,0,0.0f });
+		m_gameScore.push_back({ 0,0,0,0 });
 	}
 	
 
@@ -49,9 +49,9 @@ public:
 
 	struct PlayerStats {
 		int kills;
+		float gamePoints;
 		int deaths;
 		int pointsCaptured;
-		float gamePoints;
 	};
 
 
