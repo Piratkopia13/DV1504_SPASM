@@ -16,7 +16,7 @@ Weapon::Weapon() {
 	m_timeSinceFire = 0;
 }
 
-Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, Character* owner) 
+Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, ParticleHandler* particleHandler, Character* owner)
 	: Weapon()
 {
 	m_particleHandler = particleHandler;
@@ -99,11 +99,11 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
 			m_nozzlePos,
-			direction * baseSpeed * extraSpeed, 
-			baseDamage * extraDamage, 
-			m_owner);
+			direction * baseSpeed * extraSpeed,
+			baseDamage * extraDamage,
 			baseKnockback * extraKnockback,
-			m_owner->getTeam());
+			m_owner->getTeam(),
+			m_owner->getIndex());
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
@@ -132,16 +132,16 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 					m_nozzlePos,
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
-					m_owner);
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				Projectile* temp2 = new Projectile(
 					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
-					m_owner);
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				if (m_upgrade->gravActive()) {
 					temp1->setGravScale(0);
 					temp2->setGravScale(0);

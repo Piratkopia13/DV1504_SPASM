@@ -2,13 +2,14 @@
 
 #include "common\Moveable.h"
 
-class Character;
 class Projectile : public Moveable {
 public:
-	Projectile(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& velocity, float damage, Character* owner);
+	friend class ProjectileHandler;
+	Projectile(const DirectX::SimpleMath::Vector3& position, const DirectX::SimpleMath::Vector3& velocity, float damage, float knockbackAmount, int team, int owner);
 	virtual ~Projectile();
 
-	Character* getOwner() const;
+	int getTeam() const;
+	int getOwner() const;
 	float getDamage() const;
 	float getKnockbackAmount() const;
 
@@ -18,6 +19,5 @@ private:
 	float m_damage;
 	float m_knockbackAmount;
 	int m_team;
-	Character* m_owner;
-
+	int m_owner;
 };

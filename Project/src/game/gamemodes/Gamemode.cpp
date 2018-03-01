@@ -1,8 +1,10 @@
 #include "Gamemode.h"
 
 Gamemode::Gamemode() {
-	m_scoreTeamOne = 0;
-	m_scoreTeamTwo = 0;
+	m_teamScore.resize(4);
+	for (int i = 0; i < 4; i++) {
+		m_teamScore[i] = 0;
+	}
 
 	m_gametime = 60.f;
 }
@@ -19,15 +21,17 @@ void Gamemode::draw() {
 
 }
 
-float Gamemode::getScore(const int team) {
-	switch (team) {
-	case 1:
-		return m_scoreTeamOne;
-	case 2:
-		return m_scoreTeamTwo;
-	default:
-		return -1;
+const std::vector<float> & Gamemode::getScore() {
+	return m_teamScore;
+}
+
+const float & Gamemode::getScore(const int team) {
+	if (team < 0 || team > 4) {
+		Logger::Warning("Tried to fetch an out of bounds teamscore");
+		return 0.f;
 	}
+
+	return m_teamScore[team];
 }
 
 float Gamemode::getGametime() {
@@ -35,16 +39,10 @@ float Gamemode::getGametime() {
 }
 
 void Gamemode::addScore(const float toAdd, const int team) {
-	switch (team) {
-	case 1:
-		m_scoreTeamOne += toAdd;
-		break;
-	case 2:
-		m_scoreTeamTwo += toAdd;
-		break;
-	default:
-		break;
-	}
+	if (team < 0 || team > 4)
+		return;
+
+	m_teamScore[team] += toAdd;
 }
 
 void Gamemode::setGametime(const float& seconds) {

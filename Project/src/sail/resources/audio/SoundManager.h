@@ -65,8 +65,8 @@ public:
 	*/
 	void playSoundEffect(const SoundEffect soundID, float volume = 1.f, float pitch = 1.f);
 	void playSoundEffectWithRndPitch(const SoundEffect soundID, float low, float high, float volume = 1.f);
-	void playAmbientSound(const Ambient soundID, const bool looping = false);
 
+	void playAmbientSound(const Ambient soundID, const bool looping = false, float volume = 1.0f);
 	void pauseAmbientSound(const Ambient soundID);
 	void resumeAmbientSound(const Ambient soundID);
 	void stopAmbientSound(const Ambient soundID);
@@ -77,8 +77,10 @@ public:
 	bool loadSoundEffect(const SoundEffect soundID, wchar_t* file);
 	bool loadAmbientSound(const Ambient soundID, wchar_t* file);
 
-	void setVolume(const float& volume);
-	float getVolume();
+	void setMasterVolume(const float& volume);
+	void setAmbientVolume(const float& volume);
+	void setEffectsVolume(const float& volume);
+	float getMasterVolume();
 
 private:
 	IXAudio2* m_audioEngine;
@@ -95,5 +97,9 @@ private:
 	const float MAX_PITCH = 1024.f;
 
 	bool m_playSound;
+
+	float m_masterVolume;
+	float m_effectsVolume;
+	float m_ambientVolume;
 
 };

@@ -17,7 +17,7 @@ public:
 
 	virtual HRESULT Initialize(IXAudio2* audioEngine, wchar_t* file);
 
-	void Play(const bool looped = false);
+	void Play(const bool looped = false, float volume = 1.0f);
 	void Pause();
 	void Stop();
 
