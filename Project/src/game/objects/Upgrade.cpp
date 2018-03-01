@@ -4,6 +4,7 @@ using namespace DirectX::SimpleMath;
 Upgrade::Upgrade(){
 	m_auto = AutoFire();
 	m_knockback = ProjectileKnockback();
+	m_activeUpgrades = 0;
 
 }
 Upgrade::Upgrade(int type) : Upgrade(){
@@ -28,24 +29,42 @@ Upgrade::~Upgrade() {
 }
 
 void Upgrade::update(float dt) {
+	m_color = Vector4(0, 0, 0, 0);
+	m_activeUpgrades = 0;
 	if (m_auto.active) {
 		m_auto.update(dt);
+		m_color += m_auto.color;
+		m_activeUpgrades += m_auto.instances;
 	}
 	if (m_knockback.active) {
 		m_knockback.update(dt);
+		m_color += m_knockback.color;
+		m_activeUpgrades += m_knockback.instances;
 	}
 	if (m_damage.active) {
 		m_damage.update(dt);
+		m_color += m_damage.color;
+		m_activeUpgrades += m_damage.instances;
 	}
 	if (m_extraProj.active) {
 		m_extraProj.update(dt);
+		m_color += m_extraProj.color;
+		m_activeUpgrades += m_extraProj.instances;
 	}
 	if (m_grav.active) {
 		m_grav.update(dt);
+		m_color += Vector4(1, 1, 0, 1);
 	}
+	if (m_color.w > 1) {
+		m_color *= (1.f / m_color.w) * min(m_activeUpgrades, 5);
+		//m_color = Vector4(1, 1, 1, 1) * min(m_activeUpgrades, 5);
+	}
+	else if (m_color.w == 0)
+		m_color = Vector4(1, 0, 0, 1);
 }
 
 void Upgrade::combine(const Upgrade & other) {
+	m_activeUpgrades++;
 	m_auto += other.m_auto;
 	m_knockback += other.m_knockback;
 	m_damage += other.m_damage;
@@ -128,3 +147,10 @@ float Upgrade::gravTime()
 	return m_grav.time.getPercent();
 }
 
+Vector4 Upgrade::getColor() const {
+	return m_color;
+}
+
+int Upgrade::getActiveUprades() const {
+	return m_activeUpgrades;
+}
