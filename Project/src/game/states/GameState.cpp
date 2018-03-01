@@ -20,7 +20,7 @@ GameState::GameState(StateStack& stack)
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
-	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
+	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
 
 	// Set up handlers
 
@@ -146,7 +146,7 @@ GameState::GameState(StateStack& stack)
 	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
 	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
 	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
-	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile.tga");
+	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
 
 	m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
 	m_infTop = std::make_unique<Block>(m_infinityPlane.get());
@@ -239,7 +239,7 @@ bool GameState::update(float dt) {
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;
-	Vector4 infColor(-fabs(sinf(counter)) * epilepsyAmount, -fabs(sin(counter + 2.f)) * epilepsyAmount, -fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
+	Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
 	m_infBottom->setColor(infColor);
 	m_infTop->setColor(infColor);
 	m_infLeft->setColor(infColor);
