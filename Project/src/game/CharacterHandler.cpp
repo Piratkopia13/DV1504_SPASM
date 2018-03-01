@@ -100,16 +100,14 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		if(m_characters[index]->getLastAttacker() != -1)
 			m_info->getScore().addKill(m_characters[index]->getLastAttacker());
 		m_respawnTimers[index] = 0.01f;
-		int rnd = static_cast<int>(floor(Utils::rnd() * 10.f));
+		int rnd = static_cast<int>(floor(Utils::rnd() * 2.f));
+		float fRnd = Utils::rnd() * 0.4f + 0.8f;
 		switch (rnd) {
 		case 0:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Male_Death);
-			break;
-		case 1:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Goblin_Death);
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion2, 3.f, fRnd);
 			break;
 		default:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion);
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.f, fRnd);
 			break;
 		}
 	}

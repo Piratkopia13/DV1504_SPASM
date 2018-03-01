@@ -50,6 +50,7 @@ SoundManager::SoundManager() {
 		m_ambientSounds.resize(Ambient::NumOfAmbientSounds);
 
 		loadSoundEffect(SoundEffect::Explosion, L"res/sounds/effect/explosion.wav");
+		loadSoundEffect(SoundEffect::Explosion2, L"res/sounds/effect/explosion2.wav");
 		loadSoundEffect(SoundEffect::Laser, L"res/sounds/effect/laser.wav");
 		loadSoundEffect(SoundEffect::Shock, L"res/sounds/effect/shock.wav");
 		loadSoundEffect(SoundEffect::Male_Death, L"res/sounds/effect/death/male_death.wav");
@@ -98,10 +99,11 @@ void SoundManager::playSoundEffect(const SoundEffect soundID, float volume, floa
 	XAUDIO2_BUFFER buffer = m_sounds[soundID]->getBuffer();
 	m_audioEngine->CreateSourceVoice(&m_sourceVoices[m_currSVIndex], (WAVEFORMATEX*)&wfx);
 
+	m_sourceVoices[m_currSVIndex]->SubmitSourceBuffer(&buffer);
+
 	m_sourceVoices[m_currSVIndex]->SetVolume(vol);
 	m_sourceVoices[m_currSVIndex]->SetFrequencyRatio(pit);
 
-	m_sourceVoices[m_currSVIndex]->SubmitSourceBuffer(&buffer);
 	m_sourceVoices[m_currSVIndex]->Start(0);
 	m_currSVIndex++;
 	m_currSVIndex = m_currSVIndex % NUMBER_OF_CHANNELS;

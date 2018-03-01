@@ -28,6 +28,7 @@ Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHa
 	m_laser.dotTransform.setScale(0.1f);
 
 	m_projectileHandler = projHandler;
+	m_owner = owner;
 	m_held = true;
 	m_upgrade = new Upgrade();
 }
@@ -85,7 +86,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			extraDamage = m_upgrade->damageMultiplier();
 		}
 
-		float pitch = Utils::rnd() * 0.3f + 0.8f;
+		float pitch = Utils::rnd() * 0.4f + 0.8f;
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.4f, pitch);
 
 		// Muzzle flash particles
@@ -111,7 +112,6 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		temp->setLightColor(projColor);
 		m_projectileHandler->addProjectile(temp);
 
-
 		if (m_upgrade->multiActive()) {
 			
 			Vector3 changeVec = direction.Cross(zVec);
@@ -124,7 +124,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();
-				pitch = Utils::rnd() * 0.2f + 0.9f;
+				pitch = Utils::rnd() * 0.4f + 0.8f;
 				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 
