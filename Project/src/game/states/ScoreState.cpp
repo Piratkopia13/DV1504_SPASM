@@ -31,40 +31,16 @@ ScoreState::ScoreState(StateStack& stack)
 #ifdef _DEBUG
 	m_scene.addText(&m_debugCamText);
 #endif
-
-	;
-
-	m_info->addPlayer({&m_info->getProfiles()[0],0,0,0,0,0,0,0,0 });
-	m_info->addPlayer({ &m_info->getProfiles()[1],3,0,0,0,0,0,0,0 });
-	m_info->addPlayer({ &m_info->getProfiles()[2],1,1,0,0,0,0,0,0 });
-	m_info->addPlayer({ &m_info->getProfiles()[3],2,1,0,0,0,0,0,0 });
-
-
-
-
-	m_info->getScore().addKill(0);
-	m_info->getScore().addKill(0);
-	m_info->getScore().addKill(0);
-	m_info->getScore().addKill(0);
-	m_info->getScore().addKill(1);
-	m_info->getScore().addKill(1);
-	m_info->getScore().addKill(2);
-	m_info->getScore().addKill(2);
-	m_info->getScore().addKill(2);
-	m_info->getScore().addKill(3);
-	m_info->getScore().addPoints(0, 40);
-	m_info->getScore().addPoints(1, 20);
-	m_info->getScore().addPoints(2, 30);
-	m_info->getScore().addPoints(3, 10);
-
-
-
-	int nr = m_info->convertedGameSettings.teams.size();
+	
+	addScore();
+	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
+		m_ready.push_back(false);
+	}
 
 	Score* score = &m_info->getScore();
 	std::vector<GameInfo::Player> playerName;
 	std::vector<Score::PlayerStats> playerStats;
-
+	
 	float oldMax = 1000000;
 	for (size_t i = 0; i < score->getSize(); i++) {
 		float maxScore = 0;
@@ -80,41 +56,64 @@ ScoreState::ScoreState(StateStack& stack)
 		playerStats.push_back(score->getPlayerStats(index));
 	}
 
+	
 
-	for (size_t i = 0; i < 2; i++) {
 
+	m_topLine.text.push_back(new MenuText("name"));
+	m_topLine.text.push_back(new MenuText("kills"));
+	m_topLine.text.push_back(new MenuText("deaths"));
+	if (m_info->convertedGameSettings.gamemode == 0) {
+		m_topLine.text.push_back(new MenuText("captures"));
+	}
+	m_topLine.text.push_back(new MenuText("score"));
+
+	for (size_t i = 0; i < m_topLine.text.size(); i++) {
+		m_scene.addObject(m_topLine.text[i]);
 	}
 
-	//for (size_t i = 0; i < playerStats.size(); i++) {
-	//	m_scoreLine.push_back({
-	//		new MenuText(playerStats[i].),
 
-	//		
-	//		
-	//		});
+	for (size_t i = 0; i < playerStats.size(); i++) {
+		ScoreLine temp;
+		temp.text.push_back(new MenuText(playerName[i].currentProfile->getName()));
+		temp.text.push_back(new MenuText(std::to_string(playerStats[i].kills)));
+		temp.text.push_back(new MenuText(std::to_string(playerStats[i].deaths)));
+		if (m_info->convertedGameSettings.gamemode == 0) {
+			temp.text.push_back(new MenuText(std::to_string(playerStats[i].pointsCaptured)));
+		}
+		temp.text.push_back(new MenuText(std::to_string((int)playerStats[i].gamePoints)));
+		m_scoreLine.push_back(temp);
 
-
-
-
-	//}
-
-
-
+		for (size_t u = 0; u < m_scoreLine[i].text.size(); u++) {
 
 
+			m_scoreLine[i].text[u]->setColor(m_info->getDefaultColor(playerName[i].color,playerName[i].hue) * ((i == 0) ? 3:1));
+			m_scene.addObject(m_scoreLine[i].text[u]);
+		}
+	}
+	for (size_t i = 0; i < m_info->convertedGameSettings.teams.size(); i++) {
+		if (m_info->convertedGameSettings.teams[i].winner) {
+			if (m_info->convertedGameSettings.gamemode == 1) {
+				m_winner.text.push_back(new MenuText(playerName[0].currentProfile->getName() + " wins the game"));
+			}
+			else {
+				m_winner.text.push_back(new MenuText("Team " + std::to_string(i+1) + " Wins the game"));
 
+			}
+			m_winner.text[0]->setColor(m_info->convertedGameSettings.teams[i].color * 2.0);
+			m_winner.text[0]->setSize(4.0f);
+			m_scene.addObject(m_winner.text[0]);
+			break;
+		}
+	}
 
-
-
-
-
-
+	setPositions();
+	
 
 	m_playerCamController->setUseExtraZ(false);
 	m_playerCamController->setTarget(Vector3(0, 0, 1));
 	m_playerCamController->setOffset(Vector3(0, 0, 0));
 	m_playerCamController->setMoving(false);
-	m_playerCamController->setPosition(Vector3(0, 0, 0));
+	m_playerCamController->setPosition(Vector3(0, 0, -5));
 	m_playerCamController->setFollowSpeed(8);
 
 }
@@ -122,16 +121,14 @@ ScoreState::~ScoreState() {
 	for (size_t i = 0; i < m_scoreLine.size(); i++) {
 		m_scoreLine[i].clear();
 	}
+	m_topLine.clear();
+	m_winner.clear();
 }
 
 
 
 // Process input for the state
 bool ScoreState::processInput(float dt) {
-	static int ready = 0;
-
-
-
 	const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
 	static int keyboardPort = 0;
 	if (kbTracker.pressed.D1) {
@@ -151,35 +148,16 @@ bool ScoreState::processInput(float dt) {
 	for (int i = 0; i < 4; i++) {
 		const GamePad::State& padState = m_app->getInput().getGamePadState(i);
 		const GamePad::ButtonStateTracker& padTracker = m_app->getInput().getGpStateTracker(i);
-
+		
 		int a = 0;
 		int b = 0;
-		int down = 0;
-		int up = 0;
-		int left = 0;
-		int right = 0;
 		int menu = 0;
 		int back = 0;
 		int pressed = 0;
 		int spacePressed = 0;
 
 		if (i == keyboardPort) {
-			if (kbTracker.pressed.W) {
-				up = 1;
-				pressed = 1;
-			}
-			if (kbTracker.pressed.S) {
-				down = 1;
-				pressed = 1;
-			}
-			if (kbTracker.pressed.D) {
-				right = 1;
-				pressed = 1;
-			}
-			if (kbTracker.pressed.A) {
-				left = 1;
-				pressed = 1;
-			}
+			
 			if (kbTracker.pressed.Space) {
 				a = 1;
 				pressed = 1;
@@ -189,21 +167,7 @@ bool ScoreState::processInput(float dt) {
 				b = 1;
 				pressed = 1;
 			}
-			if (kbTracker.pressed.F) {
-				static int camP = 0;
-				camP++;
-				if (camP > 3)
-					camP = 0;
-				if (camP == 0)
-					m_playerCamController->setPosition(Vector3(0, 0, 0));
-				if (camP == 1)
-					m_playerCamController->setPosition(Vector3(0, 15, 0));
-				if (camP == 2)
-					m_playerCamController->setPosition(Vector3(10, 15, 10));
-				if (camP == 3)
-					m_playerCamController->setPosition(Vector3(-10, 15, -10));
-
-			}
+			
 		}
 
 
@@ -217,38 +181,33 @@ bool ScoreState::processInput(float dt) {
 				b = 1;
 				pressed = 1;
 			}
-			if (padTracker.dpadUp == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickUp == GamePad::ButtonStateTracker::PRESSED) {
-				up = 1;
+			if (padTracker.menu == GamePad::ButtonStateTracker::PRESSED) {
+				menu = 1;
 				pressed = 1;
 			}
-			if (padTracker.dpadDown == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickDown == GamePad::ButtonStateTracker::PRESSED) {
-				down = 1;
-				pressed = 1;
-			}
-			if (padTracker.dpadRight == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickRight == GamePad::ButtonStateTracker::PRESSED) {
-				right = 1;
-				pressed = 1;
-			}
-			if (padTracker.dpadLeft == GamePad::ButtonStateTracker::PRESSED || padTracker.leftStickLeft == GamePad::ButtonStateTracker::PRESSED) {
-				left = 1;
-				pressed = 1;
-			}
+			
 		}
 		if (pressed) {
 
-			if (a) {
+			if (a || b || menu) {
+				
+				
+				for (size_t u = 0; u < m_info->getPlayers().size(); u++) {
+					if (i == m_info->getPlayers()[u].port) {
+						m_ready[u] = true;
+						break;
+					}
+				}
 
-
-
-
-				requestStackClear();
-				requestStackPush(States::MainMenu);
+				size_t r = 0;
+				for (size_t u = 0; u < m_ready.size(); u++) {
+					if (m_ready[i])
+						r++;
+				}
+				if(r == m_ready.size())
+					exitScoreBoard();
 
 			}
-
-
-
-
 		}
 	}
 	return true;
@@ -287,4 +246,85 @@ bool ScoreState::render(float dt) {
 	m_scene.drawHUD();
 
 	return true;
+}
+
+void ScoreState::addScore() {
+
+	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
+		GameInfo::Player* playe = &m_info->getPlayers()[i];
+		Score::PlayerStats stats = m_info->getScore().getPlayerStats(i);
+		playe->currentProfile->addKills(stats.kills);
+		playe->currentProfile->addDeaths(stats.deaths);
+		if (m_info->convertedGameSettings.teams[playe->team].winner) {
+			playe->currentProfile->addWin();
+		}
+		else {
+			playe->currentProfile->addLoss();
+		}
+		
+		
+
+	}
+
+
+}
+
+void ScoreState::setPositions() {
+	Vector3 position(0, 0, 0);
+	Vector3 growth(0, -1, 0);
+	Vector3 right(1, 0, 0);
+
+	size_t size = m_scoreLine.size();
+	float halfSizeY = (float)size*0.5f;
+
+
+	float xSpace = 2.1f;
+	float ySpace = 0.4f;
+
+	m_winner.text[0]->setPosition(position - 
+	growth * ((float)size + 1.0f) * ySpace);
+	float halfSizeX = (float)(m_topLine.text.size()-1) * 0.5f;
+	for (size_t i = 0; i < m_topLine.text.size(); i++) {
+
+		m_topLine.text[i]->setPosition(position - 
+			growth * ((float)size - 1.0f) * ySpace + 
+			right * (i - halfSizeX) * xSpace);
+
+		m_topLine.text[i]->setSize(2.3f);
+	}
+
+	for (size_t u = 0; u < size; u++) {
+		
+		halfSizeX = (float)(m_scoreLine[u].text.size()-1) * 0.5f;
+		for (size_t i = 0; i < m_scoreLine[u].text.size(); i++) {
+			
+			m_scoreLine[u].text[i]->setPosition(position + 
+				growth * (u - halfSizeY+0.5f) * ySpace + 
+				right * (i - halfSizeX) * xSpace);
+
+			m_scoreLine[u].text[i]->setSize(u == 0 ? 1.8f:1.6f);
+
+		}
+
+	
+
+	}
+
+
+
+
+
+}
+
+void ScoreState::exitScoreBoard() {
+
+
+
+
+
+
+
+
+	requestStackClear();
+	requestStackPush(States::MainMenu);
 }

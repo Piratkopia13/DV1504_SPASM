@@ -169,6 +169,11 @@ void MenuText::updateLetterPosition() {
 			m_letters[i]->getTransform().setRotations(Vector3(0.0f, -atan2(m_facing.z, m_facing.x)- 1.57f, 0.0f));
 		}
 		m_letters[i]->getTransform().setScale(m_size);
+		if (m_letters[i]->m_letter == 46) {
+			m_letters[i]->getTransform().setScale(m_size);
+			m_letters[i]->getTransform().setRotations(Vector3(0.0f, -atan2(m_facing.z, m_facing.x), 0.0f));
+
+		}
 	}
 
 }
@@ -195,6 +200,11 @@ MenuText::TextLetter::TextLetter(char _letter) {
 	else if (_letter == 60 || _letter == 62) {
 		m_letter = _letter;
 		setModel(Application::getInstance()->getResourceManager().getFBXModel("arrow").getModel());
+	}
+	// .
+	else if (_letter = 46 || _letter == 44) {
+		m_letter = 46;
+		setModel(Application::getInstance()->getResourceManager().getFBXModel("projectile").getModel());
 	}
 	else 
 		m_letter = 0;

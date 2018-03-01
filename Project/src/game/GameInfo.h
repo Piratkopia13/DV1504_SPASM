@@ -28,8 +28,8 @@ public:
 	Score& getScore();
 	std::vector<Player>& getPlayers();
 	const DirectX::SimpleMath::Vector4& getDefaultColor(size_t color, size_t hue);
-
-	void addPlayer(Player player);
+	//profile port team color hue
+	void addPlayer(Player player); 
 	void addProfile(std::string name, size_t preOrdered);
 
 	struct Player {
@@ -81,7 +81,8 @@ public:
 	struct ConvertedGameSettings {
 		struct Team {
 			DirectX::SimpleMath::Vector4 color;
-			size_t preOrder;	
+			size_t preOrder;
+			bool winner;
 		};
 		std::string map = "Domination/carrot.level";
 		size_t gamemode = 0;

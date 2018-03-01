@@ -41,23 +41,25 @@ private:
 
 	
 	struct ScoreLine {
-		MenuText* profileName;
-		MenuText* kills;
-		MenuText* deaths;
-		MenuText* score;
-		MenuText* captures;
+		std::vector<MenuText*> text;
 
 		void clear() {
-			Memory::safeDelete(profileName);
-			Memory::safeDelete(kills);
-			Memory::safeDelete(deaths);
-			Memory::safeDelete(score);
-			Memory::safeDelete(captures);
+			for (size_t i = 0; i < text.size(); i++) {
+				Memory::safeDelete(text[i]);
+			}
 		}
+		
 	};
 	
-
+	ScoreLine m_winner;
+	ScoreLine m_topLine;
 	std::vector<ScoreLine> m_scoreLine;
+	std::vector<bool> m_ready;
 
+
+private:
+	void addScore();
+	void setPositions();
+	void exitScoreBoard();
 
 };

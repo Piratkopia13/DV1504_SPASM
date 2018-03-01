@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <minmax.h>
 
 class Profile {
 public:
@@ -33,10 +34,10 @@ public:
 
 
 	const float getKD() {
-		return (float)m_stats.kills / (float)m_stats.kills;
+		return (float)m_stats.kills / (float)max((float)m_stats.deaths,1.0f);
 	};
 	const float getWinRatio() {
-		return (float)m_stats.wins / (float)m_stats.losses;
+		return (float)m_stats.wins / (float)max((float)m_stats.losses,1.0f);
 	};
 	const std::string getName() {
 		return m_name;

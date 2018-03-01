@@ -1246,7 +1246,8 @@ void MenuState::initProfileViewer() {
 	m_profileViewerStats->setStaticSelection(true, 0);
 	m_profileViewerStats->addMenuSelector("KD");
 	for (size_t i = 0; i < profiles.size(); i++) {
-		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getKD()));
+		std::string kdString = std::to_string(profiles[i].getKD());
+		m_profileViewerStats->addMenuSelectorItem(kdString.substr(0,kdString.find_first_of(".")+2));
 	}
 	m_profileViewerStats->setStaticSelection(true, 0);
 
@@ -1266,7 +1267,7 @@ void MenuState::initProfileViewer() {
 	}
 	m_profileViewerStats->setStaticSelection(true, 0);
 
-
+	m_profileViewerStats->setStep(0);
 
 
 
