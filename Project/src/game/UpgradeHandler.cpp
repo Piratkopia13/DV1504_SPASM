@@ -112,7 +112,7 @@ void UpgradeHandler::UpgradeSpawn::respawn() {
 	}
 
 	if (m_onlineType == Upgrade::AUTO_FIRE) {
-		m_upgradeObject->setLightColor(Vector4(1, 0, 0, 1));
+		m_upgradeObject->setLightColor(Vector4(1, 0.5f, 0, 1));
 	}
 	if (m_onlineType == Upgrade::PROJECTILE_KNOCKBACK) {
 		m_upgradeObject->setLightColor(Vector4(0, 1, 0, 1));

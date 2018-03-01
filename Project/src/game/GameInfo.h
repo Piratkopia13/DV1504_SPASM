@@ -88,7 +88,7 @@ public:
 		float scoreLimit = 50;
 		float timeLimit = 0;
 		float respawnTime = 2;
-		float playerLife = 100;
+		float playerLife = 50;
 		float gravity = 1;
 		std::vector<Team> teams;
 	};

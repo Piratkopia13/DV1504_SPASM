@@ -98,10 +98,11 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		//Create projectile with inputs; startPos, direction, speed/force etc.
 		Projectile* temp = new Projectile(
 			m_nozzlePos,
-			direction * baseSpeed * extraSpeed, 
-			baseDamage * extraDamage, 
+			direction * baseSpeed * extraSpeed,
+			baseDamage * extraDamage,
 			baseKnockback * extraKnockback,
-			m_owner->getTeam());
+			m_owner->getTeam(),
+			m_owner->getIndex());
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
@@ -132,13 +133,15 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 					tempVec1 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				Projectile* temp2 = new Projectile(
 					m_nozzlePos,
 					tempVec2 * baseSpeed * extraSpeed,
 					baseDamage * extraDamage,
 					baseKnockback * extraKnockback,
-					m_owner->getTeam());
+					m_owner->getTeam(),
+					m_owner->getIndex());
 				if (m_upgrade->gravActive()) {
 					temp1->setGravScale(0);
 					temp2->setGravScale(0);
@@ -207,14 +210,16 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	//translation into world space
 	tempMatrix *= Matrix::CreateTranslation(tempPos);
 
+	//Updating laser
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
 	Vector3 hitPos;
 	float t;
 	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
 	float length = (hitPos - m_nozzlePos).Length();
-	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
-	m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
+	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f + (m_upgrade->getActiveUprades() * 0.1f)) / 2.f));
+	m_laser.laserTransform.setNonUniScale(min(50.f + (m_upgrade->getActiveUprades()), length * 10), 1.5f, 1.f);
 	m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
+	m_laser.lightColor = m_upgrade->getColor();
 
 	m_laser.dotTransform.setTranslation(hitPos + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
 
@@ -225,9 +230,9 @@ void Weapon::draw() {
 	model->setTransform(&getTransform());
 	if (this->getTransform().getTranslation().z < 0.5f && m_owner->isAlive()) {
 		m_laser.laserModel->setTransform(&m_laser.laserTransform);
-		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+		m_laser.laserModel->getMaterial()->setColor(m_laser.lightColor);// *3.f);
 
-		m_laser.dotModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(4.0f, 0.f, 0.f, 1.f));
+		m_laser.dotModel->getMaterial()->setColor((m_laser.lightColor * (1.f / m_laser.lightColor.w)) * 5.f);
 
 		m_laser.dotModel->setTransform(&m_laser.dotTransform);
 

@@ -17,6 +17,7 @@ public:
 	void setColor(const DirectX::SimpleMath::Vector4& color, int index = -1);
 	void setText(std::string text);
 	size_t getLetterNr();
+	std::string getString();
 
 	class TextLetter : public Object {
 	public:

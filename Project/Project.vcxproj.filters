@@ -115,6 +115,7 @@
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
+    <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
     <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
   </ItemGroup>
@@ -225,6 +226,7 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
+    <ClInclude Include="src\game\background\ScoreVisualization.h" />
     <ClInclude Include="src\game\objects\InstancedBlocks.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
   </ItemGroup>

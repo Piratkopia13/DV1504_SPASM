@@ -75,16 +75,24 @@ MenuState::MenuState(StateStack& stack)
 
 	//MAINMENU
 	initMain();
-
+	updateCamera();
 	//STARTMENU
 	initGamemode();
 	initCharacterModels();
-	m_mapMenu = nullptr;
+	for (size_t i = 0; i < 4; i++) {
+		initCharacter(i, false);
+	}
 
+
+	m_mapMenu = nullptr;
+	m_profileCreator = nullptr;
+	m_profileViewer = nullptr;
 	//CUSTOMISABILITY
 	initProfile();
-	initOptions();
+	initProfileCreator();
+	initProfileViewer();
 
+	initOptions();
 	initGraphics();
 	initSound();
 
@@ -96,7 +104,7 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController->setFollowSpeed(8);
 
 	// Sound
-	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true);
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true, 0.2f);
 	
 	m_app->getGameSettings().reset();
 }
@@ -165,14 +173,7 @@ bool MenuState::processInput(float dt) {
 		int pressed = 0;
 		int spacePressed = 0;
 
-
-		
-
-
 		if (i == keyboardPort) {
-
-
-
 			if (kbTracker.pressed.W) {
 				up = 1;
 				pressed = 1;
@@ -273,6 +274,7 @@ bool MenuState::processInput(float dt) {
 								PostQuitMessage(0);
 								break;
 						}
+						updateCamera();
 						// Sound
 						m_app->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Select);
 					}
@@ -357,7 +359,7 @@ bool MenuState::processInput(float dt) {
 										m_playerz.push_back(temp);
 
 									}
-									initCharacter(spot);
+									initCharacter(spot, true);
 									m_characterMenu[spot]->activate();
 
 									temp->player.port = i;
@@ -603,14 +605,140 @@ bool MenuState::processInput(float dt) {
 				}break;
 
 				case PROFILEMENU: {
-					if (a) {
+					switch (m_activeSubMenu) {
+						case PMAIN: {
+							if (a) {
+								switch (m_profileMenu->getActive()) {
+								case 0:
+									setProfileMenu(false);
+									setProfileCreator(true);
+									break;
+								case 1:
+									setProfileMenu(false);
+									initProfileViewer();
+									setProfileViewer(true);
+									break;
+								default:
+									break;
+								}
+								updateCamera();
 
-					}
-					if (b) {
-						setProfileMenu(false);
-						setMainSelect(true);
-					}
+							}
+							if (b) {
+								setProfileMenu(false);
+								setMainSelect(true);
+								updateCamera();
+							}
 
+							if (up) {
+								m_profileMenu->back();
+							}
+							if (down) {
+								m_profileMenu->next();
+							}
+						}break;
+						case PCREATE: {
+							static std::string name = "";
+							if (a) {
+								if (m_profileCreator->getActive() == 0) {
+									if (m_profileCreator->getEditing()) {
+										name = m_profileCreator->getEditorText();
+										m_profileCreator->editing(false);
+									}
+									else {
+										m_profileCreator->editing(true);
+									}
+
+								}
+								if (m_profileCreator->getActive() == 2) {
+									if(name.size() > 0) {
+										size_t last = name.find_last_not_of(' ');
+										std::string temp = name.substr(0, last+1);
+										if (temp.size() > 0)
+											m_info->addProfile(temp, m_profileCreator->getOptionAt(1));
+
+										setProfileCreator(false);
+										setProfileMenu(true);
+										updateCamera();
+									}
+								}
+
+							}
+							if (b) {
+								if (m_profileCreator->getEditing()) {
+									m_profileCreator->editing(false);
+								}
+								else {
+									setProfileCreator(false);
+									setProfileMenu(true);
+									name = "";
+								}
+								updateCamera();
+								
+							}
+							if (up) {
+								if (m_profileCreator->getActive() == 0 && m_profileCreator->getEditing()) {
+									m_profileCreator->up();
+								}
+								else {
+									m_profileCreator->back();
+								}
+
+							}
+							if (down) {
+								if (m_profileCreator->getActive() == 0 && m_profileCreator->getEditing()) {
+									m_profileCreator->down();
+								}
+								else {
+									m_profileCreator->next();
+								}
+								
+							}
+							if (right) {
+								m_profileCreator->right();
+								
+							}
+							if (left) {
+								m_profileCreator->left();
+								
+								
+							}
+
+						}break;
+						case PVIEW: {
+							if (a) {
+
+							}
+							if (b) {
+								setProfileViewer(false);
+								setProfileMenu(true);
+								updateCamera();
+							}
+							if (up) {
+
+							}
+							if (down) {
+
+							}
+							if (right) {
+								m_profileViewer->right();
+								for (size_t s = 0; s < 6; s++) {
+									m_profileViewerStats->right();
+									m_profileViewerStats->next();
+								}
+							}
+							if (left) {
+								m_profileViewer->left();
+								for (size_t s = 0; s < 6; s++) {
+									m_profileViewerStats->left();
+									m_profileViewerStats->next();
+								}
+							}
+
+						}break;
+						default:
+							break;
+					}
 				}break;
 
 				case OPTIONSMENU: {
@@ -682,9 +810,23 @@ bool MenuState::processInput(float dt) {
 							}
 							if (right) {
 								m_soundMenu->right();
+								
+								updateSound();
+								if (m_soundMenu->getActive() == 2) {
+									float pitch = Utils::rnd() * 0.3f + 0.8f;
+									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 0.4f, pitch);
+								}
+
+
+
 							}
 							if (left) {
 								m_soundMenu->left();
+								updateSound();
+								if (m_soundMenu->getActive() == 2) {
+									float pitch = Utils::rnd() * 0.3f + 0.8f;
+									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 0.4f, pitch);
+								}
 							}
 							updateCamera();
 						} break;
@@ -847,7 +989,6 @@ void MenuState::initCharacterModels() {
 		temp.setLight(m_offColor);
 		temp.reset();
 		m_playerMenuModelz.push_back(temp);
-		
 	}
 	Vector3 charMid(-5, 9, 3);
 	m_graphicsModel.head = new MenuItem(m_playerHeadModels[0], charMid + Vector3(0, 0.8f, 0));
@@ -876,6 +1017,7 @@ void MenuState::initCharacterModels() {
 	m_scene.addObject(m_graphicsModel.armL);
 	m_scene.addObject(m_graphicsModel.armR);
 
+	
 
 	Logger::log("player models loaded");
 }
@@ -901,15 +1043,17 @@ void MenuState::initCharacterModel(size_t spot) {
 	
 }
 
-void MenuState::initCharacter(size_t spot) {
+void MenuState::initCharacter(size_t spot, bool online) {
 	static Vector3 charMid(7, 1, -9);
-
 	if (m_characterMenu.size() == 0) {
 		for (size_t i = 0; i < 4; i++) {
 			m_characterMenu.push_back(new MenuHandler());
 			m_scene.addObject(m_characterMenu[i]);
+			m_characterMenu[i]->addMenuSelector("Offline");
+
 		}
 	}
+	
 	
 
 	
@@ -920,62 +1064,75 @@ void MenuState::initCharacter(size_t spot) {
 	temp->setFacingDirection(Vector3(-1.0f, 0, 0));
 	temp->setStep(0.4f);
 
-	//PROFILE
-	temp->addMenuSelector("profile");
-	temp->addMenuSelectorItem(m_info->getProfiles()[0].getName());
-	for (size_t p = 1; p < m_info->getProfiles().size(); p++) {
-		temp->addMenuSelectorItem(m_info->getProfiles()[p].getName());
-	}
-	temp->setStaticSelection(true, 0);
+	if (online) {
+		//PROFILE
+		temp->addMenuSelector("profile");
+		temp->addMenuSelectorItem(m_info->getProfiles()[0].getName());
+		for (size_t p = 1; p < m_info->getProfiles().size(); p++) {
+			temp->addMenuSelectorItem(m_info->getProfiles()[p].getName());
+		}
+		temp->setStaticSelection(true, 0);
 
-	//TEAMS & COLORS
-	if (m_info->gameSettings.gameMode == DEATHMATCH) {
-		temp->addMenuSelector("Color");
+		//TEAMS & COLORS
+		if (m_info->gameSettings.gameMode == DEATHMATCH) {
+			temp->addMenuSelector("Color");
 		
-		for (size_t i = 0; i < m_info->colorNames.size(); i++) {
-			temp->addMenuSelectorItem(m_info->colorNames[i]);
+			for (size_t i = 0; i < m_info->colorNames.size(); i++) {
+				temp->addMenuSelectorItem(m_info->colorNames[i]);
 
+			}
+			temp->setStaticSelection(true, 0);
+
+		}
+		else {
+			temp->addMenuSelector("team");
+			temp->addMenuSelectorItem("1");
+			temp->addMenuSelectorItem("2");
+			temp->setStaticSelection(true, 0);
+
+			temp->addMenuSelector("Team Color");
+			for (size_t i = 0; i < m_info->colorNames.size(); i++) {
+				temp->addMenuSelectorItem(m_info->colorNames[i]);
+			}
+			temp->setStaticSelection(true, 0);
+		}
+
+		// COLOR HUE
+		temp->addMenuSelector("hue");
+		for (size_t i = 0; i < m_info->colorHues.size(); i++) {
+			temp->addMenuSelectorItem(m_info->colorHues[i]);
+		}
+		temp->setStaticSelection(true, 0);
+
+		temp->addMenuSelector("<         >");
+		for (size_t i = 0; i < m_info->botHeadNames.size(); i++) {
+			temp->addMenuSelectorItem("            ");
+		}
+		temp->setStaticSelection(true, 0);
+
+		temp->addMenuSelector("<         >");
+		for (size_t i = 0; i < m_info->botBodyNames.size(); i++) {
+			temp->addMenuSelectorItem("            ");
+		}
+		temp->setStaticSelection(true, 0);
+
+		temp->addMenuSelector("<         >");
+		for (size_t i = 0; i < m_info->botLegNames.size(); i++) {
+			temp->addMenuSelectorItem("            ");
 		}
 		temp->setStaticSelection(true, 0);
 
 	}
 	else {
-		temp->addMenuSelector("team");
-		temp->addMenuSelectorItem("1");
-		temp->addMenuSelectorItem("2");
-		temp->setStaticSelection(true, 0);
+		//temp->addMenuSelector("press");
+		//temp->addMenuSelector("jump");
+		//temp->addMenuSelector("to");
+		//temp->addMenuSelector("join");
 
-		temp->addMenuSelector("Team Color");
-		for (size_t i = 0; i < m_info->colorNames.size(); i++) {
-			temp->addMenuSelectorItem(m_info->colorNames[i]);
-		}
-		temp->setStaticSelection(true, 0);
-	}
+		temp->addMenuSelector("player " + std::to_string(spot+1));
+		temp->addMenuSelector("offline");
 
-	// COLOR HUE
-	temp->addMenuSelector("hue");
-	for (size_t i = 0; i < m_info->colorHues.size(); i++) {
-		temp->addMenuSelectorItem(m_info->colorHues[i]);
 	}
-	temp->setStaticSelection(true, 0);
-
-	temp->addMenuSelector("<         >");
-	for (size_t i = 0; i < m_info->botHeadNames.size(); i++) {
-		temp->addMenuSelectorItem("            ");
-	}
-	temp->setStaticSelection(true, 0);
-
-	temp->addMenuSelector("<         >");
-	for (size_t i = 0; i < m_info->botBodyNames.size(); i++) {
-		temp->addMenuSelectorItem("            ");
-	}
-	temp->setStaticSelection(true, 0);
-
-	temp->addMenuSelector("<         >");
-	for (size_t i = 0; i < m_info->botLegNames.size(); i++) {
-		temp->addMenuSelectorItem("            ");
-	}
-	temp->setStaticSelection(true, 0);
 
 	//temp->addMenuSelector("bot arms");
 	//for (size_t i = 0; i < m_info->botArmNames.size(); i++) {
@@ -989,6 +1146,7 @@ void MenuState::initCharacter(size_t spot) {
 void MenuState::removeCharacter(size_t spot) {
 	m_characterMenu[spot]->reset();
 	m_playerMenuModelz[spot].reset();
+	initCharacter(spot, false);
 	
 }
 
@@ -1025,11 +1183,98 @@ void MenuState::initProfile() {
 	m_profileMenu = new MenuHandler();
 	m_scene.addObject(m_profileMenu);
 
-	m_profileMenu->addMenuBox("kjasd test");
-	m_profileMenu->addMenuBox("asdsad test");
-	m_profileMenu->addMenuBox("team test");
-	m_profileMenu->setPosition(Vector3(0, 10.5f, 0));
-	m_profileMenu->setFacingDirection(Vector3(0, 0, -1));
+	m_profileMenu->addMenuBox("create profile");
+	m_profileMenu->addMenuBox("view profiles");
+	m_profileMenu->setPosition(Vector3(0, 10.5f, -5));
+	m_profileMenu->setFacingDirection(Vector3(0, 0, 1));
+	Logger::log("profile main menu loaded");
+}
+
+void MenuState::initProfileCreator() {
+	if (!m_profileCreator) {
+		m_profileCreator = new MenuHandler();
+		m_scene.addObject(m_profileCreator);
+	}
+	else {
+		m_profileCreator->reset();
+
+	}
+
+	m_profileCreator->addTextItem("name", "        ");
+	Logger::log("textItem loaded");
+	m_profileCreator->addMenuSelector("preorder");
+	m_profileCreator->addMenuSelectorItem("no");
+	m_profileCreator->addMenuSelectorItem("yus");
+	m_profileCreator->setStaticSelection(true, 0);
+	m_profileCreator->addMenuBox("done");
+
+	m_profileCreator->setPosition(Vector3(0,14,5));
+	m_profileCreator->setFacingDirection(Vector3(0,0,-1));
+	Logger::log("profile creator menu loaded");
+}
+
+void MenuState::initProfileViewer() {
+	if (!m_profileViewer) {
+		m_profileViewer = new MenuHandler();
+		m_profileViewerStats = new MenuHandler();
+		m_scene.addObject(m_profileViewer);
+		m_scene.addObject(m_profileViewerStats);
+	}
+	else {
+		m_profileViewer->reset();
+		m_profileViewerStats->reset();
+
+	}
+
+	auto& profiles = m_info->getProfiles();
+	m_profileViewer->addMenuSelector("name");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewer->addMenuSelectorItem(profiles[i].getName());
+	}
+	m_profileViewer->setStaticSelection(true, 0);
+	m_profileViewerStats->addMenuSelector("kills");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getStats().kills));
+	}
+	m_profileViewerStats->setStaticSelection(true, 0);
+	m_profileViewerStats->addMenuSelector("deaths");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getStats().deaths));
+	}
+	m_profileViewerStats->setStaticSelection(true, 0);
+	m_profileViewerStats->addMenuSelector("KD");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getKD()));
+	}
+	m_profileViewerStats->setStaticSelection(true, 0);
+
+	m_profileViewerStats->addMenuSelector("wins");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getStats().wins));
+	}
+	m_profileViewerStats->setStaticSelection(true, 0);
+	m_profileViewerStats->addMenuSelector("losses");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getStats().losses));
+	}
+	m_profileViewerStats->setStaticSelection(true, 0);
+	m_profileViewerStats->addMenuSelector("win ratio");
+	for (size_t i = 0; i < profiles.size(); i++) {
+		m_profileViewerStats->addMenuSelectorItem(std::to_string(profiles[i].getWinRatio()));
+	}
+	m_profileViewerStats->setStaticSelection(true, 0);
+
+
+
+
+
+
+	m_profileViewer->setPosition(Vector3(5,15,0));
+	m_profileViewer->setFacingDirection(Vector3(-1,0,0));
+	m_profileViewerStats->setPosition(Vector3(5,12,0));
+	m_profileViewerStats->setFacingDirection(Vector3(-1, 0, 0));
+
+	Logger::log("profile viewer menu loaded");
 }
 
 void MenuState::initOptions() {
@@ -1200,21 +1445,49 @@ void MenuState::setMapSelect(bool active) {
 		for (size_t i = 0; i < m_playerz.size(); i++) {
 			m_playerz[i]->ready = false;
 		}
-	
+
 	}
 }
 
 void MenuState::setProfileMenu(bool active) {
 	if (active) {
 		m_profileMenu->activate();
-		m_playerCamController->setTargets(m_profileMenu->getTarget());
 		m_activeMenu = PROFILEMENU;
-
+		m_activeSubMenu = PMAIN;
 	}
 	else {
 		m_profileMenu->deActivate();
 
 
+	}
+}
+
+void MenuState::setProfileCreator(bool active) {
+	if (active) {
+		m_profileCreator->activate();
+		m_activeMenu = PROFILEMENU;
+		m_activeSubMenu = PCREATE;
+	} 
+	else {
+		m_profileCreator->deActivate();
+		m_activeMenu = PROFILEMENU;
+		m_activeSubMenu = PMAIN;
+	}
+}
+
+
+void MenuState::setProfileViewer(bool active) {
+	if (active) {
+		m_profileViewer->activate();
+		m_profileViewerStats->activate();
+		m_activeMenu = PROFILEMENU;
+		m_activeSubMenu = PVIEW;
+	}
+	else {
+		m_profileViewer->deActivate();
+		m_profileViewerStats->deActivate();
+		m_activeMenu = PROFILEMENU;
+		m_activeSubMenu = PMAIN;
 	}
 }
 
@@ -1224,7 +1497,7 @@ void MenuState::setOptionsMenu(bool active) {
 		m_playerCamController->setTargets(m_optionsMenu->getTarget());
 		m_activeMenu = OPTIONSMENU;
 		m_activeSubMenu = MAIN;
-		m_playerCamController->setPosition(Vector3(0,0,0));
+		m_playerCamController->setPosition(Vector3(0, 0, 0));
 	}
 	else {
 		m_optionsMenu->deActivate();
@@ -1235,7 +1508,7 @@ void MenuState::setOptionsMenu(bool active) {
 void MenuState::setGraphicsMenu(bool active) {
 	if (active) {
 		m_graphicsMenu->activate();
-		m_playerCamController->setTargets(m_graphicsMenu,m_graphicsMenu->getTarget(), m_graphicsMenu->getExtraTarget());
+		m_playerCamController->setTargets(m_graphicsMenu, m_graphicsMenu->getTarget(), m_graphicsMenu->getExtraTarget());
 		m_activeMenu = OPTIONSMENU;
 		m_activeSubMenu = GRAPHICS;
 		m_playerCamController->setPosition(Vector3(0, 5, 0));
@@ -1284,6 +1557,22 @@ void MenuState::updateCamera() {
 		}
 	}
 	if (m_activeMenu == PROFILEMENU) {
+		if (m_activeSubMenu == MAIN) {
+			m_playerCamController->setPosition(Vector3(0, 14, 0));
+			m_playerCamController->setTargets(m_profileMenu, m_profileMenu->getTarget());
+		}
+		if (m_activeSubMenu == PCREATE) {
+
+			m_playerCamController->setPosition(Vector3(0, 14, 0));
+			m_playerCamController->setTargets(m_profileCreator, m_profileCreator->getTarget());
+		}
+		if (m_activeSubMenu == PVIEW) {
+
+			m_playerCamController->setPosition(Vector3(0,14,0));
+			m_playerCamController->setTargets(m_profileViewer, m_profileViewerStats);
+		}
+
+
 
 	}
 	if (m_activeMenu == OPTIONSMENU) {
@@ -1331,5 +1620,15 @@ void MenuState::updateGraphics() {
 
 void MenuState::updateSound() {
 
+	m_info->soundSettings.masterVolume = m_info->masterVolume[m_soundMenu->getOptionAt(0)].value;
+	m_info->soundSettings.backGroundSoundVolume = m_info->backgroundVolume[m_soundMenu->getOptionAt(1)].value;
+	m_info->soundSettings.effectSoundVolume = m_info->effectVolume[m_soundMenu->getOptionAt(2)].value;
+
+
+
+
+	m_app->getResourceManager().getSoundManager()->setMasterVolume(m_info->soundSettings.masterVolume);
+	m_app->getResourceManager().getSoundManager()->setAmbientVolume(m_info->soundSettings.backGroundSoundVolume);
+	m_app->getResourceManager().getSoundManager()->setEffectsVolume(m_info->soundSettings.effectSoundVolume);
 }
 

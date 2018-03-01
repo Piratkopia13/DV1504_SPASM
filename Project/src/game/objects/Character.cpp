@@ -12,13 +12,15 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
-	m_movement = { 0.f, 10.f, 0.f, 1.0f};
+	m_movement = { 0.f, 10.f, 0.f, 1.0f, 0};
 	m_playerHealth.setMax(100.f);
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
 	m_vibration[0] = { 0, 0};
 	m_vibFreq = 1.f / 30.f;
 	m_vibDeltaAcc = 0;
+	m_resetAttacker = 0.0f;
+	m_lastAttackerIndex = -1;
 
 	getTransform().setRotations(Vector3(0.0f, 1.57f, 0.0f));
 
@@ -31,15 +33,16 @@ Character::Character()
 	//addVibration(0, 1.f, 2.f);
 }
 
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel) : Character() {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, int index) : Character() {
 	this->setModel(bodyModel);
 	this->updateBoundingBox();
 	m_leftArm = lArmModel;
 	m_head = headModel;
 	m_legs = legsModel;
+	m_playerIndex = index;
 }
-Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, unsigned int usingController, unsigned int port)
-	: Character(bodyModel, lArmModel, headModel, legsModel) {
+Character::Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel,int index, unsigned int usingController, unsigned int port)
+	: Character(bodyModel, lArmModel, headModel, legsModel, index) {
 	this->setController(usingController);
 	this->setControllerPort(port);
 }
@@ -221,16 +224,19 @@ void Character::update(float dt) {
 		// PLAYER IS ALIVE
 
 		m_thrusterEmitter->updateSpawnsPerSecond(500.f);
-
+		m_resetAttacker += dt;
 		if (m_playerHealth.current < m_playerHealth.max) {
 			m_playerHealth.current += m_playerHealth.regen * dt;
 		}
 
-		if (collHandler->outOfBounds(this)) {
-			damage(getMaxHealth());
-		}
+	if (collHandler->outOfBounds(this)) {
+		damage(getMaxHealth());
+	}
+	
+	if (m_resetAttacker >= 1.f)
+		m_lastAttackerIndex = -1;
 
-		m_playerHealth.updatePercent();
+	m_playerHealth.updatePercent();
 
 		if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
 			if (grounded()) {
@@ -297,6 +303,11 @@ void Character::update(float dt) {
 			if (m_hook) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
 				m_movement.hooked = m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
+				if (m_movement.hooked && m_movement.initialHook == 0) {
+					VibrateController(0, 1.0f, 1.5f);
+					VibrateController(1, 1.0, 1.5f);
+					m_movement.initialHook++;
+				}
 			}
 		}
 
@@ -453,6 +464,8 @@ void Character::hitByProjectile(const CollisionHandler::CharacterHitResult& hitR
 		damage(hitResult.hitDmg);
 		addVelocity(hitResult.knockbackDir * hitResult.knockbackAmount);
 		setGrounded(false);
+		m_lastAttackerIndex = hitResult.attacker;
+		m_resetAttacker = 0.0f;
 
 		// Hit particle effet
 		m_particleHandler->addEmitter(std::shared_ptr<ParticleEmitter>(new ParticleEmitter(
@@ -568,6 +581,7 @@ void Character::hook() {
 void Character::stopHook() {
 	m_hook->triggerRelease();
 	setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
+	m_movement.initialHook = 0;
 	m_movement.hooked = false;
 }
 
@@ -593,3 +607,10 @@ bool Character::updateVibration(float dt) {
 	return update;
 }
 
+int Character::getLastAttacker() const {
+	return m_lastAttackerIndex;
+}
+
+int Character::getIndex() const {
+	return m_playerIndex;
+}

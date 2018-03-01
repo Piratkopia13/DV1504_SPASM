@@ -45,6 +45,7 @@ private:
 		Model* dotModel;
 		Transform laserTransform;
 		Transform dotTransform;
+		DirectX::SimpleMath::Vector4 lightColor;
 	};
 
 	Laser m_laser;

@@ -230,6 +230,7 @@ bool CollisionHandler::checkCharacterCollisionWith(Projectile* proj, float dt, f
 
 			if (rayHit && t <= proj->getVelocity().Length() * dt) {
 				hitResult.hitDmg = proj->getDamage();
+				hitResult.attacker = proj->getOwner();
 				hitResult.knockbackDir = proj->getVelocity();
 				hitResult.knockbackDir.Normalize();
 				hitResult.hitPos = hitPoint;
