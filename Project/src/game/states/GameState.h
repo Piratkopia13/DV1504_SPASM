@@ -11,6 +11,8 @@
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
 
+#include "../objects/Block.h"
+
 class GameState : public State {
 public:
 	GameState(StateStack& stack);
@@ -59,4 +61,5 @@ private:
 
 	// The current gamemode
 	std::unique_ptr<Gamemode> m_gamemode;
+
 };

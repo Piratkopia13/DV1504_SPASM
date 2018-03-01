@@ -10,14 +10,14 @@ Grid::Grid() {
 Grid::Grid(const int worldWidth, const int worldHeight){
 	m_gridWidth = worldWidth;
 	m_gridHeight = worldHeight;
-	m_cells = std::vector<std::vector<Block*>>(m_gridWidth, std::vector<Block*>(m_gridHeight, nullptr));
+	m_cells = std::vector<std::vector<BlockInstance*>>(m_gridWidth, std::vector<BlockInstance*>(m_gridHeight, nullptr));
 }
 
 Grid::~Grid() {
 
 }
 
-void Grid::addBlock(Block* block, const int x, const int y){
+void Grid::addBlock(BlockInstance* block, const int x, const int y){
 	m_cells[x][y] = block;
 }
 
@@ -149,7 +149,7 @@ bool Grid::checkHoles(const Grid::Index& playerPos) {
 	return cover;
 }
 
-std::vector<std::vector<Block*>>& Grid::getAllBlocks() {
+std::vector<std::vector<Grid::BlockInstance*>>& Grid::getAllBlocks() {
 	return m_cells;
 }
 

@@ -15,7 +15,7 @@ namespace {
 	Handles all objects of a level
 */
 class CharacterHandler;
-class Block;
+class InstancedBlocks;
 class Grid;
 class Moveable;
 class Level {
@@ -43,7 +43,8 @@ private:
 	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;
 	// Blocks placed in the level
-	std::vector<std::unique_ptr<Block>> m_blocks;
+	//std::vector<std::unique_ptr<Block>> m_blocks;
+	std::unique_ptr<InstancedBlocks> m_instancedBlocks;
 
 	// Grid of the level
 	std::unique_ptr<Grid> m_grid;

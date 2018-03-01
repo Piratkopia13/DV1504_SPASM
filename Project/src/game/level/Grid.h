@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../../sail/Sail.h"
+#include "../../sail/graphics/shader/deferred/DeferredInstancedGeometryShader.h"
 
-
-class Block;
 class Grid {
 public:
+	typedef DeferredInstancedGeometryShader::InstanceData BlockInstance;
 
 	struct Index {
 		int x;
@@ -38,7 +38,7 @@ public:
 	Grid(const int worldWidth, const int worldHeight);
 	~Grid();
 
-	void addBlock(Block* block, const int x, const int y);
+	void addBlock(BlockInstance* block, const int x, const int y);
 
 	bool checkHoles(const Index& index);
 
@@ -52,14 +52,14 @@ public:
 	// getCollisionIndices returns a list of all indices that a bounding box is currently colliding with
 	std::vector<Index> getCurrentCollisionIndices(const AABB& boundingBox);
 
-	std::vector<std::vector<Block*>>& getAllBlocks();
+	std::vector<std::vector<BlockInstance*>>& getAllBlocks();
 	std::vector<Index> & getControlpointIndices();
 	std::vector<Index> & getPlayerSpawnPointIndices();
 	std::vector<Index> & getUpgradeSpawnPointIndices();
 	
 
 private:
-	std::vector<std::vector<Block*>> m_cells;
+	std::vector<std::vector<BlockInstance*>> m_cells;
 	// Controlpoint indices
 	std::vector<Index> m_cpIndices;
 	// Player spawnpoint indices

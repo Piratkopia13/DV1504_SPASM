@@ -19,6 +19,7 @@
     <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl" />
     <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
     <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
+    <FxCompile Include="res\shaders\deferred\InstancedGeometryShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />
@@ -114,6 +115,8 @@
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
+    <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -222,6 +225,8 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
+    <ClInclude Include="src\game\objects\InstancedBlocks.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

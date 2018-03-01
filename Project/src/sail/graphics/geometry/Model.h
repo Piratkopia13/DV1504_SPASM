@@ -16,6 +16,47 @@ public:
 
 	struct Data {
 		Data() : numIndices(0), numInstances(0), indices(nullptr), numVertices(0), normals(nullptr), positions(nullptr), colors(nullptr), texCoords(nullptr), tangents(nullptr), bitangents(nullptr) {};
+		void deepCopy(const Data& other) {
+			this->numIndices = other.numIndices;
+			this->numVertices = other.numVertices;
+			this->numInstances = other.numInstances;
+			if (other.indices) {
+				this->indices = new ULONG[other.numIndices];
+				for (UINT i = 0; i < other.numIndices; i++)
+					this->indices[i] = other.indices[i];
+			}
+			UINT numVerts = (other.numIndices > 0) ? other.numIndices : other.numVertices;
+			if (other.positions) {
+				this->positions = new DirectX::SimpleMath::Vector3[numVerts];
+				for (UINT i = 0; i < numVerts; i++)
+					this->positions[i] = other.positions[i];
+			}
+			if (other.normals) {
+				this->normals = new DirectX::SimpleMath::Vector3[numVerts];
+				for (UINT i = 0; i < numVerts; i++)
+					this->normals[i] = other.normals[i];
+			}
+			if (other.colors) {
+				this->colors = new DirectX::SimpleMath::Vector4[numVerts];
+				for (UINT i = 0; i < numVerts; i++)
+					this->colors[i] = other.colors[i];
+			}
+			if (other.texCoords) {
+				this->texCoords = new DirectX::SimpleMath::Vector2[numVerts];
+				for (UINT i = 0; i < numVerts; i++)
+					this->texCoords[i] = other.texCoords[i];
+			}
+			if (other.tangents) {
+				this->tangents = new DirectX::SimpleMath::Vector3[numVerts];
+				for (UINT i = 0; i < numVerts; i++)
+					this->tangents[i] = other.tangents[i];
+			}
+			if (other.bitangents) {
+				this->bitangents = new DirectX::SimpleMath::Vector3[numVerts];
+				for (UINT i = 0; i < numVerts; i++)
+					this->bitangents[i] = other.bitangents[i];
+			}
+		}
 		UINT numIndices;
 		ULONG* indices;
 		UINT numVertices;

@@ -162,7 +162,6 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
-
 }
 
 GameState::~GameState() {
@@ -267,6 +266,7 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
 	CollisionHandler::getInstance()->resolveProjectileCollision(dt);

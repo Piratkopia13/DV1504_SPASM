@@ -158,7 +158,7 @@ void ParticleShader::draw(Model& model, bool bindFirst, UINT instanceCount) {
 	ID3D11Buffer* bufferPtrs[2] = { *model.getVertexBuffer(), model.getInstanceBuffer() };
 	devCon->IASetVertexBuffers(0, 2, bufferPtrs, strides, offsets);
 
-	// Bind index buffer if one exitsts
+	// Bind index buffer if one exists
 	auto iBuffer = model.getIndexBuffer();
 	if (iBuffer)
 		devCon->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
