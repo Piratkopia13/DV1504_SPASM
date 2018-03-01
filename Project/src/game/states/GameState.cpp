@@ -238,7 +238,7 @@ bool GameState::update(float dt) {
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;
-	Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
+	Vector4 infColor(-fabs(sinf(counter)) * epilepsyAmount, -fabs(sin(counter + 2.f)) * epilepsyAmount, -fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
 	m_infBottom->setColor(infColor);
 	m_infTop->setColor(infColor);
 	m_infLeft->setColor(infColor);
