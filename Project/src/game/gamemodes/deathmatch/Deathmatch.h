@@ -14,7 +14,7 @@ public:
 	virtual int checkWin();
 
 private:
-	size_t m_maxKills;
+	float m_maxKills;
 	int m_winnerID;
 
 };

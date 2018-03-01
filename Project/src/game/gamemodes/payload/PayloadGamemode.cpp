@@ -14,18 +14,20 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_numOfNodes = indices.size();
 	m_radius = 2;
 	m_teamWin = -1;
-	m_scoreToWin = 100.f;
+	
+	GameInfo * info = GameInfo::getInstance();
+
+	m_scoreToWin = info->convertedGameSettings.scoreLimit;
 	m_levelWidth = levelWidth;
 	m_levelHeight = levelHeight;
 
-	GameInfo * info = GameInfo::getInstance();
 	
 	m_teamOneColor = info->getDefaultColor(info->gameSettings.teams[0].color, 0);
 	m_teamTwoColor = info->getDefaultColor(info->gameSettings.teams[1].color, 0);
 
 	// Add default scores
-	addScore(50, 0);
-	addScore(50, 1);
+	addScore(m_scoreToWin / 2.f, 0);
+	addScore(m_scoreToWin / 2.f, 1);
 
 	Gamemode::setGametime(60000000000000000.f);
 

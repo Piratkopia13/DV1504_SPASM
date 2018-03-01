@@ -1,6 +1,8 @@
 #include "GameState.h"
 #include "../objects/Block.h"
 #include "../gamemodes/payload/PayloadGamemode.h"
+#include "../gamemodes/deathmatch/Deathmatch.h"
+#include "../gamemodes/tdm/TeamDeathmatch.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -53,7 +55,22 @@ GameState::GameState(StateStack& stack)
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
 
-	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+	switch (info->convertedGameSettings.gamemode) {
+	case GameInfo::DOMINATION:
+		m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+		break;
+	case GameInfo::DEATHMATCH:
+		m_gamemode = std::make_unique<Deathmatch>();
+		break;
+	case GameInfo::TEAMDEATHMATCH:
+		m_gamemode = std::make_unique<TeamDeathmatch>();
+		break;
+	default:
+		m_gamemode = nullptr;
+		Logger::Error("No gamemode were properly set.");
+		break;
+	}
+	
 	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
 	if (gamemode) {
 		gamemode->setParticleHandler(m_particleHandler.get());
