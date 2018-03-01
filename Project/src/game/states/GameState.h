@@ -12,6 +12,8 @@
 #include "../ParticleHandler.h"
 #include "../background/ScoreVisualization.h"
 
+#include "../objects/Block.h"
+
 class GameState : public State {
 public:
 	GameState(StateStack& stack);

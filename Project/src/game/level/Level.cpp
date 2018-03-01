@@ -2,23 +2,31 @@
 #include "../objects/Block.h"
 #include "Grid.h"
 #include "../objects/common/Moveable.h"
+#include "../objects/InstancedBlocks.h"
 
 #include <string>
 #include <fstream>
+#include <cctype>
+
+using namespace DirectX::SimpleMath;
 
 const float Level::DEFAULT_BLOCKSIZE = 1.0f;
 
 Level::Level(const std::string& filename) 
 	: m_grid(nullptr)
 {
+	m_instancedBlocks = std::make_unique<InstancedBlocks>();
+
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
-	
+
 	if (infile) {		
 
 		std::string line;
 		unsigned int currTask = 0;
 		unsigned int x = 0;
 		unsigned int y = 0;
+
+		UINT blockCount = 0;
 
 		while (infile >> line) {
 			if (!line.compare("attributes")) {
@@ -28,7 +36,40 @@ Level::Level(const std::string& filename)
 			if (!line.compare("map")) {
 				currTask = 2;
 				infile >> line;
+				m_width = line.length();
+
+				// Count the map height and num blocks
+				m_height = 0;
+				std::string mapLine = line;
+				auto seekPos = infile.tellg();
+				// Valid map line until first character in line is not a digit
+				bool countHeight = true;
+				while (true) {
+					// Only count on lines that are part of the map (beginning with a digit)
+					if (std::isdigit(mapLine[0])) {
+						if (countHeight) {
+							m_height++;
+						}
+						for (char& c : mapLine) {
+							if (c == '1')
+								blockCount++;
+						}
+					} else {
+						countHeight = false;
+					}
+					if (!(infile >> mapLine)) break;
+				}
+				// Seek back to beginning of map
+				infile.clear();
+				infile.seekg(seekPos);
+
+				// Init instance data
+				m_instancedBlocks->init(blockCount);
+
+				y = m_height;
+
 				m_grid = std::make_unique<Grid>(m_width, m_height);
+
 			}
 			if (!line.compare("depth1")) {
 				currTask = 3;
@@ -41,7 +82,6 @@ Level::Level(const std::string& filename)
 				y = m_height;
 			}
 
-
 			switch (currTask) {
 
 			case 0: // Load models
@@ -50,92 +90,45 @@ Level::Level(const std::string& filename)
 				break;
 
 			case 1:
-				if (!line.compare(0, 6, "height")) {
-					int find = line.find('=');
-					m_height = std::stoi(line.substr(find + 1, line.length() - find));
-					y = m_height;
-				}
-				if (!line.compare(0, 5, "width")) {
-					int find = line.find('=');
-					m_width = std::stoi(line.substr(find + 1, line.length() - find));
-				}
+				// TODO: parse attributes here
 				break;
 
 			case 2: // Load map
-				x = 0;
-				for (auto c : line) {
-					switch (c) {
-
-					// Normal blocks
-					case '1':
-						m_blocks.push_back(std::make_unique<Block>(m_models.at(0)->getModel()));
-						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
-						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
-						m_grid->addBlock(m_blocks.back().get(), x, y - 1);
-						break;
-
-					// Controlnodes
-					case 'c':
-						m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
-						break;
-
-					// Holes to hide in
-					case 'h':
-						m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
-						break;
-
-					// Spawnpoints for players
-					case 'p':
-						m_grid->addPlayerSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
-						break;
-
-					// Spawnpoints for upgrades
-					case 'u':
-						m_grid->addUpgradeSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
-						break;
-
-					default:
-						break;
-
-					}
-					x++;
-				}
-
-				y--;
-				break;
-
 			case 3:
-				x = 0;
-
-				for (auto c : line) {
-					switch (c) {
-					case '1':
-						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
-						//m_blocks.back()->setColor(DirectX::SimpleMath::Vector4(0.f, 0.f, 0.f, 1.f));
-						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE));
-						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
-						break;
-					default:
-						break;
-					}
-					x++;
-				}
-
-				y--;
-				break;
-
 			case 4:
 				x = 0;
+				for (char& c : line) {
 
-				for (auto c : line) {
-					switch (c) {
-					case '1':
-						m_blocks.push_back(std::make_unique<Block>(m_models.at(1)->getModel()));
-						m_blocks.back()->getTransform().setTranslation(DirectX::SimpleMath::Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE));
-						m_blocks.back()->getTransform().setScale(DEFAULT_SCALING);
-						break;
-					default:
-						break;
+					if (currTask == 2) {
+						if (c == '1') {
+							// Normal blocks
+							DeferredInstancedGeometryShader::InstanceData instanceData;
+							instanceData.color = Vector4::One;
+							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f);
+							m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y - 1);
+						} else if (c == 'c') {
+							// Controlnodes
+							m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
+						} else if (c == 'h') {
+							// Holes to hide in
+							m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
+						} else if (c == 'p') {
+							// Spawnpoints for players
+							m_grid->addPlayerSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
+						} else if (c == 'u') {
+							// Spawnpoints for upgrades
+							m_grid->addUpgradeSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
+						}
+					} else if (c == '1') {
+						DeferredInstancedGeometryShader::InstanceData instanceData;
+						instanceData.color = Vector4::One;
+						if (currTask == 3) {
+							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE);
+							m_instancedBlocks->addInstance(instanceData);
+						} else if (currTask == 4) {
+							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE);
+							m_instancedBlocks->addInstance(instanceData);
+						}
 					}
 					x++;
 				}
@@ -148,6 +141,7 @@ Level::Level(const std::string& filename)
 
 			}
 		}
+
 	}
 	else {
 		Logger::Error("Could not load the file '" + filename + "'.");
@@ -162,8 +156,8 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 }
 
 void Level::draw() {
-	for (const auto& block : m_blocks) 
-		block->draw();
+	// Draw instanced
+	m_instancedBlocks->draw();
 }
 
 Grid* Level::getGrid() {

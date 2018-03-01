@@ -85,7 +85,7 @@ void DeferredPointLightShader::bind() {
 
 void DeferredPointLightShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
 
-	Model::Data modelData = *(Model::Data*)data;
+	Model::Data& modelData = *(Model::Data*)data;
 
 	if (modelData.numVertices <= 0 || !modelData.positions)
 		Logger::Error("numVertices or position data not set for model");
