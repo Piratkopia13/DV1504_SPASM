@@ -24,25 +24,29 @@ ScoreVisualization::~ScoreVisualization() {
 }
 
 void ScoreVisualization::update(float dt) {
-	float totScore = 0.0f;
+	GameInfo* info = GameInfo::getInstance();
+
+	unsigned int currentGamemode = info->convertedGameSettings.gamemode;
+
+	float targetScore = info->convertedGameSettings.scoreLimit;
+
+	if (currentGamemode == 0) {
+		targetScore *= 2.0f;
+	}
 
 	std::vector<float> finalScore = m_currentGamemode->getScore();
 
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
-		totScore += finalScore[i];
-	}
-
-	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
-		finalScore[i] = (finalScore[i] / totScore) * 10.0f;
+		finalScore[i] = (finalScore[i] / targetScore) * 10.0f;
 	}
 
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
 		for (int j = 0; j < 10; j++) {
 			if (finalScore[i] - (float) j > 1) {
-				m_blocks[i * 10 + j]->setColor(GameInfo::getInstance()->convertedGameSettings.teams[i].color * 0.5f);
+				m_blocks[i * 10 + j]->setColor(info->convertedGameSettings.teams[i].color * 0.5f);
 			}
 			else if (finalScore[i] - (float) j > 0) {
-				m_blocks[i * 10 + j]->setColor(GameInfo::getInstance()->convertedGameSettings.teams[i].color * 0.5f * (finalScore[i] - (float) j));
+				m_blocks[i * 10 + j]->setColor(info->convertedGameSettings.teams[i].color * 0.5f * (finalScore[i] - (float) j));
 			}
 			else {
 				m_blocks[i * 10 + j]->setColor(Vector4(0.0f, 0.0f, 0.0f, 1.0f));
