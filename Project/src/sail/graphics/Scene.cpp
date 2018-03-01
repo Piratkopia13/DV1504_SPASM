@@ -80,7 +80,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 		// Render all blocks to the shadow map
 		// TODO: only render the blocks that the camera can see
-		if (level) {
+		/*if (level) {
 			auto& blocks = level->getGrid()->getAllBlocks();
 			for (auto& row : blocks) {
 				for (auto* block : row) {
@@ -90,7 +90,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 					}
 				}
 			}
-		}
+		}*/
 		dxm->enableBackFaceCulling();
 	}
 

@@ -139,6 +139,7 @@
     <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
     <ClCompile Include="src\game\GameInfo.cpp" />
+    <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
     <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
@@ -189,6 +190,7 @@
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
@@ -248,6 +250,7 @@
     <ClInclude Include="src\game\GameInfo\Profile.h" />
     <ClInclude Include="src\game\GameInfo\Score.h" />
     <ClInclude Include="src\game\gamemodes\tdm\TeamDeathmatch.h" />
+    <ClInclude Include="src\game\objects\InstancedBlocks.h" />
     <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
     <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
     <ClInclude Include="src\game\objects\Menu\MenuText.h" />
@@ -305,6 +308,7 @@
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
@@ -376,6 +380,14 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\deferred\InstancedGeometryShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\deferred\PointLightShader.hlsl">

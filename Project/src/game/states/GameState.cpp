@@ -22,7 +22,7 @@ GameState::GameState(StateStack& stack)
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
-	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
+	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
 
 	// Set up handlers
 
@@ -163,7 +163,7 @@ GameState::GameState(StateStack& stack)
 	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
 	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
 	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
-	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile.tga");
+	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
 
 	m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
 	m_infTop = std::make_unique<Block>(m_infinityPlane.get());
@@ -183,7 +183,6 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
-
 }
 
 GameState::~GameState() {
@@ -294,6 +293,7 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
 	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
