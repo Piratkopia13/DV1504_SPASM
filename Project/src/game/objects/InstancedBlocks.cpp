@@ -45,7 +45,6 @@ void InstancedBlocks::init(UINT maxInstances) {
 
 void InstancedBlocks::init() {
 	init(m_instanceData.size());
-	//m_instanceData.shrink_to_fit();
 }
 
 void InstancedBlocks::reserve(UINT capacity) {
@@ -59,17 +58,13 @@ void InstancedBlocks::draw() {
 	//m_shader->draw(*m_instancedModel, true, m_particles.size());
 
 }
-//
-//void InstancedBlocks::setDataForInstance(UINT instanceIndex, const DeferredInstancedGeometryShader::InstanceData& instanceData) {
-//	m_instanceData.at(instanceIndex) = instanceData;
-//}
 
 DeferredInstancedGeometryShader::InstanceData& InstancedBlocks::getInstanceData(UINT index) {
 	return m_instanceData[index];
 }
 
 DeferredInstancedGeometryShader::InstanceData& InstancedBlocks::addInstance(const DeferredInstancedGeometryShader::InstanceData& instanceData) {
-	Logger::log(std::to_string(m_instanceData.size()));
+	//Logger::log(std::to_string(m_instanceData.size()));
 	assert(m_instanceData.size() != m_instanceData.capacity());
 	m_instanceData.push_back(instanceData);
 	return m_instanceData.back();
