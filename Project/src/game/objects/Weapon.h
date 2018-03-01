@@ -9,7 +9,7 @@ class Character;
 class Weapon : public Moveable {
 public:
 	Weapon();
-	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, Character* owner);
+	Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHandler* projHandler, ParticleHandler* particleHandler, Character* owner);
 	virtual ~Weapon();
 
 	void update(float dt, const DirectX::SimpleMath::Vector3& direction);
@@ -32,7 +32,6 @@ private:
 	ParticleHandler* m_particleHandler;
 	Character* m_owner;
 	bool m_held;
-	Character* m_owner;
 
 	bool m_triggerHeld;
 	float m_timeSinceFire;

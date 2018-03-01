@@ -16,8 +16,8 @@ Projectile::~Projectile() {
 
 }
 
-Character* Projectile::getOwner() const {
-	return m_owner;
+int Projectile::getTeam() const {
+	return m_team;
 }
 
 int Projectile::getOwner() const {
