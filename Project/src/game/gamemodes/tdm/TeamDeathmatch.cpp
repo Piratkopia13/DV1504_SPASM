@@ -20,16 +20,13 @@ void TeamDeathmatch::update(CharacterHandler* charHandler, float delta) {
 	unsigned int numOfPlayers = charHandler->getNrOfPlayers();
 	float teamOne = 0;
 	float teamTwo = 0;
-	Character* character = nullptr;
 	for (unsigned int i = 0; i < numOfPlayers; i++) {
 		switch (charHandler->getCharacter(i)->getTeam()) {
 		case 0:
-			teamOne = float(GameInfo::getInstance()->getScore().getPlayerStats(i).kills);
-			setScore(teamOne, 0);
+			teamOne += float(GameInfo::getInstance()->getScore().getPlayerStats(i).kills);
 			break;
 		case 1:
-			teamTwo = float(GameInfo::getInstance()->getScore().getPlayerStats(i).kills);
-			setScore(teamTwo, 1);
+			teamTwo += float(GameInfo::getInstance()->getScore().getPlayerStats(i).kills);
 			break;
 		default:
 			Logger::Warning("The number of teams are too many");
@@ -37,6 +34,8 @@ void TeamDeathmatch::update(CharacterHandler* charHandler, float delta) {
 		}
 	}
 
+	setScore(teamOne, 0);
+	setScore(teamTwo, 1);
 
 	if (teamOne >= m_maxKills)
 		m_winnerID = 0;

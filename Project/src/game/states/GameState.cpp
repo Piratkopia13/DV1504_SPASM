@@ -56,27 +56,28 @@ GameState::GameState(StateStack& stack)
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
 
 	switch (info->convertedGameSettings.gamemode) {
-	case GameInfo::DOMINATION:
+	case GameInfo::DOMINATION: {
 		m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
-		break;
-	case GameInfo::DEATHMATCH:
+		PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
+		if (gamemode) {
+			gamemode->setParticleHandler(m_particleHandler.get());
+		}
+
+		
+
+	}break;
+	case GameInfo::DEATHMATCH: {
 		m_gamemode = std::make_unique<Deathmatch>();
-		break;
-	case GameInfo::TEAMDEATHMATCH:
+	}break;
+	case GameInfo::TEAMDEATHMATCH: {
 		m_gamemode = std::make_unique<TeamDeathmatch>();
-		break;
-	default:
+	}break;
+	default: {
 		m_gamemode = nullptr;
 		Logger::Error("No gamemode were properly set.");
-		break;
+	}break;
 	}
 	
-	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
-	if (gamemode) {
-		gamemode->setParticleHandler(m_particleHandler.get());
-		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
-		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
-	}
 
 	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
 	m_scene.addObject(m_scoreVisualization.get());
@@ -217,6 +218,75 @@ bool GameState::processInput(float dt) {
 	if (kbTracker.pressed.T) {
 		m_characterHandler->killPlayer(0);
 	}
+
+	GameInfo* info = GameInfo::getInstance();
+	if (kbTracker.pressed.O) {
+		if (info->convertedGameSettings.gamemode == 0) {
+			m_gamemode->addScore(10,0);
+			m_gamemode->addScore(-10, 1);
+			info->getScore().addCapture(0);
+			info->getScore().addPoints(0,10);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(1);
+
+		}
+		if (info->convertedGameSettings.gamemode == 1) {
+			info->getScore().addCapture(0);
+			info->getScore().addPoints(0, 10);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(1);
+
+		}
+
+		if (info->convertedGameSettings.gamemode == 2) {
+			info->getScore().addCapture(0);
+			info->getScore().addPoints(0, 10);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(1);
+
+		}
+
+
+
+
+	}
+
+	if (kbTracker.pressed.P) {
+		if (info->convertedGameSettings.gamemode == 0) {
+			m_gamemode->addScore(10, 1);
+			m_gamemode->addScore(-10, 0);
+			info->getScore().addCapture(1);
+			info->getScore().addPoints(1, 10);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(0);
+
+		}
+
+		if (info->convertedGameSettings.gamemode == 1) {
+
+			info->getScore().addCapture(1);
+			info->getScore().addPoints(1, 10);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(0);
+
+		}
+
+
+		if (info->convertedGameSettings.gamemode == 2) {
+
+			info->getScore().addCapture(1);
+			info->getScore().addPoints(1, 10);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(0);
+
+		}
+
+
+
+	}
+
+
+
 
 
 	// Pause menu

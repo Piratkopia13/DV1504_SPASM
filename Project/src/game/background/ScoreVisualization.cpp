@@ -31,7 +31,7 @@ void ScoreVisualization::update(float dt) {
 	float targetScore = info->convertedGameSettings.scoreLimit;
 
 	if (currentGamemode == 0) {
-		targetScore *= 2.0f;
+		targetScore *= 1.0f;
 	}
 
 	std::vector<float> finalScore = m_currentGamemode->getScore();

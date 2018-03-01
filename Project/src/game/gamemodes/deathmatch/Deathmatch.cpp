@@ -6,7 +6,6 @@
 Deathmatch::Deathmatch() {
 	m_winnerID = -1;
 	m_maxKills = GameInfo::getInstance()->convertedGameSettings.scoreLimit;
-	m_maxKills = 3;
 }
 
 
@@ -33,8 +32,7 @@ void Deathmatch::update(CharacterHandler* charHandler, float delta) {
 
 
 void Deathmatch::draw() {
-	std::vector<float> score = getScore();
-	std::cout << "0: " << score[0] << " 1: " << score[1] << std::endl;
+
 }
 
 

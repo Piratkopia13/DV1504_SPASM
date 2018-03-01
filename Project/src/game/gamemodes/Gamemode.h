@@ -17,8 +17,8 @@ public:
 
 	virtual int checkWin() = 0;
 	
-protected:
 	void addScore(const float toAdd, const unsigned int team);
+protected:
 	void setScore(const float score, const unsigned int team);
 	void setGametime(const float& seconds);
 	void addGametime(const float& seconds);

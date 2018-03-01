@@ -8,6 +8,7 @@ Gamemode::Gamemode() {
 	}
 
 	m_gametime = GameInfo::getInstance()->convertedGameSettings.timeLimit;
+
 }
 
 Gamemode::~Gamemode() {
