@@ -85,7 +85,7 @@ void Hook::triggerRelease() {
 
 void Hook::draw() {
 	model->setTransform(&getTransform());
-	model->getMaterial()->setColor(this->lightColor * 6.f);
+	model->getMaterial()->setColor(this->lightColor * 3.f);
 	model->draw();
 }
 
