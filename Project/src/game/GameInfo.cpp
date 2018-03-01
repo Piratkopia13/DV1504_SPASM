@@ -293,7 +293,7 @@ void GameInfo::convertGameSettings() {
 	if (gameSettings.gameMode == DEATHMATCH)
 		preText = "DM/";
 	if (gameSettings.gameMode == TEAMDEATHMATCH)
-		preText = "TDM/";
+		preText = "teamDM/";
 	convertedGameSettings.map = preText + maps[gameSettings.gameMode][gameSettings.map]+".level";
 	convertedGameSettings.gamemode = gameModes[gameSettings.gameMode].value;
 	convertedGameSettings.scoreLimit = scoreLimit[gameSettings.scoreLimit].value;
