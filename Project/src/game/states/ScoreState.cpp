@@ -33,8 +33,10 @@ ScoreState::ScoreState(StateStack& stack)
 #endif
 	
 	addScore();
+	std::vector<bool> used;
 	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
 		m_ready.push_back(false);
+		used.push_back(false);
 	}
 
 	Score* score = &m_info->getScore();
@@ -42,16 +44,37 @@ ScoreState::ScoreState(StateStack& stack)
 	std::vector<Score::PlayerStats> playerStats;
 	
 	float oldMax = 1000000;
+	float oldDeaths = 0;
+
+
 	for (size_t i = 0; i < score->getSize(); i++) {
-		float maxScore = 0;
+		float tempMaxKills = -1;
+		float tempDeaths = -1;
 		size_t index = 0;
 		for (size_t u = 0; u < score->getSize(); u++) {
-			if (maxScore < score->getPlayerStats(u).gamePoints && score->getPlayerStats(u).gamePoints < oldMax) {
+			if (used[u])
+				continue;
+			int kills = score->getPlayerStats(u).kills;
+			int deaths = score->getPlayerStats(u).deaths;
+			// om fler kills
+			if (tempMaxKills < kills) {
 				index = u;
-				maxScore = score->getPlayerStats(u).gamePoints;
+				tempMaxKills = kills;
+				tempDeaths = deaths;
+			}
+			// om lika kills & mindre deaths
+			else if (tempMaxKills == kills && tempDeaths >= deaths) {
+				index = u;
+				tempMaxKills = kills;
+				tempDeaths = deaths;
+
 			}
 		}
-		oldMax = maxScore;
+		if (used[index])
+			continue;
+		used[index] = true;
+		oldMax = tempMaxKills;
+		oldDeaths = score->getPlayerStats(index).deaths;
 		playerName.push_back(m_info->getPlayers()[index]);
 		playerStats.push_back(score->getPlayerStats(index));
 	}
@@ -62,10 +85,10 @@ ScoreState::ScoreState(StateStack& stack)
 	m_topLine.text.push_back(new MenuText("name"));
 	m_topLine.text.push_back(new MenuText("kills"));
 	m_topLine.text.push_back(new MenuText("deaths"));
-	if (m_info->convertedGameSettings.gamemode == 0) {
+	/*if (m_info->convertedGameSettings.gamemode == 0) {
 		m_topLine.text.push_back(new MenuText("captures"));
 	}
-	m_topLine.text.push_back(new MenuText("score"));
+	m_topLine.text.push_back(new MenuText("score"));*/
 
 	for (size_t i = 0; i < m_topLine.text.size(); i++) {
 		m_scene.addObject(m_topLine.text[i]);
@@ -77,10 +100,10 @@ ScoreState::ScoreState(StateStack& stack)
 		temp.text.push_back(new MenuText(playerName[i].currentProfile->getName()));
 		temp.text.push_back(new MenuText(std::to_string(playerStats[i].kills)));
 		temp.text.push_back(new MenuText(std::to_string(playerStats[i].deaths)));
-		if (m_info->convertedGameSettings.gamemode == 0) {
+		/*if (m_info->convertedGameSettings.gamemode == 0) {
 			temp.text.push_back(new MenuText(std::to_string(playerStats[i].pointsCaptured)));
 		}
-		temp.text.push_back(new MenuText(std::to_string((int)playerStats[i].gamePoints)));
+		temp.text.push_back(new MenuText(std::to_string((int)playerStats[i].gamePoints)));*/
 		m_scoreLine.push_back(temp);
 
 		for (size_t u = 0; u < m_scoreLine[i].text.size(); u++) {
@@ -279,7 +302,7 @@ void ScoreState::setPositions() {
 
 
 	float xSpace = 2.1f;
-	float ySpace = 0.4f;
+	float ySpace = 0.5f;
 
 	m_winner.text[0]->setPosition(position - 
 	growth * ((float)size + 1.0f) * ySpace);
@@ -299,7 +322,7 @@ void ScoreState::setPositions() {
 		for (size_t i = 0; i < m_scoreLine[u].text.size(); i++) {
 			
 			m_scoreLine[u].text[i]->setPosition(position + 
-				growth * (u - halfSizeY+0.5f) * ySpace + 
+				growth * (u - halfSizeY+0.7f) * ySpace + 
 				right * (i - halfSizeX) * xSpace);
 
 			m_scoreLine[u].text[i]->setSize(u == 0 ? 1.8f:1.6f);
@@ -322,7 +345,9 @@ void ScoreState::exitScoreBoard() {
 
 
 
-
+	m_info->resetScore();
+	m_info->getPlayers().clear();
+	m_info->gameSettings.teams.clear();
 
 
 	requestStackClear();

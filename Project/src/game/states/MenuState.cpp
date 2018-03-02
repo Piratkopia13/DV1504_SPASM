@@ -418,7 +418,7 @@ bool MenuState::processInput(float dt) {
 
 							if (b) {
 								if (spot == -1) {
-									//controller not online, go back to game settings
+									//player not online, go back to game settings
 									for (size_t u = 0; u < m_playerz.size(); u++) {
 										Memory::safeDelete(m_playerz[u]);
 										removeCharacter(u);
@@ -478,7 +478,23 @@ bool MenuState::processInput(float dt) {
 								if (spot > -1) {
 									if (!m_playerz[spot]->ready) {
 										size_t option = m_characterMenu[spot]->getActive();
+										if (option == 0) {
+											m_playerz[spot]->player.currentProfile = &m_info->getProfiles()[m_characterMenu[spot]->getOptionAt(option)];
+											if (m_playerz[spot]->player.currentProfile->preOrdered()== 0) {
+												int opt = m_info->gameSettings.gameMode == DEATHMATCH ? 3:4;
+												
+												if (m_characterMenu[spot]->getOptionAt(opt) == 2) {
+													m_characterMenu[spot]->setOptionAt(opt,0);
+													m_playerz[spot]->player.headModel = m_characterMenu[spot]->getOptionAt(option);
+													m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[m_playerz[spot]->player.headModel]);
+												}
+
+											}
+										}
 										if (m_info->gameSettings.gameMode == DEATHMATCH) {
+
+
+
 
 											if (option == 1) {
 												m_playerz[spot]->player.color = m_characterMenu[spot]->getOptionAt(option);
@@ -490,6 +506,12 @@ bool MenuState::processInput(float dt) {
 											}
 
 											if (option == 3) {
+												if (m_characterMenu[spot]->getOptionAt(option) == 2) {
+													if (right)
+														m_characterMenu[spot]->right();
+													if (left)
+														m_characterMenu[spot]->left();
+												}
 												m_playerz[spot]->player.headModel = m_characterMenu[spot]->getOptionAt(option);
 												m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[m_playerz[spot]->player.headModel]);
 											}
@@ -547,6 +569,12 @@ bool MenuState::processInput(float dt) {
 												m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(m_playerz[spot]->player.color, m_playerz[spot]->player.hue));
 											}
 											if (option == 4) {
+												if (m_characterMenu[spot]->getOptionAt(option) == 2 && m_playerz[spot]->player.currentProfile->preOrdered() == 0) {
+													if (right)
+														m_characterMenu[spot]->right();
+													if (left)
+														m_characterMenu[spot]->left();
+												}
 												m_playerz[spot]->player.headModel = m_characterMenu[spot]->getOptionAt(option);
 												m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[m_playerz[spot]->player.headModel]);
 											}
@@ -1248,7 +1276,7 @@ void MenuState::initProfileViewer() {
 	m_profileViewerStats->addMenuSelector("KD");
 	for (size_t i = 0; i < profiles.size(); i++) {
 		std::string kdString = std::to_string(profiles[i].getKD());
-		m_profileViewerStats->addMenuSelectorItem(kdString.substr(0,kdString.find_first_of(".")+2));
+		m_profileViewerStats->addMenuSelectorItem(kdString.substr(0,kdString.find_first_of(".")+3));
 	}
 	m_profileViewerStats->setStaticSelection(true, 0);
 
