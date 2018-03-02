@@ -350,6 +350,6 @@ void ScoreState::exitScoreBoard() {
 	m_info->gameSettings.teams.clear();
 
 
-	requestStackClear();
+	requestStackPop();
 	requestStackPush(States::MainMenu);
 }

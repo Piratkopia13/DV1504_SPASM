@@ -1570,6 +1570,7 @@ void MenuState::setSoundMenu(bool active) {
 void MenuState::updateCamera() {
 	if (m_activeMenu == MAINMENU) {
 		m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget());
+		m_playerCamController->setPosition(Vector3(0, 0, 0));
 	}
 	if (m_activeMenu == STARTMENU) {
 		if (m_activeSubMenu == GAMEOPTIONSELECT) {
