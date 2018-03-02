@@ -715,6 +715,7 @@ bool MenuState::processInput(float dt) {
 							if (b) {
 								setProfileViewer(false);
 								setProfileMenu(true);
+								updateCamera();
 							}
 							if (up) {
 

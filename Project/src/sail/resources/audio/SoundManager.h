@@ -28,6 +28,7 @@ class SoundManager {
 public:
 	enum SoundEffect {
 		Explosion,
+		Explosion2,
 		Shock,
 		Laser,
 		Male_Death,

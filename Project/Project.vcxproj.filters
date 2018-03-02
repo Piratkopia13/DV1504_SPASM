@@ -19,6 +19,7 @@
     <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl" />
     <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
     <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
+    <FxCompile Include="res\shaders\deferred\InstancedGeometryShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />
@@ -112,9 +113,28 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
+    <ClCompile Include="src\game\CharacterHandler.cpp" />
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
+    <ClCompile Include="src\sail\graphics\Particle.cpp" />
+    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
+    <ClCompile Include="src\game\ParticleHandler.cpp" />
+    <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
+    <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
+    <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
     <ClCompile Include="src\game\states\ScoreState.cpp" />
+    <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
+    <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
+    <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -224,6 +244,10 @@
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
     <ClInclude Include="src\game\states\ScoreState.h" />
+    <ClInclude Include="src\game\gamemodes\tdm\TeamDeathmatch.h" />
+    <ClInclude Include="src\game\background\ScoreVisualization.h" />
+    <ClInclude Include="src\game\objects\InstancedBlocks.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />
@@ -235,6 +259,20 @@
     <Media Include="res\sounds\effect\shock.wav" />
     <Media Include="res\sounds\effect\explosion.wav" />
     <Media Include="res\sounds\ambient\windows95.wav" />
+    <ClInclude Include="src\game\collision\CollisionHandler.h" />
+    <ClInclude Include="src\game\gamemodes\Gamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\PayloadGamemode.h" />
+    <ClInclude Include="src\game\gamemodes\payload\ControlNode.h" />
+    <ClInclude Include="src\game\CharacterHandler.h" />
+    <ClInclude Include="src\sail\Input.h" />
+    <ClInclude Include="src\sail\resources\audio\SoundManager.h" />
+    <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
+    <ClInclude Include="src\sail\graphics\Particle.h" />
+    <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
+    <ClInclude Include="src\game\ParticleHandler.h" />
+    <ClInclude Include="src\sail\resources\audio\Sound.h" />
+    <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
+    <ClInclude Include="src\game\gamemodes\deathmatch\Deathmatch.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -258,5 +296,6 @@
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\ambient\theme.wav" />
     <Media Include="res\sounds\effect\pickup.wav" />
+    <Media Include="res\sounds\effect\explosion2.wav" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,8 @@
 #include "GameState.h"
 #include "../objects/Block.h"
 #include "../gamemodes/payload/PayloadGamemode.h"
+#include "../gamemodes/deathmatch/Deathmatch.h"
+#include "../gamemodes/tdm/TeamDeathmatch.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -20,7 +22,7 @@ GameState::GameState(StateStack& stack)
 	m_app = Application::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
-	m_app->getResourceManager().LoadDXTexture("background_tile.tga");
+	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
 
 	// Set up handlers
 
@@ -31,6 +33,7 @@ GameState::GameState(StateStack& stack)
 	if (info->gameSettings.teams.size() == 0) {
 		info->gameSettings.teams.push_back({ 0, 0 });
 		info->gameSettings.teams.push_back({ 1, 0 });
+		info->convertGameSettings();
 	}
 
 #ifdef _DEBUG
@@ -52,13 +55,32 @@ GameState::GameState(StateStack& stack)
 	m_upgradeHandler = std::make_unique<UpgradeHandler>();
 	m_collisionHandler = std::make_unique<CollisionHandler>(m_level.get(), m_characterHandler.get(), m_projHandler.get(), m_upgradeHandler.get());
 
-	m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
-	PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
-	if (gamemode) {
-		gamemode->setParticleHandler(m_particleHandler.get());
-		//gamemode->setTeamColor(1, info->getDefaultColor(info->gameSettings.teams[0].color, 0));
-		//gamemode->setTeamColor(2, info->getDefaultColor(info->gameSettings.teams[1].color, 0));
+	switch (info->convertedGameSettings.gamemode) {
+	case GameInfo::DOMINATION: {
+		m_gamemode = std::make_unique<PayloadGamemode>(m_level->getGrid()->getControlpointIndices(), m_level->getGrid()->getAllBlocks(), m_level->getGridWidth(), m_level->getGridHeight());
+		PayloadGamemode* gamemode = dynamic_cast<PayloadGamemode*>(m_gamemode.get());
+		if (gamemode) {
+			gamemode->setParticleHandler(m_particleHandler.get());
+		}
+
+		
+
+	}break;
+	case GameInfo::DEATHMATCH: {
+		m_gamemode = std::make_unique<Deathmatch>();
+	}break;
+	case GameInfo::TEAMDEATHMATCH: {
+		m_gamemode = std::make_unique<TeamDeathmatch>();
+	}break;
+	default: {
+		m_gamemode = nullptr;
+		Logger::Error("No gamemode were properly set.");
+	}break;
 	}
+	
+
+	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
+	m_scene.addObject(m_scoreVisualization.get());
 
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
@@ -142,7 +164,7 @@ GameState::GameState(StateStack& stack)
 	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
 	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
 	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
-	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile.tga");
+	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
 
 	m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
 	m_infTop = std::make_unique<Block>(m_infinityPlane.get());
@@ -162,7 +184,6 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
-
 }
 
 GameState::~GameState() {
@@ -197,6 +218,75 @@ bool GameState::processInput(float dt) {
 	if (kbTracker.pressed.T) {
 		m_characterHandler->killPlayer(0);
 	}
+
+	GameInfo* info = GameInfo::getInstance();
+	if (kbTracker.pressed.O) {
+		if (info->convertedGameSettings.gamemode == 0) {
+			m_gamemode->addScore(10,0);
+			m_gamemode->addScore(-10, 1);
+			info->getScore().addCapture(0);
+			info->getScore().addPoints(0,10);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(1);
+
+		}
+		if (info->convertedGameSettings.gamemode == 1) {
+			info->getScore().addCapture(0);
+			info->getScore().addPoints(0, 10);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(1);
+
+		}
+
+		if (info->convertedGameSettings.gamemode == 2) {
+			info->getScore().addCapture(0);
+			info->getScore().addPoints(0, 10);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(1);
+
+		}
+
+
+
+
+	}
+
+	if (kbTracker.pressed.P) {
+		if (info->convertedGameSettings.gamemode == 0) {
+			m_gamemode->addScore(10, 1);
+			m_gamemode->addScore(-10, 0);
+			info->getScore().addCapture(1);
+			info->getScore().addPoints(1, 10);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(0);
+
+		}
+
+		if (info->convertedGameSettings.gamemode == 1) {
+
+			info->getScore().addCapture(1);
+			info->getScore().addPoints(1, 10);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(0);
+
+		}
+
+
+		if (info->convertedGameSettings.gamemode == 2) {
+
+			info->getScore().addCapture(1);
+			info->getScore().addPoints(1, 10);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(0);
+
+		}
+
+
+
+	}
+
+
+
 
 
 	// Pause menu
@@ -274,12 +364,15 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
 	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
 
 	// Update particles
 	m_particleHandler->update(dt);
+
+	m_scoreVisualization->update(dt);
 
 	return true;
 }

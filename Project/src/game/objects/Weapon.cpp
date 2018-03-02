@@ -28,6 +28,7 @@ Weapon::Weapon(Model *armModel, Model* laserModel, Model* dotModel, ProjectileHa
 	m_laser.dotTransform.setScale(0.1f);
 
 	m_projectileHandler = projHandler;
+	m_owner = owner;
 	m_held = true;
 	m_upgrade = new Upgrade();
 }
@@ -85,7 +86,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			extraDamage = m_upgrade->damageMultiplier();
 		}
 
-		float pitch = Utils::rnd() * 0.3f + 0.8f;
+		float pitch = Utils::rnd() * 0.4f + 0.8f;
 		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.4f, pitch);
 
 		// Muzzle flash particles
@@ -111,7 +112,6 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 		temp->setLightColor(projColor);
 		m_projectileHandler->addProjectile(temp);
 
-
 		if (m_upgrade->multiActive()) {
 			
 			Vector3 changeVec = direction.Cross(zVec);
@@ -124,7 +124,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 
 				tempVec1.Normalize();
 				tempVec2.Normalize();
-				pitch = Utils::rnd() * 0.2f + 0.9f;
+				pitch = Utils::rnd() * 0.4f + 0.8f;
 				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 				Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Laser, 0.2f, pitch);
 
@@ -210,14 +210,16 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	//translation into world space
 	tempMatrix *= Matrix::CreateTranslation(tempPos);
 
+	//Updating laser
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
 	Vector3 hitPos;
 	float t;
 	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
 	float length = (hitPos - m_nozzlePos).Length();
-	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f) / 2.f));
-	m_laser.laserTransform.setNonUniScale(min(50.f, length * 10), 1.f, 1.f);
+	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f + (m_upgrade->getActiveUprades() * 0.1f)) / 2.f));
+	m_laser.laserTransform.setNonUniScale(min(50.f + (m_upgrade->getActiveUprades()), length * 10), 1.5f, 1.f);
 	m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
+	m_laser.lightColor = m_upgrade->getColor();
 
 	m_laser.dotTransform.setTranslation(hitPos + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
 
@@ -228,9 +230,9 @@ void Weapon::draw() {
 	model->setTransform(&getTransform());
 	if (this->getTransform().getTranslation().z < 0.5f && m_owner->isAlive()) {
 		m_laser.laserModel->setTransform(&m_laser.laserTransform);
-		m_laser.laserModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(1.0f, 0.f, 0.f, 1.f));
+		m_laser.laserModel->getMaterial()->setColor(m_laser.lightColor);// *3.f);
 
-		m_laser.dotModel->getMaterial()->setColor(DirectX::SimpleMath::Vector4(4.0f, 0.f, 0.f, 1.f));
+		m_laser.dotModel->getMaterial()->setColor((m_laser.lightColor * (1.f / m_laser.lightColor.w)) * 5.f);
 
 		m_laser.dotModel->setTransform(&m_laser.dotTransform);
 

@@ -75,6 +75,7 @@ private:
 		float speed;
 		bool inCover;
 		float xDirection;
+		int initialHook = 0;
 	};
 	struct Health {
 		float current;

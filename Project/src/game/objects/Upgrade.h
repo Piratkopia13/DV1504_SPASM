@@ -10,7 +10,8 @@ public:
 	void update(float dt);
 	virtual void combine(const Upgrade& other);
 
-	
+	DirectX::SimpleMath::Vector4 getColor() const;
+	int getActiveUprades() const;
 
 	bool autoActive();
 	float autoRate();
@@ -79,8 +80,10 @@ private:
 	struct AutoFire {
 	public:
 		bool active;
+		int instances;
 		float fireRate;
 		float baseRate;
+		DirectX::SimpleMath::Vector4 color;
 		UpgradeTimer time;
 
 		void update(float dt) {
@@ -93,6 +96,7 @@ private:
 		}
 		void operator+=(const AutoFire& other) {
 			if (other.active) {
+				instances++;
 				fireRate *= 0.5;
 				time.addTime(other.time.remaining);
 				active = true;
@@ -101,10 +105,13 @@ private:
 		void reset() {
 			time.reset();
 			active = false;
+			instances = 1;
 			fireRate = baseRate;
 		}
 		AutoFire() {
 			active = false;
+			color = DirectX::SimpleMath::Vector4(1, 0.5f, 0, 1);
+			instances = 1;
 			fireRate = 1.0f;
 			baseRate = 1.0f;
 			time.setCap(10);
@@ -119,8 +126,10 @@ private:
 	struct ProjectileKnockback {
 	public:
 		bool active;
+		int instances;
 		float amount;
 		float baseAmount;
+		DirectX::SimpleMath::Vector4 color;
 		UpgradeTimer time;
 
 		void update(float dt) {
@@ -139,15 +148,19 @@ private:
 					amount += other.amount;
 				time.addTime(other.time.remaining);
 				active = true;
+				instances++;
 			}
 		}
 		void reset() {
 			time.reset();
 			active = false;
+			instances = 1;
 			amount = baseAmount;
 		}
 		ProjectileKnockback() {
 			active = false;
+			color = DirectX::SimpleMath::Vector4(0, 1, 0, 1);
+			instances = 1;
 			amount = 2;
 			baseAmount = 2;
 			time.setCap(10);
@@ -163,8 +176,10 @@ private:
 	struct ExtraDamage {
 
 		bool active;
+		int instances;
 		float multiplier;
 		float baseMultiplier;
+		DirectX::SimpleMath::Vector4 color;
 		UpgradeTimer time;
 
 		void update(float dt) {
@@ -181,17 +196,21 @@ private:
 					multiplier *= 2;
 				time.addTime(other.time.remaining);
 				active = true;
+				instances++;
 			}
 		}
 		void reset() {
 			time.reset();
 			active = false;
+			instances = 1;
 			multiplier = baseMultiplier;
 		}
 		ExtraDamage() {
 			active = false;
+			color = DirectX::SimpleMath::Vector4(0, 0, 1, 1);
 			multiplier = 2;
 			baseMultiplier = 2;
+			instances = 1;
 			time.setCap(10);
 		}
 		ExtraDamage(float multi, float _time) : ExtraDamage() {
@@ -204,8 +223,10 @@ private:
 	struct ExtraProjectiles {
 
 		bool active;
+		int instances;
 		unsigned int nr;
 		unsigned int baseNr;
+		DirectX::SimpleMath::Vector4 color;
 		UpgradeTimer time;
 
 		void update(float dt) {
@@ -222,16 +243,20 @@ private:
 					nr += 1;
 				time.addTime(other.time.remaining);
 				active = true;
+				instances++;
 			}
 		}
 		void reset() {
 			time.reset();
 			active = false;
+			instances = 1;
 			nr = baseNr;
 		}
 		ExtraProjectiles() {
 			active = false;
+			color = DirectX::SimpleMath::Vector4(0, 1, 1, 1);
 			baseNr = 1;
+			instances = 1;
 			nr = baseNr;
 			time.setCap(10);
 		}
@@ -293,6 +318,9 @@ private:
 	NoGravity m_grav;
 	Explosion m_explosion;
 	Bouncy m_bouncy;
+
+	int m_activeUpgrades;
+	DirectX::SimpleMath::Vector4 m_color;
 
 };
 
