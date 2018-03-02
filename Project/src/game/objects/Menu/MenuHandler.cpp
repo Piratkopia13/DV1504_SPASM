@@ -37,7 +37,10 @@ MenuHandler::~MenuHandler() {
 		Memory::safeDelete(m_itemList[i].item);
 		Memory::safeDelete(m_itemList[i].text);
 		Memory::safeDelete(m_itemList[i].selector);
+		Memory::safeDelete(m_itemList[i].extraText);
 	}
+	Memory::safeDelete(m_pointers[0]);
+	Memory::safeDelete(m_pointers[1]);
 }
 
 void MenuHandler::draw() {
@@ -150,6 +153,7 @@ void MenuHandler::setOptionAt(size_t index, size_t option) {
 void MenuHandler::editing(bool active) {
 	if (m_itemList[m_activeItem].extraText) {
 		m_itemList[m_activeItem].editable = active;
+		updateTransform();
 	}
 }
 
@@ -321,7 +325,7 @@ void MenuHandler::left() {
 	}
 	if (active->editable) {
 		if (active->index == 0) {
-			active->index = active->extraText->getLetterNr();
+			active->index = active->extraText->getLetterNr()-1;
 		}
 		else
 			active->index--;

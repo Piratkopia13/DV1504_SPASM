@@ -213,7 +213,7 @@ private:
 	MenuHandler* m_optionsMenu;
 	MenuHandler* m_graphicsMenu;
 	MenuHandler* m_soundMenu;
-
+private:
 	void initMain();
 	void initGamemode();
 	void initCharacterModels();

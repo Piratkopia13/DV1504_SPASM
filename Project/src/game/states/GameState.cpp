@@ -20,6 +20,7 @@ GameState::GameState(StateStack& stack)
 
 	// Get the Application instance
 	m_app = Application::getInstance();
+	m_info = GameInfo::getInstance();
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
 	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
@@ -28,22 +29,24 @@ GameState::GameState(StateStack& stack)
 
 
 	GameInfo * info = GameInfo::getInstance();
-	std::string map = info->convertedGameSettings.map;
 
+
+#ifdef _DEBUG
 	if (info->gameSettings.teams.size() == 0) {
 		info->gameSettings.teams.push_back({ 0, 0 });
 		info->gameSettings.teams.push_back({ 1, 0 });
 		info->convertGameSettings();
 	}
-
-#ifdef _DEBUG
 	if (info->getPlayers().size() == 0) {
-		info->addPlayer({ nullptr, 0, 0, 0, 0, 0, 0, 0, 0 });
-		info->addPlayer({ nullptr, 1, 1, 1, 0, 0, 0, 0, 0 });
+		info->addPlayer({ &info->getProfiles()[0], 0, 0, 0, 0, 0, 0, 0, 0 });
+		info->addPlayer({ &info->getProfiles()[1], 1, 1, 1, 0, 0, 0, 0, 0 });
 	} else if (info->getPlayers().size() == 1) {
-		info->addPlayer({ nullptr, 1, 1, 1, 0, 0, 0, 0, 0 });
+		info->addPlayer({ &info->getProfiles()[1], 1, 0, 0, 0, 0, 0, 0, 0 });
+		info->addPlayer({ &info->getProfiles()[2], 2, 1, 1, 0, 0, 0, 0, 0 });
+		info->addPlayer({ &info->getProfiles()[3], 3, 1, 1, 0, 0, 0, 0, 0 });
 	}
 #endif
+	std::string map = info->convertedGameSettings.map;
 
 	m_level = std::make_unique<Level>(map);
 	
@@ -224,10 +227,12 @@ bool GameState::processInput(float dt) {
 		if (info->convertedGameSettings.gamemode == 0) {
 			m_gamemode->addScore(10,0);
 			m_gamemode->addScore(-10, 1);
-			info->getScore().addCapture(0);
-			info->getScore().addPoints(0,10);
 			info->getScore().addKill(0);
-			info->getScore().addDeath(1);
+			info->getScore().addDeath(2);
+			info->getScore().addKill(1);
+			info->getScore().addDeath(3);
+			info->getScore().addKill(0);
+			info->getScore().addDeath(3);
 
 		}
 		if (info->convertedGameSettings.gamemode == 1) {
@@ -255,10 +260,12 @@ bool GameState::processInput(float dt) {
 		if (info->convertedGameSettings.gamemode == 0) {
 			m_gamemode->addScore(10, 1);
 			m_gamemode->addScore(-10, 0);
-			info->getScore().addCapture(1);
-			info->getScore().addPoints(1, 10);
-			info->getScore().addKill(1);
+			info->getScore().addKill(2);
 			info->getScore().addDeath(0);
+			info->getScore().addKill(2);
+			info->getScore().addDeath(1);
+			info->getScore().addKill(3);
+			info->getScore().addDeath(1);
 
 		}
 
@@ -352,8 +359,12 @@ bool GameState::update(float dt) {
 		else
 			std::cout << "DRAW!" << std::endl;
 
+
+		m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
+
 		requestStackClear();
-		requestStackPush(States::ID::MainMenu);
+		requestStackPush(States::Score);
+		//requestStackPush(States::ID::Score);
 	}
 
 	if(!m_flyCam)

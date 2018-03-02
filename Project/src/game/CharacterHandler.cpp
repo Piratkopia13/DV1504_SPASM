@@ -21,6 +21,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Model* armRightModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botArmNames[0] + "_armR").getModel();
 	Model* legsModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botLegNames[0] + "_legs").getModel();
 
+	bool keyboardUsed = false;
 	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
 		headModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botHeadNames[m_info->getPlayers()[i].headModel] + "_head").getModel();
 		bodyModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botBodyNames[m_info->getPlayers()[i].bodyModel] + "_body").getModel();
@@ -42,7 +43,6 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 			tempChar->setController(0);
 
 #ifdef _DEBUG
-		static bool keyboardUsed = false;
 		if (!keyboardUsed && !Application::getInstance()->getInput().getGamePadState(i).IsConnected()) {
 			tempChar->setController(false);
 			keyboardUsed = true;

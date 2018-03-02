@@ -19,7 +19,7 @@ GameInfo::GameInfo()
 	
 	float base = 1.0f;
 	float hue1 = 0.2f;
-	float hue2 = 0.4f;
+	float hue2 = 0.3f;
 
 	//RED
 	defaultColors.push_back(Vector4(base, 0.0f, 0.0f, 1.0f));
@@ -275,7 +275,9 @@ const DirectX::SimpleMath::Vector4 & GameInfo::getDefaultColor(size_t color, siz
 	return defaultColors[color*colorHues.size()+hue];
 }
 
+
 void GameInfo::addPlayer(Player player) {
+	
 	m_currentPlayers.push_back(player);
 	m_gameScore.addPlayer();
 }

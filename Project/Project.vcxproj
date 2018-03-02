@@ -166,6 +166,7 @@
     <ClCompile Include="src\game\objects\Weapon.cpp" />
     <ClCompile Include="src\game\ProjectileHandler.cpp" />
     <ClCompile Include="src\game\states\GameState.cpp" />
+    <ClCompile Include="src\game\states\ScoreState.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\game\PlayerCameraController.cpp" />
     <ClCompile Include="src\sail\Application.cpp" />
@@ -278,6 +279,7 @@
     <ClInclude Include="src\game\PlayerCameraController.h" />
     <ClInclude Include="src\game\ProjectileHandler.h" />
     <ClInclude Include="src\game\states\GameState.h" />
+    <ClInclude Include="src\game\states\ScoreState.h" />
     <ClInclude Include="src\sail\Application.h" />
     <ClInclude Include="src\sail\DXManager.h" />
     <ClInclude Include="src\sail\graphics\camera\Camera.h" />

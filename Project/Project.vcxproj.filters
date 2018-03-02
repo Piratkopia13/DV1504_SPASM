@@ -130,6 +130,7 @@
     <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
+    <ClCompile Include="src\game\states\ScoreState.cpp" />
     <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
     <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
+    <ClInclude Include="src\game\states\ScoreState.h" />
     <ClInclude Include="src\game\gamemodes\tdm\TeamDeathmatch.h" />
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
     <ClInclude Include="src\game\objects\InstancedBlocks.h" />

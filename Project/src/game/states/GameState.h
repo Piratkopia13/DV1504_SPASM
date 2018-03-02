@@ -30,7 +30,7 @@ public:
 
 private:
 	Application* m_app;
-
+	GameInfo* m_info;
 	// Camera
 	PerspectiveCamera m_cam;
 	FlyingCameraController m_camController;
