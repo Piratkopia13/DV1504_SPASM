@@ -10,12 +10,13 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(30.f, 1280.f / 720.f, 0.1f, 100000.f)
+, m_cam(30.f, 1280.f / 720.f, 0.1f, 1000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
+, m_testBlocks(250)
 {
 
 	// Get the Application instance
@@ -187,6 +188,17 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
+
+	for (int x = 0; x < 5; x++) {
+		for (int z = 0; z < 50; z++) {
+			DeferredInstancedGeometryShader::InstanceData data;
+			data.color = Utils::getRandomColor();
+			data.position = Vector3(x + 15, 10.f, z - 40);
+			m_testBlocks.addInstance(data);
+		}
+	}
+
+	//m_scene.addObject(&m_testBlocks);
 }
 
 GameState::~GameState() {

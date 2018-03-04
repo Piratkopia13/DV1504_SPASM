@@ -58,6 +58,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	//dxm->getDeviceContext()->ClearState();
 
 	if (m_doPostProcessing) {
+		m_postProcessPass.setCamera(cam);
 		// Render skybox to the prePostTex
 		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
 		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
@@ -141,8 +142,11 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		// Do post processing
 		//m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 0.0f });
 
-		//m_postProcessPass.run(*m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
-		m_postProcessPass.run(*m_deferredOutputTex, *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
+		// Unbind deferredOutputTex so that it can be bound to UAVs in the post process pass
+		ID3D11RenderTargetView* nullRTV = nullptr;
+		dxm->getDeviceContext()->OMSetRenderTargets(1, &nullRTV, nullptr);
+		// Run post process pass
+		m_postProcessPass.run(*m_deferredOutputTex, m_deferredRenderer.getGBufferSRV(DeferredRenderer::DEPTH_GBUFFER), *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
 	}
 
 	// Re-enable conservative rasterization

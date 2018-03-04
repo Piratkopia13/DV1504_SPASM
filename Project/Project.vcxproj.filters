@@ -20,6 +20,8 @@
     <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
     <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
     <FxCompile Include="res\shaders\deferred\InstancedGeometryShader.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\DepthOfField.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\SimpleDepthOfField.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />
@@ -135,6 +137,8 @@
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
     <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\DOFStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -248,6 +252,8 @@
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
     <ClInclude Include="src\game\objects\InstancedBlocks.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\DOFStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

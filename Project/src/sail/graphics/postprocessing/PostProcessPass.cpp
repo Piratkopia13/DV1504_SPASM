@@ -3,7 +3,8 @@
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
-PostProcessPass::PostProcessPass()
+PostProcessPass::PostProcessPass(const Camera* cam)
+	: m_cam(cam)
 {
 
 	createFullscreenQuad();
@@ -27,10 +28,10 @@ PostProcessPass::PostProcessPass()
 	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
 	m_hGaussStage3 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
 	m_vGaussStage3 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
-
 	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(UINT(windowWidth * m_brightnessCutoffScale), UINT(windowHeight * m_brightnessCutoffScale), &m_fullscreenQuad);
-
-	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(UINT(windowWidth), UINT(windowHeight), &m_fullscreenQuad);
+	m_dofStage = std::make_unique<DOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	m_gaussianDofStage = std::make_unique<GaussianDOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 
 }
 
@@ -43,34 +44,56 @@ void PostProcessPass::resize(UINT width, UINT height) {
 	m_hGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
 	m_vGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
 	m_brightnessCutoffStage->resize(UINT(width * m_brightnessCutoffScale), UINT(height * m_brightnessCutoffScale));
-	m_toneMapHackStage->resize(UINT(width), UINT(height));
+	m_toneMapHackStage->resize(width, height);
+	m_dofStage->resize(width, height);
+	m_gaussianDofStage->resize(width, height);
+}
+
+void PostProcessPass::setCamera(const Camera& cam) {
+	m_cam = &cam;
 }
 
 PostProcessPass::~PostProcessPass() {
 }
 
-void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inputTexture) {
+void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
+	if (m_cam)
+		m_gaussianDofStage->setFocus(-m_cam->getPosition().z, 10.f);
+
 	dxm->disableDepthBuffer();
-	//// Disable conservatiec rasterization to avoid wierd graphical artifacts
-	//dxm->disableConservativeRasterizer();
 
 	if (kbState.pressed.H) {
 		m_FXAAPass = !m_FXAAPass;
 	}
 
+	m_hGaussStage->run(baseTexture);
+	m_vGaussStage->run(m_hGaussStage->getOutput());
+
+	m_hGaussStage2->run(m_vGaussStage->getOutput());
+	m_vGaussStage2->run(m_hGaussStage2->getOutput());
+
+	m_hGaussStage3->run(m_vGaussStage2->getOutput());
+	m_vGaussStage3->run(m_hGaussStage3->getOutput());
+
+	m_gaussianDofStage->setBlurredSRV(m_vGaussStage3->getOutput().getColorSRV());
+	m_gaussianDofStage->setDepthSRV(depthTexture);
+	m_gaussianDofStage->run(baseTexture);
+
+	/*m_dofStage->setDepthSRV(depthTexture);
+	m_dofStage->run(baseTexture);*/
 
 	if (m_FXAAPass) {
-		m_FXAAStage->run(baseTexture);
+		m_FXAAStage->run(m_gaussianDofStage->getOutput());
 		m_toneMapHackStage->run(m_FXAAStage->getOutput());
 	} else {
-		m_toneMapHackStage->run(baseTexture);
+		m_toneMapHackStage->run(m_gaussianDofStage->getOutput());
 
 	}
-	m_brightnessCutoffStage->run(inputTexture);
+	m_brightnessCutoffStage->run(bloomInputTexture);
 
 	m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
 	m_vGaussStage->run(m_hGaussStage->getOutput());
@@ -81,31 +104,24 @@ void PostProcessPass::run(RenderableTexture& baseTexture, RenderableTexture& inp
 	m_hGaussStage3->run(m_vGaussStage2->getOutput());
 	m_vGaussStage3->run(m_hGaussStage3->getOutput());
 
-	// Blend last output together with the baseTexture to produce the final image
+	//// Blend last output together with the baseTexture to produce the final image
 	dxm->renderToBackBuffer();
-	//m_toneMapHackStage->getOutput().begin();
-
 	dxm->enableAdditiveBlending();
-	//if (m_FXAAPass) {
-		m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
-	//}
-	//else
-	//{
-	//	m_fullscreenQuad.getMaterial()->setTextures(m_FXAAStage->getOutput().getColorSRV(), 1);
-	//}
+
+	// Two following lines are for testing -- remove later
+	/*m_fullscreenQuad.getMaterial()->setTextures(m_gaussianDofStage->getOutput().getColorSRV(), 1);
+	m_fullscreenQuad.draw();*/
+
+	m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
 	m_fullscreenQuad.draw();
 
 	// Draw bloom using additive blending
 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
 	m_fullscreenQuad.draw();
 
-	//m_fullscreenQuad.draw();
 	dxm->disableAlphaBlending();
 
 	dxm->enableDepthBuffer();
-	//// Re-enable conservative rasterization
-	//dxm->enableBackFaceCulling();
-
 }
 
 void PostProcessPass::createFullscreenQuad() {
