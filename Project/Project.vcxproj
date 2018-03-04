@@ -185,9 +185,11 @@
     <ClCompile Include="src\sail\graphics\postprocessing\stages\DOFStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
@@ -307,8 +309,10 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\DOFStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\RenderableTexture.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
@@ -489,6 +493,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.1</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurWithDepthCheck.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSHorizontal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSHorizontal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>

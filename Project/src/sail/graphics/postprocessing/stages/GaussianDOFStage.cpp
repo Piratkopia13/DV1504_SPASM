@@ -72,8 +72,8 @@ void GaussianDOFStage::run(RenderableTexture& inputTexture) {
 	else
 		con->Draw(FullscreenQuad->getNumVertices(), 0);
 
-	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 1, nullSRV);
+	ID3D11ShaderResourceView* nullSRV[3] = { nullptr, nullptr, nullptr };
+	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 3, nullSRV);
 
 }
 

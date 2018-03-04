@@ -6,6 +6,8 @@
 #include "stages/PostProcessStage.h"
 #include "stages/HGaussianBlurStage.h"
 #include "stages/VGaussianBlurStage.h"
+#include "stages/VGaussianBlurDepthTest.h"
+#include "stages/HGaussianBlurDepthTest.h"
 #include "stages/BrightnessCutoffStage.h"
 #include "stages/ToneMapHackStage.h"
 #include "stages/FXAAStage.h"
@@ -28,13 +30,21 @@ private:
 
 private:
 	// Post process stages - TODO: make this a map
-	std::unique_ptr<FXAAStage> m_FXAAStage;
 	std::unique_ptr<HGaussianBlurStage> m_hGaussStage;
 	std::unique_ptr<VGaussianBlurStage> m_vGaussStage;
 	std::unique_ptr<HGaussianBlurStage> m_hGaussStage2;
 	std::unique_ptr<VGaussianBlurStage> m_vGaussStage2;
 	std::unique_ptr<HGaussianBlurStage> m_hGaussStage3;
 	std::unique_ptr<VGaussianBlurStage> m_vGaussStage3;
+
+	std::unique_ptr<HGaussianBlurDepthTest> m_hGaussDepthStage;
+	std::unique_ptr<VGaussianBlurDepthTest> m_vGaussDepthStage;
+	std::unique_ptr<HGaussianBlurDepthTest> m_hGaussDepthStage2;
+	std::unique_ptr<VGaussianBlurDepthTest> m_vGaussDepthStage2;
+	std::unique_ptr<HGaussianBlurDepthTest> m_hGaussDepthStage3;
+	std::unique_ptr<VGaussianBlurDepthTest> m_vGaussDepthStage3;
+
+	std::unique_ptr<FXAAStage> m_FXAAStage;
 	std::unique_ptr<BrightnessCutoffStage> m_brightnessCutoffStage;
 	std::unique_ptr<DOFStage> m_dofStage;
 	std::unique_ptr<GaussianDOFStage> m_gaussianDofStage;

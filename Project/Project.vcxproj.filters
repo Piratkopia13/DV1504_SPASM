@@ -22,6 +22,7 @@
     <FxCompile Include="res\shaders\deferred\InstancedGeometryShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\DepthOfField.hlsl" />
     <FxCompile Include="res\shaders\postprocess\SimpleDepthOfField.hlsl" />
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurWithDepthCheck.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\game\GameInfo.cpp" />
@@ -139,6 +140,8 @@
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\DOFStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -254,6 +257,8 @@
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\DOFStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

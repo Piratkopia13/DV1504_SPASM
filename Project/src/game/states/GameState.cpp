@@ -193,12 +193,12 @@ GameState::GameState(StateStack& stack)
 		for (int z = 0; z < 50; z++) {
 			DeferredInstancedGeometryShader::InstanceData data;
 			data.color = Utils::getRandomColor();
-			data.position = Vector3(x + 15, 10.f, z - 40);
+			data.position = Vector3(x + 15, z, 20);
 			m_testBlocks.addInstance(data);
 		}
 	}
 
-	//m_scene.addObject(&m_testBlocks);
+	m_scene.addObject(&m_testBlocks);
 }
 
 GameState::~GameState() {
