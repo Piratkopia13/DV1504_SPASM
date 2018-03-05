@@ -77,8 +77,9 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 	auto* dxm = Application::getInstance()->getDXManager();
 	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
-	if (m_cam)
-		m_gaussianDofStage->setFocus(-m_cam->getPosition().z, 10.f);
+	/*if (m_cam)
+		m_gaussianDofStage->setFocus(-m_cam->getPosition().z, 10.f);*/
+	m_gaussianDofStage->setFocus(5.f, 10.f);
 
 	dxm->disableDepthBuffer();
 
@@ -118,20 +119,20 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 // 		m_toneMapHackStage->run(m_gaussianDofStage->getOutput());
 // 
 // 	}
-// 	m_brightnessCutoffStage->run(bloomInputTexture);
-// 
-// 	m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
-// 	m_vGaussStage->run(m_hGaussStage->getOutput());
-// 
-// 	m_hGaussStage2->run(m_vGaussStage->getOutput());
-// 	m_vGaussStage2->run(m_hGaussStage2->getOutput());
-// 
-// 	m_hGaussStage3->run(m_vGaussStage2->getOutput());
-// 	m_vGaussStage3->run(m_hGaussStage3->getOutput());
+ 	m_brightnessCutoffStage->run(bloomInputTexture);
+ 
+ 	m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
+ 	m_vGaussStage->run(m_hGaussStage->getOutput());
+ 
+ 	m_hGaussStage2->run(m_vGaussStage->getOutput());
+ 	m_vGaussStage2->run(m_hGaussStage2->getOutput());
+ 
+ 	m_hGaussStage3->run(m_vGaussStage2->getOutput());
+ 	m_vGaussStage3->run(m_hGaussStage3->getOutput());
 
 	//// Blend last output together with the baseTexture to produce the final image
  	dxm->renderToBackBuffer();
-// 	dxm->enableAdditiveBlending();
+ 	dxm->enableAdditiveBlending();
 
 	// Two following lines are for testing -- remove later
 	m_fullscreenQuad.getMaterial()->setTextures(m_gaussianDofStage->getOutput().getColorSRV(), 1);
@@ -140,9 +141,9 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 // 	m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
 // 	m_fullscreenQuad.draw();
 // 
-// 	// Draw bloom using additive blending
-// 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
-// 	m_fullscreenQuad.draw();
+ 	// Draw bloom using additive blending
+ 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
+ 	m_fullscreenQuad.draw();
 
 	dxm->disableAlphaBlending();
 

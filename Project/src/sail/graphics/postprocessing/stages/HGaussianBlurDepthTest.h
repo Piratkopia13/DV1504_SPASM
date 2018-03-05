@@ -4,6 +4,8 @@
 #include "../../shader/component/ConstantBuffer.h"
 #include "../../shader/component/Sampler.h"
 
+#include <memory>
+
 class VertexShader;
 class PixelShader;
 
