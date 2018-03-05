@@ -29,8 +29,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	addScore(m_scoreToWin / 2.f, 0);
 	addScore(m_scoreToWin / 2.f, 1);
 
-	Gamemode::setGametime(60000000000000000.f);
-
 	for (Grid::Index index : indices) {
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
 		float y = Level::DEFAULT_BLOCKSIZE * (index.y);
@@ -183,13 +181,20 @@ int PayloadGamemode::checkWin() {
 	float redScore = Gamemode::getScore(0);
 	float blueScore = Gamemode::getScore(1);
 
-	m_teamWin = -1;
+	m_teamWin = Gamemode::NONE;
 	if (redScore > m_scoreToWin)
 		m_teamWin = 0;
 	if (blueScore > m_scoreToWin)
 		m_teamWin = 1;
-	if (m_teamWin != -1 && blueScore == redScore)
-		m_teamWin = -1;
+	if (m_teamWin != Gamemode::NONE && blueScore == redScore)
+		m_teamWin = Gamemode::DRAW;
+	
+
+	if (getGametime() <= 0.f) {
+		float teamOne = getScore(0);
+		float teamTwo = getScore(1);
+		m_teamWin = (teamOne > teamTwo) ? 0 : (teamTwo > teamOne) ? 1 : Gamemode::DRAW;
+	}
 
 	return m_teamWin;
 }

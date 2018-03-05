@@ -5,6 +5,10 @@
 class CharacterHandler;
 class Gamemode {
 public:
+	const static int DRAW = -1;
+	const static int NONE = -2;
+
+public:
 	Gamemode();
 	virtual ~Gamemode();
 

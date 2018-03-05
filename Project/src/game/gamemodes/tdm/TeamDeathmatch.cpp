@@ -4,7 +4,7 @@
 #include "../../GameInfo.h"
 
 TeamDeathmatch::TeamDeathmatch() {
-	m_winnerID = -1;
+	m_winnerID = Gamemode::NONE;
 	m_maxKills = GameInfo::getInstance()->convertedGameSettings.scoreLimit;
 }
 
@@ -15,7 +15,7 @@ TeamDeathmatch::~TeamDeathmatch() {
 
 
 void TeamDeathmatch::update(CharacterHandler* charHandler, float delta) {
-	Gamemode::update(charHandler, delta);
+	Gamemode::update(nullptr, delta);
 
 	unsigned int numOfPlayers = charHandler->getNrOfPlayers();
 	float teamOne = 0;
@@ -53,5 +53,11 @@ void TeamDeathmatch::draw() {
 
 
 int TeamDeathmatch::checkWin() {
+	if (getGametime() <= 0.f) {
+		float teamOne = getScore(0);
+		float teamTwo = getScore(1);
+		m_winnerID = (teamOne > teamTwo) ? 0 : (teamTwo > teamOne) ? 1 : -1;
+	}
+
 	return m_winnerID;
 }

@@ -353,8 +353,12 @@ bool GameState::update(float dt) {
 
 	m_level->update(dt, m_characterHandler.get());
 	m_gamemode->update(m_characterHandler.get(), dt);
-	if (m_gamemode->checkWin() > -1) {
-		if (m_gamemode->checkWin() > -1)
+
+	/*
+		UPDATE DIS SHIET
+	*/
+	if (m_gamemode->checkWin() > Gamemode::NONE) {
+		if (m_gamemode->checkWin() > Gamemode::DRAW)
 			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
 		else
 			std::cout << "DRAW!" << std::endl;
