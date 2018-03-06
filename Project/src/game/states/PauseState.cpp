@@ -59,7 +59,7 @@ PauseState::PauseState(StateStack& stack)
 
 	m_pauseMenu->addMenuBox("resume");
 	m_pauseMenu->addMenuBox("quit");
-	m_pauseMenu->setPosition(Vector3(0, -0.5, 7));
+	m_pauseMenu->setPosition(Vector3(0, 0.5f, 7.f));
 	m_pauseMenu->setFacingDirection(Vector3(0, 0, -1));
 	m_pauseMenu->setOffColor(m_offColor);
 	m_pauseMenu->setOnColor(m_onColor);
@@ -92,7 +92,7 @@ PauseState::PauseState(StateStack& stack)
 	/*m_playerCamController->setPosition(this->m_menuList[1]->getTransform().getTranslation());
 	m_playerCamController->setTarget(this->m_menuList[1]->getTransform().getTranslation());*/
 
-	m_playerCamController->setPosition(m_pauseMenu->getTarget()->getTransform().getTranslation());
+	m_playerCamController->setPosition(m_pauseMenu->getTarget()->getTransform().getTranslation() - DirectX::SimpleMath::Vector3(0.f, 0.f, 3.f));
 	m_playerCamController->setTarget(m_pauseMenu->getTarget()->getTransform().getTranslation());
 	m_playerCamController->setOffset(Vector3(0,0,4));
 }
