@@ -69,12 +69,16 @@ void ScoreVisualization::update(float dt) {
 
 	for (unsigned int i = 0; i < m_randomBlocks.size(); i++) {
 		Vector3 tempPos = m_randomBlocks[i]->getTransform().getTranslation();
+		Vector3 tempRotations = m_randomBlocks[i]->getTransform().getRotations();
 		m_accelerations[i] = Utils::rnd() * 0.2f;
 		m_velocities[i] += (m_targetPositions[i] - tempPos) * m_accelerations[i] * dt;
 		float m_tempVelocity = min(m_velocities[i].Length(), 7.0f);
 		m_velocities[i].Normalize();
 		m_velocities[i] *= m_tempVelocity;
 		m_randomBlocks[i]->getTransform().setTranslation(tempPos + m_velocities[i] * dt);
+		m_randomBlocks[i]->getTransform().rotateAroundX(Utils::rnd() * dt);
+		m_randomBlocks[i]->getTransform().rotateAroundY(Utils::rnd() * dt);
+		m_randomBlocks[i]->getTransform().rotateAroundZ(Utils::rnd() * dt);
 	}
 
 	if (m_animationClock > 4.0f) {
