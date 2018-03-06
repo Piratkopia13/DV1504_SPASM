@@ -77,13 +77,13 @@ MenuState::MenuState(StateStack& stack)
 	initMain();
 	updateCamera();
 	//STARTMENU
+	m_gamemodeMenu = nullptr;
 	initGamemode();
 	initCharacterModels();
 	for (size_t i = 0; i < 4; i++) {
 		initCharacter(i, false);
 	}
-
-
+	
 	m_mapMenu = nullptr;
 	m_profileCreator = nullptr;
 	m_profileViewer = nullptr;
@@ -302,7 +302,6 @@ bool MenuState::processInput(float dt) {
 								if (m_info->gameSettings.gameMode == DEATHMATCH) {
 									for (size_t u = 0; u < 4; u++)
 										m_info->gameSettings.teams.push_back({ u, 0});
-
 								}
 								else {
 									for (size_t u = 0; u < 2; u++)
@@ -328,9 +327,14 @@ bool MenuState::processInput(float dt) {
 
 							if (right) {
 								m_gamemodeMenu->right();
+								if (m_gamemodeMenu->getActive() == 0)
+									updateGameMode();
+
 							}
 							if (left) {
 								m_gamemodeMenu->left();
+								if (m_gamemodeMenu->getActive() == 0)
+									updateGameMode();
 							}
 
 							updateCamera();
@@ -485,7 +489,7 @@ bool MenuState::processInput(float dt) {
 												
 												if (m_characterMenu[spot]->getOptionAt(opt) == 2) {
 													m_characterMenu[spot]->setOptionAt(opt,0);
-													m_playerz[spot]->player.headModel = m_characterMenu[spot]->getOptionAt(option);
+													m_playerz[spot]->player.headModel = m_characterMenu[spot]->getOptionAt(opt);
 													m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[m_playerz[spot]->player.headModel]);
 												}
 
@@ -506,7 +510,7 @@ bool MenuState::processInput(float dt) {
 											}
 
 											if (option == 3) {
-												if (m_characterMenu[spot]->getOptionAt(option) == 2) {
+												if (m_characterMenu[spot]->getOptionAt(option) == 2 && m_playerz[spot]->player.currentProfile->preOrdered() == 0) {
 													if (right)
 														m_characterMenu[spot]->right();
 													if (left)
@@ -557,7 +561,6 @@ bool MenuState::processInput(float dt) {
 																m_playerMenuModelz[p].setLight(
 																	m_info->getDefaultColor(m_playerz[p]->player.color, m_playerz[p]->player.hue));
 														}
-
 													}
 												}
 												m_playerz[spot]->player.color = color;
@@ -591,23 +594,10 @@ bool MenuState::processInput(float dt) {
 												m_playerMenuModelz[spot].armL->setModel(m_playerArmLModels[m_playerz[spot]->player.armModel]);
 												m_playerMenuModelz[spot].armR->setModel(m_playerArmRModels[m_playerz[spot]->player.armModel]);
 											}
-
-
-
-
-
 										}
 									}
-
 								}
-
-
 							}
-
-
-
-
-
 						}break;
 						case MAPSELECT: {
 							if (right) {
@@ -935,8 +925,11 @@ void MenuState::initMain() {
 
 void MenuState::initGamemode() {
 
-	m_gamemodeMenu = new MenuHandler();
-	m_scene.addObject(m_gamemodeMenu);
+	if (!m_gamemodeMenu) {
+		m_gamemodeMenu = new MenuHandler();
+		m_scene.addObject(m_gamemodeMenu);
+
+	}
 
 	m_gamemodeMenu->addMenuSelector("gamemode");
 	for (size_t i = 0; i < m_info->gameModes.size(); i++) {
@@ -985,6 +978,72 @@ void MenuState::initGamemode() {
 
 
 	Logger::log("gamesettings menu loaded");
+}
+
+void MenuState::updateGameMode() {
+	if (m_gamemodeMenu) {
+		int options[6] = { 0,0,0,0,0,0 };
+
+		for (size_t i = 0; i < 6; i++) {
+			options[i] = m_gamemodeMenu->getOptionAt(i);
+
+		}
+		m_gamemodeMenu->reset();
+
+
+		m_gamemodeMenu->addMenuSelector("gamemode");
+		for (size_t i = 0; i < m_info->gameModes.size(); i++) {
+			m_gamemodeMenu->addMenuSelectorItem(m_info->gameModes[i].name);
+
+		}
+		m_gamemodeMenu->setOptionAt(0, options[0]);
+
+		//m_gamemodeMenu->setStaticSelection(true, 0);
+		m_gamemodeMenu->addMenuSelector("time limit");
+		for (size_t i = 0; i < m_info->timeLimit.size(); i++) {
+			m_gamemodeMenu->addMenuSelectorItem(m_info->timeLimit[i].name);
+
+		}
+		m_gamemodeMenu->setStaticSelection(true, 0);
+		m_gamemodeMenu->setOptionAt(1, options[1]);
+		m_gamemodeMenu->addMenuSelector("score limit");
+		for (size_t i = 0; i < m_info->scoreLimit.size(); i++) {
+			if(options[0] == 0)
+				m_gamemodeMenu->addMenuSelectorItem(m_info->scoreLimit[i].name);
+			if (options[0] == 1)
+				m_gamemodeMenu->addMenuSelectorItem(m_info->scoreLimitDM[i].name);
+			if (options[0] == 2)
+				m_gamemodeMenu->addMenuSelectorItem(m_info->scoreLimitTDM[i].name);
+
+
+		}
+		m_gamemodeMenu->setStaticSelection(true, 0);
+		m_gamemodeMenu->setOptionAt(2, options[2]);
+		m_gamemodeMenu->addMenuSelector("respawn time");
+		for (size_t i = 0; i < m_info->respawnTime.size(); i++) {
+			m_gamemodeMenu->addMenuSelectorItem(m_info->respawnTime[i].name);
+
+		}
+		m_gamemodeMenu->setStaticSelection(true, 0);
+		m_gamemodeMenu->setOptionAt(3, options[3]);
+		m_gamemodeMenu->addMenuSelector("gravity");
+		for (size_t i = 0; i < m_info->gravity.size(); i++) {
+			m_gamemodeMenu->addMenuSelectorItem(m_info->gravity[i].name);
+
+		}
+		m_gamemodeMenu->setStaticSelection(true, 0);
+		m_gamemodeMenu->setOptionAt(4, options[4]);
+		m_gamemodeMenu->addMenuSelector("player Health");
+		for (size_t i = 0; i < m_info->playerHealth.size(); i++) {
+			m_gamemodeMenu->addMenuSelectorItem(m_info->playerHealth[i].name);
+
+		}
+		m_gamemodeMenu->setStaticSelection(true, 0);
+		m_gamemodeMenu->setOptionAt(5, options[5]);
+
+
+	}
+
 }
 
 void MenuState::initCharacterModels() {
@@ -1362,9 +1421,9 @@ void MenuState::initGraphics() {
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
-	m_graphicsMenu->addMenuSelector("wtf");
-	for (size_t i = 0; i < m_info->wtfGraphics.size(); i++) {
-		m_graphicsMenu->addMenuSelectorItem(m_info->wtfGraphics[i].name);
+	m_graphicsMenu->addMenuSelector("depth of field");
+	for (size_t i = 0; i < m_info->depthOfField.size(); i++) {
+		m_graphicsMenu->addMenuSelectorItem(m_info->depthOfField[i].name);
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
@@ -1397,11 +1456,6 @@ void MenuState::initSound() {
 	}
 	m_soundMenu->setStaticSelection(true, 0);
 
-	m_soundMenu->addMenuSelector("wtf");
-	for (size_t i = 0; i < m_info->wtfVolume.size(); i++) {
-		m_soundMenu->addMenuSelectorItem(m_info->wtfVolume[i].name);
-	}
-	m_soundMenu->setStaticSelection(true, 0);
 
 	m_soundMenu->setPosition(Vector3(-5,-8,0));
 	m_soundMenu->setFacingDirection(Vector3(1,0,0));
@@ -1409,9 +1463,6 @@ void MenuState::initSound() {
 
 	Logger::log("sound menu loaded");
 }
-
-
-
 
 
 
@@ -1553,7 +1604,7 @@ void MenuState::setGraphicsMenu(bool active) {
 
 void MenuState::setSoundMenu(bool active) {
 	if (active) {
-		m_profileMenu->activate();
+		m_soundMenu->activate();
 		m_playerCamController->setTargets(m_soundMenu, m_soundMenu->getTarget());
 		m_activeMenu = OPTIONSMENU;
 		m_activeSubMenu = SOUND;
@@ -1646,7 +1697,7 @@ void MenuState::updateGraphics() {
 	m_info->graphicsSettings.backGround= m_graphicsMenu->getOptionAt(3);
 	m_info->graphicsSettings.fpsCounter = m_graphicsMenu->getOptionAt(4);
 	m_info->graphicsSettings.vSync = m_graphicsMenu->getOptionAt(5);
-	m_info->graphicsSettings.wtf = m_graphicsMenu->getOptionAt(6);
+	m_info->graphicsSettings.depthOfField = m_graphicsMenu->getOptionAt(6);
 
 	m_info->convertGraphics();
 }

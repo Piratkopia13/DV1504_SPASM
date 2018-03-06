@@ -52,7 +52,7 @@ public:
 		size_t backGround = 0;
 		size_t fpsCounter = 1;
 		bool vSync = 0;
-		bool wtf = false;
+		bool depthOfField = false;
 	};
 	struct ConvertedGraphics {
 		float particles = 3;
@@ -61,7 +61,7 @@ public:
 		float background = 1;
 		float fpsCounter = 1;
 		float vSync = 0;
-		float wtf = 0;
+		float depthOfField = 0;
 	};
 
 	struct GameSettings {
@@ -105,7 +105,6 @@ public:
 		float masterVolume = 0.5;
 		float backGroundSoundVolume = 0.5;
 		float effectSoundVolume = 0.5;
-		bool wtf = false;
 	};
 
 	enum Modes {
@@ -132,6 +131,8 @@ public:
 	std::vector<Setting> gameModes;
 	std::vector<Setting> timeLimit;
 	std::vector<Setting> scoreLimit;
+	std::vector<Setting> scoreLimitDM;
+	std::vector<Setting> scoreLimitTDM;
 	std::vector<Setting> respawnTime;
 	std::vector<Setting> gravity;
 	std::vector<Setting> playerHealth;
@@ -143,13 +144,12 @@ public:
 	std::vector<Setting> fpsCounter;
 	std::vector<Setting> frameRateLock;
 	std::vector<Setting> vSync;
-	std::vector<Setting> wtfGraphics;
+	std::vector<Setting> depthOfField;
 
 
 	std::vector<Setting> masterVolume;
 	std::vector<Setting> backgroundVolume;
 	std::vector<Setting> effectVolume;
-	std::vector<Setting> wtfVolume;
 
 	void convertGameSettings();
 

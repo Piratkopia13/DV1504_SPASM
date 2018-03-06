@@ -89,10 +89,24 @@ GameInfo::GameInfo()
 	timeLimit.push_back({ "10 min", 600.0f, 0 });
 
 	scoreLimit.push_back({ "50 points", 50.0f, 0 });
+	scoreLimit.push_back({ "75 points", 75.0f, 0 });
 	scoreLimit.push_back({ "100 points", 100.0f, 0 });
-	scoreLimit.push_back({ "150 points", 150.0f, 0 });
-	scoreLimit.push_back({ "250 points", 250.0f, 0 });
+	scoreLimit.push_back({ "25 points", 25.0f, 0 });
 	scoreLimit.push_back({ "no limit", 0, 0 });
+
+	scoreLimitDM.push_back({ "20 kills", 20.0f, 0 });
+	scoreLimitDM.push_back({ "30 kills", 30.0f, 0 });
+	scoreLimitDM.push_back({ "50 kills", 50.0f, 0 });
+	scoreLimitDM.push_back({ "10 kills", 10.0f, 0 });
+	scoreLimitDM.push_back({ "no limit", 0, 0 });
+
+	scoreLimitTDM.push_back({ "30 kills", 30.0f, 0 });
+	scoreLimitTDM.push_back({ "60 kills", 60.0f, 0 });
+	scoreLimitTDM.push_back({ "90 kills", 90.0f, 0 });
+	scoreLimitTDM.push_back({ "20 kills", 20.0f, 0 });
+	scoreLimitTDM.push_back({ "no limit", 0, 0 });
+
+
 
 	respawnTime.push_back({ "2 seconds", 2.0f, 0});
 	respawnTime.push_back({ "4 seconds", 4.0f, 0 });
@@ -111,9 +125,8 @@ GameInfo::GameInfo()
 	
 	// GRAPHICS SETTINGS
 
-	particles.push_back({ "standard",3,0 });
-	particles.push_back({ "plenty",6,0 });
-	particles.push_back({ "too much",10,0 });
+	particles.push_back({ "standard",1,0 });
+	particles.push_back({ "plenty",2,0 });
 	particles.push_back({ "none",0,0 });
 
 	bloom.push_back({ "standard",1,0 });
@@ -130,17 +143,11 @@ GameInfo::GameInfo()
 	fpsCounter.push_back({ "top left",1,0 });
 	fpsCounter.push_back({ "none",0,0 });
 
-	frameRateLock.push_back({ "none", 0, 0 });
-	frameRateLock.push_back({ "60", 1.0f / 60.0f, 0 });
-	frameRateLock.push_back({ "120", 1.0f / 120.0f, 0 });
-	frameRateLock.push_back({ "144", 1.0f / 144.0f, 0 });
-
 	vSync.push_back({ "none",0,0 });
 	vSync.push_back({ "vsync",1,0 });
 
-
-	wtfGraphics.push_back({ "no", 0 ,0 });
-	wtfGraphics.push_back({ "pogchamp", 0 ,0 });
+	depthOfField.push_back({ "on", 1 ,0 });
+	depthOfField.push_back({ "off", 0 ,0 });
 
 	// SOUND SETTINGS
 	
@@ -179,9 +186,6 @@ GameInfo::GameInfo()
 	effectVolume.push_back({ "20",0.2f,0 });
 	effectVolume.push_back({ "30",0.3f,0 });
 	effectVolume.push_back({ "40",0.4f,0 });
-
-	wtfVolume.push_back({ "no", 0, 0 });
-	wtfVolume.push_back({ "wtf", 0, 0 });
 
 
 	// MAPS
@@ -322,7 +326,7 @@ void GameInfo::convertGraphics() {
 	convertedGraphics.particles = particles[graphicsSettings.particles].value;
 	convertedGraphics.fpsCounter = fpsCounter[graphicsSettings.fpsCounter].value;
 	convertedGraphics.vSync = fpsCounter[graphicsSettings.fpsCounter].value;
-	convertedGraphics.wtf = wtfGraphics[graphicsSettings.wtf].value;
+	convertedGraphics.depthOfField = depthOfField[graphicsSettings.depthOfField].value;
 }
 
 void GameInfo::saveGraphics() {
