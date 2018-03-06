@@ -1,19 +1,20 @@
-#include "DeferredInstancedGeometryShader.h"
+#include "DynBlockDeferredInstancedGeometryShader.h"
 
 using namespace DirectX;
 using namespace SimpleMath;
 
-D3D11_INPUT_ELEMENT_DESC DeferredInstancedGeometryShader::IED[7] = {
+D3D11_INPUT_ELEMENT_DESC DynBlockDeferredInstancedGeometryShader::IED[8] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "POSOFFSET", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "POS_OFFSET", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 	{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "VARIATION_OFFSET", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
 };
 
-DeferredInstancedGeometryShader::DeferredInstancedGeometryShader()
+DynBlockDeferredInstancedGeometryShader::DynBlockDeferredInstancedGeometryShader()
 	: m_clippingPlaneHasChanged(false) {
 
 	// Set up constant buffers
@@ -26,49 +27,48 @@ DeferredInstancedGeometryShader::DeferredInstancedGeometryShader()
 	m_sampler = std::make_unique<ShaderComponent::Sampler>();
 
 	// Compile VS
-	auto vsBlob = compileShader(L"deferred/InstancedGeometryShader.hlsl", "VSMain", "vs_5_0");
+	auto vsBlob = compileShader(L"deferred/DynBlockInstancedGeometryShader.hlsl", "VSMain", "vs_5_0");
 	// Add the VS to this ShaderSet
 	setVertexShader(vsBlob);
 
 	// Compile GS
-	auto gsBlob = compileShader(L"deferred/InstancedGeometryShader.hlsl", "GSMain", "gs_5_0");
+	auto gsBlob = compileShader(L"deferred/DynBlockInstancedGeometryShader.hlsl", "GSMain", "gs_5_0");
 	// Add the GS to this ShaderSet
 	setGeometryShader(gsBlob);
 
 	// Compile PS
-	auto psBlob = compileShader(L"deferred/InstancedGeometryShader.hlsl", "PSMain", "ps_5_0");
+	auto psBlob = compileShader(L"deferred/DynBlockInstancedGeometryShader.hlsl", "PSMain", "ps_5_0");
 	// Add the PS to this ShaderSet
 	setPixelShader(psBlob);
 
 	// Create the input layouts
-	//Application::getInstance()->getDXManager()->getDevice()->CreateInputLayout(IED, 5, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_inputLayout);
-	Application::getInstance()->getDXManager()->getDevice()->CreateInputLayout(IED, 7, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_inputLayout);
+	Application::getInstance()->getDXManager()->getDevice()->CreateInputLayout(IED, 8, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_inputLayout);
 
 	// Done with the blobs, release them
 	Memory::safeRelease(vsBlob);
 	Memory::safeRelease(psBlob);
 
 }
-DeferredInstancedGeometryShader::~DeferredInstancedGeometryShader() {
+DynBlockDeferredInstancedGeometryShader::~DynBlockDeferredInstancedGeometryShader() {
 	Memory::safeRelease(m_inputLayout);
 }
 
-void DeferredInstancedGeometryShader::updateCamera(Camera& cam) {
+void DynBlockDeferredInstancedGeometryShader::updateCamera(Camera& cam) {
 	m_mView = cam.getViewMatrix();
 	m_mProjection = cam.getProjMatrix();
 }
 
-void DeferredInstancedGeometryShader::setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {
+void DynBlockDeferredInstancedGeometryShader::setClippingPlane(const DirectX::SimpleMath::Vector4& clippingPlane) {
 	m_clippingPlane = clippingPlane;
 	m_clippingPlaneHasChanged = true;
 }
 
-void DeferredInstancedGeometryShader::updateWorldDataBuffer(const DirectX::SimpleMath::Vector4& clippingPlaneVS) const {
+void DynBlockDeferredInstancedGeometryShader::updateWorldDataBuffer(const DirectX::SimpleMath::Vector4& clippingPlaneVS) const {
 	WorldDataBuffer data = { clippingPlaneVS };
 	m_worldDataBuffer->updateData(&data, sizeof(data));
 }
 
-void DeferredInstancedGeometryShader::updateModelDataBuffer(const Material& material, const DirectX::SimpleMath::Matrix& wv, const DirectX::SimpleMath::Matrix& p) const {
+void DynBlockDeferredInstancedGeometryShader::updateModelDataBuffer(const Material& material, const DirectX::SimpleMath::Matrix& wv, const DirectX::SimpleMath::Matrix& p) const {
 
 	const bool* texFlags = material.getTextureFlags();
 
@@ -85,7 +85,7 @@ void DeferredInstancedGeometryShader::updateModelDataBuffer(const Material& mate
 	m_modelDataBuffer->updateData(&data, sizeof(data));
 }
 
-void DeferredInstancedGeometryShader::updateInstanceData(const void* instanceData, UINT bufferSize, ID3D11Buffer* instanceBuffer) {
+void DynBlockDeferredInstancedGeometryShader::updateInstanceData(const void* instanceData, UINT bufferSize, ID3D11Buffer* instanceBuffer) {
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	Application::getInstance()->getDXManager()->getDeviceContext()->Map(instanceBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -94,7 +94,7 @@ void DeferredInstancedGeometryShader::updateInstanceData(const void* instanceDat
 
 }
 
-void DeferredInstancedGeometryShader::bind() {
+void DynBlockDeferredInstancedGeometryShader::bind() {
 
 	// Call parent to bind shaders
 	ShaderSet::bind();
@@ -108,7 +108,7 @@ void DeferredInstancedGeometryShader::bind() {
 
 }
 
-void DeferredInstancedGeometryShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
+void DynBlockDeferredInstancedGeometryShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, const void* data) {
 
 	Model::Data& modelData = *(Model::Data*)data;
 
@@ -119,7 +119,7 @@ void DeferredInstancedGeometryShader::createBufferFromModelData(ID3D11Buffer** v
 		Logger::Warning("Texture coordinates not set for model that will render with a texture shader");
 
 	// Create the vertex array that this shader uses
-	DeferredInstancedGeometryShader::Vertex* vertices = new DeferredInstancedGeometryShader::Vertex[modelData.numVertices];
+	DynBlockDeferredInstancedGeometryShader::Vertex* vertices = new DynBlockDeferredInstancedGeometryShader::Vertex[modelData.numVertices];
 
 	for (UINT i = 0; i < modelData.numVertices; i++) {
 		// Position
@@ -150,7 +150,7 @@ void DeferredInstancedGeometryShader::createBufferFromModelData(ID3D11Buffer** v
 	ZeroMemory(&vbd, sizeof(vbd));
 
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = modelData.numVertices * sizeof(DeferredInstancedGeometryShader::Vertex);
+	vbd.ByteWidth = modelData.numVertices * sizeof(DynBlockDeferredInstancedGeometryShader::Vertex);
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 
@@ -208,19 +208,11 @@ void DeferredInstancedGeometryShader::createBufferFromModelData(ID3D11Buffer** v
 
 }
 
-void DeferredInstancedGeometryShader::draw(Model& model, bool bindFirst) {
-
-	bool isInstanced = model.getNumInstances() > 0;
+void DynBlockDeferredInstancedGeometryShader::draw(Model& model, bool bindFirst) {
 
 	if (bindFirst) {
 		bind();
-		//if (isInstanced) {
-		//	// Set instanced input layout as active
 		Application::getInstance()->getDXManager()->getDeviceContext()->IASetInputLayout(m_inputLayout);
-		//} else {
-		//	// Set non instanced input layout as active
-		//	Application::getInstance()->getDXManager()->getDeviceContext()->IASetInputLayout(m_inputLayout);
-		//}
 	}
 
 	if (m_clippingPlaneHasChanged) {
@@ -243,17 +235,11 @@ void DeferredInstancedGeometryShader::draw(Model& model, bool bindFirst) {
 
 	// Bind vertex 
 
-	//if (isInstanced) {
 	// Bind vertex and instance buffers
-	UINT strides[2] = { sizeof(DeferredInstancedGeometryShader::Vertex), sizeof(InstanceData) };
+	UINT strides[2] = { sizeof(DynBlockDeferredInstancedGeometryShader::Vertex), sizeof(DynBlockDeferredInstancedGeometryShader::InstanceData) };
 	UINT offsets[2] = { 0, 0 };
 	ID3D11Buffer* bufferPtrs[2] = { *model.getVertexBuffer(), model.getInstanceBuffer() };
 	devCon->IASetVertexBuffers(0, 2, bufferPtrs, strides, offsets);
-	/*} else {
-	UINT stride = sizeof(DeferredInstancedGeometryShader::Vertex);
-	UINT offset = 0;
-	devCon->IASetVertexBuffers(0, 1, model.getVertexBuffer(), &stride, &offset);
-	}*/
 
 	// Bind index buffer if one exitsts
 	auto iBuffer = model.getIndexBuffer();
@@ -264,17 +250,10 @@ void DeferredInstancedGeometryShader::draw(Model& model, bool bindFirst) {
 	devCon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Draw
-	if (isInstanced) {
-		if (iBuffer)
-			devCon->DrawIndexedInstanced(model.getNumIndices(), model.getNumInstances(), 0, 0, 0);
-		else
-			devCon->DrawInstanced(model.getNumVertices(), model.getNumInstances(), 0, 0);
-	} else {
-		if (iBuffer)
-			devCon->DrawIndexed(model.getNumIndices(), 0, 0);
-		else
-			devCon->Draw(model.getNumVertices(), 0);
-	}
+	if (iBuffer)
+		devCon->DrawIndexedInstanced(model.getNumIndices(), model.getNumInstances(), 0, 0, 0);
+	else
+		devCon->DrawInstanced(model.getNumVertices(), model.getNumInstances(), 0, 0);
 
 	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
 	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 1, nullSRV);
