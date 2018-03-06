@@ -304,8 +304,7 @@ void Character::update(float dt) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
 				m_movement.hooked = m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 				if (m_movement.hooked && m_movement.initialHook == 0) {
-					VibrateController(0, 1.0f, 1.5f);
-					VibrateController(1, 1.0, 1.5f);
+					VibrateController(1, 0.75f, 1.f);
 					m_movement.initialHook++;
 				}
 			}
@@ -558,7 +557,7 @@ void Character::jump() {
 	//this->jumping = true;
 	if (grounded()) {
 		setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
-		VibrateController(1, 0.5f, 1);
+		VibrateController(1, 0.5f, 1.f);
 	}
 
 	//this->getTransform().translate(Vector3(0,10,0));
