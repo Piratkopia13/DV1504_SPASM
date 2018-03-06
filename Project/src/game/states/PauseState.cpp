@@ -46,12 +46,28 @@ PauseState::PauseState(StateStack& stack)
 	m_background->getTransform().setTranslation(Vector3(0, 0, 2));
 	m_background->getTransform().setRotations(Vector3(-1.62f, 0, 0));
 
+
+	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
+	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+
 	this->m_selector = 0;
 	this->startTimer = 0;
 	
-	
 
-	MenuItem* start = new MenuItem(m_menuOnModel, Vector3(1, 3, 3));
+	m_pauseMenu = std::make_unique<MenuHandler>();
+	m_scene.addObject(m_pauseMenu.get());
+
+	m_pauseMenu->addMenuBox("resume");
+	m_pauseMenu->addMenuBox("quit");
+	m_pauseMenu->setPosition(Vector3(0, -0.5, 7));
+	m_pauseMenu->setFacingDirection(Vector3(0, 0, -1));
+	m_pauseMenu->setOffColor(m_offColor);
+	m_pauseMenu->setOnColor(m_onColor);
+	m_pauseMenu->activate();
+	Logger::log("pause menu loaded");
+
+
+	/*MenuItem* start = new MenuItem(m_menuOnModel, Vector3(1, 3, 3));
 	MenuItem* something = new MenuItem(m_menuOffModel, Vector3(1, 2, 3));
 	MenuItem* exit = new MenuItem(m_menuOffModel, Vector3(1, 1, 3));
 	
@@ -63,18 +79,21 @@ PauseState::PauseState(StateStack& stack)
 
 	for (size_t i = 0; i < this->m_menuList.size(); i++) {
 		m_scene.addObject(m_menuList[i]);
-	}
+	}*/
 
 
 	m_playerCamController->setTargets(
-		this->m_menuList[0],
+		m_pauseMenu->getTarget(),
 		nullptr,
 		nullptr,
 		nullptr
 	);
 	m_playerCamController->setMoving(false);
-	m_playerCamController->setPosition(this->m_menuList[1]->getTransform().getTranslation());
-	m_playerCamController->setTarget(this->m_menuList[1]->getTransform().getTranslation());
+	/*m_playerCamController->setPosition(this->m_menuList[1]->getTransform().getTranslation());
+	m_playerCamController->setTarget(this->m_menuList[1]->getTransform().getTranslation());*/
+
+	m_playerCamController->setPosition(m_pauseMenu->getTarget()->getTransform().getTranslation());
+	m_playerCamController->setTarget(m_pauseMenu->getTarget()->getTransform().getTranslation());
 	m_playerCamController->setOffset(Vector3(0,0,4));
 }
 
@@ -94,7 +113,7 @@ bool PauseState::processInput(float dt) {
 
 	m_app->getInput().processAllGamepads([&](auto& state, auto& tracker) {
 		// ON BUTTON CLICK
-		if (tracker.a == GamePad::ButtonStateTracker::PRESSED) {
+		/*if (tracker.a == GamePad::ButtonStateTracker::PRESSED) {
 			switch (this->m_selector) {
 			case 0:
 
@@ -115,7 +134,29 @@ bool PauseState::processInput(float dt) {
 				break;
 			}
 
+		}*/
+		/* UPDATED */
+		if (tracker.a == GamePad::ButtonStateTracker::PRESSED) {
+			//switch (this->m_selector) {
+			switch (m_pauseMenu->getActive()) {
+			case 0:
+
+				requestStackPop();
+				//this->beginStartTimer();
+				break;
+			
+			case 1:
+
+				requestStackClear();
+				requestStackPush(States::MainMenu);
+
+			default:
+				break;
+			}
+
 		}
+		/* UPDATED */
+
 		if (tracker.b == GamePad::ButtonStateTracker::PRESSED) {
 
 
@@ -184,6 +225,8 @@ bool PauseState::render(float dt) {
 	m_background->draw();
 	m_scene.draw(dt, m_cam);
 
+	//m_pauseMenu->draw();
+
 	m_colorShader.updateCamera(m_cam);
 
 	// Draw HUD
@@ -197,9 +240,8 @@ void PauseState::beginStartTimer()
 	this->startTimer += 0.01f;
 }
 
-void PauseState::changeMenu(int change)
-{
-	this->m_menuList[this->m_selector]->setModel(m_menuOffModel);
+void PauseState::changeMenu(int change) {
+	/*this->m_menuList[this->m_selector]->setModel(m_menuOffModel);
 	this->m_selector += change;
 	if (this->m_selector < 0)
 		this->m_selector = 2;
@@ -212,5 +254,24 @@ void PauseState::changeMenu(int change)
 		nullptr,
 		nullptr,
 		nullptr
-	);
+	);*/
+
+	switch (change) {
+	case 1:
+		m_pauseMenu->next();
+		break;
+	case -1:
+		m_pauseMenu->back();
+		break;
+	default:
+		break;
+	}
+
+	/*m_playerCamController->setTargets(
+		m_pauseMenu->getTarget(),
+		nullptr,
+		nullptr,
+		nullptr
+	);*/
+
 }
