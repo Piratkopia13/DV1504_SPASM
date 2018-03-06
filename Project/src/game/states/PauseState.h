@@ -54,6 +54,8 @@ private:
 	DirectX::SimpleMath::Vector4 m_onColor;
 	DirectX::SimpleMath::Vector4 m_offColor;
 
+	float m_posZTEMP;
+
 private:
 	float startTimer;
 	void beginStartTimer();

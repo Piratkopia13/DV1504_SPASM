@@ -42,8 +42,8 @@ PauseState::PauseState(StateStack& stack)
 	Vector2 texPlaneHalfSize(texPlaneHeight / 2.f * (windowWidth / windowHeight), texPlaneHeight / 2.f);
 	m_background = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
 	m_background->buildBufferForShader(&m_colorShader);
-	m_background->getMaterial()->setColor(Vector4(0, 0, 0, 0.8f));
-	m_background->getTransform().setTranslation(Vector3(0, 0, 2));
+	m_background->getMaterial()->setColor(Vector4(0, 0, 0, 0.8f)); 
+	m_background->getTransform().setTranslation(Vector3(0, 0, 4.f));
 	m_background->getTransform().setRotations(Vector3(-1.62f, 0, 0));
 
 
@@ -199,6 +199,8 @@ bool PauseState::update(float dt) {
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));
 
+	m_posZTEMP -= dt * 0.1f;
+	//m_background->getTransform().setTranslation(Vector3(0, 0, m_posZTEMP));
 
 	if (this->startTimer > 0) {
 
