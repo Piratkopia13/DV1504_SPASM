@@ -192,7 +192,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	else if (teamOneScoreChange < teamTwoScoreChange)
 	{
 		if ((m_pulsePos - 1) < ceil(teamOneBlocks))
-			m_pulsePos = m_levelWidth;
+			m_pulsePos = float(m_levelWidth);
 		m_pulseDirection = -1;
 		m_pulseSpeed = teamTwoBlocks;
 	}
