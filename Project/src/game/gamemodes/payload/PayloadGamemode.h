@@ -38,6 +38,11 @@ private:
 	int m_radius;
 	int m_teamWin;
 	int m_currentActivePoint;
+	int m_pulseDirection;
+	float m_pulsePos;
+	float m_pulseMultiplier;
+	float m_pulseSpeed;
+	float m_pulseStrength;
 
 	float m_scoreToWin;
 
