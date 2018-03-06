@@ -12,7 +12,7 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
-	m_movement = { 0.f, 10.f, 0.f, 1.0f, 0};
+	m_movement = { 0.f, 10.f, false, 1.0f, 0, false, 0.f};
 	m_playerHealth.setMax(100.f);
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
@@ -237,9 +237,14 @@ void Character::update(float dt) {
 		m_lastAttackerIndex = -1;
 
 	m_playerHealth.updatePercent();
+	m_movement.dJumpTimer += dt;
+	if (m_movement.dJumpTimer > 3.0f) {
+		m_movement.dJump = true;
+	}
 
 		if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
 			if (grounded()) {
+				m_movement.dJump = true;
 				if (!m_movement.hooked) {//Movement while on the ground
 					if(m_input.movement.x > 0)
 						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
@@ -556,9 +561,13 @@ void Character::setLightColor(const Vector4& color) {
 
 void Character::jump() {
 	//this->jumping = true;
-	if (grounded()) {
-		setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
+	if (grounded() || m_movement.dJump) {
+		setVelocity(Vector3(getVelocity().x, 10.f, 0.f));
 		VibrateController(1, 0.5f, 1);
+		if (m_movement.dJump && !grounded()) {
+			m_movement.dJump = false;
+			m_movement.dJumpTimer = 0.f;
+		}
 	}
 
 	//this->getTransform().translate(Vector3(0,10,0));
