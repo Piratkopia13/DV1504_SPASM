@@ -9,10 +9,10 @@
 #include "../../Lights.h"
 #include "../../geometry/Material.h"
 
-class DeferredInstancedGeometryShader : public ShaderSet {
+class DynBlockDeferredInstancedGeometryShader : public ShaderSet {
 public:
-	DeferredInstancedGeometryShader();
-	~DeferredInstancedGeometryShader();
+	DynBlockDeferredInstancedGeometryShader();
+	~DynBlockDeferredInstancedGeometryShader();
 
 	void bind() override;
 
@@ -35,6 +35,7 @@ public:
 	struct InstanceData {
 		DirectX::SimpleMath::Vector3 position;
 		DirectX::SimpleMath::Vector3 color;
+		float blockVariationOffset;
 	};
 
 private:
@@ -43,7 +44,7 @@ private:
 
 private:
 	// Input element description
-	static D3D11_INPUT_ELEMENT_DESC IED[7];
+	static D3D11_INPUT_ELEMENT_DESC IED[8];
 	// Input layout
 	ID3D11InputLayout* m_inputLayout;
 

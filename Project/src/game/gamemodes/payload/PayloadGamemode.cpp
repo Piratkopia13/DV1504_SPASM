@@ -2,10 +2,11 @@
 
 #include "../../CharacterHandler.h"
 #include "../../objects/Block.h"
+#include "../../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
 
 using namespace DirectX::SimpleMath;
 
-PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<Grid::BlockInstance*>>& blocks, const int levelWidth, const int levelHeight)
+PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>& blocks, const int levelWidth, const int levelHeight)
 : Gamemode()
 , m_blocks(blocks) 
 {
@@ -103,11 +104,10 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 		for (int y = 0; y < m_levelHeight; y++) {
 			if (m_blocks[x][y]) {
-				m_blocks[x][y]->color = DirectX::SimpleMath::Vector4(
+				m_blocks[x][y]->color = DirectX::SimpleMath::Vector3(
 					blockColor.x,
 					blockColor.y,
-					blockColor.z,
-					1.f);
+					blockColor.z);
 			}
 		}
 	}

@@ -11,13 +11,16 @@
 using namespace DirectX::SimpleMath;
 
 const float Level::DEFAULT_BLOCKSIZE = 1.0f;
+const unsigned int Level::BLOCK_VARIATIONS = 16;
 
 Level::Level(const std::string& filename) 
 	: m_grid(nullptr)
 {
-	m_instancedBlocks = std::make_unique<InstancedBlocks>();
+	m_instancedBlocks = std::make_unique<InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>>();
 
 	std::ifstream infile(DEFAULT_LEVEL_LOCATION + filename);
+
+	float variationOffsetRowMul = 1.f / BLOCK_VARIATIONS;
 
 	if (infile) {		
 
@@ -25,6 +28,8 @@ Level::Level(const std::string& filename)
 		unsigned int currTask = 0;
 		unsigned int x = 0;
 		unsigned int y = 0;
+
+		char** mapData = nullptr;
 
 		UINT blockCount = 0;
 
@@ -70,6 +75,12 @@ Level::Level(const std::string& filename)
 
 				m_grid = std::make_unique<Grid>(m_width, m_height);
 
+				// Allocate memory to store map data
+				mapData = new char*[m_width];
+				for (int i = 0; i < m_width; i++) {
+					mapData[i] = new char[m_height];
+				}
+
 			}
 			if (!line.compare("depth1")) {
 				currTask = 3;
@@ -100,28 +111,11 @@ Level::Level(const std::string& filename)
 				for (char& c : line) {
 
 					if (currTask == 2) {
-						if (c == '1') {
-							// Normal blocks
-							DeferredInstancedGeometryShader::InstanceData instanceData;
-							instanceData.color = Vector4::One;
-							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 0.f);
-							m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y - 1);
-						} else if (c == 'c') {
-							// Controlnodes
-							m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y - 1));
-						} else if (c == 'h') {
-							// Holes to hide in
-							m_grid->addHole(static_cast<int>(x), static_cast<int>(y - 1));
-						} else if (c == 'p') {
-							// Spawnpoints for players
-							m_grid->addPlayerSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
-						} else if (c == 'u') {
-							// Spawnpoints for upgrades
-							m_grid->addUpgradeSpawnPoint(static_cast<int>(x), static_cast<int>(y - 1));
-						}
+						mapData[x][y - 1] = c;
 					} else if (c == '1') {
-						DeferredInstancedGeometryShader::InstanceData instanceData;
-						instanceData.color = Vector4::One;
+						DynBlockDeferredInstancedGeometryShader::InstanceData instanceData;
+						instanceData.blockVariationOffset = 1 * variationOffsetRowMul;
+						instanceData.color = Vector3::One;
 						if (currTask == 3) {
 							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE);
 							m_instancedBlocks->addInstance(instanceData);
@@ -141,6 +135,67 @@ Level::Level(const std::string& filename)
 
 			}
 		}
+
+
+		for (int x = 0; x < m_width; x++) {
+			for (int y = 0; y < m_height; y++) {
+				char& c = mapData[x][y];
+
+				if (c == '1') {
+					// Normal blocks
+					DynBlockDeferredInstancedGeometryShader::InstanceData instanceData;
+					instanceData.color = Vector3::One;
+
+					// Logic to set the texture coordinate offset depending on what blocks are next to the current block
+					// This removes the lines between blocks
+					float row = 1;
+
+					bool right = (x - 1 != -1) ? (mapData[x - 1][y] == '1') : false;
+					bool left = (x + 1 != m_width) ? (mapData[x + 1][y] == '1') : false;
+					bool up = (y + 1 != m_height) ? (mapData[x][y + 1] == '1') : false;
+					bool down = (y - 1 != -1) ? (mapData[x][y - 1] == '1') : false;
+
+					if (!left && !right && !up && !down) row = 1;
+					if (!left && !right && up && !down) row = 2;
+					if (!left && right && !up && !down) row = 3;
+					if (!left && !right && !up && down) row = 4;
+					if (left && !right && !up && !down) row = 5;
+					if (!left && right && up && !down) row = 6;
+					if (!left && right && !up && down) row = 7;
+					if (left && !right && !up && down) row = 8;
+					if (left && !right && up && !down) row = 9;
+					if (!left && !right && up && down) row = 10;
+					if (left && right && !up && !down) row = 11;
+					if (!left && right && up && down) row = 12;
+					if (left && right && !up && down) row = 13;
+					if (left && !right && up && down) row = 14;
+					if (left && right && up && !down) row = 15;
+					if (left && right && up && down) row = 16;
+
+					instanceData.blockVariationOffset = variationOffsetRowMul * row;
+					instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f);
+					m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y);
+				} else if (c == 'c') {
+					// Controlnodes
+					m_grid->addControlpoint(static_cast<int>(x), static_cast<int>(y));
+				} else if (c == 'h') {
+					// Holes to hide in
+					m_grid->addHole(static_cast<int>(x), static_cast<int>(y));
+				} else if (c == 'p') {
+					// Spawnpoints for players
+					m_grid->addPlayerSpawnPoint(static_cast<int>(x), static_cast<int>(y));
+				} else if (c == 'u') {
+					// Spawnpoints for upgrades
+					m_grid->addUpgradeSpawnPoint(static_cast<int>(x), static_cast<int>(y));
+				}
+			}
+		}
+
+		// Deallocate memory
+		for (int i = 0; i < m_width; i++) {
+			Memory::safeDeleteArr(mapData[i]);
+		}
+		Memory::safeDeleteArr(mapData);
 
 	}
 	else {

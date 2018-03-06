@@ -9,7 +9,7 @@ class CharacterHandler;
 class Block;
 class PayloadGamemode : public Gamemode {
 public:
-	PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<Grid::BlockInstance*>> & blocks, const int levelWidth, const int levelHeight);
+	PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>> & blocks, const int levelWidth, const int levelHeight);
 	virtual ~PayloadGamemode();
 
 	virtual void update(CharacterHandler* charHandler, float dt);
@@ -46,7 +46,7 @@ private:
 
 	float m_scoreToWin;
 
-	std::vector<std::vector<Grid::BlockInstance*>>& m_blocks;
+	std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>& m_blocks;
 	int m_levelWidth, m_levelHeight;
 
 	DirectX::SimpleMath::Vector4 m_teamOneColor, m_teamTwoColor;
