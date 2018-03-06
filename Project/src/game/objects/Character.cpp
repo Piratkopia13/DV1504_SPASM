@@ -307,6 +307,8 @@ void Character::update(float dt) {
 					VibrateController(0, 1.0f, 1.5f);
 					VibrateController(1, 1.0, 1.5f);
 					m_movement.initialHook++;
+
+					app->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Hook_Hit, 0.8f, 1.f, 0.2f);
 				}
 			}
 		}
@@ -576,6 +578,7 @@ void Character::fire()
 
 void Character::hook() {
 	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
+	Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Hook_Shot, 0.8f, 1.f, 0.2f);
 }
 
 void Character::stopHook() {

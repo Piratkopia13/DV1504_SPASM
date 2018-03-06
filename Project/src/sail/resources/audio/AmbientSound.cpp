@@ -65,9 +65,13 @@ void AmbientSound::setVolume(float volume) {
 float AmbientSound::getVolume() {
 	float* vol = nullptr;
 	m_sourceVoice->GetVolume(vol);
-
-	float _vol = *vol;
-	delete vol;
+	
+	float _vol = 1.f;
+	
+	if (vol) {
+		_vol = *vol;
+		delete vol;
+	}
 
 	return _vol;
 }

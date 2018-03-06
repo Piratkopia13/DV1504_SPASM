@@ -58,6 +58,8 @@ SoundManager::SoundManager() {
 		loadSoundEffect(SoundEffect::Pickup, L"res/sounds/effect/pickup.wav");
 		loadSoundEffect(SoundEffect::Switch, L"res/sounds/effect/switch.wav");
 		loadSoundEffect(SoundEffect::Select, L"res/sounds/effect/select.wav");
+		loadSoundEffect(SoundEffect::Hook_Shot, L"res/sounds/effect/hook_shot.wav");
+		loadSoundEffect(SoundEffect::Hook_Hit, L"res/sounds/effect/hook_hit.wav");
 
 		loadAmbientSound(Ambient::Loop1, L"res/sounds/ambient/loop1.wav");
 		loadAmbientSound(Ambient::Loop2, L"res/sounds/ambient/loop2.wav");

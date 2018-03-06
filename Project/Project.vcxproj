@@ -506,6 +506,8 @@
     <Media Include="res\sounds\effect\death\male_death.wav" />
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\effect\explosion2.wav" />
+    <Media Include="res\sounds\effect\hook_hit.wav" />
+    <Media Include="res\sounds\effect\hook_shot.wav" />
     <Media Include="res\sounds\effect\laser.wav" />
     <Media Include="res\sounds\effect\pickup.wav" />
     <Media Include="res\sounds\effect\shock.wav" />

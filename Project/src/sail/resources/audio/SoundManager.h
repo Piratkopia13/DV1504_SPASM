@@ -36,6 +36,8 @@ public:
 		Pickup, 
 		Switch,
 		Select,
+		Hook_Shot,
+		Hook_Hit,
 		NumOfSoundEffects
 	};
 
