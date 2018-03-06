@@ -13,7 +13,7 @@ using namespace std;
 
 Scene::Scene(const AABB& worldSize)
 	: m_dirLightShadowMap(4096, 2160)
-	, m_doPostProcessing(true)
+	, m_doPostProcessing(false)
 	, m_doShadows(false)
 {
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
