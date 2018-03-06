@@ -74,7 +74,7 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	float teamOneBlocks = (redScore / totScore) * float(m_levelWidth);
 	float teamTwoBlocks = (blueScore / totScore) * float(m_levelWidth);
 
-	DirectX::SimpleMath::Vector4 blockColor;
+	DirectX::SimpleMath::Vector3 blockColor;
 
 	for (int x = 0; x < m_levelWidth; x++) {
 		if (x <= int(ceil(m_pulsePos + 2.f)) && x >= int(floor(m_pulsePos - 2.f)) && m_pulseDirection != 0) {
