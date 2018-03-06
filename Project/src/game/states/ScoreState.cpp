@@ -16,6 +16,8 @@ ScoreState::ScoreState(StateStack& stack)
 	// Set up camera with controllers
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
 
+	//m_app->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Game_Over);
+
 	// Set up the scene
 	//m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
@@ -138,6 +140,8 @@ ScoreState::ScoreState(StateStack& stack)
 	m_playerCamController->setMoving(false);
 	m_playerCamController->setPosition(Vector3(0, 0, -5));
 	m_playerCamController->setFollowSpeed(8);
+
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Scoreboard, true, 0.8f);
 
 }
 ScoreState::~ScoreState() {
@@ -349,6 +353,7 @@ void ScoreState::exitScoreBoard() {
 	m_info->getPlayers().clear();
 	m_info->gameSettings.teams.clear();
 
+	m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Scoreboard);
 
 	requestStackPop();
 	requestStackPush(States::MainMenu);

@@ -500,6 +500,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <Media Include="res\sounds\ambient\ambient_capture.wav" />
+    <Media Include="res\sounds\ambient\battle_sound.wav" />
     <Media Include="res\sounds\ambient\loop1.wav" />
     <Media Include="res\sounds\ambient\loop2.wav" />
     <Media Include="res\sounds\ambient\theme.wav" />
