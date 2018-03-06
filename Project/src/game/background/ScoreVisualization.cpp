@@ -48,10 +48,6 @@ void ScoreVisualization::update(float dt) {
 
 	float targetScore = info->convertedGameSettings.scoreLimit;
 
-	if (currentGamemode == 0) {
-		targetScore *= 1.0f;
-	}
-
 	std::vector<float> finalScore = m_currentGamemode->getScore();
 
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
