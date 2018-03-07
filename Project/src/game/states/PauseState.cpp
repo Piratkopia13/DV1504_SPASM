@@ -42,7 +42,7 @@ PauseState::PauseState(StateStack& stack)
 	Vector2 texPlaneHalfSize(texPlaneHeight / 2.f * (windowWidth / windowHeight), texPlaneHeight / 2.f);
 	m_background = ModelFactory::PlaneModel::Create(texPlaneHalfSize);
 	m_background->buildBufferForShader(&m_colorShader);
-	m_background->getMaterial()->setColor(Vector4(0, 0, 0, 0.8f)); 
+	m_background->getMaterial()->setColor(Vector4(0, 0, 0, 0.95f)); 
 	m_background->getTransform().setTranslation(Vector3(0, 0, 4.f));
 	m_background->getTransform().setRotations(Vector3(-1.62f, 0, 0));
 
@@ -162,10 +162,10 @@ bool PauseState::processInput(float dt) {
 
 		}
 
-		if (tracker.dpadDown == GamePad::ButtonStateTracker::PRESSED) {
+		if (tracker.dpadDown == GamePad::ButtonStateTracker::PRESSED || tracker.leftStickDown == GamePad::ButtonStateTracker::PRESSED) {
 			this->changeMenu(1);
 		}
-		if (tracker.dpadUp == GamePad::ButtonStateTracker::PRESSED) {
+		if (tracker.dpadUp == GamePad::ButtonStateTracker::PRESSED || tracker.leftStickUp == GamePad::ButtonStateTracker::PRESSED) {
 			this->changeMenu(-1);
 		}
 
