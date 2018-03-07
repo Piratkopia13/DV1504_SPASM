@@ -119,20 +119,27 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 	/*m_dofStage->setDepthSRV(depthTexture);
 	m_dofStage->run(baseTexture);*/
 
+	dxm->getPerfProfilerThing()->BeginEvent(L"FXAA");
 	// FXAA pass
 	if (m_FXAAPass)
 		m_FXAAStage->run(baseTexture);
+	dxm->getPerfProfilerThing()->EndEvent();
 	RenderableTexture& processedBaseTexture = (m_FXAAPass) ? m_FXAAStage->getOutput() : baseTexture;
 
 	// DOF pass
 	if (m_DOFPass) {
+		dxm->getPerfProfilerThing()->BeginEvent(L"Depth of field");
 
+		dxm->getPerfProfilerThing()->BeginEvent(L"Tonemap");
 		m_toneMapHackStage->run(processedBaseTexture);
+		dxm->getPerfProfilerThing()->EndEvent();
 
+		dxm->getPerfProfilerThing()->BeginEvent(L"GaussDepth");
 		m_hGaussDepthStage->setDepthSRV(depthTexture);
 		m_hGaussDepthStage->run(m_toneMapHackStage->getOutput());
 		m_vGaussDepthStage->setDepthSRV(depthTexture);
 		m_vGaussDepthStage->run(m_hGaussDepthStage->getOutput());
+		dxm->getPerfProfilerThing()->EndEvent();
 
 		/*m_hGaussDepthStage2->setDepthSRV(depthTexture);
 		m_hGaussDepthStage2->run(m_vGaussDepthStage->getOutput());
@@ -141,9 +148,10 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 
 		/*m_hGaussStage3->run(processedBaseTexture);
 		m_vGaussStage3->run(m_hGaussStage3->getOutput());*/
-
+		dxm->getPerfProfilerThing()->BeginEvent(L"Gauss");
 		m_hGaussStage->run(m_vGaussDepthStage->getOutput());
 		m_vGaussStage->run(m_hGaussStage->getOutput());
+		dxm->getPerfProfilerThing()->EndEvent();
 
 		/*m_hGaussStage2->run(m_vGaussStage->getOutput());
 		m_vGaussStage2->run(m_hGaussStage2->getOutput());*/
@@ -151,12 +159,16 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 		/*m_hGaussStage3->run(m_vGaussStage2->getOutput());
 		m_vGaussStage3->run(m_hGaussStage3->getOutput());*/
 
+		dxm->getPerfProfilerThing()->BeginEvent(L"Gaussian DOF");
 		m_gaussianDofStage->setBlurredSRV(m_vGaussStage->getOutput().getColorSRV());
 		m_gaussianDofStage->setDepthSRV(depthTexture);
 		m_gaussianDofStage->run(processedBaseTexture);
+		dxm->getPerfProfilerThing()->EndEvent();
 
+		dxm->getPerfProfilerThing()->EndEvent();
 	}
 
+	dxm->getPerfProfilerThing()->BeginEvent(L"Bloom");
 	// Blend particles with the bloom input texture
 	m_blendStage->setBlendInput(particlesTexture.getColorSRV());
 	m_blendStage->run(bloomInputTexture);
@@ -181,6 +193,7 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 	m_blendStage2->setBlendInput(m_blendStage->getOutput().getColorSRV());
 	m_blendStage2->run((m_DOFPass) ? m_gaussianDofStage->getOutput() : processedBaseTexture);
 
+	dxm->getPerfProfilerThing()->EndEvent();
 
 	// Tone map pass - clamp color values to 1 without changing the color (too much)
 	//m_toneMapHackStage->run(m_blendStage2->getOutput());

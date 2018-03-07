@@ -57,6 +57,8 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 	auto* dxm = Application::getInstance()->getDXManager();
 
+	dxm->getPerfProfilerThing()->BeginEvent(L"Scene rendering starting");
+
 	//dxm->getDeviceContext()->ClearState();
 
 	if (m_doPostProcessing) {
@@ -108,17 +110,26 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 	m_timer.getFrameTime();
 	/* draw level here */
+	dxm->getPerfProfilerThing()->BeginEvent(L"Level rendering");
 	if (level) {
 		level->draw();
 	}
+	dxm->getPerfProfilerThing()->EndEvent();
+	dxm->getPerfProfilerThing()->BeginEvent(L"Gamemode rendering");
 	if (gamemode) {
 		gamemode->draw();
 	}
+	dxm->getPerfProfilerThing()->EndEvent();
+	dxm->getPerfProfilerThing()->BeginEvent(L"Projectile rendering");
 	if (projectiles) {
 		projectiles->draw();
 	}
+	dxm->getPerfProfilerThing()->EndEvent();
+	dxm->getPerfProfilerThing()->BeginEvent(L"Other object rendering");
 	for (Object* m : m_objects)
 		m->draw();
+	dxm->getPerfProfilerThing()->EndEvent();
+
 
 	// Disable conservatiec rasterization to avoid wierd graphical artifacts
 	dxm->disableConservativeRasterizer();
@@ -127,9 +138,11 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	// This is neccassary for the depth of field effect since it needs depth data that particles dont write (will always be in focus)
 	if (m_doPostProcessing)
 		dxm->getDeviceContext()->OMSetRenderTargets(1, m_particleOutputTex->getRenderTargetView(), m_deferredRenderer.getDSV());
+	dxm->getPerfProfilerThing()->BeginEvent(L"Particle rendering");
 	if (particles) {
 		particles->draw();
 	}
+	dxm->getPerfProfilerThing()->EndEvent();
 	//double time = m_timer.getFrameTime();
 	//std::cout << "Rendering took: " << time * 1000.f << "ms" << std::endl << std::endl;
 
@@ -143,7 +156,9 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	}
 
 	// Do the light pass (using additive blending)
+	dxm->getPerfProfilerThing()->BeginEvent(L"Deferred light pass");
 	m_deferredRenderer.doLightPass(m_lights, cam, (m_doShadows) ? &m_dirLightShadowMap : nullptr);
+	dxm->getPerfProfilerThing()->EndEvent();
 
 	if (m_doPostProcessing) {
 		// Do post processing
@@ -152,8 +167,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		// Unbind deferredOutputTex so that it can be bound to UAVs in the post process pass
 		ID3D11RenderTargetView* nullRTV = nullptr;
 		dxm->getDeviceContext()->OMSetRenderTargets(1, &nullRTV, nullptr);
+		dxm->getPerfProfilerThing()->BeginEvent(L"Post process pass");
 		// Run post process pass
 		m_postProcessPass.run(*m_deferredOutputTex, m_deferredRenderer.getGBufferSRV(DeferredRenderer::DEPTH_GBUFFER), *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER), *m_particleOutputTex);
+		dxm->getPerfProfilerThing()->EndEvent();
 	}
 
 	// Re-enable conservative rasterization
@@ -161,10 +178,14 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 	// Change active depth buffer to the one used in the deferred geometry pass
 	dxm->getDeviceContext()->OMSetRenderTargets(1, dxm->getBackBufferRTV(), m_deferredRenderer.getDSV());
+
+	dxm->getPerfProfilerThing()->EndEvent();
 }
 
 void Scene::drawHUD() {
 	auto* dxm = Application::getInstance()->getDXManager();
+
+	dxm->getPerfProfilerThing()->BeginEvent(L"HUD rendering starting");
 
 	// 2D rendering stuffs
 	// Beginning the spritebatch will disable depth testing
@@ -178,6 +199,8 @@ void Scene::drawHUD() {
 	// Re-enable the depth buffer and rasterizer state after 2D rendering
 	dxm->enableDepthBuffer();
 	dxm->enableBackFaceCulling();
+
+	dxm->getPerfProfilerThing()->EndEvent();
 }
 
 std::map<ShaderSet*, std::vector<Model*>> Scene::mapModelsToShaders(std::vector<Quadtree::Element*>& elements) {
