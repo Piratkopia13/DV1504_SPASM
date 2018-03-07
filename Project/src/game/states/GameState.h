@@ -11,7 +11,7 @@
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
 #include "../background/ScoreVisualization.h"
-#include "../objects/InstancedBlocks.h"
+//#include "../objects/InstancedBlocks.h"
 
 #include "../objects/Block.h"
 
@@ -66,6 +66,6 @@ private:
 
 	std::unique_ptr<ScoreVisualization> m_scoreVisualization;
 
-	InstancedBlocks m_testBlocks;
+	//InstancedBlocks m_testBlocks;
 
 };

@@ -7,7 +7,7 @@ VGaussianBlurDepthTest::VGaussianBlurDepthTest(UINT width, UINT height, Model* f
 	: PostProcessStage(width, height, fullscreenQuad)
 {
 	// Set up constant buffer
-	CBuffer pixelSize = { (float)width, (float)height };
+	CBuffer pixelSize = { 1.f / width, 1.f / height };
 	m_cBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&pixelSize, sizeof(pixelSize)));
 
 	// Set up sampler
@@ -73,4 +73,11 @@ void VGaussianBlurDepthTest::run(RenderableTexture& inputTexture) {
 	ID3D11ShaderResourceView* nullSRV[2] = { nullptr, nullptr };
 	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 2, nullSRV);
 
+}
+
+void VGaussianBlurDepthTest::resize(UINT width, UINT height) {
+	PostProcessStage::resize(width, height);
+	// Update constant buffer
+	CBuffer pixelSize = { 1.f / width, 1.f / height };
+	m_cBuffer->updateData(&pixelSize, sizeof(pixelSize));
 }

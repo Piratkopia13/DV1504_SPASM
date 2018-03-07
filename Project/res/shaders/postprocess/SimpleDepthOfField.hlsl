@@ -42,6 +42,8 @@ float4 PSMain(PSIn input) : SV_Target0 {
 
 	//float blendFactor = saturate(pow(pixelDepth - 5, 2) / zFar + zNear);
 	float blendFactor = smoothstep(0.f, focalWidth, abs(focalDistance - pixelDepth));
+	//float blendFactor = abs(smoothstep(-focalWidth * 0.5f, focalWidth * 0.5f, focalDistance - pixelDepth));
+
 
 	return lerp(colorTex.Sample(ss, input.texCoord), blurTex.Sample(ss, input.texCoord), blendFactor);
 	//return float4(blendFactor, blendFactor, blendFactor, 1.f);

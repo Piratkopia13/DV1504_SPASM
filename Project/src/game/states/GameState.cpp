@@ -16,7 +16,7 @@ GameState::GameState(StateStack& stack)
 , m_debugCamText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
-, m_testBlocks(250)
+//, m_testBlocks(250)
 {
 
 	// Get the Application instance
@@ -189,16 +189,16 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
 
-	for (int x = 0; x < 5; x++) {
-		for (int z = 0; z < 50; z++) {
-			DeferredInstancedGeometryShader::InstanceData data;
-			data.color = Utils::getRandomColor();
-			data.position = Vector3(x + 15, z, 20);
-			m_testBlocks.addInstance(data);
-		}
-	}
+	//for (int x = 0; x < 5; x++) {
+	//	for (int z = 0; z < 50; z++) {
+	//		DeferredInstancedGeometryShader::InstanceData data;
+	//		data.color = Utils::getRandomColor();
+	//		data.position = Vector3(x + 15, z, 20);
+	//		m_testBlocks.addInstance(data);
+	//	}
+	//}
 
-	m_scene.addObject(&m_testBlocks);
+	//m_scene.addObject(&m_testBlocks);
 }
 
 GameState::~GameState() {

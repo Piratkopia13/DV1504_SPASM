@@ -16,8 +16,8 @@ struct PSIn {
 };
 
 cbuffer CBuffer : register(b0) {
-    float windowWidth;
-    float windowHeight;
+    float invWindowWidth;
+    float invWindowHeight;
 }
 
 PSIn VSMain(VSIn input) {
@@ -37,6 +37,8 @@ Texture2D tex : register(t0);
 Texture2D depthTex : register(t1);
 SamplerState ss : register(s0);
 
+#define DEPTH_THRESHOLD 0.001f
+
 float4 PSHorizontal(PSIn input) : SV_Target0 {
 
     float4 color;
@@ -44,8 +46,8 @@ float4 PSHorizontal(PSIn input) : SV_Target0 {
     float centerDepth = depthTex.Sample(ss, input.texCoord).r;
     float4 centerColor = tex.Sample(ss, input.texCoord);
     for (int x = 0; x < 13; x++) {
-        float2 coord = input.texCoord + float2((x - 6.f) / windowWidth, 0.f);
-        if (abs(depthTex.Sample(ss, coord).r - centerDepth) < 0.005f) {
+        float2 coord = input.texCoord + float2((x - 6.f) * invWindowWidth, 0.f);
+        if (abs(depthTex.Sample(ss, coord).r - centerDepth) < DEPTH_THRESHOLD) {
             color += tex.Sample(ss, coord) * filter[x];
         } else {
             color += centerColor * filter[x];
@@ -63,8 +65,8 @@ float4 PSVertical(PSIn input) : SV_Target0 {
     float centerDepth = depthTex.Sample(ss, input.texCoord).r;
     float4 centerColor = tex.Sample(ss, input.texCoord);
     for (int y = 0; y < 13; y++) {
-        float2 coord = input.texCoord + float2(0.f, (y - 6.f) / windowHeight);
-        if (abs(depthTex.Sample(ss, coord).r - centerDepth) < 0.005f) {
+        float2 coord = input.texCoord + float2(0.f, (y - 6.f) * invWindowHeight);
+        if (abs(depthTex.Sample(ss, coord).r - centerDepth) < DEPTH_THRESHOLD) {
             color += tex.Sample(ss, coord) * filter[y];
         } else {
             color += centerColor * filter[y];

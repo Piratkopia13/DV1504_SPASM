@@ -27,6 +27,7 @@ Scene::Scene(const AABB& worldSize)
 	UINT height = window->getWindowHeight();
 
 	m_deferredOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
+	m_particleOutputTex = std::unique_ptr<RenderableTexture>(new RenderableTexture(1U, width, height, false));
 }
 Scene::~Scene() {}
 
@@ -47,6 +48,7 @@ void Scene::resize(int width, int height) {
 	// Resize textures
 	m_deferredRenderer.resize(width, height);
 	m_deferredOutputTex->resize(width, height);
+	m_particleOutputTex->resize(width, height);
 	m_postProcessPass.resize(width, height);
 }
 
@@ -61,6 +63,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		m_postProcessPass.setCamera(cam);
 		// Render skybox to the prePostTex
 		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
+		m_particleOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
 		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
 	}
 
@@ -120,6 +123,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	// Disable conservatiec rasterization to avoid wierd graphical artifacts
 	dxm->disableConservativeRasterizer();
 
+	// Render particles to separate texture if post processing is active
+	// This is neccassary for the depth of field effect since it needs depth data that particles dont write (will always be in focus)
+	if (m_doPostProcessing)
+		dxm->getDeviceContext()->OMSetRenderTargets(1, m_particleOutputTex->getRenderTargetView(), m_deferredRenderer.getDSV());
 	if (particles) {
 		particles->draw();
 	}
@@ -146,7 +153,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		ID3D11RenderTargetView* nullRTV = nullptr;
 		dxm->getDeviceContext()->OMSetRenderTargets(1, &nullRTV, nullptr);
 		// Run post process pass
-		m_postProcessPass.run(*m_deferredOutputTex, m_deferredRenderer.getGBufferSRV(DeferredRenderer::DEPTH_GBUFFER), *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER));
+		m_postProcessPass.run(*m_deferredOutputTex, m_deferredRenderer.getGBufferSRV(DeferredRenderer::DEPTH_GBUFFER), *m_deferredRenderer.getGBufferRenderableTexture(DeferredRenderer::DIFFUSE_GBUFFER), *m_particleOutputTex);
 	}
 
 	// Re-enable conservative rasterization

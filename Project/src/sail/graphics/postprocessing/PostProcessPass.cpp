@@ -16,9 +16,13 @@ PostProcessPass::PostProcessPass(const Camera* cam)
 	m_gaussPass1Scale = 1.f / 1.f;
 	m_gaussPass2Scale = 1.f / 1.5f;
 	m_gaussPass3Scale = 1.f / 2.f;
-	m_brightnessCutoffScale = 1.f / 2;
+	m_brightnessCutoffScale = 1.f / 1.f;
+
+	m_gaussDepthPassScale = 1.f / 2.f;
 
 	m_FXAAPass = false;
+	m_DOFPass = true;
+	m_dofFocusWidth = 140.f;
 
 	m_FXAAStage = std::make_unique<FXAAStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 
@@ -29,8 +33,8 @@ PostProcessPass::PostProcessPass(const Camera* cam)
 	m_hGaussStage3 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
 	m_vGaussStage3 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
 
-	m_hGaussDepthStage = std::make_unique<HGaussianBlurDepthTest>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
-	m_vGaussDepthStage = std::make_unique<VGaussianBlurDepthTest>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
+	m_hGaussDepthStage = std::make_unique<HGaussianBlurDepthTest>(UINT(windowWidth * m_gaussDepthPassScale), UINT(windowHeight * m_gaussDepthPassScale), &m_fullscreenQuad);
+	m_vGaussDepthStage = std::make_unique<VGaussianBlurDepthTest>(UINT(windowWidth * m_gaussDepthPassScale), UINT(windowHeight * m_gaussDepthPassScale), &m_fullscreenQuad);
 	m_hGaussDepthStage2 = std::make_unique<HGaussianBlurDepthTest>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
 	m_vGaussDepthStage2 = std::make_unique<VGaussianBlurDepthTest>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
 	m_hGaussDepthStage3 = std::make_unique<HGaussianBlurDepthTest>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
@@ -40,6 +44,8 @@ PostProcessPass::PostProcessPass(const Camera* cam)
 	m_dofStage = std::make_unique<DOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 	m_gaussianDofStage = std::make_unique<GaussianDOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	m_blendStage = std::make_unique<BlendStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	m_blendStage2 = std::make_unique<BlendStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 
 }
 
@@ -63,6 +69,8 @@ void PostProcessPass::resize(UINT width, UINT height) {
 	m_toneMapHackStage->resize(width, height);
 	m_dofStage->resize(width, height);
 	m_gaussianDofStage->resize(width, height);
+	m_blendStage->resize(width, height);
+	m_blendStage2->resize(width, height);
 }
 
 void PostProcessPass::setCamera(const Camera& cam) {
@@ -72,20 +80,31 @@ void PostProcessPass::setCamera(const Camera& cam) {
 PostProcessPass::~PostProcessPass() {
 }
 
-void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture) {
+void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture, RenderableTexture& particlesTexture) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
 	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
-	/*if (m_cam)
-		m_gaussianDofStage->setFocus(-m_cam->getPosition().z, 10.f);*/
-	m_gaussianDofStage->setFocus(5.f, 10.f);
+	if (kbState.pressed.I)
+		m_dofFocusWidth += 10.f;
+	if (kbState.pressed.K)
+		m_dofFocusWidth -= 10.f;
+	if (kbState.pressed.Up)
+		m_dofFocusWidth += 1.f;
+	if (kbState.pressed.Down)
+		m_dofFocusWidth -= 1.f;
+
+
+	if (m_cam)
+		m_gaussianDofStage->setFocus(fabsf(m_cam->getPosition().z), m_dofFocusWidth);
+	//m_gaussianDofStage->setFocus(10.f, m_dofFocusWidth);
 
 	dxm->disableDepthBuffer();
 
-	if (kbState.pressed.H) {
+	if (kbState.pressed.H)
 		m_FXAAPass = !m_FXAAPass;
-	}
+	if (kbState.pressed.J)
+		m_DOFPass = !m_DOFPass;
 
 // 	m_hGaussDepthStage->setDepthSRV(depthTexture); m_hGaussDepthStage->run(baseTexture);
 // 	m_vGaussDepthStage->setDepthSRV(depthTexture); m_vGaussDepthStage->run(m_hGaussDepthStage->getOutput());
@@ -96,30 +115,54 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 // 	m_hGaussDepthStage3->setDepthSRV(depthTexture); m_hGaussDepthStage3->run(m_vGaussDepthStage2->getOutput());
 // 	m_vGaussDepthStage3->setDepthSRV(depthTexture); m_vGaussDepthStage3->run(m_hGaussDepthStage3->getOutput());
 
- 	m_hGaussStage->run(baseTexture);
- 	m_vGaussStage->run(m_hGaussStage->getOutput());
- 
- 	m_hGaussStage2->run(m_vGaussStage->getOutput());
- 	m_vGaussStage2->run(m_hGaussStage2->getOutput());
- 
- 	m_hGaussStage3->run(m_vGaussStage2->getOutput());
- 	m_vGaussStage3->run(m_hGaussStage3->getOutput());
-
-	m_gaussianDofStage->setBlurredSRV(m_vGaussStage3->getOutput().getColorSRV());
-	m_gaussianDofStage->setDepthSRV(depthTexture);
-	m_gaussianDofStage->run(baseTexture);
 
 	/*m_dofStage->setDepthSRV(depthTexture);
 	m_dofStage->run(baseTexture);*/
 
-// 	if (m_FXAAPass) {
-// 		m_FXAAStage->run(m_gaussianDofStage->getOutput());
-// 		m_toneMapHackStage->run(m_FXAAStage->getOutput());
-// 	} else {
-// 		m_toneMapHackStage->run(m_gaussianDofStage->getOutput());
-// 
-// 	}
- 	m_brightnessCutoffStage->run(bloomInputTexture);
+	// FXAA pass
+	if (m_FXAAPass)
+		m_FXAAStage->run(baseTexture);
+	RenderableTexture& processedBaseTexture = (m_FXAAPass) ? m_FXAAStage->getOutput() : baseTexture;
+
+	// DOF pass
+	if (m_DOFPass) {
+
+		m_toneMapHackStage->run(processedBaseTexture);
+
+		m_hGaussDepthStage->setDepthSRV(depthTexture);
+		m_hGaussDepthStage->run(m_toneMapHackStage->getOutput());
+		m_vGaussDepthStage->setDepthSRV(depthTexture);
+		m_vGaussDepthStage->run(m_hGaussDepthStage->getOutput());
+
+		/*m_hGaussDepthStage2->setDepthSRV(depthTexture);
+		m_hGaussDepthStage2->run(m_vGaussDepthStage->getOutput());
+		m_vGaussDepthStage2->setDepthSRV(depthTexture);
+		m_vGaussDepthStage2->run(m_hGaussDepthStage2->getOutput());*/
+
+		/*m_hGaussStage3->run(processedBaseTexture);
+		m_vGaussStage3->run(m_hGaussStage3->getOutput());*/
+
+		m_hGaussStage->run(m_vGaussDepthStage->getOutput());
+		m_vGaussStage->run(m_hGaussStage->getOutput());
+
+		/*m_hGaussStage2->run(m_vGaussStage->getOutput());
+		m_vGaussStage2->run(m_hGaussStage2->getOutput());*/
+
+		/*m_hGaussStage3->run(m_vGaussStage2->getOutput());
+		m_vGaussStage3->run(m_hGaussStage3->getOutput());*/
+
+		m_gaussianDofStage->setBlurredSRV(m_vGaussStage->getOutput().getColorSRV());
+		m_gaussianDofStage->setDepthSRV(depthTexture);
+		m_gaussianDofStage->run(processedBaseTexture);
+
+	}
+
+	// Blend particles with the bloom input texture
+	m_blendStage->setBlendInput(particlesTexture.getColorSRV());
+	m_blendStage->run(bloomInputTexture);
+
+	// Bloom pass
+ 	m_brightnessCutoffStage->run(m_blendStage->getOutput());
  
  	m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
  	m_vGaussStage->run(m_hGaussStage->getOutput());
@@ -130,22 +173,37 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
  	m_hGaussStage3->run(m_vGaussStage2->getOutput());
  	m_vGaussStage3->run(m_hGaussStage3->getOutput());
 
-	//// Blend last output together with the baseTexture to produce the final image
- 	dxm->renderToBackBuffer();
- 	dxm->enableAdditiveBlending();
+	// Blend particles with the bloom output
+	m_blendStage->setBlendInput(particlesTexture.getColorSRV());
+	m_blendStage->run(m_vGaussStage3->getOutput());
 
-	// Two following lines are for testing -- remove later
-	m_fullscreenQuad.getMaterial()->setTextures(m_gaussianDofStage->getOutput().getColorSRV(), 1);
+	// Blend bloom with processBaseTexture
+	m_blendStage2->setBlendInput(m_blendStage->getOutput().getColorSRV());
+	m_blendStage2->run((m_DOFPass) ? m_gaussianDofStage->getOutput() : processedBaseTexture);
+
+
+	// Tone map pass - clamp color values to 1 without changing the color (too much)
+	//m_toneMapHackStage->run(m_blendStage2->getOutput());
+	
+	// Blend last output together with the baseTexture to produce the final image
+ 	dxm->renderToBackBuffer();
+ 	//dxm->enableAdditiveBlending();
+
+	/*if (m_DOFPass)
+		m_fullscreenQuad.getMaterial()->setTextures(m_gaussianDofStage->getOutput().getColorSRV(), 1);
+	else */
+		m_fullscreenQuad.getMaterial()->setTextures(m_blendStage2->getOutput().getColorSRV(), 1);
+
 	m_fullscreenQuad.draw();
 // 
 // 	m_fullscreenQuad.getMaterial()->setTextures(m_toneMapHackStage->getOutput().getColorSRV(), 1);
 // 	m_fullscreenQuad.draw();
 // 
  	// Draw bloom using additive blending
- 	m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
- 	m_fullscreenQuad.draw();
+ 	//m_fullscreenQuad.getMaterial()->setTextures(m_vGaussStage3->getOutput().getColorSRV(), 1);
+ 	//m_fullscreenQuad.draw();
 
-	dxm->disableAlphaBlending();
+	//dxm->disableAlphaBlending();
 
 	dxm->enableDepthBuffer();
 }

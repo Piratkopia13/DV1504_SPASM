@@ -16,6 +16,7 @@ public:
 
 	void setDepthSRV(ID3D11ShaderResourceView** depthSRV);
 	void run(RenderableTexture& inputTexture);
+	void resize(UINT width, UINT height);
 
 private:
 	//GaussianBlurCShader m_gaussianShader;
@@ -24,8 +25,8 @@ private:
 	std::unique_ptr<PixelShader> m_PS;
 
 	struct CBuffer {
-		float texWidth;
-		float texHeight;
+		float invTexWidth;
+		float invTexHeight;
 		float padding[2];
 	};
 

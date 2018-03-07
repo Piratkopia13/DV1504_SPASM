@@ -13,6 +13,7 @@
 #include "stages/FXAAStage.h"
 #include "stages/DOFStage.h"
 #include "stages/GaussianDOFStage.h"
+#include "stages/BlendStage.h"
 //#include "../shader/postprocess/GaussianBlurCShader.h"
 #include "../shader/postprocess/PostProcessFlushShader.h"
 
@@ -21,7 +22,7 @@ public:
 	PostProcessPass(const Camera* cam = nullptr);
 	~PostProcessPass();
 
-	void run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture);
+	void run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture, RenderableTexture& particlesTexture);
 	void resize(UINT width, UINT height);
 
 	void setCamera(const Camera& cam);
@@ -49,6 +50,8 @@ private:
 	std::unique_ptr<DOFStage> m_dofStage;
 	std::unique_ptr<GaussianDOFStage> m_gaussianDofStage;
 	std::unique_ptr<ToneMapHackStage> m_toneMapHackStage;
+	std::unique_ptr<BlendStage> m_blendStage;
+	std::unique_ptr<BlendStage> m_blendStage2;
 
 	PostProcessFlushShader m_flushShader;
 
@@ -56,8 +59,11 @@ private:
 	float m_gaussPass2Scale;
 	float m_gaussPass3Scale;
 	float m_brightnessCutoffScale;
+	float m_gaussDepthPassScale;
 
 	bool m_FXAAPass;
+	bool m_DOFPass;
+	float m_dofFocusWidth;
 
 	// TODO make enableEffect(enum) and disableEffect(enum) and a map that binds the enums to enabled/disabled bool
 
