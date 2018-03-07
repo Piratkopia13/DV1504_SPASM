@@ -1,9 +1,8 @@
 #pragma once
 
 #include "../../sail/Sail.h"
-#include "../../sail/graphics/models/FbxModel.h"
-#include "../../sail/graphics/renderer/DeferredRenderer.h"
-#include "Grid.h"
+#include "../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
+//#include "Grid.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
@@ -15,7 +14,12 @@ namespace {
 	Handles all objects of a level
 */
 class CharacterHandler;
+template <class T, typename D>
 class InstancedBlocks;
+//class DynBlockDeferredInstancedGeometryShader;
+//public:
+//	class InstanceData;
+//};
 class Grid;
 class Moveable;
 class Level {
@@ -35,6 +39,8 @@ public:
 	const int& getGridHeight() const;
 
 private:
+	static const unsigned int BLOCK_VARIATIONS;
+
 	// Number of blocks in the x-axis
 	int m_width;
 	// Number of blocks in the y-axis
@@ -44,7 +50,7 @@ private:
 	std::vector<std::unique_ptr<FbxModel>> m_models;
 	// Blocks placed in the level
 	//std::vector<std::unique_ptr<Block>> m_blocks;
-	std::unique_ptr<InstancedBlocks> m_instancedBlocks;
+	std::unique_ptr<InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>> m_instancedBlocks;
 
 	// Grid of the level
 	std::unique_ptr<Grid> m_grid;
