@@ -85,6 +85,10 @@ GameState::GameState(StateStack& stack)
 	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
 	m_scene.addObject(m_scoreVisualization.get());
 
+	m_timeVisualization = std::make_unique<TimeVisualization>(m_level.get(), m_gamemode.get());
+	m_scene.addObject(m_timeVisualization.get());
+
+
 	// Set up camera with controllers
 	m_cam.setPosition(Vector3(0.f, 5.f, -7.0f));
 	Vector2 mapSize = m_level->getGridWorldSize();
@@ -387,6 +391,7 @@ bool GameState::update(float dt) {
 	m_particleHandler->update(dt);
 
 	m_scoreVisualization->update(dt);
+	m_timeVisualization->update(dt);
 
 	return true;
 }
