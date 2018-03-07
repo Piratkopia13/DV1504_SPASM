@@ -20,6 +20,7 @@
     <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl" />
     <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
     <FxCompile Include="res\shaders\deferred\InstancedGeometryShader.hlsl" />
+    <FxCompile Include="res\shaders\deferred\DynBlockInstancedGeometryShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\DepthOfField.hlsl" />
     <FxCompile Include="res\shaders\postprocess\SimpleDepthOfField.hlsl" />
     <FxCompile Include="res\shaders\postprocess\GaussianBlurWithDepthCheck.hlsl" />
@@ -136,12 +137,12 @@
     <ClCompile Include="src\game\states\ScoreState.cpp" />
     <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
-    <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\DOFStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -255,6 +256,7 @@
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
     <ClInclude Include="src\game\objects\InstancedBlocks.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\DOFStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.h" />

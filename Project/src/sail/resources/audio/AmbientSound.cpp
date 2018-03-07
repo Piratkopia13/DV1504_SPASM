@@ -57,3 +57,17 @@ void AmbientSound::Stop() {
 
 	m_state = SoundState::Stopped;
 }
+
+void AmbientSound::setVolume(float volume) {
+	m_sourceVoice->SetVolume(volume);
+}
+
+float AmbientSound::getVolume() {
+	float* vol = nullptr;
+	m_sourceVoice->GetVolume(vol);
+
+	float _vol = *vol;
+	delete vol;
+
+	return _vol;
+}

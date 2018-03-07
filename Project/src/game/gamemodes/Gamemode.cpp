@@ -7,7 +7,10 @@ Gamemode::Gamemode() {
 		m_teamScore[i] = 0;
 	}
 
-	m_gametime = GameInfo::getInstance()->convertedGameSettings.timeLimit;
+	if (GameInfo::getInstance()->convertedGameSettings.timeLimit > 0.f)
+		m_gametime = GameInfo::getInstance()->convertedGameSettings.timeLimit;
+	else
+		m_gametime = 60000000000000.f;
 
 }
 

@@ -2,10 +2,11 @@
 
 #include "../../CharacterHandler.h"
 #include "../../objects/Block.h"
+#include "../../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
 
 using namespace DirectX::SimpleMath;
 
-PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<Grid::BlockInstance*>>& blocks, const int levelWidth, const int levelHeight)
+PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>& blocks, const int levelWidth, const int levelHeight)
 : Gamemode()
 , m_blocks(blocks) 
 {
@@ -14,6 +15,10 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	m_numOfNodes = indices.size();
 	m_radius = 2;
 	m_teamWin = -1;
+	m_pulseDirection = 0;
+	m_pulsePos = 0.f;
+	m_pulseMultiplier = 3.0f;
+	m_pulseSpeed = 0.f;
 	
 	GameInfo * info = GameInfo::getInstance();
 
@@ -28,8 +33,6 @@ PayloadGamemode::PayloadGamemode(std::vector<Grid::Index>& indices, std::vector<
 	// Add default scores
 	addScore(m_scoreToWin / 2.f, 0);
 	addScore(m_scoreToWin / 2.f, 1);
-
-	Gamemode::setGametime(60000000000000000.f);
 
 	for (Grid::Index index : indices) {
 		float x = Level::DEFAULT_BLOCKSIZE * (index.x + 0.5f);
@@ -71,24 +74,40 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	float teamOneBlocks = (redScore / totScore) * float(m_levelWidth);
 	float teamTwoBlocks = (blueScore / totScore) * float(m_levelWidth);
 
-	DirectX::SimpleMath::Vector4 blockColor;
+	DirectX::SimpleMath::Vector3 blockColor;
 
 	for (int x = 0; x < m_levelWidth; x++) {
-		blockColor.x = min(m_teamOneColor.x * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
-		blockColor.y = min(m_teamOneColor.y * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
-		blockColor.z = min(m_teamOneColor.z * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
+		if (x <= int(ceil(m_pulsePos + 2.f)) && x >= int(floor(m_pulsePos - 2.f)) && m_pulseDirection != 0) {
+			m_pulseStrength = m_pulseMultiplier * (1.f - (fabs(m_pulsePos - float(x)) / 5.f));
+		}
+		else
+			m_pulseStrength = 1.f;
+		if (m_pulseDirection == 1) {
+			blockColor.x = min(m_teamOneColor.x * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x) * m_pulseStrength;
+			blockColor.y = min(m_teamOneColor.y * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y) * m_pulseStrength;
+			blockColor.z = min(m_teamOneColor.z * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z) * m_pulseStrength;
 
-		blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.x));
-		blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.y));
-		blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth) - x)) * m_teamTwoColor.z));
+			blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.x));
+			blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.y));
+			blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.z));
+		}
+		else{
+			blockColor.x = min(m_teamOneColor.x * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
+			blockColor.y = min(m_teamOneColor.y * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
+			blockColor.z = min(m_teamOneColor.z * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
+
+			blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.x)) * m_pulseStrength;
+			blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.y)) * m_pulseStrength;
+			blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.z)) * m_pulseStrength;
+		}
+
 
 		for (int y = 0; y < m_levelHeight; y++) {
 			if (m_blocks[x][y]) {
-				m_blocks[x][y]->color = DirectX::SimpleMath::Vector4(
+				m_blocks[x][y]->color = DirectX::SimpleMath::Vector3(
 					blockColor.x,
 					blockColor.y,
-					blockColor.z,
-					1.f);
+					blockColor.z);
 			}
 		}
 	}
@@ -160,6 +179,29 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 	}
 	m_pointEmitter->updateColor(tempColor);
 	m_pointEmitter2->updateColor(tempColor);
+
+	float teamOneScoreChange = Gamemode::getScore(0) - redScore;
+	float teamTwoScoreChange = Gamemode::getScore(1) - blueScore;
+	float pulseSpeed = 0;
+	if (teamOneScoreChange > teamTwoScoreChange) {
+		if (m_pulsePos > floor(teamOneBlocks))
+			m_pulsePos = 0;
+		m_pulseDirection = 1;
+		m_pulseSpeed = teamOneBlocks;
+	}
+	else if (teamOneScoreChange < teamTwoScoreChange)
+	{
+		if ((m_pulsePos - 1) < ceil(teamOneBlocks))
+			m_pulsePos = float(m_levelWidth);
+		m_pulseDirection = -1;
+		m_pulseSpeed = teamTwoBlocks;
+	}
+	else {
+		if (m_pulseDirection != 0)
+			m_pulsePos = 0;
+		m_pulseDirection = 0;
+	}
+	m_pulsePos += m_pulseDirection * dt * m_pulseSpeed;
 }
 
 void PayloadGamemode::draw() {
@@ -183,13 +225,20 @@ int PayloadGamemode::checkWin() {
 	float redScore = Gamemode::getScore(0);
 	float blueScore = Gamemode::getScore(1);
 
-	m_teamWin = -1;
+	m_teamWin = Gamemode::NONE;
 	if (redScore > m_scoreToWin)
 		m_teamWin = 0;
 	if (blueScore > m_scoreToWin)
 		m_teamWin = 1;
-	if (m_teamWin != -1 && blueScore == redScore)
-		m_teamWin = -1;
+	if (m_teamWin != Gamemode::NONE && blueScore == redScore)
+		m_teamWin = Gamemode::DRAW;
+	
+
+	if (getGametime() <= 0.f) {
+		float teamOne = getScore(0);
+		float teamTwo = getScore(1);
+		m_teamWin = (teamOne > teamTwo) ? 0 : (teamTwo > teamOne) ? 1 : Gamemode::DRAW;
+	}
 
 	return m_teamWin;
 }

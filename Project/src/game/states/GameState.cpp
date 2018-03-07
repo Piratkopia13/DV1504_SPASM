@@ -365,8 +365,12 @@ bool GameState::update(float dt) {
 
 	m_level->update(dt, m_characterHandler.get());
 	m_gamemode->update(m_characterHandler.get(), dt);
-	if (m_gamemode->checkWin() > -1) {
-		if (m_gamemode->checkWin() > -1)
+
+	/*
+		UPDATE DIS SHIET
+	*/
+	if (m_gamemode->checkWin() > Gamemode::NONE) {
+		if (m_gamemode->checkWin() > Gamemode::DRAW)
 			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
 		else
 			std::cout << "DRAW!" << std::endl;
@@ -386,7 +390,7 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
-	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<DynBlockDeferredInstancedGeometryShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
 	CollisionHandler::getInstance()->resolveProjectileCollision(dt);

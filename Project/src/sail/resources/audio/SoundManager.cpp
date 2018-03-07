@@ -226,7 +226,15 @@ void SoundManager::setAmbientVolume(const float& volume) {
 	if (!m_playSound)
 		return;
 
+	float oldAmbient = m_ambientVolume;
 	m_ambientVolume = volume;
+
+	for (int i = 0; i < m_ambientSounds.size(); i++) {
+		float oldVol = m_ambientSounds[i]->getVolume();
+		oldVol /= oldAmbient;
+		oldVol = min(XAUDIO2_MAX_VOLUME_LEVEL, max(-XAUDIO2_MAX_VOLUME_LEVEL, oldVol * m_ambientVolume));
+		m_ambientSounds[i]->setVolume(volume);
+	}
 }
 
 void SoundManager::setEffectsVolume(const float& volume) {
