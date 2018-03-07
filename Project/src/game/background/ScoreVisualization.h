@@ -20,12 +20,13 @@ private:
 
 	unsigned int m_numberOfTeams;
 	std::vector<float> teamScores;
+	unsigned int m_randomBlocksPerTeam;
 
-	std::vector<std::unique_ptr<Block>> m_scoreBlocks;
-	std::vector<std::unique_ptr<Block>> m_randomBlocks;
-	std::vector<DirectX::SimpleMath::Vector3> m_targetPositions;
-	std::vector<float> m_accelerations;
-	std::vector<DirectX::SimpleMath::Vector3> m_velocities;
+	//std::vector<std::unique_ptr<Block>> m_scoreBlocks;
+	std::vector<std::vector<std::unique_ptr<Block>>> m_randomBlocks;
+	std::vector<std::vector<DirectX::SimpleMath::Vector3>> m_targetPositions;
+	std::vector<std::vector<float>> m_accelerations;
+	std::vector<std::vector<DirectX::SimpleMath::Vector3>> m_velocities;
 	float m_animationClock;
 
 	Model* m_blockModel;
