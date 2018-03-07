@@ -42,10 +42,10 @@ int Deathmatch::checkWin() {
 		std::vector<float> playerScore = getScore();
 		
 		float score = 0;
-		for (int i = 0; i < playerScore.size(); i++) {
+		for (unsigned int i = 0; i < playerScore.size(); i++) {
 			if (playerScore[i] > score) {
 				score = playerScore[i];
-				m_winnerID = i;
+				m_winnerID = static_cast<int>(i);
 			}
 		}
 	}

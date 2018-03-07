@@ -85,7 +85,7 @@ void Hook::triggerRelease() {
 
 void Hook::draw() {
 	model->setTransform(&getTransform());
-	model->getMaterial()->setColor(this->lightColor * 3.f);
+	model->getMaterial()->setColor(DirectX::SimpleMath::Vector4(3.0f));
 	model->draw();
 }
 

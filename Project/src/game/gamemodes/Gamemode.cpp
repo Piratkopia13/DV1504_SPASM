@@ -2,7 +2,7 @@
 #include "../GameInfo.h"
 
 Gamemode::Gamemode() {
-	m_teamScore.resize(GameInfo::getInstance()->getPlayers().size());
+	m_teamScore.resize(GameInfo::getInstance()->convertedGameSettings.teams.size());
 	for (unsigned int i = 0; i < m_teamScore.size(); i++) {
 		m_teamScore[i] = 0;
 	}
