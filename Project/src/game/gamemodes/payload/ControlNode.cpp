@@ -228,7 +228,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 		m_teamOne.isOwner = true;
 		m_teamOne.timeCapturing = m_timeTillCapture;
 		m_ownershipColor = m_teamOneColor;
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Captured);
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Captured, 0.3f);
 		Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
 	}
 
@@ -246,7 +246,7 @@ bool ControlNode::updateNodeTimer(float dt) {
 		m_teamTwo.isOwner = true;
 		m_teamTwo.timeCapturing = m_timeTillCapture;
 		m_ownershipColor = m_teamTwoColor;
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Captured);
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Captured, 0.3f);
 		Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
 	}
 
