@@ -22,7 +22,13 @@ ScoreVisualization::ScoreVisualization(Level* level, Gamemode* currentGamemode) 
 	//}
 
 	//Animated random blocks
-	float scale = 2.5f;
+
+
+
+
+
+
+	float scale = 3.0f;
 	m_randomBlocksPerTeam = 20;
 	m_randomBlocks.resize(m_numberOfTeams);
 	m_targetPositions.resize(m_numberOfTeams);
@@ -77,7 +83,13 @@ void ScoreVisualization::update(float dt) {
 	}*/
 
 	//Animate random blocks by giving them a target position and making them accelerate towards that position
-	float scale = 2.5f;
+
+
+
+
+
+
+	float scale = 3.0f;
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
 		int pointBlocks = m_randomBlocksPerTeam * finalScore[i] * 0.1f;
 
