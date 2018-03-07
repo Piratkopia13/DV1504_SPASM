@@ -31,6 +31,7 @@ public:
 	bool resolveCoverCollision(const DirectX::SimpleMath::Vector3& playerPos);
 	bool resolveUpgradeCollisionWith(Character* character);
 	bool outOfBounds(Character* character);
+	bool outOfBounds(Projectile* projectile);
 	bool rayTraceLevel(const Ray& ray, DirectX::SimpleMath::Vector3& hitPos, float& hitT);
 
 	bool resolveProjectileCollision(float dt);
