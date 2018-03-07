@@ -76,6 +76,8 @@ private:
 		bool inCover;
 		float xDirection;
 		int initialHook = 0;
+		bool dJump;
+		float dJumpTimer;
 	};
 	struct Health {
 		float current;
