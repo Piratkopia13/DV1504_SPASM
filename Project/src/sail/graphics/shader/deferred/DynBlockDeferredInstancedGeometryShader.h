@@ -33,9 +33,9 @@ public:
 		DirectX::SimpleMath::Vector3 bitangent;
 	};
 	struct InstanceData {
-		DirectX::SimpleMath::Vector3 position;
-		DirectX::SimpleMath::Vector3 color;
-		float blockVariationOffset;
+		DirectX::SimpleMath::Matrix modelMatrix = DirectX::SimpleMath::Matrix::Identity;
+		DirectX::SimpleMath::Vector3 color = DirectX::SimpleMath::Vector3::One;
+		float blockVariationOffset = 0.f;
 	};
 
 private:
@@ -44,13 +44,13 @@ private:
 
 private:
 	// Input element description
-	static D3D11_INPUT_ELEMENT_DESC IED[8];
+	static D3D11_INPUT_ELEMENT_DESC IED[11];
 	// Input layout
 	ID3D11InputLayout* m_inputLayout;
 
 	// Transform constant buffer structure
 	struct ModelDataBuffer {
-		DirectX::SimpleMath::Matrix mWV;
+		DirectX::SimpleMath::Matrix mV;
 		DirectX::SimpleMath::Matrix mP;
 		DirectX::SimpleMath::Vector4 modelColor;
 		float ka;
