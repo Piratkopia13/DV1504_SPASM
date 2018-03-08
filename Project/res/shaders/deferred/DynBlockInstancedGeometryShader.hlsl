@@ -7,7 +7,7 @@ struct VSIn {
   float3 tangent : TANGENT0;
   float3 bitangent : BINORMAL0;
   
-  float3 posOffset : POS_OFFSET0;
+  float4x4 modelMat : MODELMAT0;
   float3 color : COLOR0;
   float blockVariationOffset : VARIATION_OFFSET0;
 };
@@ -41,7 +41,7 @@ GSIn VSMain(VSIn input) {
 
   output.texCoords = float2(input.texCoords.x, input.texCoords.y * 0.0625f + input.blockVariationOffset);
   input.position.w = 1.f;
-  output.position = mul(input.position + float4(input.posOffset, 0.f), mWV);
+  output.position = mul(input.position, input.modelMat);
   output.posVS = output.position;
 	// Convert position into projection space
   output.position = mul(output.position, mP);

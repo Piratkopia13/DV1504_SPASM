@@ -33,9 +33,9 @@ public:
 		DirectX::SimpleMath::Vector3 bitangent;
 	};
 	struct InstanceData {
-		DirectX::SimpleMath::Vector3 position;
-		DirectX::SimpleMath::Vector3 color;
-		float blockVariationOffset;
+		DirectX::SimpleMath::Matrix modelMatrix = DirectX::SimpleMath::Matrix::Identity;
+		DirectX::SimpleMath::Vector3 color = DirectX::SimpleMath::Vector3::One;
+		float blockVariationOffset = 0.f;
 	};
 
 private:
