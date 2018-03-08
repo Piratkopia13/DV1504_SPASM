@@ -104,7 +104,7 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController->setFollowSpeed(8);
 
 	// Sound
-	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true, 0.2f);
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true, 0.1f);
 	
 	m_app->getGameSettings().reset();
 }
@@ -373,8 +373,25 @@ bool MenuState::processInput(float dt) {
 									temp->player.port = i;
 									if (m_info->gameSettings.gameMode == DEATHMATCH) {
 										temp->player.team = spot;
-										temp->player.color = spot;
-										m_characterMenu[spot]->setOptionAt(1, spot);
+
+										m_characterMenu[spot]->next();
+										bool cok = false;
+										while (!cok) {
+											temp->player.color = m_characterMenu[spot]->getOptionAt(1);
+
+											for (size_t u = 0; u < m_playerz.size(); u++) {
+												if (temp->player.color == m_playerz[u]->player.color && spot != u) {
+													m_characterMenu[spot]->right();
+													break;
+												}
+												if (u == m_playerz.size() - 1) {
+													cok = true;
+													break;
+												}
+											}
+										}
+										m_characterMenu[spot]->back();
+
 
 									}
 									else {
@@ -389,14 +406,32 @@ bool MenuState::processInput(float dt) {
 									temp->player.bodyModel = 0;
 									temp->player.armModel = 0;
 									temp->player.legModel = 0;
-									temp->player.currentProfile = &m_info->getProfiles()[spot];
-									m_characterMenu[spot]->setOptionAt(0, spot);
+									temp->player.currentProfile = &m_info->getProfiles()[0];
+									
+
+
 									Logger::log(temp->player.currentProfile->getName());
 									temp->ready = false;
 									initCharacterModel(spot);
-									m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(temp->player.color,temp->player.hue));
+									m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(temp->player.color, temp->player.hue));
 									
 									m_playerz[spot] = temp;
+									bool ok = false;
+									while (!ok) {
+										m_playerz[spot]->player.currentProfile = &m_info->getProfiles()[m_characterMenu[spot]->getOptionAt(0)];
+
+										for (size_t u = 0; u < m_playerz.size(); u++) {
+											if (m_playerz[spot]->player.currentProfile == m_playerz[u]->player.currentProfile && spot != u) {
+												m_characterMenu[spot]->right();
+												break;
+											}
+											if (u == m_playerz.size() - 1) {
+												ok = true;
+												break;
+											}
+										}
+									}
+
 								}
 								else {
 									if(!m_playerz[spot]->ready) {
@@ -910,11 +945,10 @@ bool MenuState::processInput(float dt) {
 							}
 							if (right) {
 								m_soundMenu->right();
-								
 								updateSound();
 								if (m_soundMenu->getActive() == 2) {
 									float pitch = Utils::rnd() * 0.3f + 0.8f;
-									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 0.4f, pitch);
+									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.0f, pitch);
 								}
 
 
@@ -925,7 +959,7 @@ bool MenuState::processInput(float dt) {
 								updateSound();
 								if (m_soundMenu->getActive() == 2) {
 									float pitch = Utils::rnd() * 0.3f + 0.8f;
-									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 0.4f, pitch);
+									Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.0f, pitch);
 								}
 							}
 							updateCamera();

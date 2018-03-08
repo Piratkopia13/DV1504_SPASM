@@ -248,6 +248,13 @@ GameInfo::GameInfo()
 	convertGraphics();
 	convertSound();
 
+	Application::getInstance()->getResourceManager().getSoundManager()->setMasterVolume(convertedSound.masterVolume);
+	Application::getInstance()->getResourceManager().getSoundManager()->setAmbientVolume(convertedSound.backGroundSoundVolume);
+	Application::getInstance()->getResourceManager().getSoundManager()->setEffectsVolume(convertedSound.effectSoundVolume);
+
+
+
+
  	if (m_infoInstance) {
 		Logger::Warning("wtf you doing");
 		return;
@@ -429,7 +436,6 @@ void GameInfo::loadGraphics() {
 		graphicsSettings.fpsCounter = std::stoul(tempList[4]);
 		graphicsSettings.vSync = std::stoul(tempList[5]);
 		graphicsSettings.depthOfField = std::stoul(tempList[6]);
-		convertGraphics();
 	}
 	else {
 		Logger::Error("Could not open graphics file - no graphics loaded");
@@ -438,19 +444,18 @@ void GameInfo::loadGraphics() {
 
 void GameInfo::loadSound() {
 	// read from file
-	std::string filePath = "res/data/data.graphics";
-	std::ifstream graphicsFile(filePath);
+	std::string filePath = "res/data/data.sound";
+	std::ifstream soundFile(filePath);
 	std::string line = "";
 	std::vector<std::string> tempList;
-	if (graphicsFile.is_open()) {
-		while (getline(graphicsFile, line)) {
+	if (soundFile.is_open()) {
+		while (getline(soundFile, line)) {
 			tempList.push_back(line);
 		}
 
 		soundSettings.master = std::stoul(tempList[0]);
 		soundSettings.background = std::stoul(tempList[1]);
 		soundSettings.effect = std::stoul(tempList[2]);
-		convertSound();
 	}
 	else {
 		Logger::Error("Could not open graphics file - no graphics loaded");
