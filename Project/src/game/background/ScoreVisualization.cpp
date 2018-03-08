@@ -53,7 +53,7 @@ void ScoreVisualization::update(float dt) {
 	//Animate random blocks by giving them a target position and making them accelerate towards that position
 	float scale = 3.0f;
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
-		int pointBlocks = (int) (m_blocksPerTeam * finalScore[i] * 0.1f);
+		int pointBlocks = min((int) ceil(m_blocksPerTeam * finalScore[i] * 0.1f), m_blocksPerTeam);
 		for (int j = 0; j < pointBlocks; j++) { //Blocks moving toward or are already in the score pillar (claimed points)
 			Vector3 tempPos = m_scoreBlocks[i][j]->getTransform().getTranslation();
 			m_targetPositions[i][j] = Vector3((float)i * (15.0f) + m_currentLevel->getGridWidth() / 2.0f - 7.5f * (m_numberOfTeams - 1) + (j % 2) * scale, floorf((float)j / 2.0f) * scale + m_currentLevel->getGridHeight() / 2.0f - 15.0f, 100.0f);
@@ -77,11 +77,12 @@ void ScoreVisualization::update(float dt) {
 				tempRotations.y = fmod(tempRotations.y, 1.57f);
 				tempRotations.z = fmod(tempRotations.z, 1.57f);
 				float travelTime = (m_targetPositions[i][j] - tempPos).Length() / 20.0f;
-
+				//Rotation interpolation
 				m_scoreBlocks[i][j]->getTransform().setRotations(Vector3(max(0.0f, tempRotations.x - (tempRotations.x / travelTime) * dt)
 					, max(0.0f, tempRotations.y - (tempRotations.y / travelTime) * dt)
 					, max(0.0f, tempRotations.y - (tempRotations.y / travelTime) * dt)));
 
+				//Set the blocks color
 				m_scoreBlocks[i][j]->setColor(GameInfo::getInstance()->convertedGameSettings.teams[i].color);
 			}
 		}
