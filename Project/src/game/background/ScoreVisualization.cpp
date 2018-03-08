@@ -89,7 +89,7 @@ void ScoreVisualization::update(float dt) {
 	//Timer that keeps track of when a new target position should be given to the blocks
 	if (m_animationClock > 4.0f) {
 		for (unsigned int i = 0; i < m_targetPositions.size(); i++) {
-			m_targetPositions[i] = Vector3(m_currentLevel->getGridWidth() / 2.0f + Utils::rnd() * 90.0f - 45.0f, m_currentLevel->getGridHeight() / 2.0f + Utils::rnd() * 50.0f - 25.0f, 0.0f + Utils::rnd() * 50.0f - 25.0f);
+			m_targetPositions[i] = Vector3(m_currentLevel->getGridWidth() / 2.0f + Utils::rnd() * 90.0f - 45.0f, m_currentLevel->getGridHeight() / 2.0f + Utils::rnd() * 50.0f - 25.0f, 0.0f + Utils::rnd() * 10.f  / 5.f);
 		}
 		m_animationClock = 0.0f;
 	}
