@@ -117,10 +117,10 @@ Level::Level(const std::string& filename)
 						instanceData.blockVariationOffset = 1 * variationOffsetRowMul;
 						instanceData.color = Vector3::One;
 						if (currTask == 3) {
-							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE);
+							instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 1.f * DEFAULT_BLOCKSIZE));
 							m_instancedBlocks->addInstance(instanceData);
 						} else if (currTask == 4) {
-							instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE);
+							instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y - 0.5f) * DEFAULT_BLOCKSIZE, 2.f * DEFAULT_BLOCKSIZE));
 							m_instancedBlocks->addInstance(instanceData);
 						}
 					}
@@ -173,7 +173,7 @@ Level::Level(const std::string& filename)
 					if (left && right && up && down) row = 16;
 
 					instanceData.blockVariationOffset = variationOffsetRowMul * row;
-					instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f);
+					instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 					m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y);
 				} else if (c == 'c') {
 					// Controlnodes
