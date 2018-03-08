@@ -56,7 +56,6 @@ void ScoreVisualization::update(float dt) {
 		int pointBlocks = (int) (m_blocksPerTeam * finalScore[i] * 0.1f);
 		for (int j = 0; j < pointBlocks; j++) { //Blocks moving toward or are already in the score pillar (claimed points)
 			Vector3 tempPos = m_scoreBlocks[i][j]->getTransform().getTranslation();
-			Vector3 tempRotations = m_scoreBlocks[i][j]->getTransform().getRotations();
 			m_targetPositions[i][j] = Vector3((float)i * (15.0f) + m_currentLevel->getGridWidth() / 2.0f - 7.5f * (m_numberOfTeams - 1) + (j % 2) * scale, floorf((float)j / 2.0f) * scale + m_currentLevel->getGridHeight() / 2.0f - 15.0f, 100.0f);
 			
 			if ((tempPos - m_targetPositions[i][j]).Length() < 0.5f) { //Block is in the right place in the score pillar
@@ -66,16 +65,22 @@ void ScoreVisualization::update(float dt) {
 				m_scoreBlocks[i][j]->getTransform().setTranslation(m_targetPositions[i][j]);
 			}
 			else { //Block is moving towards score pillar
-				m_accelerations[i][j] = 10.0f;
+				m_accelerations[i][j] = 15.0f;
 				m_velocities[i][j] += (m_targetPositions[i][j] - tempPos) * m_accelerations[i][j] * dt;
-				float m_tempVelocity = min(m_velocities[i][j].Length(), 15.0f);
+				float m_tempVelocity = min(m_velocities[i][j].Length(), 20.0f);
 				m_velocities[i][j].Normalize();
 				m_velocities[i][j] *= m_tempVelocity;
 				m_scoreBlocks[i][j]->getTransform().setTranslation(tempPos + m_velocities[i][j] * dt);
-				//Randomly rotate the blocks
-				m_scoreBlocks[i][j]->getTransform().rotateAroundX(Utils::rnd() * dt);
-				m_scoreBlocks[i][j]->getTransform().rotateAroundY(Utils::rnd() * dt);
-				m_scoreBlocks[i][j]->getTransform().rotateAroundZ(Utils::rnd() * dt);
+				//Rotate block towards the right angle
+				Vector3 tempRotations = m_scoreBlocks[i][j]->getTransform().getRotations();
+				tempRotations.x = fmod(tempRotations.x, 1.57f);
+				tempRotations.y = fmod(tempRotations.y, 1.57f);
+				tempRotations.z = fmod(tempRotations.z, 1.57f);
+				float travelTime = (m_targetPositions[i][j] - tempPos).Length() / 20.0f;
+
+				m_scoreBlocks[i][j]->getTransform().setRotations(Vector3(max(0.0f, tempRotations.x - (tempRotations.x / travelTime) * dt)
+					, max(0.0f, tempRotations.y - (tempRotations.y / travelTime) * dt)
+					, max(0.0f, tempRotations.y - (tempRotations.y / travelTime) * dt)));
 
 				m_scoreBlocks[i][j]->setColor(GameInfo::getInstance()->convertedGameSettings.teams[i].color);
 			}
