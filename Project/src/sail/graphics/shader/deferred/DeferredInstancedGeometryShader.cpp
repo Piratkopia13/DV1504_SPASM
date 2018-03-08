@@ -3,13 +3,16 @@
 using namespace DirectX;
 using namespace SimpleMath;
 
-D3D11_INPUT_ELEMENT_DESC DeferredInstancedGeometryShader::IED[7] = {
+D3D11_INPUT_ELEMENT_DESC DeferredInstancedGeometryShader::IED[10] = {
 	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	{ "BINORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-	{ "POSOFFSET", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "MODELMAT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "MODELMAT", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "MODELMAT", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+	{ "MODELMAT", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 	{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 };
 
@@ -42,7 +45,7 @@ DeferredInstancedGeometryShader::DeferredInstancedGeometryShader()
 
 	// Create the input layouts
 	//Application::getInstance()->getDXManager()->getDevice()->CreateInputLayout(IED, 5, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_inputLayout);
-	Application::getInstance()->getDXManager()->getDevice()->CreateInputLayout(IED, 7, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_inputLayout);
+	Application::getInstance()->getDXManager()->getDevice()->CreateInputLayout(IED, 10, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &m_inputLayout);
 
 	// Done with the blobs, release them
 	Memory::safeRelease(vsBlob);
@@ -68,12 +71,12 @@ void DeferredInstancedGeometryShader::updateWorldDataBuffer(const DirectX::Simpl
 	m_worldDataBuffer->updateData(&data, sizeof(data));
 }
 
-void DeferredInstancedGeometryShader::updateModelDataBuffer(const Material& material, const DirectX::SimpleMath::Matrix& wv, const DirectX::SimpleMath::Matrix& p) const {
+void DeferredInstancedGeometryShader::updateModelDataBuffer(const Material& material, const DirectX::SimpleMath::Matrix& v, const DirectX::SimpleMath::Matrix& p) const {
 
 	const bool* texFlags = material.getTextureFlags();
 
 	ModelDataBuffer data = {
-		wv.Transpose(), p.Transpose() ,
+		v.Transpose(), p.Transpose() ,
 		material.getColor(),
 		material.getKa(),
 		material.getKd(),
@@ -231,7 +234,7 @@ void DeferredInstancedGeometryShader::draw(Model& model, bool bindFirst) {
 	}
 
 	// Update the model data to match this model
-	updateModelDataBuffer(*model.getMaterial(), model.getTransform().getMatrix() * m_mView, m_mProjection);
+	updateModelDataBuffer(*model.getMaterial(), m_mView, m_mProjection);
 
 	auto devCon = Application::getInstance()->getDXManager()->getDeviceContext();
 

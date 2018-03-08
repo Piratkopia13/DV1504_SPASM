@@ -1,12 +1,5 @@
 #include "../Phong.hlsl"
 
-static matrix Identity = {
-    { 1, 0, 0, 0 },
-    { 0, 1, 0, 0 },
-    { 0, 0, 1, 0 },
-    { 0, 0, 0, 1 }
-};
-
 struct VSIn {
   float4 position : POSITION0;
   float3 normal : NORMAL0;
