@@ -366,9 +366,6 @@ bool GameState::update(float dt) {
 		UPDATE DIS SHIET
 	*/
 	int checkWin = m_gamemode->checkWin();
-	// TESTING
-	if (m_gamemode->getGametime() < 0.f)
-		checkWin = Gamemode::DRAW;
 	if (checkWin > Gamemode::NONE) {
 		if (checkWin > Gamemode::DRAW && checkWin < m_info->convertedGameSettings.teams.size())
 			m_info->convertedGameSettings.teams[checkWin].winner = true;
