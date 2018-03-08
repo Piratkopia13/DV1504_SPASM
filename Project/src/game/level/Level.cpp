@@ -145,7 +145,7 @@ Level::Level(const std::string& filename)
 				if (c == '1') {
 					// Normal blocks
 					DynBlockDeferredInstancedGeometryShader::InstanceData instanceData;
-					instanceData.position = Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f);
+					instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 					m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y);
 					m_blocks[x][y].data = m_grid->getBlock(x, y);
 					instanceData.color = Vector3::One;
@@ -246,7 +246,7 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const Dir
 		block->health--;
 		if (block->health <= 0) {
 			block->destroyed = true;
-			block->data->position += DirectX::SimpleMath::Vector3(0.0f, 0.0f, 5.f);
+			block->data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(block->data->modelMatrix.Translation().x, block->data->modelMatrix.Translation().y, 5.0f);
 			block->data->color = DirectX::SimpleMath::Vector3::Zero;
 			m_grid->removeBlock(blockIndex.x, blockIndex.y);
 			updateAdjacent(blockIndex.x, blockIndex.y);

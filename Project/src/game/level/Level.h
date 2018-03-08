@@ -40,7 +40,7 @@ public:
 					timeDead = 0.0f;
 					destroyed = false;
 					health = 5;
-					data->position = DirectX::SimpleMath::Vector3(data->position.x, data->position.y, 0.f);
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation().x, data->modelMatrix.Translation().y, 0.f);
 					data->color = DirectX::SimpleMath::Vector3::One;
 				}
 			}
