@@ -102,6 +102,11 @@ public:
 	};
 	
 	struct SoundSettings {
+		size_t master = 0;
+		size_t background = 0;
+		size_t effect = 0;
+	};
+	struct ConvertedSoundSettings {
 		float masterVolume = 0.5;
 		float backGroundSoundVolume = 0.5;
 		float effectSoundVolume = 0.5;
@@ -118,6 +123,7 @@ public:
 	GraphicsSettings graphicsSettings;
 	ConvertedGraphics convertedGraphics;
 	SoundSettings soundSettings;
+	ConvertedSoundSettings convertedSound;
 
 	std::vector<DirectX::SimpleMath::Vector4> defaultColors;
 	std::vector<std::string> colorNames;
@@ -152,8 +158,9 @@ public:
 	std::vector<Setting> effectVolume;
 
 	void convertGameSettings();
-
 	void convertGraphics();
+	void convertSound();
+
 	void saveGraphics();
 	void saveSound();
 

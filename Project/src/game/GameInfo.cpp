@@ -15,6 +15,8 @@ GameInfo::GameInfo()
 
 	m_profiles.push_back(Profile("Guest 1", 0));
 	m_profiles.push_back(Profile("Guest 2", 0));
+	m_profiles.push_back(Profile("Guest 3", 0));
+	m_profiles.push_back(Profile("Guest 4", 0));
 	loadProfiles();
 	
 	float base = 1.0f;
@@ -111,7 +113,7 @@ GameInfo::GameInfo()
 	respawnTime.push_back({ "2 seconds", 2.0f, 0});
 	respawnTime.push_back({ "4 seconds", 4.0f, 0 });
 	respawnTime.push_back({ "8 seconds", 8.0f, 0 });
-	respawnTime.push_back({ "instant", 2.0f, 0 });
+	respawnTime.push_back({ "instant", 0.1f, 0 });
 
 	gravity.push_back({ "earth",1,0 });
 	gravity.push_back({ "moon",0.16f,0 });
@@ -240,6 +242,11 @@ GameInfo::GameInfo()
 	maps.push_back(deathmatch);
 	maps.push_back(teamdeathmatch);
 
+	loadGraphics();
+	loadSound();
+
+	convertGraphics();
+	convertSound();
 
  	if (m_infoInstance) {
 		Logger::Warning("wtf you doing");
@@ -251,6 +258,8 @@ GameInfo::GameInfo()
 
 GameInfo::~GameInfo() {
 	saveProfiles();
+	saveGraphics();
+	saveSound();
 }
 
 GameInfo * GameInfo::getInstance()
@@ -329,12 +338,41 @@ void GameInfo::convertGraphics() {
 	convertedGraphics.depthOfField = depthOfField[graphicsSettings.depthOfField].value;
 }
 
+void GameInfo::convertSound() {
+	convertedSound = ConvertedSoundSettings();
+	convertedSound.masterVolume = masterVolume[soundSettings.master].value;
+	convertedSound.backGroundSoundVolume = backgroundVolume[soundSettings.background].value;
+	convertedSound.effectSoundVolume = effectVolume[soundSettings.effect].value;
+}
+
 void GameInfo::saveGraphics() {
 
+
+	std::string filePath = "res/data/data.graphics";
+	std::ofstream graphicsFile(filePath);
+	if (graphicsFile.is_open()) {
+			graphicsFile << std::to_string(graphicsSettings.particles) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.bloom) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.AA) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.backGround) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.fpsCounter) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.vSync) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.depthOfField) << "\n";
+
+			graphicsFile.close();
+	}
 }
 
 void GameInfo::saveSound() {
+	std::string filePath = "res/data/data.sound";
+	std::ofstream soundFile(filePath);
+	if (soundFile.is_open()) {
+		soundFile << std::to_string(soundSettings.master) << "\n";
+		soundFile << std::to_string(soundSettings.background) << "\n";
+		soundFile << std::to_string(soundSettings.effect) << "\n";
 
+		soundFile.close();
+	}
 }
 
 void GameInfo::loadProfiles() {
@@ -353,6 +391,9 @@ void GameInfo::loadProfiles() {
 			m_profiles.push_back(Profile(tempList[0], std::stoul(tempList[1]), {std::stoul(tempList[2]), std::stoul(tempList[3]), std::stoul(tempList[4]), std::stoul(tempList[5])}));
 		}
 	}
+	else {
+		Logger::Error("Could not open profiles file - no profiles loaded");
+	}
 }
 
 void GameInfo::saveProfiles() {
@@ -360,22 +401,62 @@ void GameInfo::saveProfiles() {
 	std::string filePath = "res/data/data.profiles";
 	std::ofstream profilesFile(filePath);
 	if (profilesFile.is_open()) {
-		for (unsigned int i = 2; i < m_profiles.size(); i++) {
+		for (unsigned int i = 4; i < m_profiles.size(); i++) {
 			profilesFile << m_profiles[i].getAsString() << "\n";
 		}
 		profilesFile.close();
 	}
 	else {
-		Logger::Error("Could not open profiles file - no profiles loaded");
+		Logger::Error("Could not open profiles file - no profiles saved");
 	}
 }
 
-void GameInfo::loadGraphics()
-{
+void GameInfo::loadGraphics() {
+	// read from file
+	std::string filePath = "res/data/data.graphics";
+	std::ifstream graphicsFile(filePath);
+	std::string line = "";
+	std::vector<std::string> tempList;
+	if (graphicsFile.is_open()) {
+		while (getline(graphicsFile, line)) {			
+			tempList.push_back(line);
+		}
+
+		graphicsSettings.particles = std::stoul(tempList[0]);
+		graphicsSettings.bloom = std::stoul(tempList[1]);
+		graphicsSettings.AA = std::stoul(tempList[2]);
+		graphicsSettings.backGround = std::stoul(tempList[3]);
+		graphicsSettings.fpsCounter = std::stoul(tempList[4]);
+		graphicsSettings.vSync = std::stoul(tempList[5]);
+		graphicsSettings.depthOfField = std::stoul(tempList[6]);
+		convertGraphics();
+	}
+	else {
+		Logger::Error("Could not open graphics file - no graphics loaded");
+	}
 }
 
-void GameInfo::loadSound()
-{
+void GameInfo::loadSound() {
+	// read from file
+	std::string filePath = "res/data/data.graphics";
+	std::ifstream graphicsFile(filePath);
+	std::string line = "";
+	std::vector<std::string> tempList;
+	if (graphicsFile.is_open()) {
+		while (getline(graphicsFile, line)) {
+			tempList.push_back(line);
+		}
+
+		soundSettings.master = std::stoul(tempList[0]);
+		soundSettings.background = std::stoul(tempList[1]);
+		soundSettings.effect = std::stoul(tempList[2]);
+		convertSound();
+	}
+	else {
+		Logger::Error("Could not open graphics file - no graphics loaded");
+	}
+
+
 }
 
 

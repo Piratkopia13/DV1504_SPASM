@@ -388,7 +388,9 @@ bool MenuState::processInput(float dt) {
 									temp->player.bodyModel = 0;
 									temp->player.armModel = 0;
 									temp->player.legModel = 0;
-									temp->player.currentProfile = &m_info->getProfiles()[0];
+									temp->player.currentProfile = &m_info->getProfiles()[spot];
+									m_characterMenu[spot]->setOptionAt(0, spot);
+									Logger::log(temp->player.currentProfile->getName());
 									temp->ready = false;
 									initCharacterModel(spot);
 									m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(temp->player.color,temp->player.hue));
@@ -483,17 +485,42 @@ bool MenuState::processInput(float dt) {
 									if (!m_playerz[spot]->ready) {
 										size_t option = m_characterMenu[spot]->getActive();
 										if (option == 0) {
-											m_playerz[spot]->player.currentProfile = &m_info->getProfiles()[m_characterMenu[spot]->getOptionAt(option)];
+											bool ok = false;
+											while (!ok) {
+												m_playerz[spot]->player.currentProfile = &m_info->getProfiles()[m_characterMenu[spot]->getOptionAt(option)];
+
+												for (size_t u = 0; u < m_playerz.size(); u++) {
+													if (m_playerz[spot]->player.currentProfile == m_playerz[u]->player.currentProfile && spot != u) {
+														right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
+														break;
+													}
+													if (u == m_playerz.size() - 1) {
+														ok = true;
+														break;
+													}
+												}
+											}
+
+
+											std::string txt;
+
+											for (size_t u = 0; u < m_playerz.size(); u++) {
+												txt += (m_playerz[u]->player.currentProfile->getName() + "  ");
+											}
+											Logger::log(txt);
+
+
 											if (m_playerz[spot]->player.currentProfile->preOrdered()== 0) {
 												int opt = m_info->gameSettings.gameMode == DEATHMATCH ? 3:4;
 												
 												if (m_characterMenu[spot]->getOptionAt(opt) == 2) {
-													m_characterMenu[spot]->setOptionAt(opt,0);
+													m_characterMenu[spot]->setOptionAt(opt, 0);
 													m_playerz[spot]->player.headModel = m_characterMenu[spot]->getOptionAt(opt);
 													m_playerMenuModelz[spot].head->setModel(m_playerHeadModels[m_playerz[spot]->player.headModel]);
 												}
 
 											}
+
 										}
 										if (m_info->gameSettings.gameMode == DEATHMATCH) {
 
@@ -501,12 +528,33 @@ bool MenuState::processInput(float dt) {
 
 
 											if (option == 1) {
-												m_playerz[spot]->player.color = m_characterMenu[spot]->getOptionAt(option);
+												bool ok = false;
+												while (!ok) {
+													m_playerz[spot]->player.color = m_characterMenu[spot]->getOptionAt(option);
+
+													for (size_t u = 0; u < m_playerz.size(); u++) {
+														if (m_playerz[spot]->player.color == m_playerz[u]->player.color && spot != u) {
+															right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
+															break;
+														}
+														if (u == m_playerz.size() - 1) {
+															ok = true;
+															break;
+														}
+													}
+												}
+
+
+
+
+
 												m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(m_playerz[spot]->player.color, m_playerz[spot]->player.hue));
 											}
 											if (option == 2) {
+											
 												m_playerz[spot]->player.hue = m_characterMenu[spot]->getOptionAt(option);
 												m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(m_playerz[spot]->player.color, m_playerz[spot]->player.hue));
+									
 											}
 
 											if (option == 3) {
@@ -544,9 +592,39 @@ bool MenuState::processInput(float dt) {
 											}
 
 											if (option == 2) {
+
+
+
+
+
 												size_t team = m_playerz[spot]->player.team;
-												size_t color = m_characterMenu[spot]->getOptionAt(option);
-												m_info->gameSettings.teams[team].color = color;
+												size_t color = 0;
+
+												bool ok = false;
+												while (!ok) {
+													m_info->gameSettings.teams[team].color = m_characterMenu[spot]->getOptionAt(option);
+
+													for (size_t u = 0; u < m_info->gameSettings.teams.size(); u++) {
+														if (m_info->gameSettings.teams[team].color == m_info->gameSettings.teams[u].color && team != u) {
+															right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
+															break;
+														}
+														if (u == m_info->gameSettings.teams.size() - 1) {
+															ok = true;
+															break;
+														}
+													}
+												}
+
+
+
+
+
+												color = m_info->gameSettings.teams[team].color;
+
+
+
+
 
 												for (size_t p = 0; p < m_playerz.size(); p++) {
 													if (m_playerz[p]) {
@@ -917,6 +995,7 @@ void MenuState::initMain() {
 	m_mainMenu->addMenuBox("exit");
 	m_mainMenu->setPosition(Vector3(0, -0.5, 7));
 	m_mainMenu->setFacingDirection(Vector3(0, 0, -1));
+	m_mainMenu->setSize(1.3);
 	m_mainMenu->setOffColor(m_offColor);
 	m_mainMenu->setOnColor(m_onColor);
 	m_mainMenu->activate();
@@ -1163,6 +1242,7 @@ void MenuState::initCharacter(size_t spot, bool online) {
 		}
 		temp->setStaticSelection(true, 0);
 
+
 		//TEAMS & COLORS
 		if (m_info->gameSettings.gameMode == DEATHMATCH) {
 			temp->addMenuSelector("Color");
@@ -1385,48 +1465,61 @@ void MenuState::initOptions() {
 void MenuState::initGraphics() {
 	m_graphicsMenu = new MenuHandler();
 	m_scene.addObject(m_graphicsMenu);
+	size_t ite = 0;
 
 	m_graphicsMenu->addMenuSelector("particles");
 	for (size_t i = 0; i < m_info->particles.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->particles[i].name);
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.particles);
+
 	m_graphicsMenu->addMenuSelector("bloom");
 	for (size_t i = 0; i < m_info->bloom.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->bloom[i].name);
-
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.bloom);
+
 	m_graphicsMenu->addMenuSelector("antiAliasing");
 	for (size_t i = 0; i < m_info->antiAliasing.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->antiAliasing[i].name);
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.AA);
+
 	m_graphicsMenu->addMenuSelector("background");
 	for (size_t i = 0; i < m_info->background.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->background[i].name);
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.backGround);
+
 	m_graphicsMenu->addMenuSelector("fpscounter");
 	for (size_t i = 0; i < m_info->fpsCounter.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->fpsCounter[i].name);
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.fpsCounter);
+
 	m_graphicsMenu->addMenuSelector("vsync");
 	for (size_t i = 0; i < m_info->vSync.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->vSync[i].name);
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.vSync);
+
 	m_graphicsMenu->addMenuSelector("depth of field");
 	for (size_t i = 0; i < m_info->depthOfField.size(); i++) {
 		m_graphicsMenu->addMenuSelectorItem(m_info->depthOfField[i].name);
 
 	}
 	m_graphicsMenu->setStaticSelection(true, 0);
+	m_graphicsMenu->setOptionAt(ite++, m_info->graphicsSettings.depthOfField);
 
 	m_graphicsMenu->setPosition(Vector3(-5,8,0));
 	m_graphicsMenu->setFacingDirection(Vector3(1, 0, 0));
@@ -1438,23 +1531,28 @@ void MenuState::initGraphics() {
 void MenuState::initSound() {
 	m_soundMenu = new MenuHandler();
 	m_scene.addObject(m_soundMenu);
+	size_t ite = 0;
 
 	m_soundMenu->addMenuSelector("master volume");
 	for (size_t i = 0; i < m_info->masterVolume.size(); i++) {
 		m_soundMenu->addMenuSelectorItem(m_info->masterVolume[i].name);
 	}
 	m_soundMenu->setStaticSelection(true, 0);
+	m_soundMenu->setOptionAt(ite++, m_info->soundSettings.master);
 
 	m_soundMenu->addMenuSelector("background volume");
 	for (size_t i = 0; i < m_info->backgroundVolume.size(); i++) {
 		m_soundMenu->addMenuSelectorItem(m_info->backgroundVolume[i].name);
 	}
 	m_soundMenu->setStaticSelection(true, 0);
+	m_soundMenu->setOptionAt(ite++, m_info->soundSettings.background);
+
 	m_soundMenu->addMenuSelector("effect volume");
 	for (size_t i = 0; i < m_info->effectVolume.size(); i++) {
 		m_soundMenu->addMenuSelectorItem(m_info->effectVolume[i].name);
 	}
 	m_soundMenu->setStaticSelection(true, 0);
+	m_soundMenu->setOptionAt(ite++, m_info->soundSettings.effect);
 
 
 	m_soundMenu->setPosition(Vector3(-5,-8,0));
@@ -1679,8 +1777,13 @@ void MenuState::updateCamera() {
 void MenuState::startGame() {
 	Application::GameSettings& settings = Application::getInstance()->getGameSettings();
 	for (size_t i = 0; i < m_playerz.size(); i++) {
-		if(m_playerz[i])
+		if (m_playerz[i]) {
 			m_info->addPlayer(m_playerz[i]->player);
+			if (m_info->gameSettings.gameMode == 1) {
+
+				m_info->gameSettings.teams.push_back({m_playerz[i]->player.color, m_playerz[i]->player.currentProfile->preOrdered()});
+			}
+		}
 	}
 	m_info->convertGameSettings();
 
@@ -1704,15 +1807,14 @@ void MenuState::updateGraphics() {
 
 void MenuState::updateSound() {
 
-	m_info->soundSettings.masterVolume = m_info->masterVolume[m_soundMenu->getOptionAt(0)].value;
-	m_info->soundSettings.backGroundSoundVolume = m_info->backgroundVolume[m_soundMenu->getOptionAt(1)].value;
-	m_info->soundSettings.effectSoundVolume = m_info->effectVolume[m_soundMenu->getOptionAt(2)].value;
+	m_info->soundSettings.master = m_soundMenu->getOptionAt(0);
+	m_info->soundSettings.background = m_soundMenu->getOptionAt(1);
+	m_info->soundSettings.effect = m_soundMenu->getOptionAt(2);
 
+	m_info->convertSound();
 
-
-
-	m_app->getResourceManager().getSoundManager()->setMasterVolume(m_info->soundSettings.masterVolume);
-	m_app->getResourceManager().getSoundManager()->setAmbientVolume(m_info->soundSettings.backGroundSoundVolume);
-	m_app->getResourceManager().getSoundManager()->setEffectsVolume(m_info->soundSettings.effectSoundVolume);
+	m_app->getResourceManager().getSoundManager()->setMasterVolume(m_info->convertedSound.masterVolume);
+	m_app->getResourceManager().getSoundManager()->setAmbientVolume(m_info->convertedSound.backGroundSoundVolume);
+	m_app->getResourceManager().getSoundManager()->setEffectsVolume(m_info->convertedSound.effectSoundVolume);
 }
 
