@@ -483,15 +483,15 @@ void MenuHandler::updateTransform() {
 			position += selectionSpace;
 			Vector3 right = m_growth.Cross(m_direction);
 
-			m_itemList[i].extraText->setPosition(position + extraHeight + m_growth*m_size*0.1);
+			m_itemList[i].extraText->setPosition(position + extraHeight + m_growth*m_size*0.1f);
 			m_itemList[i].extraText->setSize(m_size * 2);
 			m_itemList[i].extraText->setDirection(right);
 			m_itemList[i].extraText->setFacingDirection(m_direction);
 			if (m_itemList[i].editable) {
 				
 				Vector3 textHeight(0, 0.3f*m_size, 0);
-				m_pointers[0]->setPosition(position+textHeight + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1);
-				m_pointers[1]->setPosition(position-textHeight*0.5 + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1);
+				m_pointers[0]->setPosition(position+textHeight + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1f);
+				m_pointers[1]->setPosition(position-textHeight*0.5 + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1f);
 
 			}
 

@@ -58,11 +58,18 @@ SoundManager::SoundManager() {
 		loadSoundEffect(SoundEffect::Pickup, L"res/sounds/effect/pickup.wav");
 		loadSoundEffect(SoundEffect::Switch, L"res/sounds/effect/switch.wav");
 		loadSoundEffect(SoundEffect::Select, L"res/sounds/effect/select.wav");
+		loadSoundEffect(SoundEffect::Hook_Shot, L"res/sounds/effect/hook_shot.wav");
+		loadSoundEffect(SoundEffect::Hook_Hit, L"res/sounds/effect/hook_hit.wav");
+		loadSoundEffect(SoundEffect::Captured, L"res/sounds/effect/captured2.wav");
+		loadSoundEffect(SoundEffect::Game_Over, L"res/sounds/effect/game_over.wav");
 
 		loadAmbientSound(Ambient::Loop1, L"res/sounds/ambient/loop1.wav");
 		loadAmbientSound(Ambient::Loop2, L"res/sounds/ambient/loop2.wav");
 		loadAmbientSound(Ambient::Windows95, L"res/sounds/ambient/windows95.wav");
 		loadAmbientSound(Ambient::Theme, L"res/sounds/ambient/theme.wav");
+		loadAmbientSound(Ambient::Ambient_Capture, L"res/sounds/ambient/ambient_capture.wav");
+		loadAmbientSound(Ambient::Battle_Sound, L"res/sounds/ambient/battle_sound.wav");
+		loadAmbientSound(Ambient::Scoreboard, L"res/sounds/ambient/scoreboard.wav");
 	}
 }
 
@@ -229,7 +236,7 @@ void SoundManager::setAmbientVolume(const float& volume) {
 	float oldAmbient = m_ambientVolume;
 	m_ambientVolume = volume;
 
-	for (int i = 0; i < m_ambientSounds.size(); i++) {
+	for (unsigned int i = 0; i < m_ambientSounds.size(); i++) {
 		float oldVol = m_ambientSounds[i]->getVolume();
 		oldVol /= oldAmbient;
 		oldVol = min(XAUDIO2_MAX_VOLUME_LEVEL, max(-XAUDIO2_MAX_VOLUME_LEVEL, oldVol * m_ambientVolume));
