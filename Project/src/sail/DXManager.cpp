@@ -29,6 +29,7 @@ DXManager::~DXManager() {
 	Memory::safeRelease(m_blendStateEnabled);
 	Memory::safeRelease(m_blendStateDisabled);
 	Memory::safeRelease(m_blendStateAdditive);
+	Memory::safeRelease(m_perf);
 
 	//m_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 
