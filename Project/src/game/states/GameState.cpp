@@ -190,7 +190,7 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infRight.get());
 
 
-	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.05f);
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.10f);
 }
 
 GameState::~GameState() {

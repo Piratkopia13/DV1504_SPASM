@@ -77,6 +77,15 @@ void MenuHandler::update(float dt) {
 		}
 	}
 
+	if (m_colorChange.active) {
+		m_colorChange.update(dt);
+
+
+
+
+	}
+
+
 
 }
 
@@ -122,9 +131,10 @@ void MenuHandler::setOnColor(const DirectX::SimpleMath::Vector4 & color) {
 void MenuHandler::setOffColor(const DirectX::SimpleMath::Vector4 & color) {
 	m_offColor = color;
 	for (size_t i = 0; i < m_itemList.size(); i++) {
-		m_itemList[i].item->setLightColor(color);
+		if(m_itemList[i].item)
+			m_itemList[i].item->setLightColor(color);
 
-		if (m_itemList[m_activeItem].text)
+		if (m_itemList[i].text)
 			m_itemList[i].text->setColor(color);
 	}
 }
@@ -165,8 +175,12 @@ bool MenuHandler::getEditing()
 void MenuHandler::addMenuBox(std::string text) {
 	MenuIndex temp;
 
-	temp.item = new MenuItem(Application::getInstance()->getResourceManager().getFBXModel("buttons/emptyButtonFlat").getModel(), Vector3(0,0,0));
+	//temp.item = new MenuItem(Application::getInstance()->getResourceManager().getFBXModel("buttons/emptyButtonFlat").getModel(), Vector3(0,0,0));
+	temp.item = new MenuItem(nullptr, Vector3(0,0,0));
 	temp.item->setLightColor(m_offColor);
+	//temp.item = nullptr;
+	
+
 	if (text.size() > 0) {
 		temp.text = new MenuText(text);
 		temp.text->setColor(m_offColor);
@@ -407,6 +421,9 @@ void MenuHandler::activate() {
 		m_itemList[m_activeItem].item->setLightColor(m_onColor);
 	if (m_itemList[m_activeItem].text)
 		m_itemList[m_activeItem].text->setColor(m_onColor);
+
+	//m_colorChange.active = true;
+
 }
 
 void MenuHandler::deActivate() {
@@ -513,3 +530,14 @@ void MenuHandler::updateTransform() {
 	}
 
 }
+
+DirectX::SimpleMath::Vector4 MenuHandler::interpolateColor(float progress, const DirectX::SimpleMath::Vector4 & from, const DirectX::SimpleMath::Vector4 & to)
+{
+	progress = min(max(progress,0),1);
+	Vector4 diff(to-from);
+
+	Vector4 res = from + diff * progress;
+	res.w = 1;
+	return res;
+}
+
