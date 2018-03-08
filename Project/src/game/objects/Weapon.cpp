@@ -73,7 +73,9 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2f;
 
-	static Vector4 projColor(m_owner->getLightColor());
+	//static Vector4 projColor(m_owner->getLightColor());
+	Vector4 projColor = getLightColor();
+	//static Vector4 projColor(GameInfo::getInstance()->convertedGameSettings.teams[m_owner->getTeam()].color);
 	static float projScale = 4.f;
 
 	if (m_projectileHandler) {
