@@ -20,6 +20,7 @@ public:
 	ID3D11DepthStencilView* getDepthStencilView() const;
 	UINT getAASamples();
 	ID3D11RenderTargetView* const* getBackBufferRTV() const;
+	ID3DUserDefinedAnnotation* getPerfProfilerThing();
 
 	void resize(int width, int height);
 	void renderToBackBuffer() const;
@@ -64,6 +65,8 @@ private:
 	ID3D11BlendState* m_blendStateDisabled;
 	ID3D11BlendState* m_blendStateAdditive;
 	ID3D11Debug* m_debug;
+
+	ID3DUserDefinedAnnotation* m_perf;
 
 	UINT m_aaSamples;
 

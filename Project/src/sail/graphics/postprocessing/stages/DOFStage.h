@@ -6,28 +6,28 @@
 #include "../../shader/component/Sampler.h"
 #include "../../../Application.h"
 
-class VGaussianBlurStage : public PostProcessStage {
+class DOFStage : public PostProcessStage {
 public:
-	VGaussianBlurStage(UINT width, UINT height, Model* fullscreenQuad);
-	virtual ~VGaussianBlurStage();
+	DOFStage(UINT width, UINT height, Model* fullScreenQuad);
+	virtual ~DOFStage();
 
+	void setDepthSRV(ID3D11ShaderResourceView** depthSRV);
 	void run(RenderableTexture& inputTexture);
 	void resize(UINT width, UINT height);
 
 private:
+	void createOutputUAV();
 
-	std::unique_ptr<VertexShader> m_VS;
-	std::unique_ptr<PixelShader> m_PS;
+private:
+	std::unique_ptr<ComputeShader> m_CS;
 
 	struct CBuffer {
-		float invTexWidth;
-		float invTexHeight;
+		float zNear;
+		float zFar;
 		float padding[2];
 	};
 
-	// Components
+	ID3D11UnorderedAccessView* m_outputUAV;
 	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cBuffer;
-	std::unique_ptr<ShaderComponent::Sampler> m_sampler;
-
-
+	ID3D11ShaderResourceView** m_depthSRV;
 };

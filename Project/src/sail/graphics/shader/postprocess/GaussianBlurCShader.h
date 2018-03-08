@@ -10,10 +10,10 @@
 #include "../ShaderSet.h"
 #include "../../RenderableTexture.h"
 
-class GaussianBlurCShader : public ShaderSet {
+class GaussianBlurCShaderPoo : public ShaderSet {
 public:
-	GaussianBlurCShader();
-	~GaussianBlurCShader();
+	GaussianBlurCShaderPoo();
+	~GaussianBlurCShaderPoo();
 
 	void bind() override;
 
