@@ -16,7 +16,7 @@ public:
 	virtual void draw();
 
 	const std::vector<float> & getScore();
-	const float & getScore(const unsigned int team);
+	const float getScore(const unsigned int team);
 	float getGametime();
 
 	virtual int checkWin() = 0;
