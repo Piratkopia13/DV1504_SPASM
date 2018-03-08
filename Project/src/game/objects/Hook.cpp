@@ -5,6 +5,7 @@ Hook::Hook(Model *drawModel, ParticleHandler* particleHandler) {
 	model = drawModel;
 	m_hookVelocity = 60.f;
 	setLightColor(DirectX::SimpleMath::Vector4(3.f));
+	this->getTransform().setScale(0.f);
 	m_hookEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f),
 	DirectX::SimpleMath::Vector3(-0.5f, -0.5f, -0.5f), DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), 0.f, 800, 0.15f, 0.5f, DirectX::SimpleMath::Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.0f, 0U, true, false));
 	particleHandler->addEmitter(m_hookEmitter);
@@ -85,7 +86,7 @@ void Hook::triggerRelease() {
 
 void Hook::draw() {
 	model->setTransform(&getTransform());
-	model->getMaterial()->setColor(this->lightColor * 3.f);
+	model->getMaterial()->setColor(DirectX::SimpleMath::Vector4(3.0f));
 	model->draw();
 }
 

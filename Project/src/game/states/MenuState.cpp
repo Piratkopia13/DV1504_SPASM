@@ -300,8 +300,9 @@ bool MenuState::processInput(float dt) {
 								
 
 								if (m_info->gameSettings.gameMode == DEATHMATCH) {
-									for (size_t u = 0; u < 4; u++)
-										m_info->gameSettings.teams.push_back({ u, 0});
+									/*for (size_t u = 0; u < 4; u++)
+										m_info->gameSettings.teams.push_back({ u, 0});*/
+
 								}
 								else {
 									for (size_t u = 0; u < 2; u++)
@@ -1779,9 +1780,8 @@ void MenuState::startGame() {
 	for (size_t i = 0; i < m_playerz.size(); i++) {
 		if (m_playerz[i]) {
 			m_info->addPlayer(m_playerz[i]->player);
-			if (m_info->gameSettings.gameMode == 1) {
-
-				m_info->gameSettings.teams.push_back({m_playerz[i]->player.color, m_playerz[i]->player.currentProfile->preOrdered()});
+			if (m_info->gameSettings.gameMode == DEATHMATCH) {
+				m_info->gameSettings.teams.push_back({ m_playerz[i]->player.color, m_playerz[i]->player.currentProfile->preOrdered() });
 			}
 		}
 	}

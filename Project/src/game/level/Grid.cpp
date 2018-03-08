@@ -7,18 +7,26 @@ Grid::Grid() {
 	m_gridHeight = 5;
 }
 
-Grid::Grid(const int worldWidth, const int worldHeight){
+Grid::Grid(const int worldWidth, const int worldHeight) {
 	m_gridWidth = worldWidth;
 	m_gridHeight = worldHeight;
-	m_cells = std::vector<std::vector<BlockInstance*>>(m_gridWidth, std::vector<BlockInstance*>(m_gridHeight, nullptr));
+	m_cells = std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>(m_gridWidth, std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>(m_gridHeight, nullptr));
 }
 
 Grid::~Grid() {
 
 }
 
-void Grid::addBlock(BlockInstance* block, const int x, const int y){
+void Grid::addBlock(DynBlockDeferredInstancedGeometryShader::InstanceData* block, const int x, const int y){
 	m_cells[x][y] = block;
+}
+
+DynBlockDeferredInstancedGeometryShader::InstanceData* Grid::getBlock(const int x, const int y) {
+	return m_cells[x][y];
+}
+
+void Grid::removeBlock(const int x, const int y) {
+	m_cells[x][y] = nullptr;
 }
 
 void Grid::addControlpoint(const int x, const int y) {
@@ -149,7 +157,7 @@ bool Grid::checkHoles(const Grid::Index& playerPos) {
 	return cover;
 }
 
-std::vector<std::vector<Grid::BlockInstance*>>& Grid::getAllBlocks() {
+std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>& Grid::getAllBlocks() {
 	return m_cells;
 }
 

@@ -139,7 +139,6 @@
     <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
     <ClCompile Include="src\game\GameInfo.cpp" />
-    <ClCompile Include="src\game\objects\InstancedBlocks.cpp" />
     <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
@@ -181,17 +180,23 @@
     <ClCompile Include="src\sail\graphics\Particle.cpp" />
     <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\PostProcessPass.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\BlendStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\DOFStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\PostProcessStage.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.cpp" />
     <ClCompile Include="src\sail\graphics\RenderableTexture.cpp" />
     <ClCompile Include="src\sail\graphics\renderer\DeferredRenderer.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\CubeMapShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\basic\DepthShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.cpp" />
@@ -301,16 +306,22 @@
     <ClInclude Include="src\sail\graphics\Particle.h" />
     <ClInclude Include="src\sail\graphics\ParticleEmitter.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\PostProcessPass.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\BlendStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BrightnessCutoffStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\DOFStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\GaussianDOFStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurDepthTest.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\HGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurDepthTest.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\VGaussianBlurStage.h" />
     <ClInclude Include="src\sail\graphics\RenderableTexture.h" />
     <ClInclude Include="src\sail\graphics\renderer\DeferredRenderer.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\CubeMapShader.h" />
     <ClInclude Include="src\sail\graphics\shader\basic\DepthShader.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\instanced\ParticleShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\GaussianBlurCShader.h" />
     <ClInclude Include="src\sail\graphics\shader\postprocess\PostProcessFlushShader.h" />
@@ -374,6 +385,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="res\shaders\deferred\DynBlockInstancedGeometryShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\deferred\GeometryShader.hlsl">
@@ -446,6 +465,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Effect</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\BlendShader.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSMain</EntryPointName>
@@ -453,6 +480,14 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\DepthOfField.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\FXAAShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSMain</EntryPointName>
@@ -478,9 +513,25 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.1</ShaderModel>
     </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\GaussianBlurWithDepthCheck.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PSHorizontal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PSHorizontal</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="res\shaders\postprocess\PostProcessFlushShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+    </FxCompile>
+    <FxCompile Include="res\shaders\postprocess\SimpleDepthOfField.hlsl">
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="res\shaders\postprocess\ToneMapHack.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
@@ -500,12 +551,16 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <Media Include="res\sounds\ambient\ambient_capture.wav" />
+    <Media Include="res\sounds\ambient\battle_sound.wav" />
     <Media Include="res\sounds\ambient\loop1.wav" />
     <Media Include="res\sounds\ambient\loop2.wav" />
     <Media Include="res\sounds\ambient\theme.wav" />
     <Media Include="res\sounds\effect\death\male_death.wav" />
     <Media Include="res\sounds\effect\death\goblin_death.wav" />
     <Media Include="res\sounds\effect\explosion2.wav" />
+    <Media Include="res\sounds\effect\hook_hit.wav" />
+    <Media Include="res\sounds\effect\hook_shot.wav" />
     <Media Include="res\sounds\effect\laser.wav" />
     <Media Include="res\sounds\effect\pickup.wav" />
     <Media Include="res\sounds\effect\shock.wav" />

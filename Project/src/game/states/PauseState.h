@@ -2,6 +2,7 @@
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuItem.h"
+#include "../objects/Menu/MenuHandler.h"
 
 class PauseState :
 	public State
@@ -46,7 +47,14 @@ private:
 	std::unique_ptr<Model> m_background;
 
 	int m_selector;
+	std::unique_ptr<MenuHandler> m_pauseMenu;
 	std::vector<MenuItem*> m_menuList;
+
+
+	DirectX::SimpleMath::Vector4 m_onColor;
+	DirectX::SimpleMath::Vector4 m_offColor;
+
+	float m_posZTEMP;
 
 private:
 	float startTimer;

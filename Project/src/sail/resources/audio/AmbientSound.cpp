@@ -16,8 +16,6 @@ HRESULT AmbientSound::Initialize(IXAudio2* audioEngine, wchar_t* file) {
 }
 
 void AmbientSound::Play(const bool looped, float volume) {
-	//m_sourceVoice->SetVolume(vol);
-	//m_sourceVoice->SetFrequencyRatio(pit);
 	switch (m_state) {
 
 	case SoundState::Paused:
@@ -65,9 +63,13 @@ void AmbientSound::setVolume(float volume) {
 float AmbientSound::getVolume() {
 	float* vol = nullptr;
 	m_sourceVoice->GetVolume(vol);
-
-	float _vol = *vol;
-	delete vol;
+	
+	float _vol = 1.f;
+	
+	if (vol) {
+		_vol = *vol;
+		delete vol;
+	}
 
 	return _vol;
 }

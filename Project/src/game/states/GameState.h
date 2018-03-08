@@ -11,6 +11,10 @@
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
 #include "../background/ScoreVisualization.h"
+//#include "../objects/InstancedBlocks.h"
+
+#include "../objects/InstancedBlocks.h"
+#include "../../sail/graphics/shader/deferred/DeferredInstancedGeometryShader.h"
 
 #include "../objects/Block.h"
 
@@ -64,4 +68,5 @@ private:
 	std::unique_ptr<Gamemode> m_gamemode;
 
 	std::unique_ptr<ScoreVisualization> m_scoreVisualization;
+
 };

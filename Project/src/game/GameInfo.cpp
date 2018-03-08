@@ -310,7 +310,7 @@ void GameInfo::convertGameSettings() {
 	if (gameSettings.gameMode == TEAMDEATHMATCH)
 		preText = "teamDM/";
 	convertedGameSettings.map = preText + maps[gameSettings.gameMode][gameSettings.map]+".level";
-	convertedGameSettings.gamemode = gameModes[gameSettings.gameMode].value;
+	convertedGameSettings.gamemode = static_cast<size_t>(gameModes[gameSettings.gameMode].value);
 	convertedGameSettings.scoreLimit = scoreLimit[gameSettings.scoreLimit].value;
 	convertedGameSettings.timeLimit = timeLimit[gameSettings.timelimit].value;
 	convertedGameSettings.respawnTime = respawnTime[gameSettings.respawnTime].value;

@@ -212,6 +212,16 @@ bool CollisionHandler::outOfBounds(Character* character) {
 	return oob;
 }
 
+bool CollisionHandler::outOfBounds(Projectile* projectile) {
+	float x = projectile->getTransform().getTranslation().x;
+	float y = projectile->getTransform().getTranslation().y;
+	bool oob = false;
+	if (x < -5.f || y < -5.f || x > m_level->getGridWidth() + 5.f || y > m_level->getGridHeight() + 5.f)
+		oob = true;
+
+	return oob;
+}
+
 bool CollisionHandler::checkCharacterCollisionWith(Projectile* proj, float dt, float& t, Character** hitCharacter, CharacterHitResult& hitResult) {
 
 	bool hit = false;
@@ -360,36 +370,48 @@ bool CollisionHandler::resolveProjectileCollision(float dt) {
 
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		auto& proj = projectiles.at(i);
-		bool hit = false;
 
-		float tLevel = -1.f;
-		float tCharacter = -1.f;
-		Vector3 levelHitPos;
-		Character* hitCharacter = nullptr;
-		CharacterHitResult charaHitRes;
-		bool levelHit = checkLevelCollisionWith(proj, dt, tLevel, levelHitPos);
-		bool characterHit = checkCharacterCollisionWith(proj, dt, tCharacter, &hitCharacter, charaHitRes);
+		if (!outOfBounds(proj)) {
 
-		if (levelHit && characterHit) {
+			bool hit = false;
 
-			// Only the closest should be hit
-			if (tLevel < tCharacter)
-				characterHit = false;
-			else
-				levelHit = false;
+			float tLevel = -1.f;
+			float tCharacter = -1.f;
+			Vector3 levelHitPos;
+			Character* hitCharacter = nullptr;
+			CharacterHitResult charaHitRes;
+			bool levelHit = checkLevelCollisionWith(proj, dt, tLevel, levelHitPos);
+			bool characterHit = checkCharacterCollisionWith(proj, dt, tCharacter, &hitCharacter, charaHitRes);
 
+			if (levelHit && characterHit) {
+
+				// Only the closest should be hit
+				if (tLevel < tCharacter)
+					characterHit = false;
+				else
+					levelHit = false;
+
+			}
+
+			if (levelHit) {
+				m_projectileHandler->projectileHitLevel(levelHitPos);
+				m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
+				m_level->blockHit(proj->getVelocity(), levelHitPos);
+			}
+			else if (characterHit) {
+				hitCharacter->hitByProjectile(charaHitRes);
+				m_projectileHandler->projectileHitSomething(proj, charaHitRes.hitPos, dt);
+			}
+
+
+
+
+			if (levelHit || characterHit) {
+				m_projectileHandler->removeAt(i);
+				i--;
+			}
 		}
-		
-		if (levelHit) {
-			m_projectileHandler->projectileHitLevel(levelHitPos);
-			m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
-		} else if (characterHit) {
-			hitCharacter->hitByProjectile(charaHitRes);
-			m_projectileHandler->projectileHitSomething(proj, charaHitRes.hitPos, dt);
-		}
-
-
-		if (levelHit || characterHit) {
+		else {
 			m_projectileHandler->removeAt(i);
 			i--;
 		}

@@ -10,12 +10,13 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(30.f, 1280.f / 720.f, 0.1f, 100000.f)
+, m_cam(30.f, 1280.f / 720.f, 0.1f, 1000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
+//, m_testBlocks(250)
 {
 
 	// Get the Application instance
@@ -187,6 +188,9 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infTop.get());
 	m_scene.addObject(m_infLeft.get());
 	m_scene.addObject(m_infRight.get());
+
+
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.05f);
 }
 
 GameState::~GameState() {
@@ -358,6 +362,7 @@ bool GameState::update(float dt) {
 		UPDATE DIS SHIET
 	*/
 	if (m_gamemode->checkWin() > Gamemode::NONE) {
+
 		if (m_gamemode->checkWin() > Gamemode::DRAW)
 			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
 		else
@@ -366,6 +371,8 @@ bool GameState::update(float dt) {
 
 		m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
 
+		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
+		
 		requestStackClear();
 		requestStackPush(States::Score);
 		//requestStackPush(States::ID::Score);
@@ -378,6 +385,7 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<ParticleShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<DynBlockDeferredInstancedGeometryShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles

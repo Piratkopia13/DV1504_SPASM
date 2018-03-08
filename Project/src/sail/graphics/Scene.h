@@ -88,6 +88,8 @@ private:
 
 	// This is what the deferred renderer will render to
 	std::unique_ptr<RenderableTexture> m_deferredOutputTex;
+	// Particles will be rendered to a separate texture if post processing is active
+	std::unique_ptr<RenderableTexture> m_particleOutputTex;
 
 	bool m_doShadows;
 	bool m_doPostProcessing;
