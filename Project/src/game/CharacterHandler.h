@@ -27,7 +27,7 @@ private:
 	std::vector<Character*> m_characters;
 	std::vector<float> m_respawnTimers;
 	std::vector<DirectX::SimpleMath::Vector3> m_spawns[4];
-
+	std::unique_ptr<Model> m_laserModel;
 
 	GameInfo* m_info;
 };
