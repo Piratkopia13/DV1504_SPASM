@@ -380,9 +380,12 @@ bool MenuState::processInput(float dt) {
 											temp->player.color = m_characterMenu[spot]->getOptionAt(1);
 
 											for (size_t u = 0; u < m_playerz.size(); u++) {
-												if (temp->player.color == m_playerz[u]->player.color && spot != u) {
-													m_characterMenu[spot]->right();
-													break;
+												if (m_playerz[u]) {
+
+													if (temp->player.color == m_playerz[u]->player.color && spot != u) {
+														m_characterMenu[spot]->right();
+														break;
+													}
 												}
 												if (u == m_playerz.size() - 1) {
 													cok = true;
@@ -410,7 +413,6 @@ bool MenuState::processInput(float dt) {
 									
 
 
-									Logger::log(temp->player.currentProfile->getName());
 									temp->ready = false;
 									initCharacterModel(spot);
 									m_playerMenuModelz[spot].setLight(m_info->getDefaultColor(temp->player.color, temp->player.hue));
@@ -421,9 +423,12 @@ bool MenuState::processInput(float dt) {
 										m_playerz[spot]->player.currentProfile = &m_info->getProfiles()[m_characterMenu[spot]->getOptionAt(0)];
 
 										for (size_t u = 0; u < m_playerz.size(); u++) {
-											if (m_playerz[spot]->player.currentProfile == m_playerz[u]->player.currentProfile && spot != u) {
-												m_characterMenu[spot]->right();
-												break;
+											if (m_playerz[u]) {
+
+												if (m_playerz[spot]->player.currentProfile == m_playerz[u]->player.currentProfile && spot != u) {
+													m_characterMenu[spot]->right();
+													break;
+												}
 											}
 											if (u == m_playerz.size() - 1) {
 												ok = true;
@@ -526,9 +531,12 @@ bool MenuState::processInput(float dt) {
 												m_playerz[spot]->player.currentProfile = &m_info->getProfiles()[m_characterMenu[spot]->getOptionAt(option)];
 
 												for (size_t u = 0; u < m_playerz.size(); u++) {
-													if (m_playerz[spot]->player.currentProfile == m_playerz[u]->player.currentProfile && spot != u) {
-														right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
-														break;
+													if (m_playerz[u]) {
+
+														if (m_playerz[spot]->player.currentProfile == m_playerz[u]->player.currentProfile && spot != u) {
+															right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
+															break;
+														}
 													}
 													if (u == m_playerz.size() - 1) {
 														ok = true;
@@ -538,12 +546,6 @@ bool MenuState::processInput(float dt) {
 											}
 
 
-											std::string txt;
-
-											for (size_t u = 0; u < m_playerz.size(); u++) {
-												txt += (m_playerz[u]->player.currentProfile->getName() + "  ");
-											}
-											Logger::log(txt);
 
 
 											if (m_playerz[spot]->player.currentProfile->preOrdered()== 0) {
@@ -569,9 +571,12 @@ bool MenuState::processInput(float dt) {
 													m_playerz[spot]->player.color = m_characterMenu[spot]->getOptionAt(option);
 
 													for (size_t u = 0; u < m_playerz.size(); u++) {
-														if (m_playerz[spot]->player.color == m_playerz[u]->player.color && spot != u) {
-															right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
-															break;
+														if (m_playerz[u]) {
+															if (m_playerz[spot]->player.color == m_playerz[u]->player.color && spot != u) {
+																right ? m_characterMenu[spot]->right() : m_characterMenu[spot]->left();
+																break;
+															}
+
 														}
 														if (u == m_playerz.size() - 1) {
 															ok = true;
