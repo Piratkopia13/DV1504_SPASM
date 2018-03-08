@@ -44,13 +44,13 @@ private:
 
 private:
 	// Input element description
-	static D3D11_INPUT_ELEMENT_DESC IED[8];
+	static D3D11_INPUT_ELEMENT_DESC IED[11];
 	// Input layout
 	ID3D11InputLayout* m_inputLayout;
 
 	// Transform constant buffer structure
 	struct ModelDataBuffer {
-		DirectX::SimpleMath::Matrix mWV;
+		DirectX::SimpleMath::Matrix mV;
 		DirectX::SimpleMath::Matrix mP;
 		DirectX::SimpleMath::Vector4 modelColor;
 		float ka;

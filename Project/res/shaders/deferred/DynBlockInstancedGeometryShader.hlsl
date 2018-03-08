@@ -1,5 +1,12 @@
 #include "../Phong.hlsl"
 
+static matrix Identity = {
+    { 1, 0, 0, 0 },
+    { 0, 1, 0, 0 },
+    { 0, 0, 1, 0 },
+    { 0, 0, 0, 1 }
+};
+
 struct VSIn {
   float4 position : POSITION0;
   float3 normal : NORMAL0;
@@ -7,7 +14,10 @@ struct VSIn {
   float3 tangent : TANGENT0;
   float3 bitangent : BINORMAL0;
   
-  float4x4 modelMat : MODELMAT0;
+  float4 modelMatRow0 : MODELMAT0;
+  float4 modelMatRow1 : MODELMAT1;
+  float4 modelMatRow2 : MODELMAT2;
+  float4 modelMatRow3 : MODELMAT3;
   float3 color : COLOR0;
   float blockVariationOffset : VARIATION_OFFSET0;
 };
@@ -31,34 +41,37 @@ struct PSIn {
 };
 
 cbuffer ModelData : register(b0) {
-  matrix mWV;
+  matrix mV;
   matrix mP;
   Material material;
 }
 
 GSIn VSMain(VSIn input) {
-  GSIn output;
+	GSIn output;
 
-  output.texCoords = float2(input.texCoords.x, input.texCoords.y * 0.0625f + input.blockVariationOffset);
-  input.position.w = 1.f;
-  output.position = mul(input.position, input.modelMat);
-  output.posVS = output.position;
+	matrix modelMat = { input.modelMatRow0, input.modelMatRow1, input.modelMatRow2, input.modelMatRow3 };
+	matrix modelView = mul(modelMat, mV);
+
+	output.texCoords = float2(input.texCoords.x, input.texCoords.y * 0.0625f + input.blockVariationOffset);
+	input.position.w = 1.f;
+	output.position = mul(input.position, modelView);
+	output.posVS = output.position;
 	// Convert position into projection space
-  output.position = mul(output.position, mP);
-    
+	output.position = mul(output.position, mP);
+	
 	// Convert normal into view space and normalize
-  output.normal = mul(input.normal, (float3x3) mWV);
-  output.normal = normalize(output.normal);
+	output.normal = mul(input.normal, (float3x3) modelView);
+	output.normal = normalize(output.normal);
 
 	// Create TBN matrix to go from tangent space to view space
-  output.tbn = float3x3(
-	  normalize(mul(input.tangent, (float3x3) mWV)),
-	  normalize(mul(input.bitangent, (float3x3) mWV)),
-	  output.normal
+	output.tbn = float3x3(
+		normalize(mul(input.tangent, (float3x3) modelView)),
+		normalize(mul(input.bitangent, (float3x3) modelView)),
+		output.normal
 	);
-  output.color = input.color;
+	output.color = input.color;
 
-  return output;
+	return output;
 
 }
 
@@ -67,27 +80,27 @@ cbuffer WorldData : register(b0) {
 }
 [maxvertexcount(3)]
 void GSMain(triangle GSIn input[3], inout TriangleStream<PSIn> output) {
-    
-  float3 edge1 = input[1].posVS.xyz - input[0].posVS.xyz;
-  float3 edge2 = input[2].posVS.xyz - input[0].posVS.xyz;
-  float3 normal = normalize(cross(edge1, edge2));
 
-    // Append triangle to output if normal is facing the screen
-  if (dot(-normalize(input[0].posVS.xyz), normal) > 0) {
-    for (uint i = 0; i < 3; i++) {
-      PSIn psin;
-            // Copy input to output
-      psin.normal = input[i].normal;
-      psin.position = input[i].position;
-      psin.tbn = input[i].tbn;
-      psin.texCoords = input[i].texCoords;
-      psin.color = input[i].color;
-            // Calculate the distance from the vertex to the clipping plane
-      psin.clip = dot(input[i].position, clippingPlanePS);
-      output.Append(psin);
-    }
-  }
-        
+	float3 edge1 = input[1].posVS.xyz - input[0].posVS.xyz;
+	float3 edge2 = input[2].posVS.xyz - input[0].posVS.xyz;
+	float3 normal = normalize(cross(edge1, edge2));
+
+	// Append triangle to output if normal is facing the screen
+	if (dot(-normalize(input[0].posVS.xyz), normal) > 0) {
+		for (uint i = 0; i < 3; i++) {
+			PSIn psin;
+			// Copy input to output
+			psin.normal = input[i].normal;
+			psin.position = input[i].position;
+			psin.tbn = input[i].tbn;
+			psin.texCoords = input[i].texCoords;
+			psin.color = input[i].color;
+			// Calculate the distance from the vertex to the clipping plane
+			psin.clip = dot(input[i].position, clippingPlanePS);
+			output.Append(psin);
+		}
+	}
+
 }
 
 
