@@ -12,9 +12,9 @@ TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 
 	m_timeBlocks.resize(20);
 	m_run = false;
-	m_timeLeft = info->convertedGameSettings.timeLimit;
+	m_timeLeft = gamemode->getGametime();
 
-	if (m_timeLeft > 0) {
+	if (m_timeLeft < 60000000.f) {
 		m_blockModel = Application::getInstance()->getResourceManager().getFBXModel("block").getModel();
 
 		m_run = true;
