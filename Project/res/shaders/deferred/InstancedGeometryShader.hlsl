@@ -6,7 +6,11 @@ struct VSIn {
   float2 texCoords : TEXCOORD0;
   float3 tangent : TANGENT0;
   float3 bitangent : BINORMAL0;
-  float3 posOffset : POSOFFSET0;
+  
+  float4 modelMatRow0 : MODELMAT0;
+  float4 modelMatRow1 : MODELMAT1;
+  float4 modelMatRow2 : MODELMAT2;
+  float4 modelMatRow3 : MODELMAT3;
   float3 color : COLOR0;
 };
 
@@ -29,7 +33,7 @@ struct PSIn {
 };
 
 cbuffer ModelData : register(b0) {
-  matrix mWV;
+  matrix mV;
   matrix mP;
   Material material;
 }
@@ -37,21 +41,24 @@ cbuffer ModelData : register(b0) {
 GSIn VSMain(VSIn input) {
   GSIn output;
 
+	matrix modelMat = { input.modelMatRow0, input.modelMatRow1, input.modelMatRow2, input.modelMatRow3 };
+	matrix modelView = mul(modelMat, mV);
+
   output.texCoords = input.texCoords;
   input.position.w = 1.f;
-  output.position = mul(input.position + float4(input.posOffset, 0.f), mWV);
+  output.position = mul(input.position, modelView);
   output.posVS = output.position;
 	// Convert position into projection space
   output.position = mul(output.position, mP);
     
 	// Convert normal into view space and normalize
-  output.normal = mul(input.normal, (float3x3) mWV);
+  output.normal = mul(input.normal, (float3x3) modelView);
   output.normal = normalize(output.normal);
 
 	// Create TBN matrix to go from tangent space to view space
   output.tbn = float3x3(
-	  normalize(mul(input.tangent, (float3x3) mWV)),
-	  normalize(mul(input.bitangent, (float3x3) mWV)),
+	  normalize(mul(input.tangent, (float3x3) modelView)),
+	  normalize(mul(input.bitangent, (float3x3) modelView)),
 	  output.normal
 	);
   output.color = input.color;
