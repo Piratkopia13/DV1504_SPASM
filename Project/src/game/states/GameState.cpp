@@ -372,7 +372,9 @@ bool GameState::update(float dt) {
 			std::cout << "DRAW!" << std::endl;
 
 
-		m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
+		//m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
+		// TESTING
+		m_info->convertedGameSettings.teams[0].winner = true;
 
 		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		

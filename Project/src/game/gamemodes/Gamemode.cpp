@@ -13,7 +13,7 @@ Gamemode::Gamemode() {
 		m_gametime = 60000000000000.f;
 
 	//TEMP
-	m_gametime = 20.f;
+	m_gametime = 2.f;
 
 }
 
