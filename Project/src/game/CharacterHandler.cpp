@@ -16,7 +16,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 
 	//m_laserModel = std::unique_ptr<Model>(new Model(*app->getResourceManager().getFBXModel("laser").getModel()));
 	m_laserModel = ModelFactory::CubeModel::Create(Vector3(0.05f, 0.01f, 0.01f));
-	m_laserModel->buildBufferForShader(&app->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	m_laserModel->buildBufferForShader(&app->getResourceManager().getShaderSet<SimpleTextureShader>());
 	m_laserModel->getMaterial()->setDiffuseTexture("laser.tga");
 
 	Model* projectileModel = app->getResourceManager().getFBXModel("sphere").getModel();

@@ -67,12 +67,18 @@ namespace ModelFactory {
 				Vector2(1.f, 0.f),
 
 				// Pos x (right)
-				Vector2(0.f, 1.0f),
+				Vector2(0.f, 0.f),
+				Vector2(0.f, 0.f),
+				Vector2(0.f, 0.f),
+				Vector2(0.f, 0.f),
+				Vector2(0.f, 0.f),
+				Vector2(0.f, 0.f),
+				/*Vector2(0.f, 1.0f),
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 1.f),
 				Vector2(1.f, 1.f),
 				Vector2(0.f, 0.f),
-				Vector2(1.f, 0.f),
+				Vector2(1.f, 0.f),*/
 
 				// Pos z (back)
 				Vector2(1.f, 1.0f),

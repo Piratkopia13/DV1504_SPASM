@@ -73,10 +73,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		// Renders the depth of the scene out of the directional lights position
 
 		//To-do: Fix shadow pass to work with draw call from object
-		m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
+		/*m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
 		dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
 		m_depthShader.bind();
-		dxm->enableFrontFaceCulling();
+		dxm->enableFrontFaceCulling();*/
 
 		// Render all blocks to the shadow map
 		// TODO: only render the blocks that the camera can see

@@ -11,7 +11,7 @@ SimpleTextureShader::SimpleTextureShader() {
 
 	ModelDataBuffer defaultBuffer = { Vector4::One, Matrix::Identity, Matrix::Identity };
 	m_transformBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&defaultBuffer, sizeof(ModelDataBuffer)));
-	m_sampler = std::make_unique<ShaderComponent::Sampler>();
+	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_CLAMP);
 	ClippingPlaneBuffer defaultClippingBuffer = { Vector4(0.f, 0.f, 0.f, 0.f) };
 	m_clippingPlaneBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&defaultClippingBuffer, sizeof(ClippingPlaneBuffer)));
 
