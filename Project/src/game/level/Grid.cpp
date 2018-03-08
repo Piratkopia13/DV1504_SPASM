@@ -7,7 +7,7 @@ Grid::Grid() {
 	m_gridHeight = 5;
 }
 
-Grid::Grid(const int worldWidth, const int worldHeight){
+Grid::Grid(const int worldWidth, const int worldHeight) {
 	m_gridWidth = worldWidth;
 	m_gridHeight = worldHeight;
 	m_cells = std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>(m_gridWidth, std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>(m_gridHeight, nullptr));
@@ -19,6 +19,14 @@ Grid::~Grid() {
 
 void Grid::addBlock(DynBlockDeferredInstancedGeometryShader::InstanceData* block, const int x, const int y){
 	m_cells[x][y] = block;
+}
+
+DynBlockDeferredInstancedGeometryShader::InstanceData* Grid::getBlock(const int x, const int y) {
+	return m_cells[x][y];
+}
+
+void Grid::removeBlock(const int x, const int y) {
+	m_cells[x][y] = nullptr;
 }
 
 void Grid::addControlpoint(const int x, const int y) {

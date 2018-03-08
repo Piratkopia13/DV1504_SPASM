@@ -212,7 +212,7 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 
 	//Updating laser
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
-	Vector3 hitPos;
+	Vector3 hitPos = m_nozzlePos + direction * 1000;
 	float t;
 	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
 	float length = (hitPos - m_nozzlePos).Length();

@@ -39,6 +39,8 @@ public:
 	~Grid();
 
 	void addBlock(DynBlockDeferredInstancedGeometryShader::InstanceData* block, const int x, const int y);
+	DynBlockDeferredInstancedGeometryShader::InstanceData* getBlock(const int x, const int y);
+	void removeBlock(const int x, const int y);
 
 	bool checkHoles(const Index& index);
 
