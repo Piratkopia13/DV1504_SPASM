@@ -365,18 +365,16 @@ bool GameState::update(float dt) {
 	/*
 		UPDATE DIS SHIET
 	*/
-	if (m_gamemode->checkWin() > Gamemode::NONE) {
-		if (m_gamemode->checkWin() > Gamemode::DRAW)
-			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
-		else
-			std::cout << "DRAW!" << std::endl;
-
-
-		m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
+	int checkWin = m_gamemode->checkWin();
+	// TESTING
+	if (m_gamemode->getGametime() < 0.f)
+		checkWin = Gamemode::DRAW;
+	if (checkWin > Gamemode::NONE) {
+		if (checkWin > Gamemode::DRAW && checkWin < m_info->convertedGameSettings.teams.size())
+			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
 		requestStackClear();
 		requestStackPush(States::Score);
-		//requestStackPush(States::ID::Score);
 	}
 
 	if(!m_flyCam)

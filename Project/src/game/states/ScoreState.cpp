@@ -116,8 +116,11 @@ ScoreState::ScoreState(StateStack& stack)
 			m_scene.addObject(m_scoreLine[i].text[u]);
 		}
 	}
+
+	bool draw = true;
 	for (size_t i = 0; i < m_info->convertedGameSettings.teams.size(); i++) {
 		if (m_info->convertedGameSettings.teams[i].winner) {
+			draw = false;
 			if (m_info->convertedGameSettings.gamemode == 1) {
 				m_winner.text.push_back(new MenuText(playerName[0].currentProfile->getName() + " wins the game"));
 			}
@@ -130,6 +133,12 @@ ScoreState::ScoreState(StateStack& stack)
 			m_scene.addObject(m_winner.text[0]);
 			break;
 		}
+	}
+	if (draw) {
+		m_winner.text.push_back(new MenuText("Draw"));
+		m_winner.text[0]->setColor(DirectX::SimpleMath::Vector4::One * 2.0);
+		m_winner.text[0]->setSize(4.0f);
+		m_scene.addObject(m_winner.text[0]);
 	}
 
 	setPositions();

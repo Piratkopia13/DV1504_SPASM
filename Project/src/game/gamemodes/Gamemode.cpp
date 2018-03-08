@@ -12,6 +12,9 @@ Gamemode::Gamemode() {
 	else
 		m_gametime = 60000000000000.f;
 
+	//TESTING
+	m_gametime = 10.f;
+
 }
 
 Gamemode::~Gamemode() {
