@@ -16,6 +16,11 @@ ScoreState::ScoreState(StateStack& stack)
 	// Set up camera with controllers
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
 
+	/*VIB REMOVAL*/
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
+
 	// Set up the scene
 	//m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
@@ -107,9 +112,7 @@ ScoreState::ScoreState(StateStack& stack)
 		m_scoreLine.push_back(temp);
 
 		for (size_t u = 0; u < m_scoreLine[i].text.size(); u++) {
-
-
-			m_scoreLine[i].text[u]->setColor(m_info->getDefaultColor(playerName[i].color,playerName[i].hue) * ((i == 0) ? 3:1));
+			m_scoreLine[i].text[u]->setColor(m_info->getDefaultColor(playerName[i].color,playerName[i].hue) * ((m_info->convertedGameSettings.teams[playerName[i].team].winner) ? 3:1));
 			m_scene.addObject(m_scoreLine[i].text[u]);
 		}
 	}
@@ -141,9 +144,6 @@ ScoreState::ScoreState(StateStack& stack)
 
 }
 ScoreState::~ScoreState() {
-	auto& gamePad = m_app->getInput().getGamePad();
-	for (int u = 0; u < 4; u++)
-		gamePad.SetVibration(u, 0, 0);
 	for (size_t i = 0; i < m_scoreLine.size(); i++) {
 		m_scoreLine[i].clear();
 	}
@@ -343,17 +343,6 @@ void ScoreState::setPositions() {
 }
 
 void ScoreState::exitScoreBoard() {
-
-
-
-
-
-	m_info->resetScore();
-	m_info->getPlayers().clear();
-	m_info->gameSettings.teams.clear();
-	m_info->convertGameSettings();
-
-
 	requestStackPop();
 	requestStackPush(States::MainMenu);
 }

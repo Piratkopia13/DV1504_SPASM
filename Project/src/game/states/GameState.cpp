@@ -30,6 +30,10 @@ GameState::GameState(StateStack& stack)
 
 	GameInfo * info = GameInfo::getInstance();
 
+	/*VIB REMOVAL*/
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 
 #ifdef _DEBUG
 	if (info->gameSettings.teams.size() == 0) {
