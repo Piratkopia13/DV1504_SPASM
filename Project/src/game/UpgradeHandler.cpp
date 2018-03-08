@@ -175,8 +175,8 @@ void UpgradeHandler::UpgradeSpawn::UpgradeObject::update(float dt) {
 	m_offset[0] += dt * Utils::rnd() * speed;
 	m_offset[1] += dt * Utils::rnd() * speed;
 
-	directionVec.x = sin(m_offset[0])*0.1;
-	directionVec.y = sin(m_offset[1])*0.2;
+	directionVec.x = sin(m_offset[0])*0.1f;
+	directionVec.y = sin(m_offset[1])*0.2f;
 
 
 

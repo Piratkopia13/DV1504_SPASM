@@ -277,6 +277,10 @@
     <ClInclude Include="src\sail\resources\audio\Sound.h" />
     <ClInclude Include="src\sail\resources\audio\AmbientSound.h" />
     <ClInclude Include="src\game\gamemodes\deathmatch\Deathmatch.h" />
+    <Media Include="res\sounds\effect\hook_hit.wav" />
+    <Media Include="res\sounds\effect\hook_shot.wav" />
+    <Media Include="res\sounds\ambient\ambient_capture.wav" />
+    <Media Include="res\sounds\ambient\battle_sound.wav" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

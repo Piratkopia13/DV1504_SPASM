@@ -3,6 +3,7 @@
 #include "../ParticleHandler.h"
 #include "../../sail/resources/audio/SoundManager.h"
 #include "Character.h"
+#include "../GameInfo.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -72,7 +73,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 	static Vector3 zVec(0, 0, 1);
 	static float diff = 0.2f;
 
-	static Vector4 projColor(2.f);
+	Vector4 projColor = getLightColor();
 	static float projScale = 4.f;
 
 	if (m_projectileHandler) {
@@ -104,6 +105,7 @@ void Weapon::fire(const DirectX::SimpleMath::Vector3& direction) {
 			baseKnockback * extraKnockback,
 			m_owner->getTeam(),
 			m_owner->getIndex());
+
 		if (m_upgrade->gravActive()) {
 			temp->setGravScale(0);
 		}
@@ -212,7 +214,7 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 
 	//Updating laser
 	m_nozzlePos = Vector3(XMVector4Transform(Vector4(0.0f, 0.0f, 0.0f, 1.0f), tempMatrix));
-	Vector3 hitPos;
+	Vector3 hitPos = m_nozzlePos + direction * 1000;
 	float t;
 	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
 	float length = (hitPos - m_nozzlePos).Length();

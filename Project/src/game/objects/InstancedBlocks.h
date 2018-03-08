@@ -5,8 +5,8 @@
 template <class T, typename D>
 class InstancedBlocks : public Object {
 public:
-	InstancedBlocks(UINT maxInstances);
-	InstancedBlocks();
+	InstancedBlocks(UINT maxInstances, const std::string& blockModelName = "dynamic_block");
+	InstancedBlocks(const std::string& blockModelName = "dynamic_block");
 	virtual ~InstancedBlocks();
 
 	virtual void draw();
@@ -18,13 +18,15 @@ public:
 	D& addInstance(const D& instanceData);
 
 private:
+	std::string m_blockModelName;
 	std::vector<D> m_instanceData;
 	T* m_shader;
 };
 
 template <class T, typename D>
-InstancedBlocks<T, D>::InstancedBlocks(UINT maxInstances) {
+InstancedBlocks<T, D>::InstancedBlocks(UINT maxInstances, const std::string& blockModelName) {
 	auto* app = Application::getInstance();
+	m_blockModelName = blockModelName;
 
 	// Store a pointer to the shader used in rendering
 	m_shader = &app->getResourceManager().getShaderSet<T>();
@@ -33,8 +35,9 @@ InstancedBlocks<T, D>::InstancedBlocks(UINT maxInstances) {
 }
 
 template <class T, typename D>
-InstancedBlocks<T, D>::InstancedBlocks() {
+InstancedBlocks<T, D>::InstancedBlocks(const std::string& blockModelName) {
 	auto* app = Application::getInstance();
+	m_blockModelName = blockModelName;
 
 	// Store a pointer to the shader used in rendering
 	m_shader = &app->getResourceManager().getShaderSet<T>();
@@ -49,7 +52,7 @@ template <class T, typename D>
 void InstancedBlocks<T, D>::init(UINT maxInstances) {
 	auto* app = Application::getInstance();
 	// Use the data from the fbx version
-	auto* blockModel = app->getResourceManager().getFBXModel("dynamic_block").getModel();
+	auto* blockModel = app->getResourceManager().getFBXModel(m_blockModelName).getModel();
 	// Add instancing to the build data
 	Model::Data buildData;
 	buildData.deepCopy(blockModel->getBuildData());

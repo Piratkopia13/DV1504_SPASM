@@ -13,6 +13,9 @@
 #include "../background/ScoreVisualization.h"
 #include "../background/TimeVisualization.h"
 
+#include "../objects/InstancedBlocks.h"
+#include "../../sail/graphics/shader/deferred/DeferredInstancedGeometryShader.h"
+
 #include "../objects/Block.h"
 
 class GameState : public State {
