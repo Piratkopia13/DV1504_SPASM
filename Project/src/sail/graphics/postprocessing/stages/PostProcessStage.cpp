@@ -1,7 +1,7 @@
 #include "PostProcessStage.h"
 
 PostProcessStage::PostProcessStage(UINT width, UINT height, Model* fullscreenQuad, UINT outputTexBindFlags)
-	: OutputTexture(1, width, height, true, false, outputTexBindFlags)
+	: OutputTexture(1, width, height, false, false, outputTexBindFlags)
 	, FullscreenQuad(fullscreenQuad)
 	, Width(width)
 	, Height(height)

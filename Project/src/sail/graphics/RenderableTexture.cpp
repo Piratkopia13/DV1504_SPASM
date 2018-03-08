@@ -11,6 +11,7 @@ RenderableTexture::RenderableTexture(UINT aaSamples, UINT width, UINT height, bo
 	, m_nonMSAAColorTexture2D(nullptr)
 	, m_nonMSAAColorSRV(nullptr)
 	, m_nonMSAADepthSRV(nullptr)
+	, m_depthStencilView(nullptr)
 	, m_onlyDSV(createOnlyDSV)
 	, m_bindFlags(bindFlags)
 	, m_cpuAccessFlags(cpuAccessFlags)
@@ -152,8 +153,8 @@ ID3D11Texture2D* RenderableTexture::getDepthTexture2D() {
 
 void RenderableTexture::begin() {
 
-	if (!m_hasDepthStencilView)
-		Logger::Error("Tried to call to RenderableTexture::begin on a RenderableTexture that was created without a depth stencil view. Use the data from this class manually or change the constructor parameter to create a DSV.");
+// 	if (!m_hasDepthStencilView)
+// 		Logger::Error("Tried to call to RenderableTexture::begin on a RenderableTexture that was created without a depth stencil view. Use the data from this class manually or change the constructor parameter to create a DSV.");
 
 	auto dxManager = Application::getInstance()->getDXManager();
 	// Set render target
