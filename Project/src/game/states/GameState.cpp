@@ -190,6 +190,9 @@ GameState::GameState(StateStack& stack)
 }
 
 GameState::~GameState() {
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 	/*GameInfo* info = GameInfo::getInstance();
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		std::cout << "Player " << (i + 1) << std::endl;
@@ -337,6 +340,7 @@ bool GameState::update(float dt) {
 	m_infTop->setColor(infColor);
 	m_infLeft->setColor(infColor);
 	m_infRight->setColor(infColor);
+
 
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));

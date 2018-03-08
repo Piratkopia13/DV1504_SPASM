@@ -141,6 +141,9 @@ ScoreState::ScoreState(StateStack& stack)
 
 }
 ScoreState::~ScoreState() {
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 	for (size_t i = 0; i < m_scoreLine.size(); i++) {
 		m_scoreLine[i].clear();
 	}
@@ -348,6 +351,7 @@ void ScoreState::exitScoreBoard() {
 	m_info->resetScore();
 	m_info->getPlayers().clear();
 	m_info->gameSettings.teams.clear();
+	m_info->convertGameSettings();
 
 
 	requestStackPop();
