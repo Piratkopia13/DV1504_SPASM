@@ -332,7 +332,7 @@ bool GameState::resize(int width, int height) {
 bool GameState::update(float dt) {
 
 	// Infinity planes color update
-	static float epilepsyAmount = 0.3f;
+	static float epilepsyAmount = 0.1f;
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;
