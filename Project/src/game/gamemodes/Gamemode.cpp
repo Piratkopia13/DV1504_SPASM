@@ -12,8 +12,6 @@ Gamemode::Gamemode() {
 	else
 		m_gametime = 60000000000000.f;
 
-	//TEMP
-	m_gametime = 2.f;
 
 }
 

@@ -2,7 +2,7 @@
 
 #include "../GameInfo.h"
 #include "../gamemodes/Gamemode.h"
-#include "../objects/Block.h"
+#include "AnimatedObject.h"
 
 class TimeVisualization : public Object {
 
@@ -17,7 +17,8 @@ private:
 	Gamemode * m_gamemode;
 	Level* m_level;
 
-	std::vector<std::unique_ptr<Block>> m_timeBlocks;
+	std::vector<std::unique_ptr<AnimatedObject>> m_timeBlocks;
+	std::vector<bool> m_toRemove;
 	GameInfo* m_info;
 	
 	float m_timeLeft;
@@ -27,5 +28,9 @@ private:
 	bool m_run;
 
 	Model* m_blockModel;
+
+	DirectX::SimpleMath::Vector3 m_middle;
+
+	unsigned int m_numOfBlocks;
 
 };

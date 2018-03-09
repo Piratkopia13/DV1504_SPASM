@@ -137,7 +137,7 @@
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\game\background\TimeVisualization.cpp" />
-    <ClCompile Include="src\game\background\BackgroundVisualization.cpp" />
+    <ClCompile Include="src\game\background\AnimatedObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\GameInfo.h" />
@@ -253,7 +253,7 @@
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\game\background\TimeVisualization.h" />
-    <ClInclude Include="src\game\background\BackgroundVisualization.h" />
+    <ClInclude Include="src\game\background\AnimatedObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />
