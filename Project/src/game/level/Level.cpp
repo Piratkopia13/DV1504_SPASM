@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 #include <cctype>
+#include "../CharacterHandler.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -148,6 +149,7 @@ Level::Level(const std::string& filename)
 					instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 					m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y);
 					m_blocks[x][y].data = m_grid->getBlock(x, y);
+					//m_blocks[x][y].setHP
 					instanceData.color = Vector3::One;
 
 				} else if (c == 'c') {
@@ -193,15 +195,30 @@ Level::~Level() {
 }
 
 void Level::update(const float delta, CharacterHandler* charHandler) {
+	std::vector<Grid::Index> indices;
+		
+	for (int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+		std::vector<Grid::Index> temp = m_grid->convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
+		indices.insert(indices.end(), temp.begin(),temp.end());
+	}
 	for (int x = 0; x < m_width; x++) {
 		for (int y = 0; y < m_height; y++) {
+			bool blocked = false;
 				if (m_blocks[x][y].data) {
-					bool respawn = m_blocks[x][y].destroyed;
-					m_blocks[x][y].update(delta);
-					if (respawn != m_blocks[x][y].destroyed) {
-						m_grid->addBlock(m_blocks[x][y].data, x, y);
-						setBlockVariation(x, y);
-						updateAdjacent(x, y);
+					for (int j = 0; j < indices.size(); j++) {
+						if (indices.at(j).x == x && indices.at(j).y == y) {
+							blocked = true;
+						}
+					}
+					if (!blocked) {
+						bool respawn = m_blocks[x][y].destroyed;
+						m_blocks[x][y].update(delta);
+						if (respawn != m_blocks[x][y].destroyed && !blocked) {
+
+							m_grid->addBlock(m_blocks[x][y].data, x, y);
+							setBlockVariation(x, y);
+							updateAdjacent(x, y);
+						}
 					}
 				}
 			}
@@ -230,7 +247,7 @@ const int & Level::getGridHeight() const {
 	return m_height;
 }
 
-void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const DirectX::SimpleMath::Vector3& hitPos){
+void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const float damage, const DirectX::SimpleMath::Vector3& hitPos){
 	LevelBlock* block;
 	DirectX::SimpleMath::Vector3 tempPos = hitPos;
 	//Selecting correct index due to projectile direction
@@ -243,8 +260,8 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const Dir
 	Grid::Index blockIndex = Grid::convertToIndexed(tempPos);
 	block = &m_blocks[blockIndex.x][blockIndex.y];
 	if (block->data) {
-		block->health--;
-		if (block->health <= 0) {
+		block->currentHP -= damage;
+		if (block->currentHP <= 0) {
 			block->destroyed = true;
 			block->data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(block->data->modelMatrix.Translation().x, block->data->modelMatrix.Translation().y, 5.0f);
 			block->data->color = DirectX::SimpleMath::Vector3::Zero;
