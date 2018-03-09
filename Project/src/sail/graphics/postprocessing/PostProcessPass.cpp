@@ -41,7 +41,7 @@ PostProcessPass::PostProcessPass(const Camera* cam)
 	m_vGaussDepthStage3 = std::make_unique<VGaussianBlurDepthTest>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
 
 	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(UINT(windowWidth * m_brightnessCutoffScale), UINT(windowHeight * m_brightnessCutoffScale), &m_fullscreenQuad);
-	m_dofStage = std::make_unique<DOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	//m_dofStage = std::make_unique<DOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 	m_gaussianDofStage = std::make_unique<GaussianDOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 	m_blendStage = std::make_unique<BlendStage>(windowWidth, windowHeight, &m_fullscreenQuad);
@@ -67,7 +67,7 @@ void PostProcessPass::resize(UINT width, UINT height) {
 	m_FXAAStage->resize(width, height);
 	m_brightnessCutoffStage->resize(UINT(width * m_brightnessCutoffScale), UINT(height * m_brightnessCutoffScale));
 	m_toneMapHackStage->resize(width, height);
-	m_dofStage->resize(width, height);
+	//m_dofStage->resize(width, height);
 	m_gaussianDofStage->resize(width, height);
 	m_blendStage->resize(width, height);
 	m_blendStage2->resize(width, height);

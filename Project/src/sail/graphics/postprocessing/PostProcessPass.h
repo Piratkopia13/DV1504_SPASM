@@ -11,7 +11,7 @@
 #include "stages/BrightnessCutoffStage.h"
 #include "stages/ToneMapHackStage.h"
 #include "stages/FXAAStage.h"
-#include "stages/DOFStage.h"
+//#include "stages/DOFStage.h"
 #include "stages/GaussianDOFStage.h"
 #include "stages/BlendStage.h"
 //#include "../shader/postprocess/GaussianBlurCShader.h"
@@ -47,7 +47,7 @@ private:
 
 	std::unique_ptr<FXAAStage> m_FXAAStage;
 	std::unique_ptr<BrightnessCutoffStage> m_brightnessCutoffStage;
-	std::unique_ptr<DOFStage> m_dofStage;
+	//std::unique_ptr<DOFStage> m_dofStage;
 	std::unique_ptr<GaussianDOFStage> m_gaussianDofStage;
 	std::unique_ptr<ToneMapHackStage> m_toneMapHackStage;
 	std::unique_ptr<BlendStage> m_blendStage;

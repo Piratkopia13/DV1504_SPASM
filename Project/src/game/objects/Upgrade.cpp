@@ -53,7 +53,8 @@ void Upgrade::update(float dt) {
 	}
 	if (m_grav.active) {
 		m_grav.update(dt);
-		m_color += Vector4(1, 1, 0, 1);
+		m_color += m_grav.color;
+		m_activeUpgrades += m_grav.instances;
 	}
 	if (m_color.w >= 1) {
 		m_color *= (1.f / m_color.w) * min(m_activeUpgrades, 5);

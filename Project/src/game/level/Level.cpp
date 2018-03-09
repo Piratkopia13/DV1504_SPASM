@@ -261,6 +261,8 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const flo
 	block = &m_blocks[blockIndex.x][blockIndex.y];
 	if (block->data) {
 		block->currentHP -= damage;
+		float colorChange = 1.f - damage / block->maxHP;
+		block->data->color = DirectX::SimpleMath::Vector3(colorChange);
 		if (block->currentHP <= 0) {
 			block->destroyed = true;
 			block->data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(block->data->modelMatrix.Translation().x, block->data->modelMatrix.Translation().y, 5.0f);
