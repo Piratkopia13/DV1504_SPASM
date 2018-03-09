@@ -67,6 +67,7 @@ private:
 
 	size_t m_activeItem;
 	bool m_active;
+	bool m_visible;
 	DirectX::SimpleMath::Vector3 m_position;
 	DirectX::SimpleMath::Vector3 m_growth;
 	DirectX::SimpleMath::Vector3 m_direction;
@@ -77,6 +78,10 @@ private:
 
 	DirectX::SimpleMath::Vector4 m_onColor;
 	DirectX::SimpleMath::Vector4 m_offColor;
+	DirectX::SimpleMath::Vector4 m_targetColor;
+	DirectX::SimpleMath::Vector4 m_currentColor;
+
+
 
 	std::vector<MenuIndex> m_itemList;
 
@@ -87,7 +92,7 @@ private:
 	struct Animation {
 		bool active = 0;
 		float elapsed = 0.0f;
-		float endTime = 1.0f;
+		float endTime = 0.5f;
 		float div = 1.0f / endTime;
 		void update(float dt) {
 			if (active) {
@@ -110,7 +115,9 @@ private:
 	Animation m_colorChange;
 
 	void updateTransform();
+
 	DirectX::SimpleMath::Vector4 interpolateColor(float progress ,const DirectX::SimpleMath::Vector4& from, const DirectX::SimpleMath::Vector4& to);
+	void setColor(const DirectX::SimpleMath::Vector4& color);
 
 };
 

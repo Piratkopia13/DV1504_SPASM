@@ -37,7 +37,7 @@ private:
 	std::vector<Model*> m_playerLegModels;
 	std::vector<Model*> m_playerArmLModels;
 	std::vector<Model*> m_playerArmRModels;
-
+	std::vector<MenuHandler*> m_targets;
 
 	Model* m_backGroundModel;
 
@@ -207,6 +207,7 @@ private:
 	MenuHandler* m_profileMenu;
 	MenuHandler* m_profileCreator;
 	MenuHandler* m_profileViewer;
+	MenuHandler* m_profileViewerLines;
 	MenuHandler* m_profileViewerStats;
 	
 
@@ -226,6 +227,7 @@ private:
 	void initProfile();
 	void initProfileCreator();
 	void initProfileViewer();
+	void updateProfileViewer();
 
 	void initOptions();
 	void initGraphics();

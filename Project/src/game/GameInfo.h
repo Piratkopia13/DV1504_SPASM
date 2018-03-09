@@ -76,6 +76,7 @@ public:
 		size_t respawnTime = 0;
 		size_t playerLife = 0;
 		size_t gravity = 0;
+		size_t destructibleBlocks = 1;
 		std::vector<Team> teams;
 	};
 	struct ConvertedGameSettings {
@@ -91,6 +92,7 @@ public:
 		float respawnTime = 2;
 		float playerLife = 50;
 		float gravity = 1;
+		bool destructability = 1;
 		std::vector<Team> teams;
 	};
 
@@ -142,6 +144,7 @@ public:
 	std::vector<Setting> respawnTime;
 	std::vector<Setting> gravity;
 	std::vector<Setting> playerHealth;
+	std::vector<Setting> destructibleBlocks;
 
 	std::vector<Setting> particles;
 	std::vector<Setting> bloom;
