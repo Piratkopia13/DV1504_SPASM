@@ -61,7 +61,7 @@ void Upgrade::update(float dt) {
 		//m_color = Vector4(1, 1, 1, 1) * min(m_activeUpgrades, 5);
 	}
 	else if (m_color.w == 0)
-		m_color = Vector4(1, 0, 0, 1);
+		m_color = Vector4(2, 0, 0, 1);
 }
 
 void Upgrade::combine(const Upgrade & other) {

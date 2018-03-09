@@ -248,6 +248,16 @@
     <ClInclude Include="src\sail\Win32Window.h" />
     <ClInclude Include="src\game\objects\Upgrade.h" />
     <ClInclude Include="src\game\UpgradeHandler.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
+    <ClInclude Include="src\sail\graphics\postprocessing\stages\FXAAStage.h" />
+    <ClInclude Include="src\game\states\ScoreState.h" />
+    <ClInclude Include="src\game\gamemodes\tdm\TeamDeathmatch.h" />
+    <ClInclude Include="src\game\background\ScoreVisualization.h" />
+    <ClInclude Include="src\game\objects\InstancedBlocks.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
+    <ClInclude Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\ConeModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BlendStage.h" />
   </ItemGroup>
   <ItemGroup>

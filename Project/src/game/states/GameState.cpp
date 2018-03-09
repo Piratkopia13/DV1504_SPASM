@@ -387,6 +387,7 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<DynBlockDeferredInstancedGeometryShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<MaterialShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
 	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
@@ -403,7 +404,7 @@ bool GameState::update(float dt) {
 bool GameState::render(float dt) {
 
 	// Clear back buffer
-	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
+	m_app->getDXManager()->clear({0.05f, 0.05f, 0.05f, 1.0f});
 
 	// Draw the scene using deferred rendering
 	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());

@@ -2,6 +2,7 @@
 #include "../collision/CollisionHandler.h"
 #include "../ParticleHandler.h"
 #include "../../sail/resources/audio/SoundManager.h"
+#include "../../sail/Application.h"
 #include "Character.h"
 
 using namespace DirectX::SimpleMath;
@@ -217,9 +218,10 @@ void Weapon::update(float dt, const DirectX::SimpleMath::Vector3& direction) {
 	CollisionHandler::getInstance()->rayTraceLevel({ m_nozzlePos, direction }, hitPos, t);
 	float length = (hitPos - m_nozzlePos).Length();
 	m_laser.laserTransform.setTranslation(m_nozzlePos + direction * (min(length, 5.f + (m_upgrade->getActiveUprades() * 0.1f)) / 2.f));
-	m_laser.laserTransform.setNonUniScale(min(50.f + (m_upgrade->getActiveUprades()), length * 10), 1.5f, 1.f);
+	m_laser.laserTransform.setNonUniScale(min(50.f + (m_upgrade->getActiveUprades()), length * 10), 1.0f, 1.f);
 	m_laser.laserTransform.setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(direction.y, direction.x)));
 	m_laser.lightColor = m_upgrade->getColor();
+	//m_laser.lightColor.Clamp(Vector4::Zero, Vector4(2.f, 2.f, 2.f, 9999.f));
 
 	m_laser.dotTransform.setTranslation(hitPos + DirectX::SimpleMath::Vector3(0.f, 0.f, m_laser.laserTransform.getTranslation().z) + (direction * 0.05f)); //Last addition for looks with the current model
 

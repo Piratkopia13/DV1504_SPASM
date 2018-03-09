@@ -12,7 +12,7 @@
 using namespace std;
 
 Scene::Scene(const AABB& worldSize)
-	: m_dirLightShadowMap(4096, 2160)
+	: m_dirLightShadowMap(10, 10)
 	, m_doPostProcessing(true)
 	, m_doShadows(false)
 {
@@ -64,7 +64,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	if (m_doPostProcessing) {
 		m_postProcessPass.setCamera(cam);
 		// Render skybox to the prePostTex
-		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
+		m_deferredOutputTex->clear({ 0.05f, 0.05f, 0.05f, 1.0f });
 		m_particleOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
 		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
 	}
@@ -79,10 +79,10 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		// Renders the depth of the scene out of the directional lights position
 
 		//To-do: Fix shadow pass to work with draw call from object
-		m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
+		/*m_deferredRenderer.beginLightDepthPass(*m_dirLightShadowMap.getDSV());
 		dxm->getDeviceContext()->RSSetViewports(1, m_dirLightShadowMap.getViewPort());
 		m_depthShader.bind();
-		dxm->enableFrontFaceCulling();
+		dxm->enableFrontFaceCulling();*/
 
 		// Render all blocks to the shadow map
 		// TODO: only render the blocks that the camera can see
@@ -114,6 +114,8 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	if (level) {
 		level->draw();
 	}
+	// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	dxm->disableConservativeRasterizer();
 	dxm->getPerfProfilerThing()->EndEvent();
 	dxm->getPerfProfilerThing()->BeginEvent(L"Gamemode rendering");
 	if (gamemode) {
@@ -130,9 +132,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 		m->draw();
 	dxm->getPerfProfilerThing()->EndEvent();
 
-
-	// Disable conservatiec rasterization to avoid wierd graphical artifacts
-	dxm->disableConservativeRasterizer();
+	dxm->enableAlphaBlending();
 
 	// Render particles to separate texture if post processing is active
 	// This is neccassary for the depth of field effect since it needs depth data that particles dont write (will always be in focus)
