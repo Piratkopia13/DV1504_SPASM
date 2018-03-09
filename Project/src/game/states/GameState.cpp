@@ -343,7 +343,10 @@ bool GameState::update(float dt) {
 	m_infRight->setColor(infColor);
 
 	// Update HUD texts
-	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
+	if (m_info->graphicsSettings.fpsCounter == 0)
+		m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
+	else
+		m_fpsText.setText(L"");
 
 	auto& camPos = m_cam.getPosition();
 	//m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));

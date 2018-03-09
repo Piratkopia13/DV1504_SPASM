@@ -341,7 +341,7 @@ void GameInfo::convertGraphics() {
 	convertedGraphics.background = background[graphicsSettings.backGround].value;
 	convertedGraphics.particles = particles[graphicsSettings.particles].value;
 	convertedGraphics.fpsCounter = fpsCounter[graphicsSettings.fpsCounter].value;
-	convertedGraphics.vSync = fpsCounter[graphicsSettings.fpsCounter].value;
+	convertedGraphics.vSync = vSync[graphicsSettings.vSync].value;
 	convertedGraphics.depthOfField = depthOfField[graphicsSettings.depthOfField].value;
 }
 
