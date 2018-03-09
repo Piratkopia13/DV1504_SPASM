@@ -250,6 +250,7 @@
     <ClInclude Include="src\game\objects\InstancedBlocks.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\ConeModel.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

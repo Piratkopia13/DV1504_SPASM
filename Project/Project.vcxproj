@@ -285,6 +285,7 @@
     <ClInclude Include="src\sail\graphics\camera\Camera.h" />
     <ClInclude Include="src\sail\graphics\camera\CameraController.h" />
     <ClInclude Include="src\sail\graphics\camera\FlyingCameraController.h" />
+    <ClInclude Include="src\sail\graphics\geometry\factory\ConeModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\CubeModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\InstancedParticleModel.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\PlaneModel.h" />

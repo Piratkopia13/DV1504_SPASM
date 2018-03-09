@@ -212,11 +212,11 @@ float4 PSMain(PSIn input) : SV_Target0 {
 
   float shadow = calcLightValue(positionVS);
 
-  float3 diffuseColor = tex[0].Sample(ss, texCoords).rgb;
+  float4 diffuseColor = tex[0].Sample(ss, texCoords);
 
   // Dont perform lighting on bright pixels to get the "tron" glow
-  if (dot(diffuseColor.rgb, float3(0.2126, 0.7152, 0.0722)) > 0.5f)
-    return float4(diffuseColor, 1.f);
+  if (diffuseColor.a < 1.f)
+    return float4(diffuseColor.rgb, 1.f);
 
   if (shadow > 0.f) {
 
@@ -224,7 +224,7 @@ float4 PSMain(PSIn input) : SV_Target0 {
 
     float3 specular = tex[2].Sample(ss, texCoords).rgb;
 
-    return float4(deferredPhongShading(lightInput, fragToCam, diffuseColor, specular, normal) * shadow, 1.f);
+    return float4(deferredPhongShading(lightInput, fragToCam, diffuseColor.rgb, specular, normal) * shadow, 1.f);
   } else {
     return float4(0.f, 0.f, 0.f, 1.f);
   }

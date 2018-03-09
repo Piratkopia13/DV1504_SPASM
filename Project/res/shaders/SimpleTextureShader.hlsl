@@ -44,9 +44,7 @@ SamplerState ss;
 
 float4 PSMain(PSIn input) : SV_TARGET {
 
-	float4 texColor = tex.Sample(ss, input.texCoord);
-	float multipier = 1.f / max(max(texColor.r, max(texColor.g, texColor.b)), 1.f);
-	texColor.rgb *= input.modelColor.rgb * multipier;
-	return texColor;
+	return tex.Sample(ss, input.texCoord) * input.modelColor;
+	//return input.modelColor;
 
 }

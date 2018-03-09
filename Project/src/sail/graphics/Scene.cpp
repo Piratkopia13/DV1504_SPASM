@@ -12,7 +12,7 @@
 using namespace std;
 
 Scene::Scene(const AABB& worldSize)
-	: m_dirLightShadowMap(4096, 2160)
+	: m_dirLightShadowMap(10, 10)
 	, m_doPostProcessing(true)
 	, m_doShadows(false)
 {
@@ -59,7 +59,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 
 	if (m_doPostProcessing) {
 		// Render skybox to the prePostTex
-		m_deferredOutputTex->clear({ 0.f, 0.f, 0.f, 1.0f });
+		m_deferredOutputTex->clear({ 0.05f, 0.05f, 0.05f, 1.0f });
 		dxm->getDeviceContext()->OMSetRenderTargets(1, m_deferredOutputTex->getRenderTargetView(), dxm->getDepthStencilView());
 	}
 
@@ -107,6 +107,8 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	if (level) {
 		level->draw();
 	}
+	// Disable conservatiec rasterization to avoid wierd graphical artifacts
+	dxm->disableConservativeRasterizer();
 	if (gamemode) {
 		gamemode->draw();
 	}
@@ -116,8 +118,7 @@ void Scene::draw(float dt, Camera& cam, Level* level, ProjectileHandler* project
 	for (Object* m : m_objects)
 		m->draw();
 
-	// Disable conservatiec rasterization to avoid wierd graphical artifacts
-	dxm->disableConservativeRasterizer();
+	dxm->enableAlphaBlending();
 
 	if (particles) {
 		particles->draw();

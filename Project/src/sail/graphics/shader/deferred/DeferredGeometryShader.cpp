@@ -22,7 +22,7 @@ DeferredGeometryShader::DeferredGeometryShader()
 	m_worldDataBuffer = std::unique_ptr<ShaderComponent::ConstantBuffer>(new ShaderComponent::ConstantBuffer(&defaultworldData, sizeof(WorldDataBuffer)));
 
 	// Set up sampler
-	m_sampler = std::make_unique<ShaderComponent::Sampler>();
+	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_WRAP, D3D11_FILTER_MIN_MAG_MIP_POINT);
 
 	// Compile VS
 	auto vsBlob = compileShader(L"deferred/GeometryShader.hlsl", "VSMain", "vs_5_0");
