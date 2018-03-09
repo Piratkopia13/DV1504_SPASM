@@ -11,6 +11,7 @@
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
 #include "../background/ScoreVisualization.h"
+//#include "../objects/InstancedBlocks.h"
 
 #include "../objects/InstancedBlocks.h"
 #include "../../sail/graphics/shader/deferred/DeferredInstancedGeometryShader.h"

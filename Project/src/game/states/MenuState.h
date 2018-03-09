@@ -216,6 +216,7 @@ private:
 private:
 	void initMain();
 	void initGamemode();
+	void updateGameMode();
 	void initCharacterModels();
 	void initCharacterModel(size_t spot);
 	void initCharacter(size_t spot, bool online);
@@ -251,6 +252,7 @@ private:
 	void updateGraphics();
 	void updateSound();
 
+	
 	
 };
 
