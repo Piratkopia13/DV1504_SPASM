@@ -10,7 +10,7 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(30.f, 1280.f / 720.f, 0.1f, 1000.f)
+, m_cam(30.f, 1280.f / 720.f, 0.1f, 5000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
@@ -332,11 +332,11 @@ bool GameState::resize(int width, int height) {
 bool GameState::update(float dt) {
 
 	// Infinity planes color update
-	static float epilepsyAmount = 0.7f;
+	static float epilepsyAmount = 0.3f;
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;
-	Vector4 infColor(-fabs(sinf(counter)) * epilepsyAmount, -fabs(sin(counter + 2.f)) * epilepsyAmount, -fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
+	Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
 	m_infBottom->setColor(infColor);
 	m_infTop->setColor(infColor);
 	m_infLeft->setColor(infColor);
