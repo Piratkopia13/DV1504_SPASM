@@ -118,6 +118,12 @@ void MenuSelector::setActiveOption(size_t option) {
 
 void MenuSelector::setSelectionColor(const DirectX::SimpleMath::Vector4 & color) {
 	m_selectionColor = color;
+	m_offColor = color * 0.5;
+	for (size_t i = 0; i < m_options.size(); i++) {
+		m_options[i]->setColor(i == m_selector ? m_selectionColor : m_offColor);
+	}
+ 
+
 	next();
 	back();
 }

@@ -2,7 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
-//#include "Grid.h"
+//#include "../objects/Character.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
@@ -28,7 +28,8 @@ public:
 	static const float DEFAULT_BLOCKSIZE;
 
 	struct LevelBlock {
-		int health = 5;
+		float maxHP = 100;
+		float currentHP = maxHP;
 		DynBlockDeferredInstancedGeometryShader::InstanceData* data = nullptr;
 		float respawnTime = 3.f;
 		float timeDead = 0.0f;
@@ -39,7 +40,7 @@ public:
 				if (timeDead > respawnTime) {
 					timeDead = 0.0f;
 					destroyed = false;
-					health = 5;
+					currentHP = maxHP;
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation().x, data->modelMatrix.Translation().y, 0.f);
 					data->color = DirectX::SimpleMath::Vector3::One;
 				}
@@ -58,7 +59,7 @@ public:
 	const int& getGridWidth() const;
 	const int& getGridHeight() const;
 
-	void blockHit(const DirectX::SimpleMath::Vector3& projVelocity,const DirectX::SimpleMath::Vector3& hitPos);
+	void blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const float damage, const DirectX::SimpleMath::Vector3& hitPos);
 	void setBlockVariation(const int x, const int y);
 	void updateAdjacent(const int x, const int y);
 

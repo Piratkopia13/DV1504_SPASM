@@ -30,8 +30,7 @@ public:
 	Scene(const AABB& worldSize);
 	~Scene();
 
-	// Adds the specified model to the scene and it's quadtree
-	// The model will only be drawn when its aabb is inside or intersecting the cameras frustum
+	// Adds the specified model to the scene
 	void addObject(Object* newObject);
 
 	// Adds the specified text to the scene
@@ -88,6 +87,8 @@ private:
 
 	// This is what the deferred renderer will render to
 	std::unique_ptr<RenderableTexture> m_deferredOutputTex;
+	// Particles will be rendered to a separate texture if post processing is active
+	std::unique_ptr<RenderableTexture> m_particleOutputTex;
 
 	bool m_doShadows;
 	bool m_doPostProcessing;

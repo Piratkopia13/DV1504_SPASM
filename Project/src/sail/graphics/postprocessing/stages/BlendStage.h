@@ -6,28 +6,25 @@
 #include "../../shader/component/Sampler.h"
 #include "../../../Application.h"
 
-class VGaussianBlurStage : public PostProcessStage {
+class BlendStage : public PostProcessStage {
 public:
-	VGaussianBlurStage(UINT width, UINT height, Model* fullscreenQuad);
-	virtual ~VGaussianBlurStage();
+	BlendStage(UINT width, UINT height, Model* fullScreenQuad);
+	virtual ~BlendStage();
 
-	void run(RenderableTexture& inputTexture);
-	void resize(UINT width, UINT height);
+	void setBlendInput(ID3D11ShaderResourceView** blendSRV, float blendFactor = 1.0f);
+	void run(RenderableTexture& colorTexture);
 
 private:
-
 	std::unique_ptr<VertexShader> m_VS;
 	std::unique_ptr<PixelShader> m_PS;
 
 	struct CBuffer {
-		float invTexWidth;
-		float invTexHeight;
-		float padding[2];
+		float blendFactor;
+		float padding[3];
 	};
 
-	// Components
 	std::unique_ptr<ShaderComponent::ConstantBuffer> m_cBuffer;
 	std::unique_ptr<ShaderComponent::Sampler> m_sampler;
 
-
+	ID3D11ShaderResourceView** m_blendSRV;
 };

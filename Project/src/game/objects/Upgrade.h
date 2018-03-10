@@ -269,6 +269,8 @@ private:
 	
 	struct NoGravity {
 		bool active;
+		int instances;
+		DirectX::SimpleMath::Vector4 color;
 		UpgradeTimer time;
 
 		void update(float dt) {
@@ -284,15 +286,19 @@ private:
 				
 				time.addTime(other.time.remaining);
 				active = true;
+				instances++;
 			}
 		}
 		void reset() {
 			time.reset();
+			instances = 1;
 			active = false;
 		}
 		NoGravity() {
 			active = false;			
 			time.setCap(10);
+			color = DirectX::SimpleMath::Vector4(1, 1, 0, 1);
+			instances = 1;
 		}
 		NoGravity(float multi, float _time) : NoGravity() {
 			time.setCap(_time);

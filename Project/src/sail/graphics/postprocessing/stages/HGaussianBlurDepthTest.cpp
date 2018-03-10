@@ -1,6 +1,9 @@
-#include "VGaussianBlurStage.h"
+#include "HGaussianBlurDepthTest.h"
 
-VGaussianBlurStage::VGaussianBlurStage(UINT width, UINT height, Model* fullscreenQuad)
+#include "../../shader/ShaderSet.h"
+#include "../../../Application.h"
+
+HGaussianBlurDepthTest::HGaussianBlurDepthTest(UINT width, UINT height, Model* fullscreenQuad)
 	: PostProcessStage(width, height, fullscreenQuad)
 {
 	// Set up constant buffer
@@ -11,8 +14,8 @@ VGaussianBlurStage::VGaussianBlurStage(UINT width, UINT height, Model* fullscree
 	m_sampler = std::make_unique<ShaderComponent::Sampler>(D3D11_TEXTURE_ADDRESS_MIRROR_ONCE, D3D11_FILTER_MIN_MAG_MIP_LINEAR);
 
 	// Compile and assign shaders
-	auto vsBlob = ShaderSet::compileShader(L"postprocess/GaussianBlurPS.hlsl", "VSMain", "vs_5_0");
-	auto psBlob = ShaderSet::compileShader(L"postprocess/GaussianBlurPS.hlsl", "PSVertical", "ps_5_0");
+	auto vsBlob = ShaderSet::compileShader(L"postprocess/GaussianBlurWithDepthCheck.hlsl", "VSMain", "vs_5_0");
+	auto psBlob = ShaderSet::compileShader(L"postprocess/GaussianBlurWithDepthCheck.hlsl", "PSHorizontal", "ps_5_0");
 	m_VS = std::make_unique<VertexShader>(vsBlob);
 	m_PS = std::make_unique<PixelShader>(psBlob);
 	Memory::safeRelease(vsBlob);
@@ -20,10 +23,14 @@ VGaussianBlurStage::VGaussianBlurStage(UINT width, UINT height, Model* fullscree
 
 }
 
-VGaussianBlurStage::~VGaussianBlurStage() {
+HGaussianBlurDepthTest::~HGaussianBlurDepthTest() {
 }
 
-void VGaussianBlurStage::run(RenderableTexture& inputTexture) {
+void HGaussianBlurDepthTest::setDepthSRV(ID3D11ShaderResourceView** depthSRV) {
+	m_depthSRV = depthSRV;
+}
+
+void HGaussianBlurDepthTest::run(RenderableTexture& inputTexture) {
 
 	Application* app = Application::getInstance();
 	ID3D11DeviceContext* con = app->getDXManager()->getDeviceContext();
@@ -42,6 +49,7 @@ void VGaussianBlurStage::run(RenderableTexture& inputTexture) {
 
 	// Bind the input texture to the pixel shader
 	con->PSSetShaderResources(0, 1, inputTexture.getColorSRV());
+	con->PSSetShaderResources(1, 1, m_depthSRV);
 
 	// Bind vertex buffer
 	UINT stride = sizeof(PostProcessStage::Vertex);
@@ -62,12 +70,12 @@ void VGaussianBlurStage::run(RenderableTexture& inputTexture) {
 	else
 		con->Draw(FullscreenQuad->getNumVertices(), 0);
 
-	ID3D11ShaderResourceView* nullSRV[1] = { nullptr };
-	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 1, nullSRV);
+	ID3D11ShaderResourceView* nullSRV[2] = { nullptr, nullptr };
+	Application::getInstance()->getDXManager()->getDeviceContext()->PSSetShaderResources(0, 2, nullSRV);
 
 }
 
-void VGaussianBlurStage::resize(UINT width, UINT height) {
+void HGaussianBlurDepthTest::resize(UINT width, UINT height) {
 	PostProcessStage::resize(width, height);
 	// Update constant buffer
 	CBuffer pixelSize = { 1.f / width, 1.f / height };
