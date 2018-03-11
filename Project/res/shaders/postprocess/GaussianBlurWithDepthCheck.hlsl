@@ -1,5 +1,14 @@
-static const float filter[13] = {
-    0.076838, 0.076881, 0.076915, 0.076942, 0.076962, 0.076973, 0.076977, 0.076973, 0.076962, 0.076942, 0.076915, 0.076881, 0.076838
+// Kernel from http://dev.theomader.com/gaussian-kernel-calculator/
+//    0.382925f, 0.24173f, 0.060598f, 0.005977f, 0.000229f
+// Offsets and weights calculated using formula provided by Daniel Rákos
+// https://web.archive.org/web/20170926040515/http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+static const float offset[3] =
+{
+    0.f, 1.20043793f, 3.03689977f
+};
+static const float weight[3] =
+{
+    0.382925f, 0.302328f, 0.006206f
 };
 
 float getBrightness(float3 color) {
@@ -41,38 +50,45 @@ SamplerState ss : register(s0);
 
 float4 PSHorizontal(PSIn input) : SV_Target0 {
 
-    float4 color;
-
     float centerDepth = depthTex.Sample(ss, input.texCoord).r;
-    float4 centerColor = tex.Sample(ss, input.texCoord);
-    for (int x = 0; x < 13; x++) {
-        float2 coord = input.texCoord + float2((x - 6.f) * invWindowWidth, 0.f);
+    float4 color = tex.Sample(ss, input.texCoord) * weight[0];
+
+    for (int x = 1; x < 3; x++) {
+        float2 coord = input.texCoord + float2(offset[x] * invWindowWidth, 0.f);
         if (abs(depthTex.Sample(ss, coord).r - centerDepth) < DEPTH_THRESHOLD) {
-            color += tex.Sample(ss, coord) * filter[x];
-        } else {
-            color += centerColor * filter[x];
+            color += tex.Sample(ss, coord) * weight[x];
+        }
+        coord = input.texCoord - float2(offset[x] * invWindowWidth, 0.f);
+        if (abs(depthTex.Sample(ss, coord).r - centerDepth) < DEPTH_THRESHOLD) {
+            color += tex.Sample(ss, coord) * weight[x];
         }
     }
-
+    
     return color;
 
 }
 
 float4 PSVertical(PSIn input) : SV_Target0 {
 
-    float4 color;
-
     float centerDepth = depthTex.Sample(ss, input.texCoord).r;
-    float4 centerColor = tex.Sample(ss, input.texCoord);
-    for (int y = 0; y < 13; y++) {
-        float2 coord = input.texCoord + float2(0.f, (y - 6.f) * invWindowHeight);
+    float4 color = tex.Sample(ss, input.texCoord) * weight[0];
+    float centerColor = color;
+
+    for (int y = 1; y < 3; y++) {
+        float2 coord = input.texCoord + float2(0.f, offset[y] * invWindowHeight);
         if (abs(depthTex.Sample(ss, coord).r - centerDepth) < DEPTH_THRESHOLD) {
-            color += tex.Sample(ss, coord) * filter[y];
+            color += tex.Sample(ss, coord) * weight[y];
         } else {
-            color += centerColor * filter[y];
+            color += centerColor * weight[y];
+        }
+        coord = input.texCoord - float2(0.f, offset[y] * invWindowHeight);
+        if (abs(depthTex.Sample(ss, coord).r - centerDepth) < DEPTH_THRESHOLD) {
+            color += tex.Sample(ss, coord) * weight[y];
+        } else {
+            color += centerColor * weight[y];
         }
     }
-
+    
     return color;
 
 }

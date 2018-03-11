@@ -107,69 +107,73 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 	dxm->getPerfProfilerThing()->EndEvent();
 	RenderableTexture& processedBaseTexture = (m_doFXAAPass) ? m_FXAAStage->getOutput() : baseTexture;
 
-	dxm->getPerfProfilerThing()->BeginEvent(L"Tonemap");
-	// Tone map pass - clamp color values to 1 without changing the color (too much)
-	m_toneMapHackStage->run(processedBaseTexture);
-	dxm->getPerfProfilerThing()->EndEvent();
+ 	dxm->getPerfProfilerThing()->BeginEvent(L"Tonemap");
+ 	// Tone map pass - clamp color values to 1 without changing the color (too much)
+ 	m_toneMapHackStage->run(processedBaseTexture);
+ 	dxm->getPerfProfilerThing()->EndEvent();
+ 
+ 	// DOF pass
+ 	if (m_doDOFPass) {
+ 		dxm->getPerfProfilerThing()->BeginEvent(L"Depth of field");
+ 
+ 		dxm->getPerfProfilerThing()->BeginEvent(L"GaussDepth");
+ 		m_hGaussDepthStage->setDepthSRV(depthTexture);
+ 		m_hGaussDepthStage->run(m_toneMapHackStage->getOutput());
+ 		m_vGaussDepthStage->setDepthSRV(depthTexture);
+ 		m_vGaussDepthStage->run(m_hGaussDepthStage->getOutput());
+ 		dxm->getPerfProfilerThing()->EndEvent();
+ 
+ 		
+ 		dxm->getPerfProfilerThing()->BeginEvent(L"Gauss");
+ 		m_hGaussStage->run(m_vGaussDepthStage->getOutput());
+ 		m_vGaussStage->run(m_hGaussStage->getOutput());
+ 		dxm->getPerfProfilerThing()->EndEvent();
+ 
+ 
+ 		dxm->getPerfProfilerThing()->BeginEvent(L"Gaussian DOF");
+ 		m_gaussianDofStage->setBlurredSRV(m_vGaussStage->getOutput().getColorSRV());
+ 		m_gaussianDofStage->setDepthSRV(depthTexture);
+ 		m_gaussianDofStage->run(processedBaseTexture);
+ 		dxm->getPerfProfilerThing()->EndEvent();
+ 
+ 		dxm->getPerfProfilerThing()->EndEvent();
+ 	}
+ 
+ 	if (m_doBloom) {
+ 		dxm->getPerfProfilerThing()->BeginEvent(L"Bloom");
+ 		// Blend particles with the bloom input texture
+ 		m_blendStage->setBlendInput(particlesTexture.getColorSRV());
+ 		m_blendStage->run(bloomInputTexture);
+ 
+ 		// Bloom pass
+ 		m_brightnessCutoffStage->run(m_blendStage->getOutput());
+ 
+ 		m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
+ 		m_vGaussStage->run(m_hGaussStage->getOutput());
+ 
+ 		m_hGaussStage2->run(m_vGaussStage->getOutput());
+ 		m_vGaussStage2->run(m_hGaussStage2->getOutput());
+ 
+ 		m_hGaussStage3->run(m_vGaussStage2->getOutput());
+ 		m_vGaussStage3->run(m_hGaussStage3->getOutput());
+ 
+ 		// Blend particles with the bloom output
+ 		m_blendStage->setBlendInput(particlesTexture.getColorSRV());
+ 		m_blendStage->run(m_vGaussStage3->getOutput());
+ 
+ 		// Blend bloom with processBaseTexture
+ 		m_blendStage2->setBlendInput(m_blendStage->getOutput().getColorSRV(), m_bloomStrength);
+ 		m_blendStage2->run((m_doDOFPass) ? m_gaussianDofStage->getOutput() : m_toneMapHackStage->getOutput());
+ 
+ 		dxm->getPerfProfilerThing()->EndEvent();
+ 	} else {
+ 		m_blendStage2->setBlendInput(particlesTexture.getColorSRV());
+ 		m_blendStage2->run((m_doDOFPass) ? m_gaussianDofStage->getOutput() : m_toneMapHackStage->getOutput());
+ 	}
 
-	// DOF pass
-	if (m_doDOFPass) {
-		dxm->getPerfProfilerThing()->BeginEvent(L"Depth of field");
+// 	m_hGaussStage->run(baseTexture);
+// 	m_vGaussStage->run(m_hGaussStage->getOutput());
 
-		dxm->getPerfProfilerThing()->BeginEvent(L"GaussDepth");
-		m_hGaussDepthStage->setDepthSRV(depthTexture);
-		m_hGaussDepthStage->run(m_toneMapHackStage->getOutput());
-		m_vGaussDepthStage->setDepthSRV(depthTexture);
-		m_vGaussDepthStage->run(m_hGaussDepthStage->getOutput());
-		dxm->getPerfProfilerThing()->EndEvent();
-
-		
-		dxm->getPerfProfilerThing()->BeginEvent(L"Gauss");
-		m_hGaussStage->run(m_vGaussDepthStage->getOutput());
-		m_vGaussStage->run(m_hGaussStage->getOutput());
-		dxm->getPerfProfilerThing()->EndEvent();
-
-
-		dxm->getPerfProfilerThing()->BeginEvent(L"Gaussian DOF");
-		m_gaussianDofStage->setBlurredSRV(m_vGaussStage->getOutput().getColorSRV());
-		m_gaussianDofStage->setDepthSRV(depthTexture);
-		m_gaussianDofStage->run(processedBaseTexture);
-		dxm->getPerfProfilerThing()->EndEvent();
-
-		dxm->getPerfProfilerThing()->EndEvent();
-	}
-
-	if (m_doBloom) {
-		dxm->getPerfProfilerThing()->BeginEvent(L"Bloom");
-		// Blend particles with the bloom input texture
-		m_blendStage->setBlendInput(particlesTexture.getColorSRV());
-		m_blendStage->run(bloomInputTexture);
-
-		// Bloom pass
-		m_brightnessCutoffStage->run(m_blendStage->getOutput());
-
-		m_hGaussStage->run(m_brightnessCutoffStage->getOutput());
-		m_vGaussStage->run(m_hGaussStage->getOutput());
-
-		m_hGaussStage2->run(m_vGaussStage->getOutput());
-		m_vGaussStage2->run(m_hGaussStage2->getOutput());
-
-		m_hGaussStage3->run(m_vGaussStage2->getOutput());
-		m_vGaussStage3->run(m_hGaussStage3->getOutput());
-
-		// Blend particles with the bloom output
-		m_blendStage->setBlendInput(particlesTexture.getColorSRV());
-		m_blendStage->run(m_vGaussStage3->getOutput());
-
-		// Blend bloom with processBaseTexture
-		m_blendStage2->setBlendInput(m_blendStage->getOutput().getColorSRV(), m_bloomStrength);
-		m_blendStage2->run((m_doDOFPass) ? m_gaussianDofStage->getOutput() : m_toneMapHackStage->getOutput());
-
-		dxm->getPerfProfilerThing()->EndEvent();
-	} else {
-		m_blendStage2->setBlendInput(particlesTexture.getColorSRV());
-		m_blendStage2->run((m_doDOFPass) ? m_gaussianDofStage->getOutput() : m_toneMapHackStage->getOutput());
-	}
 	// Blend last output together with the baseTexture to produce the final image
  	dxm->renderToBackBuffer();
 	m_fullscreenQuad.getMaterial()->setTextures(m_blendStage2->getOutput().getColorSRV(), 1);
