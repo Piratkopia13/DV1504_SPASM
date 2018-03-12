@@ -138,8 +138,8 @@ GameInfo::GameInfo()
 	antiAliasing.push_back({ "FXAA",1,0 });
 	antiAliasing.push_back({ "none",0,0 });
 
-	background.push_back({ "standard",1,0 });
-	background.push_back({ "something",2,0 });
+	background.push_back({ "lines",1,0 });
+	//background.push_back({ "something",2,0 });
 	background.push_back({ "none",0,0 });
 
 	fpsCounter.push_back({ "top left",1,0 });
