@@ -30,12 +30,14 @@ TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 
 		float paj = PI / (float(m_timeBlocks.size()) / 2.f);
 
+		// Middle of map
 		m_middle = DirectX::SimpleMath::Vector3((m_level->getGridWidth() * m_level->DEFAULT_BLOCKSIZE) / 2.f, (m_level->getGridHeight() * m_level->DEFAULT_BLOCKSIZE) / 2.f - level->DEFAULT_BLOCKSIZE / 2.f, 3.f);
 		for (unsigned int i = 0; i < m_timeBlocks.size(); i++) {
 			m_timeBlocks[i] = std::make_unique<AnimatedObject>(m_blockModel);
 			m_timeBlocks[i]->setLightColor(DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.f));
 			m_timeBlocks[i]->getTransform().setScale(scale);
 			
+			// Sets the size of the clock depending on the number of teams in play, aswell as the scale of the clock
 			float numOfTeams = float(m_gamemode->getScore().size());
 			float x = cos(i * paj + PI / 2.f) * 8.f * numOfTeams * scale + m_middle.x;
 			float y = sin(i * paj + PI / 2.f) * 16.f * scale + m_middle.y;
@@ -63,12 +65,14 @@ void TimeVisualization::update(float dt) {
 
 	m_timeLeft = m_gamemode->getGametime();
 
+	// Depending on the amount of blocks left, removes x number of blocks to represent the time
 	float numToRemove = 0;
 	while (m_timeLeft < m_secondsPerBlock * float(m_numOfBlocks - 1) && m_numOfBlocks > 0) {
 		numToRemove++;
 		m_numOfBlocks--;
 	}
 
+	// Blocks flying away
 	for (unsigned int i = m_numOfBlocks - 1; i < m_timeBlocks.size(); i++) {
 		if (!m_toRemove[i]) {
 			m_toRemove[i] = true;
@@ -80,11 +84,13 @@ void TimeVisualization::update(float dt) {
 		}
 	}
 
+	// Updates all live blocks
 	for (unsigned int i = 0; i < m_timeBlocks.size(); i++) {
 		m_timeBlocks[i]->update(dt);
 		m_timeBlocks[i]->getTransform().rotateAroundX(dt);
 	}
 
+	// Removes all blocks that have flown into the sunset
 	while (m_toRemove[m_toRemove.size() - 1] && m_timeBlocks.back()->atTargetPos()) {
 		m_toRemove.pop_back();
 		m_timeBlocks.pop_back();
