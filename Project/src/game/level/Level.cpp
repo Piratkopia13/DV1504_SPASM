@@ -23,7 +23,7 @@ Level::Level(const std::string& filename)
 
 	float variationOffsetRowMul = 1.f / BLOCK_VARIATIONS;
 
-	m_destructible = true;
+	m_destructible = GameInfo::getInstance()->convertedGameSettings.destructability;
 
 	if (infile) {		
 
