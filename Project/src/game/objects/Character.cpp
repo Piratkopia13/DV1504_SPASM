@@ -248,11 +248,9 @@ void Character::update(float dt) {
 				m_movement.dJump = true;
 				if (!m_movement.hooked) {//Movement while on the ground
 					if (fabs(m_input.movement.x) > 0.1f) {
-						this->addVelocity(Vector3(m_input.movement.x, 0.f, 0.f));
-						float maxVel = m_movement.speed * max(fabs(m_input.movement.x), 0.5f);
-						Vector3 clampedVelocity(getVelocity());
-						clampedVelocity.Clamp(-Vector3(maxVel), Vector3(maxVel));
-						this->setVelocity(clampedVelocity);
+						// Add velocity when needed to keep player at the max speed
+						if (fabs(getVelocity().x) < m_movement.speed * max(fabs(m_input.movement.x), 0.5f))
+							this->addVelocity(Vector3(m_input.movement.x, 0.f, 0.f));
 					}
 
 					if (getVelocity().LengthSquared() < 0.01f) {
@@ -387,7 +385,7 @@ void Character::draw() {
 	m_head->setTransform(&bodyTransform);
 	m_legs->setTransform(&bodyTransform);
 
-	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
+	float colorGrad = powf(m_playerHealth.healthPercent, 3) * 2.5f + 0.2f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/
