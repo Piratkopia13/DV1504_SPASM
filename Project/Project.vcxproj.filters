@@ -128,7 +128,31 @@
     <ClCompile Include="src\sail\Win32Window.cpp" />
     <ClCompile Include="src\game\objects\Upgrade.cpp" />
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
+    <ClCompile Include="src\game\CharacterHandler.cpp" />
+    <ClCompile Include="src\game\collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\sail\resources\ResourceManager.cpp" />
+    <ClCompile Include="src\sail\Input.cpp" />
+    <ClCompile Include="src\game\gamemodes\Gamemode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\ControlNode.cpp" />
+    <ClCompile Include="src\game\gamemodes\payload\PayloadGamemode.cpp" />
+    <ClCompile Include="src\sail\resources\audio\SoundManager.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\instanced\ParticleShader.cpp" />
+    <ClCompile Include="src\sail\graphics\Particle.cpp" />
+    <ClCompile Include="src\sail\graphics\ParticleEmitter.cpp" />
+    <ClCompile Include="src\game\ParticleHandler.cpp" />
+    <ClCompile Include="src\sail\resources\audio\Sound.cpp" />
+    <ClCompile Include="src\sail\resources\audio\AmbientSound.cpp" />
+    <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\ToneMapHackStage.cpp" />
+    <ClCompile Include="src\sail\graphics\postprocessing\stages\FXAAStage.cpp" />
+    <ClCompile Include="src\game\states\ScoreState.cpp" />
+    <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
+    <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
+    <ClCompile Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.cpp" />
+    <ClCompile Include="src\game\background\TimeVisualization.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BlendStage.cpp" />
+    <ClCompile Include="src\game\background\AnimatedTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
@@ -259,6 +283,8 @@
     <ClInclude Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.h" />
     <ClInclude Include="src\sail\graphics\geometry\factory\ConeModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BlendStage.h" />
+    <ClInclude Include="src\game\background\TimeVisualization.h" />
+    <ClInclude Include="src\game\background\AnimatedTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />
