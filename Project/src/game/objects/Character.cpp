@@ -1,6 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "../collision/CollisionHandler.h"
+#include "../GameInfo.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -246,23 +247,21 @@ void Character::update(float dt) {
 			if (grounded()) {
 				m_movement.dJump = true;
 				if (!m_movement.hooked) {//Movement while on the ground
-					if(m_input.movement.x > 0)
-						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
-					else if(m_input.movement.x < 0)
-						this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x - 1.0f, -m_movement.speed), this->getVelocity().y, 0.f));
-					else
-						this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
-
-					if (fabs(this->getVelocity().x) > 5)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
-					else if (this->getVelocity().x < -1)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
-					else if (this->getVelocity().x > 1)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
-					else if (fabs(this->getVelocity().x) < 1.f) {
-						this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-						this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
+					if (fabs(m_input.movement.x) > 0.1f) {
+						this->addVelocity(Vector3(m_input.movement.x, 0.f, 0.f));
+						float maxVel = m_movement.speed * max(fabs(m_input.movement.x), 0.5f);
+						Vector3 clampedVelocity(getVelocity());
+						clampedVelocity.Clamp(-Vector3(maxVel), Vector3(maxVel));
+						this->setVelocity(clampedVelocity);
 					}
+
+					if (getVelocity().LengthSquared() < 0.01f) {
+						setVelocity(Vector3::Zero);
+					}
+					// Ground friction
+					float frictionCoeff = 2.0f * GameInfo::getInstance()->convertedGameSettings.gravity * 9.82f;
+					Vector3 direction(Utils::clamp(this->getVelocity().x, -1.f, 1.f), 0.f, 0.f);
+					this->setAcceleration(-direction * frictionCoeff);
 				}
 				else//Movement on the ground while using grappling hook
 				{	

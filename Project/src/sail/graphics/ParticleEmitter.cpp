@@ -81,8 +81,8 @@ bool ParticleEmitter::update(float dt) {
 				1.f, m_gravityScale, m_lifetime));
 			m_spawnTimer -= 1.f / m_spawnsPerSecond;
 		}
-		m_spawnTimer = 0.f;
 	}
+	m_spawnTimer = 0.f;
 
 	int i = 0;
 	auto& it = m_particles.begin();
