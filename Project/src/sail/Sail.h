@@ -40,6 +40,7 @@
 //#include "graphics/shader/deferred/DeferredInstancedGeometryShader.h"
 #include "graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
 #include "graphics/geometry/factory/CubeModel.h"
+#include "graphics/geometry/factory/ConeModel.h"
 #include "graphics/geometry/factory/PlaneModel.h"
 #include "graphics/models/FbxModel.h"
 #include "graphics/RenderableTexture.h"

@@ -151,6 +151,8 @@ ScoreState::ScoreState(StateStack& stack)
 	m_playerCamController->setPosition(Vector3(0, 0, -5));
 	m_playerCamController->setFollowSpeed(8);
 
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Scoreboard, true, 0.8f);
+
 }
 ScoreState::~ScoreState() {
 	for (size_t i = 0; i < m_scoreLine.size(); i++) {

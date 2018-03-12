@@ -1,22 +1,18 @@
-struct VSIn
-{
+struct VSIn {
   float4 position : POSITION0;
 };
 
-struct PSIn
-{
+struct PSIn {
   float4 position : SV_Position;
   float3 viewRay : VIEWRAY;
   float4 clipSpace : CLIPSPACE;
 };
 
-cbuffer ModelData : register(b0)
-{
+cbuffer ModelData : register(b0) {
   matrix mInvP;
 }
 
-PSIn VSMain(VSIn input)
-{
+PSIn VSMain(VSIn input) {
   PSIn output;
 
   input.position.w = 1.f;
@@ -40,28 +36,24 @@ SamplerState ss : register(s0);
 //Texture2D playerCamDepthTex : register(t9);
 //Texture2D lightDepthTex : register(t10);
 
-struct LightData
-{
+struct LightData {
   float3 directionVS; // View space direction of directional light
   float3 color;
 };
 
-cbuffer Light : register(b0)
-{
+cbuffer Light : register(b0) {
   LightData lightInput;
 }
 
 SamplerState shadowSS : register(s1);
 
-cbuffer ShadowLightBuffer : register(b1)
-{
+cbuffer ShadowLightBuffer : register(b1) {
   matrix mInvV;
   matrix mLightV;
   matrix mLightP;
 }
 
-float3 deferredPhongShading(LightData light, float3 fragToCam, float3 diffuse, float3 specular, float3 normal)
-{
+float3 deferredPhongShading(LightData light, float3 fragToCam, float3 diffuse, float3 specular, float3 normal) {
 
   float3 totalColor = float3(0.f, 0.f, 0.f);
   fragToCam = normalize(fragToCam);
@@ -72,8 +64,7 @@ float3 deferredPhongShading(LightData light, float3 fragToCam, float3 diffuse, f
   float diffuseCoefficient = saturate(dot(normal, -light.directionVS));
 
   float3 specularCoefficient = float3(0.f, 0.f, 0.f);
-  if (diffuseCoefficient > 0.f)
-  {
+  if (diffuseCoefficient > 0.f) {
 
     float3 r = reflect(light.directionVS, normal);
     r = normalize(r);
@@ -85,8 +76,7 @@ float3 deferredPhongShading(LightData light, float3 fragToCam, float3 diffuse, f
   return saturate(totalColor);
 }
 
-float calcLightValue(float3 camToFrag)
-{
+float calcLightValue(float3 camToFrag) {
     // The camToFrag position transformed to world space
   float4 projectedCamToFrag = mul(float4(camToFrag, 1.f), mInvV);
     //float4 projectedCamToFrag = float4(camToFrag, 1.f);
@@ -201,8 +191,7 @@ float calcLightValue(float3 camToFrag)
   return lightCoeff;
 }
 
-float4 PSMain(PSIn input) : SV_Target0
-{
+float4 PSMain(PSIn input) : SV_Target0 {
 
   float2 texCoords;
   texCoords.x = input.clipSpace.x / input.clipSpace.w / 2.f + 0.5f;
@@ -223,23 +212,20 @@ float4 PSMain(PSIn input) : SV_Target0
 
   float shadow = calcLightValue(positionVS);
 
-  float3 diffuseColor = tex[0].Sample(ss, texCoords).rgb;
+  float4 diffuseColor = tex[0].Sample(ss, texCoords);
 
   // Dont perform lighting on bright pixels to get the "tron" glow
-  if (dot(diffuseColor.rgb, float3(0.2126, 0.7152, 0.0722)) > 0.5f)
-    return float4(diffuseColor, 1.0);
+  if (diffuseColor.a < 1.f)
+    return float4(diffuseColor.rgb, 1.f);
 
-  if (shadow > 0.f)
-  {
+  if (shadow > 0.f) {
 
     float3 normal = (tex[1].Sample(ss, texCoords).rgb * 2.f - 1.f);
 
     float3 specular = tex[2].Sample(ss, texCoords).rgb;
 
-    return float4(deferredPhongShading(lightInput, fragToCam, diffuseColor, specular, normal) * shadow, 1.0f);
-  }
-  else
-  {
+    return float4(deferredPhongShading(lightInput, fragToCam, diffuseColor.rgb, specular, normal) * shadow, 1.f);
+  } else {
     return float4(0.f, 0.f, 0.f, 1.f);
   }
 	//return float4(fragToCam, 1.0f);

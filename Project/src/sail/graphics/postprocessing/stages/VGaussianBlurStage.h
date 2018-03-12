@@ -12,6 +12,7 @@ public:
 	virtual ~VGaussianBlurStage();
 
 	void run(RenderableTexture& inputTexture);
+	void resize(UINT width, UINT height);
 
 private:
 
@@ -19,8 +20,8 @@ private:
 	std::unique_ptr<PixelShader> m_PS;
 
 	struct CBuffer {
-		float texWidth;
-		float texHeight;
+		float invTexWidth;
+		float invTexHeight;
 		float padding[2];
 	};
 

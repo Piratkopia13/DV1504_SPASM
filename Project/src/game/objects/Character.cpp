@@ -26,7 +26,7 @@ Character::Character()
 
 	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
 		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true, false));
-	setLightColor(Vector4(1, 1, 1, 1));
+	//setLightColor(Vector4(1, 1, 1, 1));
 
 	m_nextRespawnPoint = Vector3::Zero;
 
@@ -311,6 +311,8 @@ void Character::update(float dt) {
 				if (m_movement.hooked && m_movement.initialHook == 0) {
 					VibrateController(1, 0.75f, 1.f);
 					m_movement.initialHook++;
+
+					app->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Hook_Hit, 0.8f, 1.f, 0.2f);
 				}
 			}
 		}
@@ -584,6 +586,7 @@ void Character::fire()
 
 void Character::hook() {
 	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
+	Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Hook_Shot, 0.8f, 1.f, 0.2f);
 }
 
 void Character::stopHook() {

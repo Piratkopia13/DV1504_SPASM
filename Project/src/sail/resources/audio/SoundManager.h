@@ -36,6 +36,10 @@ public:
 		Pickup, 
 		Switch,
 		Select,
+		Hook_Shot,
+		Hook_Hit,
+		Captured,
+		Game_Over,
 		NumOfSoundEffects
 	};
 
@@ -44,6 +48,9 @@ public:
 		Loop2,
 		Windows95,
 		Theme,
+		Ambient_Capture,
+		Battle_Sound,
+		Scoreboard,
 		NumOfAmbientSounds
 	};
 

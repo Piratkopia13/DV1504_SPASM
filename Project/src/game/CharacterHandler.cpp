@@ -10,9 +10,15 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Application* app = Application::getInstance();
 	m_info = GameInfo::getInstance();
 
+	app->getResourceManager().LoadDXTexture("laser.tga");
+
 	std::vector<Model*> bodies;
 
-	Model* laserModel = app->getResourceManager().getFBXModel("laser").getModel();
+	//m_laserModel = std::unique_ptr<Model>(new Model(*app->getResourceManager().getFBXModel("laser").getModel()));
+	m_laserModel = ModelFactory::CubeModel::Create(Vector3(0.05f, 0.01f, 0.01f));
+	m_laserModel->buildBufferForShader(&app->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	m_laserModel->getMaterial()->setDiffuseTexture("laser.tga");
+
 	Model* projectileModel = app->getResourceManager().getFBXModel("sphere").getModel();
 	Model* hookModel = app->getResourceManager().getFBXModel("projectile").getModel();
 	Model* headModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botHeadNames[0] + "_head").getModel();
@@ -29,7 +35,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 
 		Hook* tempHook = new Hook(hookModel, particleHandler);
 		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel, i);
-		Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, particleHandler, tempChar);
+		Weapon* tempWeapon = new Weapon(armRightModel, m_laserModel.get(), projectileModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(m_info->getDefaultColor(m_info->getPlayers()[i].color, m_info->getPlayers()[i].hue));
@@ -100,16 +106,9 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		if(m_characters[index]->getLastAttacker() != -1)
 			m_info->getScore().addKill(m_characters[index]->getLastAttacker());
 		m_respawnTimers[index] = 0.01f;
-		int rnd = static_cast<int>(floor(Utils::rnd() * 2.f));
+
 		float fRnd = Utils::rnd() * 0.4f + 0.8f;
-		switch (rnd) {
-		case 0:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion2, 3.f, fRnd);
-			break;
-		default:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.f, fRnd);
-			break;
-		}
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.f, fRnd);
 	}
 }
 

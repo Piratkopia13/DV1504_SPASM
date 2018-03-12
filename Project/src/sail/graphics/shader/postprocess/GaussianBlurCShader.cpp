@@ -4,7 +4,7 @@
 
 using namespace DirectX::SimpleMath;
 
-GaussianBlurCShader::GaussianBlurCShader()
+GaussianBlurCShaderPoo::GaussianBlurCShaderPoo()
 	: m_horInputSRV(nullptr)
 	, m_vertInputSRV(nullptr)
 	, m_horPassUAV(nullptr)
@@ -55,28 +55,28 @@ GaussianBlurCShader::GaussianBlurCShader()
 
 }
 
-GaussianBlurCShader::~GaussianBlurCShader() {
+GaussianBlurCShaderPoo::~GaussianBlurCShaderPoo() {
 	Memory::safeRelease(m_horPassUAV);
 	Memory::safeRelease(m_vertPassUAV);
 }
 
-void GaussianBlurCShader::updateConstantBuffer() const {
+void GaussianBlurCShaderPoo::updateConstantBuffer() const {
 
 }
 
-void GaussianBlurCShader::bind() {
+void GaussianBlurCShaderPoo::bind() {
 	ShaderSet::bind();
 }
 
-void GaussianBlurCShader::createBuffers() {
+void GaussianBlurCShaderPoo::createBuffers() {
 
 }
 
-void GaussianBlurCShader::setInputSRV(ID3D11ShaderResourceView** srv) {
+void GaussianBlurCShaderPoo::setInputSRV(ID3D11ShaderResourceView** srv) {
 	m_horInputSRV = srv;
 }
 
-void GaussianBlurCShader::setHorPassUAV(ID3D11Texture2D* tex) {
+void GaussianBlurCShaderPoo::setHorPassUAV(ID3D11Texture2D* tex) {
 	auto* dev = Application::getInstance()->getDXManager()->getDevice();
 	D3D11_TEXTURE2D_DESC texDesc;
 	tex->GetDesc(&texDesc);
@@ -93,7 +93,7 @@ void GaussianBlurCShader::setHorPassUAV(ID3D11Texture2D* tex) {
 	ThrowIfFailed(dev->CreateUnorderedAccessView(tex, &descView, &m_horPassUAV));
 }
 
-void GaussianBlurCShader::setOutputTexture(RenderableTexture* tex) {
+void GaussianBlurCShaderPoo::setOutputTexture(RenderableTexture* tex) {
 	m_outputTex = tex;
 
 	auto* dev = Application::getInstance()->getDXManager()->getDevice();
@@ -112,13 +112,13 @@ void GaussianBlurCShader::setOutputTexture(RenderableTexture* tex) {
 	ThrowIfFailed(dev->CreateUnorderedAccessView(m_outputTex->getTexture2D(), &descView, &m_vertPassUAV));
 }
 
-void GaussianBlurCShader::resize(int width, int height) {
+void GaussianBlurCShaderPoo::resize(int width, int height) {
 	m_middleTex->resize(width, height);
 	m_vertInputSRV = m_middleTex->getColorSRV();
 	setHorPassUAV(m_middleTex->getTexture2D());
 }
 
-void GaussianBlurCShader::setTextureSize(UINT width, UINT height) {
+void GaussianBlurCShaderPoo::setTextureSize(UINT width, UINT height) {
 	m_texWidth = width;
 	m_texHeight = height;
 
@@ -133,11 +133,11 @@ void GaussianBlurCShader::setTextureSize(UINT width, UINT height) {
 	setHorPassUAV(m_middleTex->getTexture2D());
 }
 
-void GaussianBlurCShader::setFullScreenQuadModel(Model* model) {
+void GaussianBlurCShaderPoo::setFullScreenQuadModel(Model* model) {
 	m_fullScreenQuadModel = model;
 }
 
-void GaussianBlurCShader::draw(bool bindFirst) {
+void GaussianBlurCShaderPoo::draw(bool bindFirst) {
 
 	m_middleTex->clear({ 0.0, 0.0, 0.0, 0.0 });
 
@@ -159,7 +159,7 @@ void GaussianBlurCShader::draw(bool bindFirst) {
 			con->PSSetShaderResources(0, numTextures, tex);
 
 		// Bind vertex buffer
-		UINT stride = sizeof(GaussianBlurCShader::Vertex);
+		UINT stride = sizeof(GaussianBlurCShaderPoo::Vertex);
 		UINT offset = 0;
 		con->IASetVertexBuffers(0, 1, m_fullScreenQuadModel->getVertexBuffer(), &stride, &offset);
 

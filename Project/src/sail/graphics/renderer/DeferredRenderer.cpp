@@ -55,13 +55,14 @@ void DeferredRenderer::beginGeometryPass(Camera& camera, ID3D11RenderTargetView*
 	Application::getInstance()->getDXManager()->getDeviceContext()->RSSetViewports(1, m_gBuffers[0]->getViewPort());
 
 	auto dxm = Application::getInstance()->getDXManager();
+	dxm->disableAlphaBlending();
 
 	// Set render targets to all the gbuffers, except depth which is written to anyway
 	dxm->getDeviceContext()->OMSetRenderTargets(NUM_GBUFFERS, m_rtvs, (dsv) ? dsv : m_dsv );
 
 	// Clear all gbuffers
 	for (int i = 0; i < NUM_GBUFFERS - 1; i++)
-		m_gBuffers[i]->clear({0.f, 0.f, 0.0f, 1.0f});
+		m_gBuffers[i]->clear({0.f, 0.f, 0.0f, 0.0f});
 
 	// Update the camera in the shaders
 	Application::getInstance()->getResourceManager().getShaderSet<DeferredGeometryShader>().updateCamera(camera);
