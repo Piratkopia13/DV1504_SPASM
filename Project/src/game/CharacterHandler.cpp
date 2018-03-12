@@ -80,6 +80,8 @@ void CharacterHandler::addPlayer(Character* player) {
 
 Vector3 CharacterHandler::getRandomSpawnPoint(UINT team) const {
 	Vector3 respawnPos(0, 0, 0);
+	if (GameInfo::getInstance()->convertedGameSettings.gamemode == GameInfo::DEATHMATCH)
+		team = 0;
 	if (m_spawns[team].size() > 0) {
 		unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
 		respawnPos = m_spawns[team][spawn];
