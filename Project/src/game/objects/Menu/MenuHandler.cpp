@@ -34,7 +34,7 @@ MenuHandler::MenuHandler() {
 	m_pointers[1]->getTransform().setRotations(Vector3(3.14f, 0, -1.57f));
 	updateTransform();
 }
-
+ 
 
 MenuHandler::~MenuHandler() {
 
@@ -71,7 +71,9 @@ void MenuHandler::draw() {
 			
 			}
 		}
+		
 	}
+	
 }
 
 void MenuHandler::update(float dt) {
@@ -157,6 +159,7 @@ void MenuHandler::setGrowth(const DirectX::SimpleMath::Vector3 & growth) {
 
 void MenuHandler::setFacingDirection(const DirectX::SimpleMath::Vector3 & direction) {
 	m_direction = direction;
+	this->getTransform().setRotations(Vector3(0, -atan2(m_direction.z, m_direction.x), 0));
 	updateTransform();
 }
 
@@ -462,10 +465,6 @@ void MenuHandler::activate() {
 	m_active = true;
 	m_visible = true;
 	m_colorChange.active = true;
-	if(m_itemList[m_activeItem].item)
-		m_itemList[m_activeItem].item->setLightColor(m_onColor);
-	if (m_itemList[m_activeItem].text)
-		m_itemList[m_activeItem].text->setColor(m_onColor);
 
 
 }
@@ -474,11 +473,6 @@ void MenuHandler::deActivate() {
 	m_active = false;
 	m_colorChange.active = true;
 	
-
-	if(m_itemList[m_activeItem].item)
-		m_itemList[m_activeItem].item->setLightColor(m_offColor);
-	if (m_itemList[m_activeItem].text)
-		m_itemList[m_activeItem].text->setColor(m_offColor);
 }
 
 bool MenuHandler::isActive() {

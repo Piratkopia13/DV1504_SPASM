@@ -202,6 +202,11 @@ GameInfo::GameInfo()
 
 	std::string s;
 	std::stringstream ss;
+
+
+
+
+
 	std::string path = "res/levels/Domination";
 	for (auto & p : directory_iterator(path)) {
 		ss << p;
@@ -210,6 +215,11 @@ GameInfo::GameInfo()
 		int last = s.find_last_of('.');
 		if (s.substr(last,6) == ".level") {
 			std::string item = s.substr(first, last - first);
+
+
+
+
+
 			Logger::log("map " + item + " Loaded for domination");
 			domination.push_back(item);	
 		}
@@ -236,11 +246,16 @@ GameInfo::GameInfo()
 		int last = s.find_last_of('.');
 
 		std::string item = s.substr(first, last - first);
+
+
+
 		Logger::log("map " + item + " Loaded for TDM");
 		teamdeathmatch.push_back(item);
 		ss.str("");
 	}
 	
+
+
 
 	maps.push_back(domination);
 	maps.push_back(deathmatch);

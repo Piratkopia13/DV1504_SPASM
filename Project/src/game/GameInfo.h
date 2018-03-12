@@ -135,6 +135,7 @@ public:
 	std::vector<std::string> botLegNames;
 	std::vector<std::string> botArmNames;
 
+	
 	std::vector<std::vector<std::string>> maps;
 	std::vector<Setting> gameModes;
 	std::vector<Setting> timeLimit;
