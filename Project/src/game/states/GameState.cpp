@@ -37,18 +37,20 @@ GameState::GameState(StateStack& stack)
 		gamePad.SetVibration(u, 0, 0);
 
 #ifdef _DEBUG
-	if (info->gameSettings.teams.size() == 0) {
-		info->gameSettings.teams.push_back({ 0, 0 });
-		info->gameSettings.teams.push_back({ 1, 0 });
-		info->convertGameSettings();
-	}
-	if (info->getPlayers().size() == 0) {
-		info->addPlayer({ &info->getProfiles()[0], 0, 0, 0, 0, 0, 0, 0, 0 });
-		info->addPlayer({ &info->getProfiles()[1], 1, 1, 1, 0, 0, 0, 0, 0 });
-	} else if (info->getPlayers().size() == 1) {
-		info->addPlayer({ &info->getProfiles()[1], 1, 0, 0, 0, 0, 0, 0, 0 });
-		info->addPlayer({ &info->getProfiles()[2], 2, 1, 1, 0, 0, 0, 0, 0 });
-		info->addPlayer({ &info->getProfiles()[3], 3, 1, 1, 0, 0, 0, 0, 0 });
+	if (info->gameSettings.gameMode == 0) {
+		if (info->gameSettings.teams.size() == 0) {
+			info->gameSettings.teams.push_back({ 0, 0 });
+			info->gameSettings.teams.push_back({ 1, 0 });
+			info->convertGameSettings();
+		}
+		if (info->getPlayers().size() == 0) {
+			info->addPlayer({ &info->getProfiles()[0], 0, 0, 0, 0, 0, 0, 0, 0 });
+			info->addPlayer({ &info->getProfiles()[1], 1, 1, 1, 0, 0, 0, 0, 0 });
+		} else if (info->getPlayers().size() == 1) {
+			info->addPlayer({ &info->getProfiles()[1], 1, 0, 0, 0, 0, 0, 0, 0 });
+			info->addPlayer({ &info->getProfiles()[2], 2, 1, 1, 0, 0, 0, 0, 0 });
+			info->addPlayer({ &info->getProfiles()[3], 3, 1, 1, 0, 0, 0, 0, 0 });
+		}
 	}
 #endif
 	std::string map = info->convertedGameSettings.map;

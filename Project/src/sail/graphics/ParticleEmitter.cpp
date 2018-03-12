@@ -1,5 +1,6 @@
 #include "ParticleEmitter.h"
 #include "geometry/factory/InstancedParticleModel.h"
+#include "../../game/GameInfo.h"
 #include <algorithm>
 #include <math.h>
 
@@ -22,6 +23,10 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 	, m_spawnTimer(0.f)
 	//, m_isBeam(false)
 {
+
+	auto& particleSetting = GameInfo::getInstance()->convertedGraphics.particles;
+	if (particleSetting == 0) return;
+	maxParticles *= static_cast<UINT>(particleSetting);
 
 	auto* m_app = Application::getInstance();
 
@@ -64,7 +69,6 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 			Vector3((Utils::rnd() + m_velocityRndAdd.x) * m_velocityVariety.x, (Utils::rnd() + m_velocityRndAdd.y) * m_velocityVariety.y, (Utils::rnd() + m_velocityRndAdd.z) * m_velocityVariety.z),
 			1.f, m_gravityScale, m_lifetime));
 	}
-
 }
 
 ParticleEmitter::~ParticleEmitter() {
@@ -72,13 +76,19 @@ ParticleEmitter::~ParticleEmitter() {
 
 bool ParticleEmitter::update(float dt) {
 
+	auto& particleSetting = GameInfo::getInstance()->convertedGraphics.particles;
+	if (particleSetting == 0) return false;
+
 	m_spawnTimer += dt;
 	if (m_spawnTimer >= 1.f / m_spawnsPerSecond) {
 		while (m_spawnTimer > 0.f) {
-			// Spawn a new particle
-			addParticle(Particle(m_emitPosition, 
-				Vector3((Utils::rnd() + m_velocityRndAdd.x) * m_velocityVariety.x, (Utils::rnd() + m_velocityRndAdd.y) * m_velocityVariety.y, (Utils::rnd() + m_velocityRndAdd.z) * m_velocityVariety.z),
-				1.f, m_gravityScale, m_lifetime));
+			// Spawn multiple particles depending on the settings
+			for (int i = 0; i < particleSetting; i++) {
+				// Spawn a new particle
+				addParticle(Particle(m_emitPosition,
+										Vector3((Utils::rnd() + m_velocityRndAdd.x) * m_velocityVariety.x, (Utils::rnd() + m_velocityRndAdd.y) * m_velocityVariety.y, (Utils::rnd() + m_velocityRndAdd.z) * m_velocityVariety.z),
+										1.f, m_gravityScale, m_lifetime));
+			}
 			m_spawnTimer -= 1.f / m_spawnsPerSecond;
 		}
 	}
@@ -124,8 +134,8 @@ bool ParticleEmitter::update(float dt) {
 	if (m_singleUse && m_particles.size() == 0)
 		return true;
 
-//#ifndef _DEBUG
-	// Only sort if neccessary
+	//#ifndef _DEBUG
+		// Only sort if neccessary
 	if (!m_useAdditiveBlending)
 		// TOOD: try different sorting algorithms
 		std::sort(m_instanceData.begin(), m_instanceData.begin() + m_particles.size(), Compare(*this));
@@ -133,7 +143,6 @@ bool ParticleEmitter::update(float dt) {
 //#endif
 
 	return false;
-
 }
 
 void ParticleEmitter::insertionSort() {
@@ -185,6 +194,8 @@ const DirectX::SimpleMath::Vector3& ParticleEmitter::getEmitterPosition() const 
 }
 
 void ParticleEmitter::spawnBeamParticles(const DirectX::SimpleMath::Vector3& startPos, const DirectX::SimpleMath::Vector3& endPos, float step, float minDuration, float maxDuration) {
+	auto& particleSetting = GameInfo::getInstance()->convertedGraphics.particles;
+	if (particleSetting == 0) return;
 
 	float dst = Vector3::Distance(startPos, endPos);
 	Vector3 dir = endPos - startPos;
@@ -192,16 +203,20 @@ void ParticleEmitter::spawnBeamParticles(const DirectX::SimpleMath::Vector3& sta
 
 	Vector3 rndAdd = -dir - Vector3(0.5f);
 
+	step /= particleSetting;
+
 	// Step along the beam and spawn particles with different lifetimes
 	for (float i = 0.f; i < dst; i += step) {
 		addParticle(Particle(startPos + dir * i,
 							 Vector3((Utils::rnd() + rndAdd.x) * m_velocityVariety.x, (Utils::rnd() + rndAdd.y) * m_velocityVariety.y, (Utils::rnd() + rndAdd.z) * m_velocityVariety.z),
 							 1.f, m_gravityScale, minDuration + maxDuration * (i / dst)));
 	}
-
 }
 
 void ParticleEmitter::draw() {
+	auto& particleSetting = GameInfo::getInstance()->convertedGraphics.particles;
+	if (particleSetting == 0) return;
+
 	m_shader->updateSpriteData(m_spritesPerRow, m_scale);
 	m_shader->updateInstanceData(&m_instanceData[0], m_instanceData.size() * sizeof(m_instanceData[0]), m_instancedModel->getInstanceBuffer());
 	Application::getInstance()->getDXManager()->enableDepthBufferWithWriteMask();
