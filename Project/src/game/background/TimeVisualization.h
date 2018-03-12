@@ -34,6 +34,7 @@ private:
 
 	float m_rightTopBottom;
 	float m_leftTopBottom;
+	float m_leftRight;
 	float m_topBottom;
 	float m_leftRightTopBottom;
 

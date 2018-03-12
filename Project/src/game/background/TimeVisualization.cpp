@@ -15,7 +15,7 @@ TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 
 		m_instancedBlocks = std::make_unique<InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>>();
 
-		m_timeTransforms.resize(120);
+		m_timeTransforms.resize(1000);
 		m_toRemove.resize(m_timeTransforms.size());
 		m_instancedBlocks->init(m_timeTransforms.size());
 
@@ -49,6 +49,8 @@ TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 		m_leftTopBottom = 0.1875f;
 		// 11/16
 		m_topBottom = 0.6875f;
+		// 10/16
+		m_leftRight = 0.625f;
 		// 1/16
 		m_leftRightTopBottom = 0.0625f;
 
@@ -108,7 +110,8 @@ void TimeVisualization::update(float dt) {
 			targetPos = m_timeTransforms[i]->getTranslation();
 			targetPos.z = 1000.f;
 			m_timeTransforms[i]->setTargetPos(targetPos, 4.f);
-			m_instancedBlocks->getInstanceData(m_numOfBlocks - 1).blockVariationOffset = m_leftRightTopBottom;
+			m_instancedBlocks->getInstanceData(m_numOfBlocks - 1).blockVariationOffset = m_topBottom;
+			m_timeTransforms[i]->rotateAroundY(DirectX::XM_PI * 0.5f);
 
 			if (m_numOfBlocks - 2 >= 0) {
 				m_instancedBlocks->getInstanceData(m_numOfBlocks - 2).blockVariationOffset = m_rightTopBottom;
@@ -117,15 +120,17 @@ void TimeVisualization::update(float dt) {
 	}
 
 	// Updates all live blocks
+	unsigned int mtrSize = m_toRemove.size() - 1;
 	for (unsigned int i = 0; i < m_timeTransforms.size(); i++) {
 		m_timeTransforms[i]->update(dt);
-		m_timeTransforms[i]->rotateAroundX(dt);
+		if(i < mtrSize)
+			if(!m_toRemove[mtrSize])
+				m_timeTransforms[i]->rotateAroundX(dt);
 
 		m_instancedBlocks->getInstanceData(i).modelMatrix = m_timeTransforms[i]->getMatrix();
 	}
 
 	// Removes all blocks that have flown into the sunset
-	unsigned int mtrSize = m_toRemove.size() - 1;
 	while (m_toRemove[mtrSize] && m_timeTransforms[mtrSize]->atTargetPos()) {
 		m_toRemove.pop_back();
 		mtrSize = m_toRemove.size() - 1;
