@@ -312,6 +312,7 @@ bool MenuState::processInput(float dt) {
 								m_info->gameSettings.respawnTime = m_gamemodeMenu->getOptionAt(RESPAWNTIME);
 								m_info->gameSettings.gravity = m_gamemodeMenu->getOptionAt(GRAVITY);
 								m_info->gameSettings.playerLife = m_gamemodeMenu->getOptionAt(PLAYERLIFE);
+								m_info->gameSettings.destructibleBlocks = m_gamemodeMenu->getOptionAt(6);
 								m_info->getPlayers().clear();
 								m_info->gameSettings.teams.clear();
 								

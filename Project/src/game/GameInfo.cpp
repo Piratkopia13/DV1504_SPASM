@@ -126,7 +126,7 @@ GameInfo::GameInfo()
 	playerHealth.push_back({ "30",30,0 });
 
 	destructibleBlocks.push_back({ "on" , 1, 0 });
-	destructibleBlocks.push_back({ "off", 1, 0 });
+	destructibleBlocks.push_back({ "off", 0, 0 });
 
 	
 	// GRAPHICS SETTINGS
@@ -327,6 +327,7 @@ void GameInfo::convertGameSettings() {
 	convertedGameSettings.respawnTime = respawnTime[gameSettings.respawnTime].value;
 	convertedGameSettings.playerLife = playerHealth[gameSettings.playerLife].value;
 	convertedGameSettings.gravity = gravity[gameSettings.gravity].value;
+	convertedGameSettings.destructability = destructibleBlocks[gameSettings.destructibleBlocks].value;
 
 	for (size_t i = 0; i < gameSettings.teams.size(); i++) {
 		convertedGameSettings.teams.push_back({
