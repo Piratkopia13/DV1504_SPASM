@@ -72,7 +72,7 @@ Level::Level(const std::string& filename)
 				infile.seekg(seekPos);
 
 				// Init instance data
-				m_instancedBlocks->init(blockCount + (m_height * 2 + m_width * 2));
+				m_instancedBlocks->init(blockCount + (m_height * 2 + m_width * 2) + 4);
 
 				y = m_height;
 
@@ -175,7 +175,7 @@ Level::Level(const std::string& filename)
 		}
 
 		//Edge indicators
-		for (int x = 0; x < m_width; x++) {
+		for (int x = -1; x < m_width + 1; x++) {
 			DynBlockDeferredInstancedGeometryShader::InstanceData instanceDataBottom, instanceDataTop;
 			instanceDataTop.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(m_height + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 			instanceDataBottom.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(-1.f + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
