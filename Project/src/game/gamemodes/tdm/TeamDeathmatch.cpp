@@ -56,7 +56,7 @@ int TeamDeathmatch::checkWin() {
 	if (getGametime() <= 0.f) {
 		float teamOne = getScore(0);
 		float teamTwo = getScore(1);
-		m_winnerID = (teamOne > teamTwo) ? 0 : (teamTwo > teamOne) ? 1 : -1;
+		m_winnerID = (teamOne > teamTwo) ? 0 : (teamTwo > teamOne) ? 1 : Gamemode::DRAW;
 	}
 
 	return m_winnerID;

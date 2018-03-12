@@ -1,6 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "../collision/CollisionHandler.h"
+#include "../GameInfo.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -26,7 +27,7 @@ Character::Character()
 
 	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
 		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true, false));
-	setLightColor(Vector4(1, 1, 1, 1));
+	//setLightColor(Vector4(1, 1, 1, 1));
 
 	m_nextRespawnPoint = Vector3::Zero;
 
@@ -246,23 +247,19 @@ void Character::update(float dt) {
 			if (grounded()) {
 				m_movement.dJump = true;
 				if (!m_movement.hooked) {//Movement while on the ground
-					if(m_input.movement.x > 0)
-						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
-					else if(m_input.movement.x < 0)
-						this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x - 1.0f, -m_movement.speed), this->getVelocity().y, 0.f));
-					else
-						this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
-
-					if (fabs(this->getVelocity().x) > 5)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
-					else if (this->getVelocity().x < -1)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
-					else if (this->getVelocity().x > 1)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
-					else if (fabs(this->getVelocity().x) < 1.f) {
-						this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-						this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
+					if (fabs(m_input.movement.x) > 0.1f) {
+						// Add velocity when needed to keep player at the max speed
+						if (fabs(getVelocity().x) < m_movement.speed * max(fabs(m_input.movement.x), 0.5f))
+							this->addVelocity(Vector3(m_input.movement.x, 0.f, 0.f));
 					}
+
+					if (getVelocity().LengthSquared() < 0.01f) {
+						setVelocity(Vector3::Zero);
+					}
+					// Ground friction
+					float frictionCoeff = 2.0f * GameInfo::getInstance()->convertedGameSettings.gravity * 9.82f;
+					Vector3 direction(Utils::clamp(this->getVelocity().x, -1.f, 1.f), 0.f, 0.f);
+					this->setAcceleration(-direction * frictionCoeff);
 				}
 				else//Movement on the ground while using grappling hook
 				{	
@@ -388,7 +385,7 @@ void Character::draw() {
 	m_head->setTransform(&bodyTransform);
 	m_legs->setTransform(&bodyTransform);
 
-	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
+	float colorGrad = powf(m_playerHealth.healthPercent, 3) * 2.5f + 0.2f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/

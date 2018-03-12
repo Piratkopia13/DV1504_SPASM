@@ -67,3 +67,11 @@ Transform& Object::getTransform() {
 AABB* Object::getBoundingBox() {
 	return boundingBox;
 }
+
+DirectX::SimpleMath::Vector4 Object::getLightColor() {
+	return lightColor;
+}
+
+DirectX::SimpleMath::Vector4 Object::getColor() {
+	return model->getMaterial()->getColor();
+}

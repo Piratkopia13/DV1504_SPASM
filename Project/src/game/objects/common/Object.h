@@ -22,6 +22,8 @@ public:
 	Model* getModel();
 	Transform& getTransform();
 	AABB* getBoundingBox();
+	DirectX::SimpleMath::Vector4 getLightColor();
+	DirectX::SimpleMath::Vector4 getColor();
 
 	virtual void draw() = 0;
 };

@@ -53,7 +53,7 @@ void ScoreVisualization::update(float dt) {
 	//Animate random blocks by giving them a target position and making them accelerate towards that position
 	float scale = 3.0f;
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
-		int pointBlocks = min((int) ceil(m_blocksPerTeam * finalScore[i] * 0.1f), m_blocksPerTeam);
+		int pointBlocks = min((unsigned int) ceil(m_blocksPerTeam * finalScore[i] * 0.1f), m_blocksPerTeam);
 		for (int j = 0; j < pointBlocks; j++) { //Blocks moving toward or are already in the score pillar (claimed points)
 			Vector3 tempPos = m_scoreBlocks[i][j]->getTransform().getTranslation();
 
