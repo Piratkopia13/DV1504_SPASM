@@ -64,14 +64,14 @@ ScoreState::ScoreState(StateStack& stack)
 			// om fler kills
 			if (tempMaxKills < kills) {
 				index = u;
-				tempMaxKills = kills;
-				tempDeaths = deaths;
+				tempMaxKills = (float)kills;
+				tempDeaths = (float)deaths;
 			}
 			// om lika kills & mindre deaths
 			else if (tempMaxKills == kills && tempDeaths >= deaths) {
 				index = u;
-				tempMaxKills = kills;
-				tempDeaths = deaths;
+				tempMaxKills = (float)kills;
+				tempDeaths = (float)deaths;
 
 			}
 		}
@@ -79,7 +79,7 @@ ScoreState::ScoreState(StateStack& stack)
 			continue;
 		used[index] = true;
 		oldMax = tempMaxKills;
-		oldDeaths = score->getPlayerStats(index).deaths;
+		oldDeaths = (float)score->getPlayerStats(index).deaths;
 		playerName.push_back(m_info->getPlayers()[index]);
 		playerStats.push_back(score->getPlayerStats(index));
 	}
@@ -112,7 +112,7 @@ ScoreState::ScoreState(StateStack& stack)
 		m_scoreLine.push_back(temp);
 
 		for (size_t u = 0; u < m_scoreLine[i].text.size(); u++) {
-			m_scoreLine[i].text[u]->setColor(m_info->getDefaultColor(playerName[i].color,playerName[i].hue) * ((m_info->convertedGameSettings.teams[playerName[i].team].winner) ? 3:1));
+			m_scoreLine[i].text[u]->setColor(m_info->getDefaultColor(playerName[i].color,playerName[i].hue) * ((m_info->convertedGameSettings.teams[playerName[i].team].winner) ? 3.f:1.f));
 			m_scene.addObject(m_scoreLine[i].text[u]);
 		}
 	}

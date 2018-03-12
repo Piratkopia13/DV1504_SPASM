@@ -367,7 +367,7 @@ bool GameState::update(float dt) {
 	*/
 	int checkWin = m_gamemode->checkWin();
 	if (checkWin > Gamemode::NONE) {
-		if (checkWin > Gamemode::DRAW && checkWin < m_info->convertedGameSettings.teams.size())
+		if (checkWin > Gamemode::DRAW && checkWin < (int)m_info->convertedGameSettings.teams.size())
 			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
 		requestStackClear();
