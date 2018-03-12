@@ -216,6 +216,7 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 
 					m_blocks[x][y].update(delta);
 					if (m_blocks[x][y].respawned) {
+						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3::One;
 						m_grid->addBlock(m_blocks[x][y].data, x, y);
 						setBlockVariation(x, y);
 						updateAdjacent(x, y);
@@ -223,7 +224,7 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 					}
 					if (m_blocks[x][y].respawning) {
 						m_blocks[x][y].respawned = true;
-						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3(2.f);
+						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3(3.f);
 						m_blocks[x][y].respawning = false;
 					}
 

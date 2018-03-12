@@ -51,7 +51,6 @@ public:
 					currentHP = maxHP;
 					implodingTimer = 0.0f;
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(100.0f) * data->modelMatrix;
-					data->color = DirectX::SimpleMath::Vector3(3.0f);
 				}
 			}
 			if (attacked) {
@@ -75,7 +74,6 @@ public:
 					destroyed = true;
 				}
 				if (implodingTimer > 1.5f) {
-					//DirectX::SimpleMath::Vector3 defaultPos = data->modelMatrix.Translation();
 					data->color = DirectX::SimpleMath::Vector3::Zero;
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation());
 					imploding = false;
