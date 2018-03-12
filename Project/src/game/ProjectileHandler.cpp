@@ -11,7 +11,7 @@ ProjectileHandler::ProjectileHandler(ParticleHandler* particleHandler)
 
 	auto teams = GameInfo::getInstance()->convertedGameSettings.teams;
 	m_traceEmitter.resize(teams.size());
-	for (int i = 0; i < m_traceEmitter.size(); i++) {
+	for (unsigned int i = 0; i < m_traceEmitter.size(); i++) {
 		m_traceEmitter[i] = std::shared_ptr<ParticleEmitter>(
 			new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3::Zero,
 				Vector3::Zero, Vector3(3.f, 3.f, 0.5f), 0.f, 10000U, 0.2f, 0.f, teams[i].color, 0.f, 0U, true, false));

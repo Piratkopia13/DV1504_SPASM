@@ -1085,7 +1085,7 @@ void MenuState::initMain() {
 	m_mainMenu->addMenuBox("exit");
 	m_mainMenu->setPosition(Vector3(0, -0.5, 7));
 	m_mainMenu->setFacingDirection(Vector3(0, 0, -1));
-	m_mainMenu->setSize(1.3);
+	m_mainMenu->setSize(1.3f);
 	m_mainMenu->setOffColor(m_offColor);
 	//m_mainMenu->setOnColor(m_onColor);
 	m_mainMenu->activate();
