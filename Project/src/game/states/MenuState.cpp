@@ -312,6 +312,7 @@ bool MenuState::processInput(float dt) {
 								m_info->gameSettings.respawnTime = m_gamemodeMenu->getOptionAt(RESPAWNTIME);
 								m_info->gameSettings.gravity = m_gamemodeMenu->getOptionAt(GRAVITY);
 								m_info->gameSettings.playerLife = m_gamemodeMenu->getOptionAt(PLAYERLIFE);
+								m_info->gameSettings.destructibleBlocks = m_gamemodeMenu->getOptionAt(6);
 								m_info->getPlayers().clear();
 								m_info->gameSettings.teams.clear();
 								
@@ -1005,7 +1006,10 @@ bool MenuState::resize(int width, int height) {
 bool MenuState::update(float dt) {
 
 	// Update HUD texts
-	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
+	if (m_info->graphicsSettings.fpsCounter == 0)
+		m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
+	else
+		m_fpsText.setText(L"");
 
 	auto& camPos = m_cam.getPosition();
 	m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()));

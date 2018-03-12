@@ -21,6 +21,7 @@ public:
 	void triggerPull();
 	void triggerRelease();
 	void fire(const DirectX::SimpleMath::Vector3& direction);
+	void resetUpgrade();
 
 
 	ProjectileHandler& getProjectileHandler();
