@@ -72,7 +72,7 @@ Level::Level(const std::string& filename)
 				infile.seekg(seekPos);
 
 				// Init instance data
-				m_instancedBlocks->init(blockCount);
+				m_instancedBlocks->init(blockCount + (m_height * 2 + m_width * 2));
 
 				y = m_height;
 
@@ -151,8 +151,6 @@ Level::Level(const std::string& filename)
 					instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 					m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y);
 					m_blocks[x][y].data = m_grid->getBlock(x, y);
-					//m_blocks[x][y].setHP
-					instanceData.color = Vector3::One;
 
 				} else if (c == 'c') {
 					// Controlnodes
@@ -175,6 +173,32 @@ Level::Level(const std::string& filename)
 				}
 			}
 		}
+
+		//Edge indicators
+		for (int x = 0; x < m_width; x++) {
+			DynBlockDeferredInstancedGeometryShader::InstanceData instanceDataBottom, instanceDataTop;
+			instanceDataTop.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(m_height + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+			instanceDataBottom.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(-1.f + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+			instanceDataTop.blockVariationOffset = 1.f/16.f;
+			instanceDataBottom.blockVariationOffset = 1.f/16.f;
+			instanceDataTop.color = Vector3(3.0f, 2.f, 3.f);
+			instanceDataBottom.color = Vector3(3.0f, 2.f, 3.f);
+			m_instancedBlocks->addInstance(instanceDataTop);
+			m_instancedBlocks->addInstance(instanceDataBottom);
+		}
+		for (int y = 0; y < m_height; y++) {
+			DynBlockDeferredInstancedGeometryShader::InstanceData instanceDataLeft, instanceDataRight;
+			instanceDataRight.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(m_width + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+			instanceDataLeft.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(-1.f + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+
+			instanceDataLeft.blockVariationOffset = 1.f/16.f;
+			instanceDataRight.blockVariationOffset = 1.f/16.f;
+			instanceDataLeft.color = Vector3(3.0f, 2.f, 3.f);
+			instanceDataRight.color = Vector3(3.0f, 2.f, 3.f);
+			m_instancedBlocks->addInstance(instanceDataLeft);
+			m_instancedBlocks->addInstance(instanceDataRight);
+		}
+
 		for (int x = 0; x < m_width; x++) {
 			for (int y = 0; y < m_height; y++)
 				setBlockVariation(x, y);
