@@ -136,7 +136,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\game\background\AnimatedObject.cpp" />
+    <ClCompile Include="src\game\background\AnimatedTransform.cpp" />
     <ClCompile Include="src\game\background\TimeVisualization.cpp" />
     <ClCompile Include="src\game\gamemodes\deathmatch\Deathmatch.cpp" />
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
@@ -253,7 +253,7 @@
     <None Include="res\models\monkey.fbx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\game\background\AnimatedObject.h" />
+    <ClInclude Include="src\game\background\AnimatedTransform.h" />
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
     <ClInclude Include="src\game\background\TimeVisualization.h" />
     <ClInclude Include="src\game\GameInfo.h" />

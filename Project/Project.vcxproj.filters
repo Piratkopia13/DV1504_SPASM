@@ -151,8 +151,8 @@
     <ClCompile Include="src\sail\graphics\shader\deferred\DeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\sail\graphics\shader\deferred\DynBlockDeferredInstancedGeometryShader.cpp" />
     <ClCompile Include="src\game\background\TimeVisualization.cpp" />
-    <ClCompile Include="src\game\background\AnimatedObject.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BlendStage.cpp" />
+    <ClCompile Include="src\game\background\AnimatedTransform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
@@ -284,7 +284,7 @@
     <ClInclude Include="src\sail\graphics\geometry\factory\ConeModel.h" />
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BlendStage.h" />
     <ClInclude Include="src\game\background\TimeVisualization.h" />
-    <ClInclude Include="src\game\background\AnimatedObject.h" />
+    <ClInclude Include="src\game\background\AnimatedTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

@@ -1,15 +1,14 @@
 #pragma once
 
 #include "../../sail/Sail.h"
-#include "../objects/common/Object.h"
+#include "../../sail/graphics/geometry/Transform.h"
 
-class AnimatedObject : public Object {
+class AnimatedTransform : public Transform {
 
 public:
-	AnimatedObject(Model *drawModel, DirectX::SimpleMath::Vector3 startPos = DirectX::SimpleMath::Vector3::Zero);
-	~AnimatedObject();
+	AnimatedTransform(DirectX::SimpleMath::Vector3 startPos = DirectX::SimpleMath::Vector3::Zero);
+	~AnimatedTransform();
 
-	virtual void draw();
 	void update(float dt);
 
 	void setTargetPos(DirectX::SimpleMath::Vector3 & target, const float timeToAnimate = 1.f);
