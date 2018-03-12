@@ -31,7 +31,7 @@ public:
 		float maxHP = 60.f;
 		float currentHP = maxHP;
 		DynBlockDeferredInstancedGeometryShader::InstanceData* data = nullptr;
-		float respawnTime = 3.f;
+		float respawnTime = 5.f;
 		float timeDead = 0.0f;
 		float implodingTimer = 0.0f;
 		bool attacked = false;
@@ -65,7 +65,7 @@ public:
 			if (imploding) {
 				implodingTimer += delta;
 				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.99f + (Utils::rnd() * 0.02f)) * data->modelMatrix;
-				if (implodingTimer > 1.5f) {
+				if (implodingTimer > 1.0f) {
 					data->color = DirectX::SimpleMath::Vector3(implodingTimer * 2.f);
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.9f + (Utils::rnd() * 0.02f))
 						* DirectX::SimpleMath::Matrix::CreateRotationX(Utils::rnd())
@@ -74,8 +74,9 @@ public:
 						* data->modelMatrix;
 					destroyed = true;
 				}
-				if (implodingTimer > 2.0f) {
+				if (implodingTimer > 1.5f) {
 					//DirectX::SimpleMath::Vector3 defaultPos = data->modelMatrix.Translation();
+					data->color = DirectX::SimpleMath::Vector3::Zero;
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation());
 					imploding = false;
 				}
@@ -105,6 +106,7 @@ private:
 	int m_width;
 	// Number of blocks in the y-axis
 	int m_height;
+	bool m_destructible;
 	
 	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;
