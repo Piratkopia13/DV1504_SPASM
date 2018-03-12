@@ -124,6 +124,10 @@ GameInfo::GameInfo()
 	playerHealth.push_back({ "100",100,0 });
 	playerHealth.push_back({ "10",10,0 });
 	playerHealth.push_back({ "30",30,0 });
+
+	destructibleBlocks.push_back({ "on" , 1, 0 });
+	destructibleBlocks.push_back({ "off", 1, 0 });
+
 	
 	// GRAPHICS SETTINGS
 

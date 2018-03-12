@@ -22,7 +22,7 @@ PostProcessPass::PostProcessPass(const Camera* cam)
 
 	m_FXAAPass = false;
 	m_DOFPass = true;
-	m_dofFocusWidth = 140.f;
+	m_dofFocusWidth = 220.f;
 
 	m_FXAAStage = std::make_unique<FXAAStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 
