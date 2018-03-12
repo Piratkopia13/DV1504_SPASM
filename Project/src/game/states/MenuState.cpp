@@ -16,6 +16,17 @@ MenuState::MenuState(StateStack& stack)
 	// Set up camera with controllers
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
 
+	/*Clear Scores*/	
+	m_info->resetScore();
+	m_info->getPlayers().clear();
+	m_info->gameSettings.teams.clear();
+	m_info->convertGameSettings();
+
+	/*VIB REMOVAL*/
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
+
 	// Set up the scene
 	//m_scene.addSkybox(L"skybox_space_512.dds");
 	// Add a directional light

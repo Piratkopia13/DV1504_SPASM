@@ -31,6 +31,10 @@ GameState::GameState(StateStack& stack)
 
 	GameInfo * info = GameInfo::getInstance();
 
+	/*VIB REMOVAL*/
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 
 #ifdef _DEBUG
 	if (info->gameSettings.teams.size() == 0) {
@@ -194,6 +198,9 @@ GameState::GameState(StateStack& stack)
 }
 
 GameState::~GameState() {
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 	/*GameInfo* info = GameInfo::getInstance();
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		std::cout << "Player " << (i + 1) << std::endl;
@@ -342,6 +349,7 @@ bool GameState::update(float dt) {
 	m_infLeft->setColor(infColor);
 	m_infRight->setColor(infColor);
 
+
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
@@ -361,21 +369,15 @@ bool GameState::update(float dt) {
 	/*
 		UPDATE DIS SHIET
 	*/
-	if (m_gamemode->checkWin() > Gamemode::NONE) {
-
-		if (m_gamemode->checkWin() > Gamemode::DRAW)
-			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
-		else
-			std::cout << "DRAW!" << std::endl;
-
-
-		m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
+	int checkWin = m_gamemode->checkWin();
+	if (checkWin > Gamemode::NONE) {
+		if (checkWin > Gamemode::DRAW && checkWin < (int)m_info->convertedGameSettings.teams.size())
+			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
 		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		
 		requestStackClear();
 		requestStackPush(States::Score);
-		//requestStackPush(States::ID::Score);
 	}
 
 	if(!m_flyCam)
