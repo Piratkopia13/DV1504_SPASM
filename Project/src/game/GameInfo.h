@@ -52,7 +52,7 @@ public:
 		size_t backGround = 0;
 		size_t fpsCounter = 1;
 		bool vSync = 0;
-		bool wtf = false;
+		bool depthOfField = false;
 	};
 	struct ConvertedGraphics {
 		float particles = 3;
@@ -61,7 +61,7 @@ public:
 		float background = 1;
 		float fpsCounter = 1;
 		float vSync = 0;
-		float wtf = 0;
+		float depthOfField = 0;
 	};
 
 	struct GameSettings {
@@ -76,6 +76,7 @@ public:
 		size_t respawnTime = 0;
 		size_t playerLife = 0;
 		size_t gravity = 0;
+		size_t destructibleBlocks = 1;
 		std::vector<Team> teams;
 	};
 	struct ConvertedGameSettings {
@@ -91,6 +92,7 @@ public:
 		float respawnTime = 2;
 		float playerLife = 50;
 		float gravity = 1;
+		bool destructability = 1;
 		std::vector<Team> teams;
 	};
 
@@ -102,10 +104,14 @@ public:
 	};
 	
 	struct SoundSettings {
+		size_t master = 0;
+		size_t background = 0;
+		size_t effect = 0;
+	};
+	struct ConvertedSoundSettings {
 		float masterVolume = 0.5;
 		float backGroundSoundVolume = 0.5;
 		float effectSoundVolume = 0.5;
-		bool wtf = false;
 	};
 
 	enum Modes {
@@ -119,6 +125,7 @@ public:
 	GraphicsSettings graphicsSettings;
 	ConvertedGraphics convertedGraphics;
 	SoundSettings soundSettings;
+	ConvertedSoundSettings convertedSound;
 
 	std::vector<DirectX::SimpleMath::Vector4> defaultColors;
 	std::vector<std::string> colorNames;
@@ -132,9 +139,12 @@ public:
 	std::vector<Setting> gameModes;
 	std::vector<Setting> timeLimit;
 	std::vector<Setting> scoreLimit;
+	std::vector<Setting> scoreLimitDM;
+	std::vector<Setting> scoreLimitTDM;
 	std::vector<Setting> respawnTime;
 	std::vector<Setting> gravity;
 	std::vector<Setting> playerHealth;
+	std::vector<Setting> destructibleBlocks;
 
 	std::vector<Setting> particles;
 	std::vector<Setting> bloom;
@@ -143,17 +153,17 @@ public:
 	std::vector<Setting> fpsCounter;
 	std::vector<Setting> frameRateLock;
 	std::vector<Setting> vSync;
-	std::vector<Setting> wtfGraphics;
+	std::vector<Setting> depthOfField;
 
 
 	std::vector<Setting> masterVolume;
 	std::vector<Setting> backgroundVolume;
 	std::vector<Setting> effectVolume;
-	std::vector<Setting> wtfVolume;
 
 	void convertGameSettings();
-
 	void convertGraphics();
+	void convertSound();
+
 	void saveGraphics();
 	void saveSound();
 

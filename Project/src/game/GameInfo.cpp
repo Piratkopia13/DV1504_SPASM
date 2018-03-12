@@ -15,6 +15,8 @@ GameInfo::GameInfo()
 
 	m_profiles.push_back(Profile("Guest 1", 0));
 	m_profiles.push_back(Profile("Guest 2", 0));
+	m_profiles.push_back(Profile("Guest 3", 0));
+	m_profiles.push_back(Profile("Guest 4", 0));
 	loadProfiles();
 	
 	float base = 1.0f;
@@ -89,15 +91,29 @@ GameInfo::GameInfo()
 	timeLimit.push_back({ "10 min", 600.0f, 0 });
 
 	scoreLimit.push_back({ "50 points", 50.0f, 0 });
+	scoreLimit.push_back({ "75 points", 75.0f, 0 });
 	scoreLimit.push_back({ "100 points", 100.0f, 0 });
-	scoreLimit.push_back({ "150 points", 150.0f, 0 });
-	scoreLimit.push_back({ "250 points", 250.0f, 0 });
+	scoreLimit.push_back({ "25 points", 25.0f, 0 });
 	scoreLimit.push_back({ "no limit", 0, 0 });
+
+	scoreLimitDM.push_back({ "20 kills", 20.0f, 0 });
+	scoreLimitDM.push_back({ "30 kills", 30.0f, 0 });
+	scoreLimitDM.push_back({ "50 kills", 50.0f, 0 });
+	scoreLimitDM.push_back({ "10 kills", 10.0f, 0 });
+	scoreLimitDM.push_back({ "no limit", 0, 0 });
+
+	scoreLimitTDM.push_back({ "30 kills", 30.0f, 0 });
+	scoreLimitTDM.push_back({ "60 kills", 60.0f, 0 });
+	scoreLimitTDM.push_back({ "90 kills", 90.0f, 0 });
+	scoreLimitTDM.push_back({ "20 kills", 20.0f, 0 });
+	scoreLimitTDM.push_back({ "no limit", 0, 0 });
+
+
 
 	respawnTime.push_back({ "2 seconds", 2.0f, 0});
 	respawnTime.push_back({ "4 seconds", 4.0f, 0 });
 	respawnTime.push_back({ "8 seconds", 8.0f, 0 });
-	respawnTime.push_back({ "instant", 2.0f, 0 });
+	respawnTime.push_back({ "instant", 0.1f, 0 });
 
 	gravity.push_back({ "earth",1,0 });
 	gravity.push_back({ "moon",0.16f,0 });
@@ -108,12 +124,15 @@ GameInfo::GameInfo()
 	playerHealth.push_back({ "100",100,0 });
 	playerHealth.push_back({ "10",10,0 });
 	playerHealth.push_back({ "30",30,0 });
+
+	destructibleBlocks.push_back({ "on" , 1, 0 });
+	destructibleBlocks.push_back({ "off", 1, 0 });
+
 	
 	// GRAPHICS SETTINGS
 
-	particles.push_back({ "standard",3,0 });
-	particles.push_back({ "plenty",6,0 });
-	particles.push_back({ "too much",10,0 });
+	particles.push_back({ "standard",1,0 });
+	particles.push_back({ "plenty",2,0 });
 	particles.push_back({ "none",0,0 });
 
 	bloom.push_back({ "standard",1,0 });
@@ -130,17 +149,11 @@ GameInfo::GameInfo()
 	fpsCounter.push_back({ "top left",1,0 });
 	fpsCounter.push_back({ "none",0,0 });
 
-	frameRateLock.push_back({ "none", 0, 0 });
-	frameRateLock.push_back({ "60", 1.0f / 60.0f, 0 });
-	frameRateLock.push_back({ "120", 1.0f / 120.0f, 0 });
-	frameRateLock.push_back({ "144", 1.0f / 144.0f, 0 });
-
 	vSync.push_back({ "none",0,0 });
 	vSync.push_back({ "vsync",1,0 });
 
-
-	wtfGraphics.push_back({ "no", 0 ,0 });
-	wtfGraphics.push_back({ "pogchamp", 0 ,0 });
+	depthOfField.push_back({ "on", 1 ,0 });
+	depthOfField.push_back({ "off", 0 ,0 });
 
 	// SOUND SETTINGS
 	
@@ -179,9 +192,6 @@ GameInfo::GameInfo()
 	effectVolume.push_back({ "20",0.2f,0 });
 	effectVolume.push_back({ "30",0.3f,0 });
 	effectVolume.push_back({ "40",0.4f,0 });
-
-	wtfVolume.push_back({ "no", 0, 0 });
-	wtfVolume.push_back({ "wtf", 0, 0 });
 
 
 	// MAPS
@@ -236,6 +246,18 @@ GameInfo::GameInfo()
 	maps.push_back(deathmatch);
 	maps.push_back(teamdeathmatch);
 
+	loadGraphics();
+	loadSound();
+
+	convertGraphics();
+	convertSound();
+
+	Application::getInstance()->getResourceManager().getSoundManager()->setMasterVolume(convertedSound.masterVolume);
+	Application::getInstance()->getResourceManager().getSoundManager()->setAmbientVolume(convertedSound.backGroundSoundVolume);
+	Application::getInstance()->getResourceManager().getSoundManager()->setEffectsVolume(convertedSound.effectSoundVolume);
+
+
+
 
  	if (m_infoInstance) {
 		Logger::Warning("wtf you doing");
@@ -247,6 +269,8 @@ GameInfo::GameInfo()
 
 GameInfo::~GameInfo() {
 	saveProfiles();
+	saveGraphics();
+	saveSound();
 }
 
 GameInfo * GameInfo::getInstance()
@@ -322,15 +346,44 @@ void GameInfo::convertGraphics() {
 	convertedGraphics.particles = particles[graphicsSettings.particles].value;
 	convertedGraphics.fpsCounter = fpsCounter[graphicsSettings.fpsCounter].value;
 	convertedGraphics.vSync = fpsCounter[graphicsSettings.fpsCounter].value;
-	convertedGraphics.wtf = wtfGraphics[graphicsSettings.wtf].value;
+	convertedGraphics.depthOfField = depthOfField[graphicsSettings.depthOfField].value;
+}
+
+void GameInfo::convertSound() {
+	convertedSound = ConvertedSoundSettings();
+	convertedSound.masterVolume = masterVolume[soundSettings.master].value;
+	convertedSound.backGroundSoundVolume = backgroundVolume[soundSettings.background].value;
+	convertedSound.effectSoundVolume = effectVolume[soundSettings.effect].value;
 }
 
 void GameInfo::saveGraphics() {
 
+
+	std::string filePath = "res/data/data.graphics";
+	std::ofstream graphicsFile(filePath);
+	if (graphicsFile.is_open()) {
+			graphicsFile << std::to_string(graphicsSettings.particles) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.bloom) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.AA) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.backGround) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.fpsCounter) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.vSync) << "\n";
+			graphicsFile << std::to_string(graphicsSettings.depthOfField) << "\n";
+
+			graphicsFile.close();
+	}
 }
 
 void GameInfo::saveSound() {
+	std::string filePath = "res/data/data.sound";
+	std::ofstream soundFile(filePath);
+	if (soundFile.is_open()) {
+		soundFile << std::to_string(soundSettings.master) << "\n";
+		soundFile << std::to_string(soundSettings.background) << "\n";
+		soundFile << std::to_string(soundSettings.effect) << "\n";
 
+		soundFile.close();
+	}
 }
 
 void GameInfo::loadProfiles() {
@@ -349,6 +402,9 @@ void GameInfo::loadProfiles() {
 			m_profiles.push_back(Profile(tempList[0], std::stoul(tempList[1]), {std::stoul(tempList[2]), std::stoul(tempList[3]), std::stoul(tempList[4]), std::stoul(tempList[5])}));
 		}
 	}
+	else {
+		Logger::Error("Could not open profiles file - no profiles loaded");
+	}
 }
 
 void GameInfo::saveProfiles() {
@@ -356,22 +412,60 @@ void GameInfo::saveProfiles() {
 	std::string filePath = "res/data/data.profiles";
 	std::ofstream profilesFile(filePath);
 	if (profilesFile.is_open()) {
-		for (unsigned int i = 2; i < m_profiles.size(); i++) {
+		for (unsigned int i = 4; i < m_profiles.size(); i++) {
 			profilesFile << m_profiles[i].getAsString() << "\n";
 		}
 		profilesFile.close();
 	}
 	else {
-		Logger::Error("Could not open profiles file - no profiles loaded");
+		Logger::Error("Could not open profiles file - no profiles saved");
 	}
 }
 
-void GameInfo::loadGraphics()
-{
+void GameInfo::loadGraphics() {
+	// read from file
+	std::string filePath = "res/data/data.graphics";
+	std::ifstream graphicsFile(filePath);
+	std::string line = "";
+	std::vector<std::string> tempList;
+	if (graphicsFile.is_open()) {
+		while (getline(graphicsFile, line)) {			
+			tempList.push_back(line);
+		}
+
+		graphicsSettings.particles = std::stoul(tempList[0]);
+		graphicsSettings.bloom = std::stoul(tempList[1]);
+		graphicsSettings.AA = std::stoul(tempList[2]);
+		graphicsSettings.backGround = std::stoul(tempList[3]);
+		graphicsSettings.fpsCounter = std::stoul(tempList[4]);
+		graphicsSettings.vSync = std::stoul(tempList[5]);
+		graphicsSettings.depthOfField = std::stoul(tempList[6]);
+	}
+	else {
+		Logger::Error("Could not open graphics file - no graphics loaded");
+	}
 }
 
-void GameInfo::loadSound()
-{
+void GameInfo::loadSound() {
+	// read from file
+	std::string filePath = "res/data/data.sound";
+	std::ifstream soundFile(filePath);
+	std::string line = "";
+	std::vector<std::string> tempList;
+	if (soundFile.is_open()) {
+		while (getline(soundFile, line)) {
+			tempList.push_back(line);
+		}
+
+		soundSettings.master = std::stoul(tempList[0]);
+		soundSettings.background = std::stoul(tempList[1]);
+		soundSettings.effect = std::stoul(tempList[2]);
+	}
+	else {
+		Logger::Error("Could not open graphics file - no graphics loaded");
+	}
+
+
 }
 
 

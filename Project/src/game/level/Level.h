@@ -2,7 +2,7 @@
 
 #include "../../sail/Sail.h"
 #include "../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
-//#include "Grid.h"
+//#include "../objects/Character.h"
 
 namespace {
 	static const std::string DEFAULT_LEVEL_LOCATION = "res/levels/";
@@ -28,20 +28,57 @@ public:
 	static const float DEFAULT_BLOCKSIZE;
 
 	struct LevelBlock {
-		int health = 5;
+		float maxHP = 60.f;
+		float currentHP = maxHP;
 		DynBlockDeferredInstancedGeometryShader::InstanceData* data = nullptr;
-		float respawnTime = 3.f;
+		float respawnTime = 5.f;
 		float timeDead = 0.0f;
+		float implodingTimer = 0.0f;
+		bool attacked = false;
+		float resetTimer = 0.f;
+		bool imploding = false;
 		bool destroyed = false;
+		bool respawned = false;
+		bool respawning = false;
+		bool blocked = false;
 		void update(float delta) {
 			if (destroyed) {
 				timeDead += delta;
-				if (timeDead > respawnTime) {
+				if (timeDead > respawnTime && !blocked) {
 					timeDead = 0.0f;
 					destroyed = false;
-					health = 5;
-					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation().x, data->modelMatrix.Translation().y, 0.f);
-					data->color = DirectX::SimpleMath::Vector3::One;
+					respawning = true;
+					currentHP = maxHP;
+					implodingTimer = 0.0f;
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(100.0f) * data->modelMatrix;
+					data->color = DirectX::SimpleMath::Vector3(3.0f);
+				}
+			}
+			if (attacked) {
+				resetTimer = 0.f;
+				attacked = false;
+			}
+			resetTimer += delta;
+			if (resetTimer > 5.f) {
+				currentHP = maxHP;
+			}
+			if (imploding) {
+				implodingTimer += delta;
+				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.99f + (Utils::rnd() * 0.02f)) * data->modelMatrix;
+				if (implodingTimer > 1.0f) {
+					data->color = DirectX::SimpleMath::Vector3(implodingTimer * 2.f);
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.9f + (Utils::rnd() * 0.02f))
+						* DirectX::SimpleMath::Matrix::CreateRotationX(Utils::rnd())
+						* DirectX::SimpleMath::Matrix::CreateRotationY(Utils::rnd())
+						* DirectX::SimpleMath::Matrix::CreateRotationZ(Utils::rnd())
+						* data->modelMatrix;
+					destroyed = true;
+				}
+				if (implodingTimer > 1.5f) {
+					//DirectX::SimpleMath::Vector3 defaultPos = data->modelMatrix.Translation();
+					data->color = DirectX::SimpleMath::Vector3::Zero;
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation());
+					imploding = false;
 				}
 			}
 		}
@@ -58,7 +95,7 @@ public:
 	const int& getGridWidth() const;
 	const int& getGridHeight() const;
 
-	void blockHit(const DirectX::SimpleMath::Vector3& projVelocity,const DirectX::SimpleMath::Vector3& hitPos);
+	void blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const float damage, const DirectX::SimpleMath::Vector3& hitPos);
 	void setBlockVariation(const int x, const int y);
 	void updateAdjacent(const int x, const int y);
 
@@ -69,6 +106,7 @@ private:
 	int m_width;
 	// Number of blocks in the y-axis
 	int m_height;
+	bool m_destructible;
 	
 	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;

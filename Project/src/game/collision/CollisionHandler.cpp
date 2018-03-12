@@ -203,10 +203,12 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 }
 
 bool CollisionHandler::outOfBounds(Character* character) {
+
 	float x = character->getTransform().getTranslation().x;
 	float y = character->getTransform().getTranslation().y;
 	bool oob = false;
-	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight())
+	std::vector<Grid::Index> indices = m_level->getGrid()->getCurrentCollisionIndices(*character->getBoundingBox());
+	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight() || indices.size() > 1)
 		oob = true;
 
 	return oob;
@@ -228,7 +230,7 @@ bool CollisionHandler::checkCharacterCollisionWith(Projectile* proj, float dt, f
 	
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		Character* chara = m_characterHandler->getCharacter(i);
-		if (proj->getTeam() != chara->getTeam()) {
+		if (proj->getTeam() != chara->getTeam() && chara->isAlive()) {
 
 			Vector3 normalizedVel = proj->getVelocity();
 			normalizedVel.Normalize();
@@ -396,7 +398,7 @@ bool CollisionHandler::resolveProjectileCollision(float dt) {
 			if (levelHit) {
 				m_projectileHandler->projectileHitLevel(levelHitPos, proj);
 				m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
-				m_level->blockHit(proj->getVelocity(), levelHitPos);
+				m_level->blockHit(proj->getVelocity(), proj->getDamage(), levelHitPos);
 			}
 			else if (characterHit) {
 				hitCharacter->hitByProjectile(charaHitRes);

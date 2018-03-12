@@ -10,12 +10,13 @@ using namespace DirectX::SimpleMath;
 
 GameState::GameState(StateStack& stack)
 : State(stack)
-, m_cam(30.f, 1280.f / 720.f, 0.1f, 100000.f)
+, m_cam(30.f, 1280.f / 720.f, 0.1f, 5000.f)
 , m_camController(&m_cam)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
 , m_flyCam(false)
 , m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
+//, m_testBlocks(250)
 {
 
 	// Get the Application instance
@@ -30,6 +31,10 @@ GameState::GameState(StateStack& stack)
 
 	GameInfo * info = GameInfo::getInstance();
 
+	/*VIB REMOVAL*/
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 
 #ifdef _DEBUG
 	if (info->gameSettings.teams.size() == 0) {
@@ -193,10 +198,13 @@ GameState::GameState(StateStack& stack)
 	m_scene.addObject(m_infRight.get());
 
 
-	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.05f);
+	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.10f);
 }
 
 GameState::~GameState() {
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 	/*GameInfo* info = GameInfo::getInstance();
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		std::cout << "Player " << (i + 1) << std::endl;
@@ -335,15 +343,16 @@ bool GameState::resize(int width, int height) {
 bool GameState::update(float dt) {
 
 	// Infinity planes color update
-	static float epilepsyAmount = 0.7f;
+	static float epilepsyAmount = 0.1f;
 	static float epilepsySpeed = 0.3f;
 	static float counter = 0;
 	counter += dt * epilepsySpeed;
-	Vector4 infColor(-fabs(sinf(counter)) * epilepsyAmount, -fabs(sin(counter + 2.f)) * epilepsyAmount, -fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
+	Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
 	m_infBottom->setColor(infColor);
 	m_infTop->setColor(infColor);
 	m_infLeft->setColor(infColor);
 	m_infRight->setColor(infColor);
+
 
 	// Update HUD texts
 	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
@@ -364,23 +373,15 @@ bool GameState::update(float dt) {
 	/*
 		UPDATE DIS SHIET
 	*/
-	if (m_gamemode->checkWin() > Gamemode::NONE) {
-
-		if (m_gamemode->checkWin() > Gamemode::DRAW)
-			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
-		else
-			std::cout << "DRAW!" << std::endl;
-
-
-		//m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
-		// TESTING
-		m_info->convertedGameSettings.teams[0].winner = true;
+	int checkWin = m_gamemode->checkWin();
+	if (checkWin > Gamemode::NONE) {
+		if (checkWin > Gamemode::DRAW && checkWin < (int)m_info->convertedGameSettings.teams.size())
+			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
 		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		
 		requestStackClear();
 		requestStackPush(States::Score);
-		//requestStackPush(States::ID::Score);
 	}
 
 	if(!m_flyCam)
@@ -392,6 +393,7 @@ bool GameState::update(float dt) {
 	m_app->getResourceManager().getShaderSet<SimpleColorShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<DynBlockDeferredInstancedGeometryShader>().updateCamera(m_cam);
 	m_app->getResourceManager().getShaderSet<DeferredInstancedGeometryShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<MaterialShader>().updateCamera(m_cam);
 
 	// Resolve collisions, must be done before particleHandler updates since it can spawn new particles
 	CollisionHandler::getInstance()->resolveProjectileCollision(dt);
@@ -409,7 +411,7 @@ bool GameState::update(float dt) {
 bool GameState::render(float dt) {
 
 	// Clear back buffer
-	m_app->getDXManager()->clear({0.0, 0.0, 0.0, 0.0});
+	m_app->getDXManager()->clear({0.05f, 0.05f, 0.05f, 1.0f});
 
 	// Draw the scene using deferred rendering
 	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
