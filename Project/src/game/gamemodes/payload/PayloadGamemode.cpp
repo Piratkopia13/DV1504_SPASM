@@ -144,8 +144,8 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 
 	int owningTeam = m_controlNodes[m_currentActivePoint]->getTeam();
 	if (owningTeam != -1) {
-		Gamemode::addScore(dt, owningTeam);
-		Gamemode::addScore(-dt, (owningTeam == 0) ? 1 : 0);
+		Gamemode::addScore(dt / 2.0f, owningTeam);
+		Gamemode::addScore(-dt / 2.0f, (owningTeam == 0) ? 1 : 0);
 	}
 
 
