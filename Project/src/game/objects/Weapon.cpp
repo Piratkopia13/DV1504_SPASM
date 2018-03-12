@@ -246,3 +246,8 @@ void Weapon::draw() {
 	model->getMaterial()->setColor(lightColor);
 	model->draw();
 }
+
+void Weapon::resetUpgrade() {
+	Memory::safeDelete(m_upgrade);
+	m_upgrade = new Upgrade();
+}

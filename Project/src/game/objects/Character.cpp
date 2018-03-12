@@ -535,6 +535,7 @@ void Character::dead() {
 	m_playerHealth.updatePercent();
 	m_playerHealth.alive = false;
 	m_weapon->triggerRelease();
+	m_weapon->resetUpgrade();
 	stopHook();
 	setVelocity(Vector3::Zero);
 	m_weapon->setHeld(true);
