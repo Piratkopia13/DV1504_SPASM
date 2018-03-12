@@ -99,14 +99,14 @@ GameInfo::GameInfo()
 	scoreLimitDM.push_back({ "20 kills", 20.0f, 0 });
 	scoreLimitDM.push_back({ "30 kills", 30.0f, 0 });
 	scoreLimitDM.push_back({ "50 kills", 50.0f, 0 });
-	scoreLimitDM.push_back({ "10 kills", 10.0f, 0 });
 	scoreLimitDM.push_back({ "no limit", 0, 0 });
+	scoreLimitDM.push_back({ "10 kills", 10.0f, 0 });
 
 	scoreLimitTDM.push_back({ "30 kills", 30.0f, 0 });
 	scoreLimitTDM.push_back({ "60 kills", 60.0f, 0 });
 	scoreLimitTDM.push_back({ "90 kills", 90.0f, 0 });
-	scoreLimitTDM.push_back({ "20 kills", 20.0f, 0 });
 	scoreLimitTDM.push_back({ "no limit", 0, 0 });
+	scoreLimitTDM.push_back({ "20 kills", 20.0f, 0 });
 
 
 
