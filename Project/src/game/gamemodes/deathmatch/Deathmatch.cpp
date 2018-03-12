@@ -6,6 +6,8 @@
 Deathmatch::Deathmatch() {
 	m_winnerID = Gamemode::NONE;
 	m_maxKills = GameInfo::getInstance()->convertedGameSettings.scoreLimit;
+
+	
 }
 
 
@@ -48,6 +50,9 @@ int Deathmatch::checkWin() {
 				m_winnerID = static_cast<int>(i);
 			}
 		}
+
+		if (m_winnerID = Gamemode::NONE)
+			m_winnerID = Gamemode::DRAW;
 	}
 
 	return m_winnerID;

@@ -23,6 +23,8 @@ Level::Level(const std::string& filename)
 
 	float variationOffsetRowMul = 1.f / BLOCK_VARIATIONS;
 
+	m_destructible = true;
+
 	if (infile) {		
 
 		std::string line;
@@ -136,7 +138,7 @@ Level::Level(const std::string& filename)
 
 			}
 		}
-
+		
 		m_blocks = std::vector<std::vector<LevelBlock>>(m_width, std::vector<LevelBlock>(m_height, LevelBlock()));
 
 		for (int x = 0; x < m_width; x++) {
@@ -195,33 +197,45 @@ Level::~Level() {
 }
 
 void Level::update(const float delta, CharacterHandler* charHandler) {
-	std::vector<Grid::Index> indices;
-		
-	for (int i = 0; i < charHandler->getNrOfPlayers(); i++) {
-		std::vector<Grid::Index> temp = m_grid->convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
-		indices.insert(indices.end(), temp.begin(),temp.end());
-	}
-	for (int x = 0; x < m_width; x++) {
-		for (int y = 0; y < m_height; y++) {
-			bool blocked = false;
-				if (m_blocks[x][y].data) {
-					for (int j = 0; j < indices.size(); j++) {
-						if (indices.at(j).x == x && indices.at(j).y == y) {
-							blocked = true;
-						}
-					}
-					if (!blocked) {
-						bool respawn = m_blocks[x][y].destroyed;
-						m_blocks[x][y].update(delta);
-						if (respawn != m_blocks[x][y].destroyed && !blocked) {
+	if (m_destructible) {
+		std::vector<Grid::Index> indices;
 
-							m_grid->addBlock(m_blocks[x][y].data, x, y);
-							setBlockVariation(x, y);
-							updateAdjacent(x, y);
+		for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+			std::vector<Grid::Index> temp = m_grid->convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
+			indices.insert(indices.end(), temp.begin(), temp.end());
+		}
+		for (int x = 0; x < m_width; x++) {
+			for (int y = 0; y < m_height; y++) {
+				if (m_blocks[x][y].data) {
+					m_blocks[x][y].blocked = false;
+					for (unsigned int j = 0; j < indices.size(); j++) {
+						if (indices.at(j).x == x && indices.at(j).y == y) {
+							m_blocks[x][y].blocked = true;
 						}
 					}
+
+					m_blocks[x][y].update(delta);
+					if (m_blocks[x][y].respawned) {
+						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3::One;
+						m_grid->addBlock(m_blocks[x][y].data, x, y);
+						setBlockVariation(x, y);
+						updateAdjacent(x, y);
+						m_blocks[x][y].respawned = false;
+					}
+					if (m_blocks[x][y].respawning) {
+						m_blocks[x][y].respawned = true;
+						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3(3.f);
+						m_blocks[x][y].respawning = false;
+					}
+
+					if (m_blocks[x][y].destroyed) {
+						m_grid->removeBlock(x, y);
+						updateAdjacent(x, y);
+					}
+
 				}
 			}
+		}
 	}
 
 }
@@ -261,14 +275,10 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const flo
 	block = &m_blocks[blockIndex.x][blockIndex.y];
 	if (block->data) {
 		block->currentHP -= damage;
-		float colorChange = 1.f - damage / block->maxHP;
-		block->data->color = DirectX::SimpleMath::Vector3(colorChange);
+		block->attacked = true;
+		block->data->color = DirectX::SimpleMath::Vector3(1.f);
 		if (block->currentHP <= 0) {
-			block->destroyed = true;
-			block->data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(block->data->modelMatrix.Translation().x, block->data->modelMatrix.Translation().y, 5.0f);
-			block->data->color = DirectX::SimpleMath::Vector3::Zero;
-			m_grid->removeBlock(blockIndex.x, blockIndex.y);
-			updateAdjacent(blockIndex.x, blockIndex.y);
+			block->imploding = true;
 		}
 	}
 }
