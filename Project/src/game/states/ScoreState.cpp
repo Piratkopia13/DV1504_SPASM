@@ -356,4 +356,5 @@ void ScoreState::setPositions() {
 void ScoreState::exitScoreBoard() {
 	requestStackPop();
 	requestStackPush(States::MainMenu);
+	m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Scoreboard);
 }

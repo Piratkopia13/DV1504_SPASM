@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#define PI 3.14159265
+#define PI 3.14159265f
 
 TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 	GameInfo* info = GameInfo::getInstance();
@@ -26,24 +26,26 @@ TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 		m_maxTime = m_timeLeft;
 		m_secondsPerBlock = m_maxTime / float(m_timeBlocks.size());
 
-		float scale = 3.f;
+		float scale = 2.f;
 
 		float paj = PI / (float(m_timeBlocks.size()) / 2.f);
-		m_blockModel->getTransform().setScale(scale);
+
 		m_middle = DirectX::SimpleMath::Vector3((m_level->getGridWidth() * m_level->DEFAULT_BLOCKSIZE) / 2.f, (m_level->getGridHeight() * m_level->DEFAULT_BLOCKSIZE) / 2.f - level->DEFAULT_BLOCKSIZE / 2.f, 3.f);
-		for (int i = 0; i < m_timeBlocks.size(); i++) {
+		for (unsigned int i = 0; i < m_timeBlocks.size(); i++) {
 			m_timeBlocks[i] = std::make_unique<AnimatedObject>(m_blockModel);
+			m_timeBlocks[i]->setLightColor(DirectX::SimpleMath::Vector4(0.5f, 0.5f, 0.5f, 1.f));
+			m_timeBlocks[i]->getTransform().setScale(scale);
 			
 			float numOfTeams = float(m_gamemode->getScore().size());
-			float x = cos(i * paj + PI / 2.f) * 2.5 * numOfTeams * scale + m_middle.x;
-			float y = sin(i * paj + PI / 2.f) * 5.f * scale + m_middle.y;
+			float x = cos(i * paj + PI / 2.f) * 8.f * numOfTeams * scale + m_middle.x;
+			float y = sin(i * paj + PI / 2.f) * 16.f * scale + m_middle.y;
 			m_timeBlocks[i]->setPosition(m_middle);
 			DirectX::SimpleMath::Vector3 rot = DirectX::SimpleMath::Vector3(y - m_middle.y, -(x - m_middle.x), 0.f);
 			rot.Normalize();
 
 			m_timeBlocks[i]->getTransform().rotateAroundZ(atan2(rot.y, rot.x));
 
-			m_timeBlocks[i]->setTargetPos(DirectX::SimpleMath::Vector3(x, y, 15.f * scale), 3.f);
+			m_timeBlocks[i]->setTargetPos(DirectX::SimpleMath::Vector3(x, y, 50.f * scale), 3.f);
 
 			m_toRemove[i] = false;
 		}
@@ -67,7 +69,7 @@ void TimeVisualization::update(float dt) {
 		m_numOfBlocks--;
 	}
 
-	for (int i = m_numOfBlocks - 1; i < m_timeBlocks.size(); i++) {
+	for (unsigned int i = m_numOfBlocks - 1; i < m_timeBlocks.size(); i++) {
 		if (!m_toRemove[i]) {
 			m_toRemove[i] = true;
 			DirectX::SimpleMath::Vector3 dir = m_timeBlocks[i]->getTransform().getTranslation() - m_middle;
@@ -78,7 +80,7 @@ void TimeVisualization::update(float dt) {
 		}
 	}
 
-	for (int i = 0; i < m_timeBlocks.size(); i++) {
+	for (unsigned int i = 0; i < m_timeBlocks.size(); i++) {
 		m_timeBlocks[i]->update(dt);
 		m_timeBlocks[i]->getTransform().rotateAroundX(dt);
 	}
@@ -94,6 +96,6 @@ void TimeVisualization::draw() {
 	if (!m_run)
 		return;
 
-	for (int i = 0; i < m_timeBlocks.size(); i++)
+	for (unsigned int i = 0; i < m_timeBlocks.size(); i++)
 		m_timeBlocks[i]->draw();
 }

@@ -317,6 +317,7 @@ bool GameState::processInput(float dt) {
 			for (int u = 0; u < 4; u++)
 				gamePad.SetVibration(u, 0, 0);
 			requestStackPush(States::Pause);
+			m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		}
 	});
 	
@@ -382,6 +383,7 @@ bool GameState::update(float dt) {
 		
 		requestStackClear();
 		requestStackPush(States::Score);
+		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 	}
 
 	if(!m_flyCam)
