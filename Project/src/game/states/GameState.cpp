@@ -31,20 +31,26 @@ GameState::GameState(StateStack& stack)
 
 	GameInfo * info = GameInfo::getInstance();
 
+	/*VIB REMOVAL*/
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 
 #ifdef _DEBUG
-	if (info->gameSettings.teams.size() == 0) {
-		info->gameSettings.teams.push_back({ 0, 0 });
-		info->gameSettings.teams.push_back({ 1, 0 });
-		info->convertGameSettings();
-	}
-	if (info->getPlayers().size() == 0) {
-		info->addPlayer({ &info->getProfiles()[0], 0, 0, 0, 0, 0, 0, 0, 0 });
-		info->addPlayer({ &info->getProfiles()[1], 1, 1, 1, 0, 0, 0, 0, 0 });
-	} else if (info->getPlayers().size() == 1) {
-		info->addPlayer({ &info->getProfiles()[1], 1, 0, 0, 0, 0, 0, 0, 0 });
-		info->addPlayer({ &info->getProfiles()[2], 2, 1, 1, 0, 0, 0, 0, 0 });
-		info->addPlayer({ &info->getProfiles()[3], 3, 1, 1, 0, 0, 0, 0, 0 });
+	if (info->gameSettings.gameMode == 0) {
+		if (info->gameSettings.teams.size() == 0) {
+			info->gameSettings.teams.push_back({ 0, 0 });
+			info->gameSettings.teams.push_back({ 1, 0 });
+			info->convertGameSettings();
+		}
+		if (info->getPlayers().size() == 0) {
+			info->addPlayer({ &info->getProfiles()[0], 0, 0, 0, 0, 0, 0, 0, 0 });
+			info->addPlayer({ &info->getProfiles()[1], 1, 1, 1, 0, 0, 0, 0, 0 });
+		} else if (info->getPlayers().size() == 1) {
+			info->addPlayer({ &info->getProfiles()[1], 1, 0, 0, 0, 0, 0, 0, 0 });
+			info->addPlayer({ &info->getProfiles()[2], 2, 1, 1, 0, 0, 0, 0, 0 });
+			info->addPlayer({ &info->getProfiles()[3], 3, 1, 1, 0, 0, 0, 0, 0 });
+		}
 	}
 #endif
 	std::string map = info->convertedGameSettings.map;
@@ -163,38 +169,40 @@ GameState::GameState(StateStack& stack)
 
 	m_playerCamController->setPosition(Vector3(10, 10, 0));
 
-	if (m_info->convertedGraphics.background == 1) {
-		// Set up background infinity planes
-		m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
-		m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
-		m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
-		m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
 
-		m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
-		m_infTop = std::make_unique<Block>(m_infinityPlane.get());
-		m_infLeft = std::make_unique<Block>(m_infinityPlane.get());
-		m_infRight = std::make_unique<Block>(m_infinityPlane.get());
+	// Set up background infinity planes
+	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
+	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
+	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
+	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
 
-		m_infBottom->getTransform().setRotations(Vector3(0.f, 0.f, 0.f));
-		m_infBottom->getTransform().setTranslation(Vector3(mapSize.x / 2.f, -70.f, 0.f));
-		m_infLeft->getTransform().setRotations(Vector3(0.f, 0.f, -1.57f));
-		m_infLeft->getTransform().setTranslation(Vector3(-70.f, 0.f, 0.f));
-		m_infRight->getTransform().setRotations(Vector3(0.f, 0.f, 1.57f));
-		m_infRight->getTransform().setTranslation(Vector3(mapSize.x + 70.f, 0.f, 0.f));
-		m_infTop->getTransform().setRotations(Vector3(0.f, 0.f, 3.1415f));
-		m_infTop->getTransform().setTranslation(Vector3(mapSize.x / 2.f, mapSize.y + 70.f, 0.f));
+	m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
+	m_infTop = std::make_unique<Block>(m_infinityPlane.get());
+	m_infLeft = std::make_unique<Block>(m_infinityPlane.get());
+	m_infRight = std::make_unique<Block>(m_infinityPlane.get());
 
-		m_scene.addObject(m_infBottom.get());
-		m_scene.addObject(m_infTop.get());
-		m_scene.addObject(m_infLeft.get());
-		m_scene.addObject(m_infRight.get());
-	}
+	m_infBottom->getTransform().setRotations(Vector3(0.f, 0.f, 0.f));
+	m_infBottom->getTransform().setTranslation(Vector3(mapSize.x / 2.f, -70.f, 0.f));
+	m_infLeft->getTransform().setRotations(Vector3(0.f, 0.f, -1.57f));
+	m_infLeft->getTransform().setTranslation(Vector3(-70.f, 0.f, 0.f));
+	m_infRight->getTransform().setRotations(Vector3(0.f, 0.f, 1.57f));
+	m_infRight->getTransform().setTranslation(Vector3(mapSize.x + 70.f, 0.f, 0.f));
+	m_infTop->getTransform().setRotations(Vector3(0.f, 0.f, 3.1415f));
+	m_infTop->getTransform().setTranslation(Vector3(mapSize.x / 2.f, mapSize.y + 70.f, 0.f));
+
+	m_scene.addObject(m_infBottom.get());
+	m_scene.addObject(m_infTop.get());
+	m_scene.addObject(m_infLeft.get());
+	m_scene.addObject(m_infRight.get());
 
 
 	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.10f);
 }
 
 GameState::~GameState() {
+	auto& gamePad = m_app->getInput().getGamePad();
+	for (int u = 0; u < 4; u++)
+		gamePad.SetVibration(u, 0, 0);
 	/*GameInfo* info = GameInfo::getInstance();
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		std::cout << "Player " << (i + 1) << std::endl;
@@ -332,24 +340,20 @@ bool GameState::resize(int width, int height) {
 // Updates the state
 bool GameState::update(float dt) {
 
-	if (m_info->convertedGraphics.background == 1) {
-		// Infinity planes color update
-		static float epilepsyAmount = 0.1f;
-		static float epilepsySpeed = 0.3f;
-		static float counter = 0;
-		counter += dt * epilepsySpeed;
-		Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
-		m_infBottom->setColor(infColor);
-		m_infTop->setColor(infColor);
-		m_infLeft->setColor(infColor);
-		m_infRight->setColor(infColor);
-	}
+	// Infinity planes color update
+	static float epilepsyAmount = 0.1f;
+	static float epilepsySpeed = 0.3f;
+	static float counter = 0;
+	counter += dt * epilepsySpeed;
+	Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
+	m_infBottom->setColor(infColor);
+	m_infTop->setColor(infColor);
+	m_infLeft->setColor(infColor);
+	m_infRight->setColor(infColor);
+
 
 	// Update HUD texts
-	if (m_info->graphicsSettings.fpsCounter == 0)
-		m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
-	else
-		m_fpsText.setText(L"");
+	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
 
 	auto& camPos = m_cam.getPosition();
 	//m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
@@ -367,21 +371,15 @@ bool GameState::update(float dt) {
 	/*
 		UPDATE DIS SHIET
 	*/
-	if (m_gamemode->checkWin() > Gamemode::NONE) {
-
-		if (m_gamemode->checkWin() > Gamemode::DRAW)
-			std::cout << "TEAM " << m_gamemode->checkWin() << " HAS WON!" << std::endl;
-		else
-			std::cout << "DRAW!" << std::endl;
-
-
-		m_info->convertedGameSettings.teams[m_gamemode->checkWin()].winner = true;
+	int checkWin = m_gamemode->checkWin();
+	if (checkWin > Gamemode::NONE) {
+		if (checkWin > Gamemode::DRAW && checkWin < (int)m_info->convertedGameSettings.teams.size())
+			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
 		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		
 		requestStackClear();
 		requestStackPush(States::Score);
-		//requestStackPush(States::ID::Score);
 	}
 
 	if(!m_flyCam)
