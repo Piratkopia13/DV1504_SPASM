@@ -128,7 +128,7 @@ ScoreState::ScoreState(StateStack& stack)
 				m_winner.text.push_back(new MenuText("Team " + std::to_string(i+1) + " Wins the game"));
 
 			}
-			m_winner.text[0]->setColor(m_info->convertedGameSettings.teams[i].color * 2.0);
+			m_winner.text[0]->setColor(m_info->convertedGameSettings.teams[i].color * 2.0f);
 			m_winner.text[0]->setSize(4.0f);
 			m_scene.addObject(m_winner.text[0]);
 			break;
@@ -136,7 +136,7 @@ ScoreState::ScoreState(StateStack& stack)
 	}
 	if (draw) {
 		m_winner.text.push_back(new MenuText("Draw"));
-		m_winner.text[0]->setColor(DirectX::SimpleMath::Vector4::One * 2.0);
+		m_winner.text[0]->setColor(DirectX::SimpleMath::Vector4::One * 2.0f);
 		m_winner.text[0]->setSize(4.0f);
 		m_scene.addObject(m_winner.text[0]);
 	}
@@ -195,15 +195,15 @@ bool ScoreState::processInput(float dt) {
 
 		if (i == keyboardPort) {
 
-if (kbTracker.pressed.Space) {
-	a = 1;
-	pressed = 1;
-	spacePressed = 1;
-}
-if (kbTracker.pressed.Tab) {
-	b = 1;
-	pressed = 1;
-}
+			if (kbTracker.pressed.Space) {
+				a = 1;
+				pressed = 1;
+				spacePressed = 1;
+			}
+			if (kbTracker.pressed.Tab) {
+				b = 1;
+				pressed = 1;
+			}
 
 		}
 
@@ -229,20 +229,20 @@ if (kbTracker.pressed.Tab) {
 			if (a || b || menu) {
 
 
-				for (size_t u = 0; u < m_info->getPlayers().size(); u++) {
-					if (i == m_info->getPlayers()[u].port) {
-						m_ready[u] = true;
-						break;
-					}
-				}
-
-				size_t r = 0;
-				for (size_t u = 0; u < m_ready.size(); u++) {
-					if (m_ready[i])
-						r++;
-				}
-				if (r == m_ready.size())
-					exitScoreBoard();
+				//for (size_t u = 0; u < m_info->getPlayers().size(); u++) {
+				//	if (i == m_info->getPlayers()[u].port) {
+				//		m_ready[u] = true;
+				//		break;
+				//	}
+				//}
+				//
+				//size_t r = 0;
+				//for (size_t u = 0; u < m_ready.size(); u++) {
+				//	if (m_ready[i])
+				//		r++;
+				//}
+				//if (r == m_ready.size())
+				exitScoreBoard();
 
 			}
 		}
