@@ -145,6 +145,7 @@ private:
 
 	//MAIN MENU
 	MenuHandler* m_mainMenu;
+	MenuHandler* m_mainName;
 
 	//GAMEMODE MENU
 	MenuHandler* m_gamemodeMenu;

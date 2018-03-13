@@ -503,11 +503,13 @@ void MenuHandler::updateTransform() {
 		if (m_itemList[i].item) {
 			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size()-1)*0.5f) * (m_size + m_offset);
 			position += selectionSpace;
-			Vector3 right = m_growth.Cross(m_direction);
+			Vector3 growth = m_growth;
+			growth.Normalize();
+			Vector3 right = growth.Cross(m_direction);
 			m_itemList[i].item->setPosition(position + extraHeight);
 			m_itemList[i].item->getTransform().setRotations(Vector3(0, -atan2(m_direction.z, m_direction.x) + 1.55f, 0));
 			if (m_itemList[m_activeItem].text) {
-				m_itemList[i].text->setPosition(position + m_direction*m_size*0.2f - m_growth*0.3f*m_size + extraHeight);
+				m_itemList[i].text->setPosition(position + m_direction*m_size*0.2f - m_growth*0.1f*m_size + extraHeight);
 				m_itemList[i].text->setDirection(right);
 				m_itemList[i].text->setSize(m_size*4);
 				m_itemList[i].text->setFacingDirection(m_direction);
