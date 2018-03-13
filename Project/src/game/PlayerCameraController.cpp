@@ -164,6 +164,9 @@ void PlayerCameraController::updatePosition(float dt)
 			targetsStandingStill = true;
 		m_targetLastFrame = newTarget;
 
+		// For map screenshot - center camera
+		//newTarget = m_mapSize / 2.f;
+
 		Vector3 moveVec = newTarget - m_target;
 		m_target += moveVec * dt * m_followSpeed;
 	}
@@ -193,7 +196,8 @@ void PlayerCameraController::updatePosition(float dt)
 		//Calculate extra z
 		if (m_useExtraZ) {
 			// Smoothstepping for very smooth min and max values, max() is used to get rid of "artifact" when maxYDst is close to 0
-			m_extraZTarget = Utils::smootherstep(minZ, maxZ, (maxXDst + max(maxYDst, 5.f) * cam->getAspectRatio()) * 1.3f ) * (maxZ - minZ) + minZ;
+			m_extraZTarget = Utils::smootherstep(minZ, maxZ, (maxXDst + max(maxYDst, 5.f) * cam->getAspectRatio()) * 1.3f) * (maxZ - minZ) + minZ;
+			//m_extraZTarget = maxZ;
 		}
 
 

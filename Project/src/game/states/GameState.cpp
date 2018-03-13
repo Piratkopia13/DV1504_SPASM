@@ -25,6 +25,11 @@ GameState::GameState(StateStack& stack)
 	Application::GameSettings* settings = &m_app->getGameSettings();
 	m_scene = std::make_unique<Scene>(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)));
 
+	// For map screenshot
+	for (auto& team : m_info->convertedGameSettings.teams) {
+		team.color = Vector4::One;
+	}
+
 	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
 
 	// Set up handlers
@@ -91,10 +96,10 @@ GameState::GameState(StateStack& stack)
 	
 
 	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
-	m_scene->addObject(m_scoreVisualization.get());
+	//m_scene->addObject(m_scoreVisualization.get());
 
 	m_timeVisualization = std::make_unique<TimeVisualization>(m_level.get(), m_gamemode.get());
-	m_scene->addObject(m_timeVisualization.get());
+	//m_scene->addObject(m_timeVisualization.get());
 
 
 	// Set up camera with controllers
@@ -170,16 +175,16 @@ GameState::GameState(StateStack& stack)
 
 	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
-		m_scene->addObject(m_characterHandler->getCharacter(i));
+		//m_scene->addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
 		// SETS TEAMS PER INDEX
 		//m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
 	}
 
 	// Give the cam controller targets to follow
-	m_playerCamController->setCharacterHandler(m_characterHandler.get());
+	//m_playerCamController->setCharacterHandler(m_characterHandler.get());
 
-	m_playerCamController->setPosition(Vector3(10, 10, 0));
+	m_playerCamController->setPosition(Vector3(mapSize.x / 2.f, mapSize.x / 2.f, 0));
 
 
 	if (m_info->convertedGraphics.background == 1) {

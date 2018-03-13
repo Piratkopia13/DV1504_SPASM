@@ -89,8 +89,10 @@ void FlyingCameraController::update(float dt) {
 	}
 
 	if (app->getInput().isCursorHidden()) {
-		m_pitch -= (float)(app->getInput().getMouseDY()) * lookSensitivityMouse;
-		m_yaw -= (float)(app->getInput().getMouseDX()) * lookSensitivityMouse;
+		/*m_pitch -= (float)(app->getInput().getMouseDY()) * lookSensitivityMouse;
+		m_yaw -= (float)(app->getInput().getMouseDX()) * lookSensitivityMouse;*/
+		m_pitch = 0.f;
+		m_yaw = 90.f;
 	}
 
 

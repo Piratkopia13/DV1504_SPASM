@@ -75,7 +75,8 @@ void CharacterHandler::addPlayer(Character* player) {
 	player->setParticleHandler(m_particleHandler);
 	m_characters.push_back(player);
 	m_respawnTimers.push_back(0);
-	m_particleHandler->addEmitter(player->m_thrusterEmitter);
+	// Map screenshot
+	//m_particleHandler->addEmitter(player->m_thrusterEmitter);
 }
 
 Vector3 CharacterHandler::getRandomSpawnPoint(UINT team) const {
