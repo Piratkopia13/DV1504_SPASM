@@ -211,7 +211,7 @@ bool PauseState::update(float dt) {
 
 
 	}
-
+	m_pauseMenu->update(dt);
 
 
 
