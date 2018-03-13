@@ -94,48 +94,55 @@ void TimeVisualization::update(float dt) {
 
 	m_timeLeft = m_gamemode->getGametime();
 
-	// Depending on the amount of blocks left, removes x number of blocks to represent the time
-	float numToRemove = 0;
-	while (m_timeLeft < m_secondsPerBlock * float(m_numOfBlocks - 1) && m_numOfBlocks > 0) {
-		numToRemove++;
-		m_numOfBlocks--;
-	}
+	if (m_toRemove.size() > 0) {
+		// Depending on the amount of blocks left, removes x number of blocks to represent the time
+		float numToRemove = 0;
+		while (m_timeLeft < m_secondsPerBlock * float(m_numOfBlocks - 1) && m_numOfBlocks > 0) {
+			numToRemove++;
+			m_numOfBlocks--;
+		}
 
-	// Blocks flying away
-	for (unsigned int i = m_numOfBlocks - 1; i < m_timeTransforms.size(); i++) {
-		if (!m_toRemove[i]) {
-			m_toRemove[i] = true;
-			DirectX::SimpleMath::Vector3 dir = m_timeTransforms[i]->getTranslation() - m_middle;
-			DirectX::SimpleMath::Vector3 targetPos = dir * (max(m_middle.x / 2.f, m_middle.y / 2.f));
-			targetPos = m_timeTransforms[i]->getTranslation();
-			targetPos.z = 1000.f;
-			m_timeTransforms[i]->setTargetPos(targetPos, 4.f);
-			m_instancedBlocks->getInstanceData(m_numOfBlocks - 1).blockVariationOffset = m_topBottom;
-			m_timeTransforms[i]->rotateAroundY(DirectX::XM_PI * 0.5f);
+		if (m_numOfBlocks > 0) {
+			// Blocks flying away
+			for (unsigned int i = m_numOfBlocks - 1; i < m_toRemove.size(); i++) {
+				if (!m_toRemove[i]) {
+					m_toRemove[i] = true;
+					DirectX::SimpleMath::Vector3 dir = m_timeTransforms[i]->getTranslation() - m_middle;
+					DirectX::SimpleMath::Vector3 targetPos = dir * (max(m_middle.x / 2.f, m_middle.y / 2.f));
+					targetPos = m_timeTransforms[i]->getTranslation();
+					targetPos.z = 1000.f;
+					m_timeTransforms[i]->setTargetPos(targetPos, 4.f);
+					m_instancedBlocks->getInstanceData(m_numOfBlocks - 1).blockVariationOffset = m_topBottom;
+					m_timeTransforms[i]->rotateAroundY(DirectX::XM_PI * 0.5f);
 
-			if (m_numOfBlocks - 2 >= 0) {
-				m_instancedBlocks->getInstanceData(m_numOfBlocks - 2).blockVariationOffset = m_rightTopBottom;
+					if (m_numOfBlocks > 1) {
+						m_instancedBlocks->getInstanceData(m_numOfBlocks - 2).blockVariationOffset = m_rightTopBottom;
+					}
+				}
+			}
+
+			// Updates all live blocks
+			unsigned int mtrSize = m_toRemove.size() - 1;
+			for (unsigned int i = 0; i < m_timeTransforms.size(); i++) {
+				m_timeTransforms[i]->update(dt);
+				if (i < mtrSize)
+					if (!m_toRemove[mtrSize])
+						m_timeTransforms[i]->rotateAroundX(dt);
+
+				m_instancedBlocks->getInstanceData(i).modelMatrix = m_timeTransforms[i]->getMatrix();
+			}
+
+
+			// Removes all blocks that have flown into the sunset
+			while (m_toRemove[mtrSize] && m_timeTransforms[mtrSize]->atTargetPos()) {
+				m_toRemove.pop_back();
+				mtrSize = m_toRemove.size() - 1;
+				if (mtrSize < 0)
+					mtrSize = 0;
+				m_timeTransforms[mtrSize]->setScale(0.f);
+				m_instancedBlocks->getInstanceData(mtrSize).modelMatrix = m_timeTransforms[mtrSize]->getMatrix();
 			}
 		}
-	}
-
-	// Updates all live blocks
-	unsigned int mtrSize = m_toRemove.size() - 1;
-	for (unsigned int i = 0; i < m_timeTransforms.size(); i++) {
-		m_timeTransforms[i]->update(dt);
-		if(i < mtrSize)
-			if(!m_toRemove[mtrSize])
-				m_timeTransforms[i]->rotateAroundX(dt);
-
-		m_instancedBlocks->getInstanceData(i).modelMatrix = m_timeTransforms[i]->getMatrix();
-	}
-
-	// Removes all blocks that have flown into the sunset
-	while (m_toRemove[mtrSize] && m_timeTransforms[mtrSize]->atTargetPos()) {
-		m_toRemove.pop_back();
-		mtrSize = m_toRemove.size() - 1;
-		m_timeTransforms[mtrSize]->setScale(0.f);
-		m_instancedBlocks->getInstanceData(mtrSize).modelMatrix = m_timeTransforms[mtrSize]->getMatrix();
 	}
 
 }

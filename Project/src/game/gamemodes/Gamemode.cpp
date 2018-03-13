@@ -12,6 +12,7 @@ Gamemode::Gamemode() {
 	else
 		m_gametime = 60000000000000.f;
 
+	//m_gametime = 5.f;
 
 }
 
