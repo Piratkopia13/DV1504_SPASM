@@ -231,6 +231,7 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 		for (int x = 0; x < m_width; x++) {
 			for (int y = 0; y < m_height; y++) {
 				if (m_blocks[x][y].data) {
+					m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3::One;
 					m_blocks[x][y].blocked = false;
 					for (unsigned int j = 0; j < indices.size(); j++) {
 						if (indices.at(j).x == x && indices.at(j).y == y) {
@@ -257,6 +258,15 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 						updateAdjacent(x, y);
 					}
 
+				}
+			}
+		}
+	}
+	else {
+		for (int x = 0; x < m_width; x++) {
+			for (int y = 0; y < m_height; y++) {
+				if (m_blocks[x][y].data) {
+					m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3::One;
 				}
 			}
 		}
@@ -300,7 +310,7 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const flo
 	if (block->data) {
 		block->currentHP -= damage;
 		block->attacked = true;
-		block->data->color = DirectX::SimpleMath::Vector3(1.f);
+		block->data->color = DirectX::SimpleMath::Vector3(0.f);
 		if (block->currentHP <= 0) {
 			block->imploding = true;
 		}

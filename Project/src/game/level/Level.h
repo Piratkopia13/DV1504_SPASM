@@ -63,17 +63,14 @@ public:
 			}
 			if (imploding) {
 				implodingTimer += delta;
-				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.99f + (Utils::rnd() * 0.02f)) * data->modelMatrix;
-				if (implodingTimer > 1.0f) {
-					data->color = DirectX::SimpleMath::Vector3(implodingTimer * 2.f);
-					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.9f + (Utils::rnd() * 0.02f))
-						* DirectX::SimpleMath::Matrix::CreateRotationX(Utils::rnd())
-						* DirectX::SimpleMath::Matrix::CreateRotationY(Utils::rnd())
-						* DirectX::SimpleMath::Matrix::CreateRotationZ(Utils::rnd())
-						* data->modelMatrix;
-					destroyed = true;
-				}
-				if (implodingTimer > 1.5f) {
+				data->color = DirectX::SimpleMath::Vector3(1.f + implodingTimer * 2.f);
+				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.9f + (Utils::rnd() * 0.02f))
+					* DirectX::SimpleMath::Matrix::CreateRotationX(Utils::rnd())
+					* DirectX::SimpleMath::Matrix::CreateRotationY(Utils::rnd())
+					* DirectX::SimpleMath::Matrix::CreateRotationZ(Utils::rnd())
+					* data->modelMatrix;
+				destroyed = true;
+				if (implodingTimer > 0.5f) {
 					data->color = DirectX::SimpleMath::Vector3::Zero;
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation());
 					imploding = false;
