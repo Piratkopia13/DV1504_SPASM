@@ -13,7 +13,7 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
-	m_movement = { 0.f, 10.f, false, 1.0f, 0, false, 0.f};
+	m_movement = { 0.f, 10.f, false, 1.0f, 0, false, 0.f, 2.5f};
 	m_playerHealth.setMax(100.f);
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
@@ -239,7 +239,8 @@ void Character::update(float dt) {
 
 	m_playerHealth.updatePercent();
 	m_movement.dJumpTimer += dt;
-	if (m_movement.dJumpTimer > 3.0f) {
+	// Jump timer
+	if (m_movement.dJumpTimer > m_movement.dJumpTimeReset) {
 		m_movement.dJump = true;
 	}
 

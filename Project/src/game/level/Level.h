@@ -28,7 +28,8 @@ public:
 	static const float DEFAULT_BLOCKSIZE;
 
 	struct LevelBlock {
-		float maxHP = 60.f;
+
+		float maxHP = 50.f;
 		float currentHP = maxHP;
 		DynBlockDeferredInstancedGeometryShader::InstanceData* data = nullptr;
 		float respawnTime = 5.f;
