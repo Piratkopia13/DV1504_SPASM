@@ -96,6 +96,10 @@ Vector3 CharacterHandler::getRandomSpawnPoint(UINT team) const {
 
 void CharacterHandler::addSpawnPoint(unsigned int team, const Vector3& position) {
 	m_spawns[team].push_back(position);
+	if(m_info->convertedGameSettings.gamemode == GameInfo::DEATHMATCH)
+		m_drawSpawns.push_back(std::make_unique<PlayerSpawn>(position, DirectX::SimpleMath::Vector4::One));
+	else 
+		m_drawSpawns.push_back(std::make_unique<PlayerSpawn>(position, m_info->convertedGameSettings.teams[team].color));
 }
 
 void CharacterHandler::killPlayer(unsigned int index) {
@@ -172,6 +176,14 @@ void CharacterHandler::processInput() {
 		character->processInput();
 }
 
+size_t CharacterHandler::getNumberOfSpawns() {
+	return m_drawSpawns.size();
+}
+
+PlayerSpawn * CharacterHandler::getSpawn(size_t index) {
+	return m_drawSpawns[index].get();
+}
+
 unsigned int CharacterHandler::getNrOfPlayers()
 {
 	return m_characters.size();
@@ -199,4 +211,26 @@ bool CharacterHandler::useableTarget(unsigned int index)
 	}
 	else
 		return false;
+}
+
+
+
+/* PlayerSpawn class */
+
+PlayerSpawn::PlayerSpawn(const DirectX::SimpleMath::Vector3 & position, const DirectX::SimpleMath::Vector4 & color) {
+	setModel(Application::getInstance()->getResourceManager().getFBXModel("upgrade_spawner").getModel());
+	Object::setPosition(position);
+	Object::getTransform().setNonUniScale(1.f, 2.f, 1.f);
+	updateBoundingBox();
+	Object::setLightColor(color);
+}
+
+PlayerSpawn::~PlayerSpawn() {
+
+}
+
+void PlayerSpawn::draw() {
+	Object::getModel()->setTransform(&getTransform());
+	Object::getModel()->getMaterial()->setColor(lightColor);
+	Object::getModel()->draw();
 }

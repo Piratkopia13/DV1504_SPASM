@@ -168,6 +168,11 @@ GameState::GameState(StateStack& stack)
 		m_scene->addObject(m_upgradeHandler->getSpawn(4));
 	}
 
+	size_t numberOfPlayerSpawns = m_characterHandler->getNumberOfSpawns();
+	for (size_t i = 0; i < numberOfPlayerSpawns; i++) {
+		m_scene->addObject(m_characterHandler->getSpawn(i));
+	}
+
 
 
 	// Add the characters for rendering and respawn them
