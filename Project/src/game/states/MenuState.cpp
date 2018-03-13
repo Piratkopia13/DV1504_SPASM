@@ -62,14 +62,16 @@ MenuState::MenuState(StateStack& stack)
 	
 
 	m_app->getResourceManager().LoadDXTexture("brick.tga");
-	m_previewModel = ModelFactory::PlaneModel::Create(Vector2(3.f, 3.f));
+	m_previewModel = ModelFactory::PlaneModel::Create(Vector2(3.f, 3.f*0.54));
 	m_previewModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
 	m_previewModel->getMaterial()->setDiffuseTexture("brick.tga");
 
 
 
 	m_targets.push_back(new MenuHandler());
+	m_targets.push_back(new MenuHandler());
 	m_targets[0]->setPosition(Vector3(0, 0, -7));
+	m_targets[1]->setPosition(Vector3(-5, 0, 0));
 
 	m_onColor = Vector4(1.f, 1.f, 1.f, 1.f);
 	m_offColor = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -761,6 +763,7 @@ bool MenuState::processInput(float dt) {
 
 								std::ifstream f("res/levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
 								if (f.good()) {
+									f.close();
 									m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
 							
 
@@ -1094,7 +1097,7 @@ bool MenuState::update(float dt) {
 // Renders the state
 bool MenuState::render(float dt) {
 	// Clear back buffer
-	m_app->getDXManager()->clear(DirectX::Colors::White);
+	m_app->getDXManager()->clear({ 0.05f, 0.05f, 0.05f, 1.0f });
 
 	// Draw the scene
 	m_scene.draw(dt, m_cam);
@@ -1466,7 +1469,7 @@ void MenuState::initMap() {
 
 		m_mapPre = new MenuItem(m_previewModel.get(),Vector3(0,0,0));
 		m_mapPre->setPosition(Vector3(-5,0,0));
-		m_mapPre->setLightColor(m_offColor);
+		m_mapPre->setLightColor(m_onColor);
 		m_mapPre->getTransform().setRotations(Vector3(0,-1.57f,-1.57f));
 		m_scene.addObject(m_mapPre);
 
@@ -1486,7 +1489,7 @@ void MenuState::initMap() {
 
 	m_mapMenu->setStaticSelection(true, 0);
 
-	m_mapMenu->setPosition(Vector3(-5,0,0));
+	m_mapMenu->setPosition(Vector3(-5,2,0));
 	m_mapMenu->setFacingDirection(Vector3(1,0,0));
 	m_mapMenu->setStep(0.1f);
 	
@@ -1494,7 +1497,7 @@ void MenuState::initMap() {
 
 	
 	m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
-	m_mapPre->getModel()->getMaterial()->setDiffuseTexture("../levels/Preview/"+m_info->maps[m_info->gameSettings.gameMode][0]+".tga");
+	m_previewModel->getMaterial()->setDiffuseTexture("../levels/Preview/"+m_info->maps[m_info->gameSettings.gameMode][0]+".tga");
 
 
 	Logger::log("maps loaded");
@@ -1784,14 +1787,14 @@ void MenuState::setMapSelect(bool active) {
 		m_activeMenu = STARTMENU;
 		m_activeSubMenu = MAPSELECT;
 		m_mapMenu->activate();
-		m_mapPre->setModel(nullptr);
+		m_mapPre->setModel(m_previewModel.get());
 	}
 	else {
 		m_mapMenu->deActivate();
 		for (size_t i = 0; i < m_playerz.size(); i++) {
 			m_playerz[i]->ready = false;
 		}
-		m_mapPre->setModel(m_previewModel.get());
+		m_mapPre->setModel(nullptr);
 	}
 }
 
@@ -1894,7 +1897,7 @@ void MenuState::updateCamera() {
 		}
 		if (m_activeSubMenu == MAPSELECT) {
 
-			m_playerCamController->setTargets(m_mapMenu, m_mapMenu->getTarget(), m_mapMenu->getExtraTarget());
+			m_playerCamController->setTargets(m_targets[1]);
 
 		}
 	}
