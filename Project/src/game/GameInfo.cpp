@@ -84,7 +84,7 @@ GameInfo::GameInfo()
 	gameModes.push_back({ "deathMatch", 1, 0 });
 	gameModes.push_back({ "team Deathmatch", 2, 0 });
 
-	timeLimit.push_back({ "no Limit", 0.0f, 0 });
+	timeLimit.push_back({ "no Limit", 900000000.f, 0 });
 	timeLimit.push_back({ "1 min", 60.0f, 0 });
 	timeLimit.push_back({ "2 min", 120.0f, 0 });
 	timeLimit.push_back({ "3 min", 180.0f, 0 });

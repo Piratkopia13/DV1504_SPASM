@@ -223,6 +223,7 @@ GameState::~GameState() {
 		std::cout << "Kills: " <<info->getScore().getPlayerStats(i).kills << std::endl << std::endl;
 	}*/
 
+	m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 }
 
 // Process input for the state
@@ -394,11 +395,9 @@ bool GameState::update(float dt) {
 		if (checkWin > Gamemode::DRAW && checkWin < (int)m_info->convertedGameSettings.teams.size())
 			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
-		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		
 		requestStackClear();
 		requestStackPush(States::Score);
-		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 	}
 
 	if(!m_flyCam)
