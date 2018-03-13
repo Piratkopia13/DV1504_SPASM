@@ -8,7 +8,6 @@ MenuState::MenuState(StateStack& stack)
 	, m_cam(60.f, 1280.f / 720.f, 0.1f, 1000.f)
 	, m_fpsText(&m_font, L"")
 	, m_debugCamText(&m_font, L"")
-	, m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 {
 	// Get the Application instance
 	m_app = Application::getInstance();
@@ -16,6 +15,8 @@ MenuState::MenuState(StateStack& stack)
 	m_info->isInMenu = true;
 	// Set up camera with controllers
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
+
+	m_scene = std::make_unique<Scene>(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)));
 
 	/*Clear Scores*/	
 	m_info->resetScore();
@@ -29,19 +30,19 @@ MenuState::MenuState(StateStack& stack)
 		gamePad.SetVibration(u, 0, 0);
 
 	// Set up the scene
-	//m_scene.addSkybox(L"skybox_space_512.dds");
+	//m_scene->addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
 	Vector3 color(0.9f, 0.9f, 0.9f);
 	Vector3 direction(0.4f, -0.6f, 1.0f);
 	direction.Normalize();
-	m_scene.setUpDirectionalLight(Lights::DirectionalLight(color, direction));
+	m_scene->setUpDirectionalLight(Lights::DirectionalLight(color, direction));
 
 	// Set up HUD texts
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	// Add texts to the scene
-	m_scene.addText(&m_fpsText);
+	m_scene->addText(&m_fpsText);
 #ifdef _DEBUG
-	m_scene.addText(&m_debugCamText);
+	m_scene->addText(&m_debugCamText);
 #endif
 
 	auto& resMan = m_app->getResourceManager();
@@ -86,7 +87,7 @@ MenuState::MenuState(StateStack& stack)
 	this->background = new MenuItem(m_backGroundModel, Vector3(0.f, -2.3f, 0.5f));
 	this->background->m_useColor = 1;
 	this->background->setLightColor(Vector4(0.5f,0.5f,0.5f,0.5f));
-	//m_scene.addObject(background);
+	//m_scene->addObject(background);
 
 	//MAINMENU
 	initMain();
@@ -998,7 +999,7 @@ bool MenuState::processInput(float dt) {
 // Process window resizing for the state
 bool MenuState::resize(int width, int height) {
 	m_cam.resize(width, height);
-	m_scene.resize(width, height);
+	m_scene->resize(width, height);
 
 	return true;
 }
@@ -1068,10 +1069,10 @@ bool MenuState::render(float dt) {
 	m_app->getDXManager()->clear(DirectX::Colors::Black);
 
 	// Draw the scene
-	m_scene.draw(dt, m_cam);
+	m_scene->draw(dt, m_cam);
 
 	// Draw HUD
-	m_scene.drawHUD();
+	m_scene->drawHUD();
 
 	return true;
 }
@@ -1082,7 +1083,7 @@ bool MenuState::render(float dt) {
 
 void MenuState::initMain() {
 	m_mainMenu = new MenuHandler();
-	m_scene.addObject(m_mainMenu);
+	m_scene->addObject(m_mainMenu);
 
 	m_mainMenu->addMenuBox("start");
 	m_mainMenu->addMenuBox("profiles");
@@ -1101,7 +1102,7 @@ void MenuState::initGamemode() {
 
 	if (!m_gamemodeMenu) {
 		m_gamemodeMenu = new MenuHandler();
-		m_scene.addObject(m_gamemodeMenu);
+		m_scene->addObject(m_gamemodeMenu);
 
 	}
 
@@ -1257,11 +1258,11 @@ void MenuState::initCharacterModels() {
 		temp.armL->getTransform().setScale(1.4f);
 		temp.armR->getTransform().setScale(1.4f);
 
-		m_scene.addObject(temp.head);
-		m_scene.addObject(temp.body);
-		m_scene.addObject(temp.legs);
-		m_scene.addObject(temp.armL);
-		m_scene.addObject(temp.armR);
+		m_scene->addObject(temp.head);
+		m_scene->addObject(temp.body);
+		m_scene->addObject(temp.legs);
+		m_scene->addObject(temp.armL);
+		m_scene->addObject(temp.armR);
 		temp.setLight(m_offColor);
 		temp.reset();
 		m_playerMenuModelz.push_back(temp);
@@ -1287,11 +1288,11 @@ void MenuState::initCharacterModels() {
 	m_graphicsModel.armL->getTransform().setScale(1.4f);
 	m_graphicsModel.armR->getTransform().setScale(1.4f);
 
-	//m_scene.addObject(m_graphicsModel.head);
-	//m_scene.addObject(m_graphicsModel.body);
-	//m_scene.addObject(m_graphicsModel.legs);
-	//m_scene.addObject(m_graphicsModel.armL);
-	//m_scene.addObject(m_graphicsModel.armR);
+	//m_scene->addObject(m_graphicsModel.head);
+	//m_scene->addObject(m_graphicsModel.body);
+	//m_scene->addObject(m_graphicsModel.legs);
+	//m_scene->addObject(m_graphicsModel.armL);
+	//m_scene->addObject(m_graphicsModel.armR);
 
 	
 
@@ -1324,7 +1325,7 @@ void MenuState::initCharacter(size_t spot, bool online) {
 	if (m_characterMenu.size() == 0) {
 		for (size_t i = 0; i < 4; i++) {
 			m_characterMenu.push_back(new MenuHandler());
-			m_scene.addObject(m_characterMenu[i]);
+			m_scene->addObject(m_characterMenu[i]);
 			m_characterMenu[i]->addMenuSelector("Offline");
 
 		}
@@ -1431,7 +1432,7 @@ void MenuState::initMap() {
 
 	if (!m_mapMenu) {
 		m_mapMenu = new MenuHandler();
-		m_scene.addObject(m_mapMenu);
+		m_scene->addObject(m_mapMenu);
 
 	}
 	else
@@ -1458,7 +1459,7 @@ void MenuState::initMap() {
 
 void MenuState::initProfile() {
 	m_profileMenu = new MenuHandler();
-	m_scene.addObject(m_profileMenu);
+	m_scene->addObject(m_profileMenu);
 
 	m_profileMenu->addMenuBox("create profile");
 	m_profileMenu->addMenuBox("view profiles");
@@ -1470,7 +1471,7 @@ void MenuState::initProfile() {
 void MenuState::initProfileCreator() {
 	if (!m_profileCreator) {
 		m_profileCreator = new MenuHandler();
-		m_scene.addObject(m_profileCreator);
+		m_scene->addObject(m_profileCreator);
 	}
 	else {
 		m_profileCreator->reset();
@@ -1496,9 +1497,9 @@ void MenuState::initProfileViewer() {
 		m_profileViewer = new MenuHandler();
 		m_profileViewerStats = new MenuHandler();
 		m_profileViewerLines = new MenuHandler();
-		m_scene.addObject(m_profileViewer);
-		m_scene.addObject(m_profileViewerLines);
-		m_scene.addObject(m_profileViewerStats);
+		m_scene->addObject(m_profileViewer);
+		m_scene->addObject(m_profileViewerLines);
+		m_scene->addObject(m_profileViewerStats);
 	}
 	else {
 		m_profileViewer->reset();
@@ -1569,7 +1570,7 @@ void MenuState::updateProfileViewer() {
 
 void MenuState::initOptions() {
 	m_optionsMenu = new MenuHandler();
-	m_scene.addObject(m_optionsMenu);
+	m_scene->addObject(m_optionsMenu);
 
 	m_optionsMenu->addMenuBox("graphics");
 	m_optionsMenu->addMenuBox("sound");
@@ -1583,7 +1584,7 @@ void MenuState::initOptions() {
 
 void MenuState::initGraphics() {
 	m_graphicsMenu = new MenuHandler();
-	m_scene.addObject(m_graphicsMenu);
+	m_scene->addObject(m_graphicsMenu);
 	size_t ite = 0;
 
 	m_graphicsMenu->addMenuSelector("particles");
@@ -1649,7 +1650,7 @@ void MenuState::initGraphics() {
 
 void MenuState::initSound() {
 	m_soundMenu = new MenuHandler();
-	m_scene.addObject(m_soundMenu);
+	m_scene->addObject(m_soundMenu);
 	size_t ite = 0;
 
 	m_soundMenu->addMenuSelector("master volume");

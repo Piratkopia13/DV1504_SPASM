@@ -42,7 +42,7 @@ private:
 	bool m_flyCam;
 
 	// Scene
-	Scene m_scene;
+	std::unique_ptr<Scene> m_scene;
 
 	// Models
 	std::unique_ptr<Model> m_infinityPlane;
