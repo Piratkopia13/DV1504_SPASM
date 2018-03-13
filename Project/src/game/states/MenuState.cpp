@@ -33,7 +33,7 @@ MenuState::MenuState(StateStack& stack)
 	//m_scene->addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
 	Vector3 color(0.9f, 0.9f, 0.9f);
-	Vector3 direction(0.4f, -0.6f, 1.0f);
+	Vector3 direction(-1.f, -0.6f, 0.0f);
 	direction.Normalize();
 	m_scene->setUpDirectionalLight(Lights::DirectionalLight(color, direction));
 
@@ -145,7 +145,7 @@ MenuState::~MenuState()
 		Memory::safeDelete(m_characterMenu[i]);
 	Memory::safeDelete(m_mapMenu);
 	Memory::safeDelete(m_mapPreview);
-	Memory::safeDelete(m_mapPre);
+	//Memory::safeDelete(m_mapPre);
 	Memory::safeDelete(m_profileMenu);
 	Memory::safeDelete(m_profileCreator);
 	Memory::safeDelete(m_profileViewer);
@@ -763,7 +763,7 @@ bool MenuState::processInput(float dt) {
 							}
 							if (left || right) {
 
-								std::ifstream f("res/levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
+								/*std::ifstream f("res/levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
 								if (f.good()) {
 									f.close();
 									m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
@@ -772,7 +772,18 @@ bool MenuState::processInput(float dt) {
 									m_mapPre->getModel()->getMaterial()->setDiffuseTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
 
 
+								}*/
+								std::string preText = "";
+								if (m_info->gameSettings.gameMode == GameInfo::DOMINATION) {
+									preText = "domination/";
 								}
+								if (m_info->gameSettings.gameMode == GameInfo::DEATHMATCH) {
+									preText = "DM/";
+								}
+								if (m_info->gameSettings.gameMode == GameInfo::TEAMDEATHMATCH) {
+									preText = "teamDM/";
+								}
+								m_mapPreview->setMap(preText + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".level");
 
 
 							}
@@ -1087,6 +1098,7 @@ bool MenuState::update(float dt) {
 
 
 	m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
+	m_app->getResourceManager().getShaderSet<DynBlockDeferredInstancedGeometryShader>().updateCamera(m_cam);
 
 
 
@@ -1464,18 +1476,21 @@ void MenuState::removeCharacter(size_t spot) {
 void MenuState::initMap() {
 
 	if (!m_mapMenu) {
+		m_mapPreview = new MapPreview();
+		m_app->getResourceManager().getShaderSet<SimpleTextureShader>().updateCamera(m_cam);
+		//m_mapPreview->setMap();
+
 		m_mapMenu = new MenuHandler();
 		m_scene->addObject(m_mapMenu);
-		m_mapPreview = new MenuHandler();
+		/*m_mapPreview = new MenuHandler();
 		
 
 		m_mapPre = new MenuItem(m_previewModel.get(),Vector3(0,0,0));
 		m_mapPre->setPosition(Vector3(-5,0,0));
 		m_mapPre->setLightColor(m_onColor);
 		m_mapPre->getTransform().setRotations(Vector3(0,-1.57f,-1.57f));
-		m_scene->addObject(m_mapPre);
-
-
+		m_scene->addObject(m_mapPre);*/
+		m_scene->addObject(m_mapPreview);
 	}
 	else
 		m_mapMenu->reset();
@@ -1495,7 +1510,17 @@ void MenuState::initMap() {
 	m_mapMenu->setFacingDirection(Vector3(1,0,0));
 	m_mapMenu->setStep(0.1f);
 	
-
+	std::string preText = "";
+	if (m_info->gameSettings.gameMode == GameInfo::DOMINATION) {
+		preText = "domination/";
+	}
+	if (m_info->gameSettings.gameMode == GameInfo::DEATHMATCH) {
+		preText = "DM/";
+	}
+	if (m_info->gameSettings.gameMode == GameInfo::TEAMDEATHMATCH) {
+		preText = "teamDM/";
+	}
+	m_mapPreview->setMap(preText + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".level");
 
 	
 	m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
@@ -1789,14 +1814,16 @@ void MenuState::setMapSelect(bool active) {
 		m_activeMenu = STARTMENU;
 		m_activeSubMenu = MAPSELECT;
 		m_mapMenu->activate();
-		m_mapPre->setModel(m_previewModel.get());
+		m_mapPreview->activate();
+		//m_mapPre->setModel(m_previewModel.get());
 	}
 	else {
 		m_mapMenu->deActivate();
+		m_mapPreview->deActivate();
 		for (size_t i = 0; i < m_playerz.size(); i++) {
 			m_playerz[i]->ready = false;
 		}
-		m_mapPre->setModel(nullptr);
+		//m_mapPre->setModel(nullptr);
 	}
 }
 

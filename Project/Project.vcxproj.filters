@@ -153,6 +153,7 @@
     <ClCompile Include="src\game\background\TimeVisualization.cpp" />
     <ClCompile Include="src\sail\graphics\postprocessing\stages\BlendStage.cpp" />
     <ClCompile Include="src\game\background\AnimatedTransform.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MapPreview.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game\background\ScoreVisualization.h" />
@@ -285,6 +286,7 @@
     <ClInclude Include="src\sail\graphics\postprocessing\stages\BlendStage.h" />
     <ClInclude Include="src\game\background\TimeVisualization.h" />
     <ClInclude Include="src\game\background\AnimatedTransform.h" />
+    <ClInclude Include="src\game\objects\Menu\MapPreview.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="res\sounds\ambient\loop1.wav" />

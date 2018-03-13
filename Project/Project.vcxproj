@@ -142,6 +142,7 @@
     <ClCompile Include="src\game\background\ScoreVisualization.cpp" />
     <ClCompile Include="src\game\GameInfo.cpp" />
     <ClCompile Include="src\game\gamemodes\tdm\TeamDeathmatch.cpp" />
+    <ClCompile Include="src\game\objects\Menu\MapPreview.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuSelector.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuHandler.cpp" />
     <ClCompile Include="src\game\objects\Menu\MenuText.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="src\game\GameInfo\Score.h" />
     <ClInclude Include="src\game\gamemodes\tdm\TeamDeathmatch.h" />
     <ClInclude Include="src\game\objects\InstancedBlocks.h" />
+    <ClInclude Include="src\game\objects\Menu\MapPreview.h" />
     <ClInclude Include="src\game\objects\Menu\MenuSelector.h" />
     <ClInclude Include="src\game\objects\Menu\MenuHandler.h" />
     <ClInclude Include="src\game\objects\Menu\MenuText.h" />
