@@ -13,6 +13,7 @@ MenuState::MenuState(StateStack& stack)
 	// Get the Application instance
 	m_app = Application::getInstance();
 	m_info = GameInfo::getInstance();
+	m_info->isInMenu = true;
 	// Set up camera with controllers
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam);
 

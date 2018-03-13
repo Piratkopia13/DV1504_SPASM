@@ -52,7 +52,7 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 			float bMinY = index.y * Level::DEFAULT_BLOCKSIZE;
 			float bMaxY = (index.y + 1) * Level::DEFAULT_BLOCKSIZE;
 
-			if (mMax.x + mVel.x > bMinX && mMin.x + mVel.x < bMaxX &&
+			if (mMax.x + mVel.x + EPS > bMinX && mMin.x + mVel.x - EPS < bMaxX &&
 				mMax.y > bMinY && mMin.y < bMaxY) {
 				if (mVel.x < 0.f)
 					toMove.x = bMaxX - mMin.x + EPS;
@@ -71,7 +71,7 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 			if (toMove.x && !(colX)) {
 				colX = true;
-				if (abs(toMove.x) <= EPS) toMove.x = 0.f;
+				//if (abs(toMove.x) <= EPS) toMove.x = 0.f;
 				DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 				tempVel.x = 0.f;
 				moveable.setVelocity(tempVel);
@@ -81,7 +81,7 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 			if (toMove.y && !(colY)) {
 				colY = true;
-				if (abs(toMove.y) <= EPS) toMove.y = 0.f;
+				//if (abs(toMove.y) <= EPS) toMove.y = 0.f;
 				DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 				tempVel.y = 0.f;
 				moveable.setVelocity(tempVel);
@@ -110,21 +110,23 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 						toMove.y = bMinY - mMax.y - EPS;
 				}
 
-				if (abs(toMove.x) < abs(toMove.y)) {
+				/*if (abs(toMove.x) < abs(toMove.y)) {
 					if (abs(toMove.x) <= EPS) toMove.x = 0.f;
 					DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 					tempVel.x = 0.f;
 					moveable.setVelocity(tempVel);
 					toMove.y = 0.f;
 					moveable.move(toMove);
-				}
-
-				if (abs(toMove.y) < abs(toMove.x)) {
-					if (abs(toMove.y) <= EPS) toMove.y = 0.f;
+				}*/
+				if (abs(toMove.x) > 0 || abs(toMove.y) > 0) {
 					DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 					tempVel.y = 0.f;
+					tempVel.x = 0.f;
 					moveable.setVelocity(tempVel);
-					toMove.x = 0.f;
+					if (toMove.x < 0)
+						toMove.x -= EPS;
+					else if (toMove.x > 0)
+						toMove.x += EPS;
 					moveable.move(toMove);
 				}
 			}
