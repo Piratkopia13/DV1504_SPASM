@@ -1496,12 +1496,14 @@ void MenuState::initMap() {
 	m_mapMenu->setStep(0.1f);
 	
 
+	std::ifstream f("res/levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
+	if (f.good()) {
+		f.close();
 
-	
-	m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
-	m_previewModel->getMaterial()->setDiffuseTexture("../levels/Preview/"+m_info->maps[m_info->gameSettings.gameMode][0]+".tga");
+		m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
+		m_previewModel->getMaterial()->setDiffuseTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
 
-
+	}
 	Logger::log("maps loaded");
 }
 
