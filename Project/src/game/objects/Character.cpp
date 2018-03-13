@@ -385,7 +385,7 @@ void Character::draw() {
 	m_head->setTransform(&bodyTransform);
 	m_legs->setTransform(&bodyTransform);
 
-	float colorGrad = powf(m_playerHealth.healthPercent, 3) * 2.5f + 0.2f;
+	float colorGrad = powf(m_playerHealth.healthPercent, 3) * 2.5f + 0.5f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/
@@ -543,7 +543,7 @@ void Character::dead() {
 	VibrateController(1, 1.f, 0.3f);
 
 	// Ghost setup
-	Vector4 color(0.8f, 0.8f, 0.8f, 1.f);
+	Vector4 color(2.0f, 2.0f, 2.0f, 1.f);
 	Object::setLightColor(color);
 	m_deathPoint = getTransform().getTranslation();
 	m_deathInterp = 0.f;

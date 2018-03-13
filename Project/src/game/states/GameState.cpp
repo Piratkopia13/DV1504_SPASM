@@ -15,7 +15,6 @@ GameState::GameState(StateStack& stack)
 , m_fpsText(&m_font, L"")
 , m_debugCamText(&m_font, L"")
 , m_flyCam(false)
-, m_scene(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)))
 //, m_testBlocks(250)
 {
 
@@ -24,6 +23,7 @@ GameState::GameState(StateStack& stack)
 	m_info = GameInfo::getInstance();
 	m_info->isInMenu = false;
 	Application::GameSettings* settings = &m_app->getGameSettings();
+	m_scene = std::make_unique<Scene>(AABB(Vector3(-100.f, -100.f, -100.f), Vector3(100.f, 100.f, 100.f)));
 
 	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
 
@@ -91,10 +91,10 @@ GameState::GameState(StateStack& stack)
 	
 
 	m_scoreVisualization = std::make_unique<ScoreVisualization>(m_level.get(), m_gamemode.get());
-	m_scene.addObject(m_scoreVisualization.get());
+	m_scene->addObject(m_scoreVisualization.get());
 
 	m_timeVisualization = std::make_unique<TimeVisualization>(m_level.get(), m_gamemode.get());
-	m_scene.addObject(m_timeVisualization.get());
+	m_scene->addObject(m_timeVisualization.get());
 
 
 	// Set up camera with controllers
@@ -103,19 +103,19 @@ GameState::GameState(StateStack& stack)
 	m_playerCamController = std::make_unique<PlayerCameraController>(&m_cam, &mapSize);
 	
 	// Set up the scene
-	//m_scene.addSkybox(L"skybox_space_512.dds");
+	//m_scene->addSkybox(L"skybox_space_512.dds");
 	// Add a directional light
 	Vector3 color(0.9f, 0.9f, 0.9f);
  	Vector3 direction(0.4f, -0.6f, 1.0f);
 	direction.Normalize();
-	m_scene.setUpDirectionalLight(Lights::DirectionalLight(color, direction));
+	m_scene->setUpDirectionalLight(Lights::DirectionalLight(color, direction));
 
 	// Set up HUD texts
 	m_debugCamText.setPosition(Vector2(0.f, 20.f));
 	// Add texts to the scene
-	m_scene.addText(&m_fpsText);
+	m_scene->addText(&m_fpsText);
 #ifdef _DEBUG
-	m_scene.addText(&m_debugCamText);
+	m_scene->addText(&m_debugCamText);
 #endif
 
 	// Set character spawn points
@@ -148,7 +148,7 @@ GameState::GameState(StateStack& stack)
 	if (upgradeSpawnPoints.size() > 0) {
 		for (Grid::Index gIndex : upgradeSpawnPoints) {
 			m_upgradeHandler->addSpawn(Vector3((float(gIndex.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(gIndex.y) * Level::DEFAULT_BLOCKSIZE, 0.f), Upgrade::RANDOM, 10);
-			m_scene.addObject(m_upgradeHandler->getSpawn(index));
+			m_scene->addObject(m_upgradeHandler->getSpawn(index));
 			index++;
 		}
 	}
@@ -159,18 +159,18 @@ GameState::GameState(StateStack& stack)
 		m_upgradeHandler->addSpawn(Vector3(8, 1.0f, 0), Upgrade::EXTRA_PROJECTILES, 10);
 		m_upgradeHandler->addSpawn(Vector3(9, 1.0f, 0), Upgrade::NO_GRAVITY, 10);
 
-		m_scene.addObject(m_upgradeHandler->getSpawn(0));
-		m_scene.addObject(m_upgradeHandler->getSpawn(1));
-		m_scene.addObject(m_upgradeHandler->getSpawn(2));
-		m_scene.addObject(m_upgradeHandler->getSpawn(3));
-		m_scene.addObject(m_upgradeHandler->getSpawn(4));
+		m_scene->addObject(m_upgradeHandler->getSpawn(0));
+		m_scene->addObject(m_upgradeHandler->getSpawn(1));
+		m_scene->addObject(m_upgradeHandler->getSpawn(2));
+		m_scene->addObject(m_upgradeHandler->getSpawn(3));
+		m_scene->addObject(m_upgradeHandler->getSpawn(4));
 	}
 
 
 
 	// Add the characters for rendering and respawn them
 	for (size_t i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
-		m_scene.addObject(m_characterHandler->getCharacter(i));
+		m_scene->addObject(m_characterHandler->getCharacter(i));
 		m_characterHandler->respawnPlayer(i);
 		// SETS TEAMS PER INDEX
 		//m_characterHandler->getCharacter(i)->setTeam(i % 2 + 1);
@@ -203,10 +203,10 @@ GameState::GameState(StateStack& stack)
 		m_infTop->getTransform().setRotations(Vector3(0.f, 0.f, 3.1415f));
 		m_infTop->getTransform().setTranslation(Vector3(mapSize.x / 2.f, mapSize.y + 70.f, 0.f));
 
-		m_scene.addObject(m_infBottom.get());
-		m_scene.addObject(m_infTop.get());
-		m_scene.addObject(m_infLeft.get());
-		m_scene.addObject(m_infRight.get());
+		m_scene->addObject(m_infBottom.get());
+		m_scene->addObject(m_infTop.get());
+		m_scene->addObject(m_infLeft.get());
+		m_scene->addObject(m_infRight.get());
 	}
 
 	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.10f);
@@ -223,6 +223,7 @@ GameState::~GameState() {
 		std::cout << "Kills: " <<info->getScore().getPlayerStats(i).kills << std::endl << std::endl;
 	}*/
 
+	m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 }
 
 // Process input for the state
@@ -230,7 +231,7 @@ bool GameState::processInput(float dt) {
 
 	const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
 	auto& gamePad = m_app->getInput().getGamePad();
-	
+
 	// Toggle camera controller on 'F' key or 'Y' btn
 	if (kbTracker.pressed.F)
 		m_flyCam = !m_flyCam;
@@ -241,7 +242,7 @@ bool GameState::processInput(float dt) {
 		//pl.setColor(Vector3(1.f, 1.f, 1.f));
 		pl.setPosition(m_cam.getPosition());
 		pl.setAttenuation(.0f, 0.1f, 0.02f);
-		m_scene.getLights().addPointLight(pl);
+		m_scene->getLights().addPointLight(pl);
 	}
 
 	if (kbTracker.pressed.T) {
@@ -251,7 +252,7 @@ bool GameState::processInput(float dt) {
 	GameInfo* info = GameInfo::getInstance();
 	if (kbTracker.pressed.O) {
 		if (info->convertedGameSettings.gamemode == 0) {
-			m_gamemode->addScore(10,0);
+			m_gamemode->addScore(10, 0);
 			m_gamemode->addScore(-10, 1);
 			info->getScore().addKill(0);
 			info->getScore().addDeath(2);
@@ -331,7 +332,7 @@ bool GameState::processInput(float dt) {
 			m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		}
 	});
-	
+
 	m_characterHandler->processInput();
 
 	// Update the camera controller from input devices
@@ -345,7 +346,7 @@ bool GameState::processInput(float dt) {
 // Process window resizing for the state
 bool GameState::resize(int width, int height) {
 	m_cam.resize(width, height);
-	m_scene.resize(width, height);
+	m_scene->resize(width, height);
 
 	return true;
 }
@@ -394,11 +395,9 @@ bool GameState::update(float dt) {
 		if (checkWin > Gamemode::DRAW && checkWin < (int)m_info->convertedGameSettings.teams.size())
 			m_info->convertedGameSettings.teams[checkWin].winner = true;
 
-		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 		
 		requestStackClear();
 		requestStackPush(States::Score);
-		m_app->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Battle_Sound);
 	}
 
 	if(!m_flyCam)
@@ -431,12 +430,12 @@ bool GameState::render(float dt) {
 	m_app->getDXManager()->clear({0.05f, 0.05f, 0.05f, 1.0f});
 
 	// Draw the scene using deferred rendering
-	m_scene.draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
+	m_scene->draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
 
 	//m_particleHandler->draw();
 
 	// Draw HUD
-	m_scene.drawHUD();
+	m_scene->drawHUD();
 
 	return true;
 }
