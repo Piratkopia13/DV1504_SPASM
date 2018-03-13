@@ -12,9 +12,9 @@ MapPreview::~MapPreview() {
 }
 
 void MapPreview::setMap(const std::string & newMap) {
-	m_blocks.reset(new InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>(10000U));
 	m_map = newMap;
 	m_level.reset(new Level(m_map));
+	m_blocks.reset(new InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>(m_level->getNumberOfBlocks()));
 	float tempScale = min(8.0f/m_level->getGridWidth(), 6.0f/m_level->getGridHeight());
 	for (int x = 0; x < m_level->getGridWidth(); x++) {
 		for (int y = 0; y < m_level->getGridHeight(); y++) {
