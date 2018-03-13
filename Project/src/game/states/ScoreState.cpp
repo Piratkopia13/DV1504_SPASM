@@ -194,17 +194,17 @@ bool ScoreState::processInput(float dt) {
 		int spacePressed = 0;
 
 		if (i == keyboardPort) {
-			
-			if (kbTracker.pressed.Space) {
-				a = 1;
-				pressed = 1;
-				spacePressed = 1;
-			}
-			if (kbTracker.pressed.Tab) {
-				b = 1;
-				pressed = 1;
-			}
-			
+
+if (kbTracker.pressed.Space) {
+	a = 1;
+	pressed = 1;
+	spacePressed = 1;
+}
+if (kbTracker.pressed.Tab) {
+	b = 1;
+	pressed = 1;
+}
+
 		}
 
 
@@ -222,13 +222,13 @@ bool ScoreState::processInput(float dt) {
 				menu = 1;
 				pressed = 1;
 			}
-			
+
 		}
 		if (pressed) {
 
 			if (a || b || menu) {
-				
-				
+
+
 				for (size_t u = 0; u < m_info->getPlayers().size(); u++) {
 					if (i == m_info->getPlayers()[u].port) {
 						m_ready[u] = true;
@@ -241,7 +241,7 @@ bool ScoreState::processInput(float dt) {
 					if (m_ready[i])
 						r++;
 				}
-				if(r == m_ready.size())
+				if (r == m_ready.size())
 					exitScoreBoard();
 
 			}
@@ -286,24 +286,30 @@ bool ScoreState::render(float dt) {
 }
 
 void ScoreState::addScore() {
-
+	bool winner = false;
 	for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
 		GameInfo::Player* playe = &m_info->getPlayers()[i];
 		Score::PlayerStats stats = m_info->getScore().getPlayerStats(i);
 		playe->currentProfile->addKills(stats.kills);
 		playe->currentProfile->addDeaths(stats.deaths);
+
 		if (m_info->convertedGameSettings.teams[playe->team].winner) {
-			playe->currentProfile->addWin();
+			winner = true;
 		}
-		else {
-			playe->currentProfile->addLoss();
+	}
+	if (!winner) {
+		for (size_t i = 0; i < m_info->getPlayers().size(); i++) {
+			GameInfo::Player* playe = &m_info->getPlayers()[i];
+			if (m_info->convertedGameSettings.teams[playe->team].winner) {
+				playe->currentProfile->addWin();
+			}
+			else {
+				playe->currentProfile->addLoss();
+			}
+
 		}
-		
-		
 
 	}
-
-
 }
 
 void ScoreState::setPositions() {

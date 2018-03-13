@@ -31,6 +31,7 @@ bool ResourceManager::hasTextureData(const std::string& filename) {
 //
 
 void ResourceManager::LoadDXTexture(const std::string& filename) {
+
 	m_dxTextures.insert({ filename, std::make_unique<DXTexture>(filename) });
 }
 DXTexture& ResourceManager::getDXTexture(const std::string& filename) {

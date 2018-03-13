@@ -203,6 +203,11 @@ GameInfo::GameInfo()
 
 	std::string s;
 	std::stringstream ss;
+
+
+
+
+
 	std::string path = "res/levels/Domination";
 	for (auto & p : directory_iterator(path)) {
 		ss << p;
@@ -211,6 +216,11 @@ GameInfo::GameInfo()
 		int last = s.find_last_of('.');
 		if (s.substr(last,6) == ".level") {
 			std::string item = s.substr(first, last - first);
+
+
+
+
+
 			Logger::log("map " + item + " Loaded for domination");
 			domination.push_back(item);	
 		}
@@ -237,11 +247,16 @@ GameInfo::GameInfo()
 		int last = s.find_last_of('.');
 
 		std::string item = s.substr(first, last - first);
+
+
+
 		Logger::log("map " + item + " Loaded for TDM");
 		teamdeathmatch.push_back(item);
 		ss.str("");
 	}
 	
+
+
 
 	maps.push_back(domination);
 	maps.push_back(deathmatch);
@@ -315,15 +330,21 @@ void GameInfo::addProfile(std::string name, size_t preOrdered) {
 void GameInfo::convertGameSettings() {
 	convertedGameSettings = ConvertedGameSettings();
 	std::string preText = "";
-	if (gameSettings.gameMode == DOMINATION)
+	if (gameSettings.gameMode == DOMINATION) {
+		convertedGameSettings.scoreLimit = scoreLimit[gameSettings.scoreLimit].value;
 		preText = "domination/";
-	if (gameSettings.gameMode == DEATHMATCH)
+	}
+	if (gameSettings.gameMode == DEATHMATCH) {
+		convertedGameSettings.scoreLimit = scoreLimitDM[gameSettings.scoreLimit].value;
 		preText = "DM/";
-	if (gameSettings.gameMode == TEAMDEATHMATCH)
+	}
+	if (gameSettings.gameMode == TEAMDEATHMATCH) {
+		convertedGameSettings.scoreLimit = scoreLimitTDM[gameSettings.scoreLimit].value;
 		preText = "teamDM/";
+	}
 	convertedGameSettings.map = preText + maps[gameSettings.gameMode][gameSettings.map]+".level";
 	convertedGameSettings.gamemode = static_cast<size_t>(gameModes[gameSettings.gameMode].value);
-	convertedGameSettings.scoreLimit = scoreLimit[gameSettings.scoreLimit].value;
+
 	convertedGameSettings.timeLimit = timeLimit[gameSettings.timelimit].value;
 	convertedGameSettings.respawnTime = respawnTime[gameSettings.respawnTime].value;
 	convertedGameSettings.playerLife = playerHealth[gameSettings.playerLife].value;

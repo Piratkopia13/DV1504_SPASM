@@ -87,18 +87,18 @@ void PayloadGamemode::update(CharacterHandler* charHandler, float dt) {
 			blockColor.y = min(m_teamOneColor.y * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y) * m_pulseStrength;
 			blockColor.z = min(m_teamOneColor.z * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z) * m_pulseStrength;
 
-			blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.x));
-			blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.y));
-			blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.z));
+			blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth - (x + 1)))) * m_teamTwoColor.x));
+			blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth - (x + 1)))) * m_teamTwoColor.y));
+			blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth - (x + 1)))) * m_teamTwoColor.z));
 		}
 		else{
 			blockColor.x = min(m_teamOneColor.x * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.x);
 			blockColor.y = min(m_teamOneColor.y * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.y);
 			blockColor.z = min(m_teamOneColor.z * 1.2f, max(0.f, (teamOneBlocks - float(x))) * m_teamOneColor.z);
 
-			blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.x)) * m_pulseStrength;
-			blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.y)) * m_pulseStrength;
-			blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth)-x)) * m_teamTwoColor.z)) * m_pulseStrength;
+			blockColor.x += min(m_teamTwoColor.x * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth - (x + 1)))) * m_teamTwoColor.x)) * m_pulseStrength;
+			blockColor.y += min(m_teamTwoColor.y * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth - (x + 1)))) * m_teamTwoColor.y)) * m_pulseStrength;
+			blockColor.z += min(m_teamTwoColor.z * 1.2f, max(0.f, (teamTwoBlocks - float((m_levelWidth - (x + 1)))) * m_teamTwoColor.z)) * m_pulseStrength;
 		}
 
 
