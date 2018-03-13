@@ -22,6 +22,7 @@ public:
 
 
 	void resetScore();
+	bool isInMenu;
 
 
 	std::vector<Profile>& getProfiles();

@@ -22,6 +22,7 @@ GameState::GameState(StateStack& stack)
 	// Get the Application instance
 	m_app = Application::getInstance();
 	m_info = GameInfo::getInstance();
+	m_info->isInMenu = false;
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
 	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
@@ -181,31 +182,32 @@ GameState::GameState(StateStack& stack)
 	m_playerCamController->setPosition(Vector3(10, 10, 0));
 
 
-	// Set up background infinity planes
-	m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
-	m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
-	m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
-	m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
+	if (m_info->convertedGraphics.background == 1) {
+		// Set up background infinity planes
+		m_infinityPlane = ModelFactory::PlaneModel::Create(Vector2(10000.f, 10000.f), Vector2(400.f, 300.f));
+		m_infinityPlane->getTransform().translate(Vector3(10.f, -50.f, 0.f));
+		m_infinityPlane->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
+		m_infinityPlane->getMaterial()->setDiffuseTexture("background_tile2.tga");
 
-	m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
-	m_infTop = std::make_unique<Block>(m_infinityPlane.get());
-	m_infLeft = std::make_unique<Block>(m_infinityPlane.get());
-	m_infRight = std::make_unique<Block>(m_infinityPlane.get());
+		m_infBottom = std::make_unique<Block>(m_infinityPlane.get());
+		m_infTop = std::make_unique<Block>(m_infinityPlane.get());
+		m_infLeft = std::make_unique<Block>(m_infinityPlane.get());
+		m_infRight = std::make_unique<Block>(m_infinityPlane.get());
 
-	m_infBottom->getTransform().setRotations(Vector3(0.f, 0.f, 0.f));
-	m_infBottom->getTransform().setTranslation(Vector3(mapSize.x / 2.f, -70.f, 0.f));
-	m_infLeft->getTransform().setRotations(Vector3(0.f, 0.f, -1.57f));
-	m_infLeft->getTransform().setTranslation(Vector3(-70.f, 0.f, 0.f));
-	m_infRight->getTransform().setRotations(Vector3(0.f, 0.f, 1.57f));
-	m_infRight->getTransform().setTranslation(Vector3(mapSize.x + 70.f, 0.f, 0.f));
-	m_infTop->getTransform().setRotations(Vector3(0.f, 0.f, 3.1415f));
-	m_infTop->getTransform().setTranslation(Vector3(mapSize.x / 2.f, mapSize.y + 70.f, 0.f));
+		m_infBottom->getTransform().setRotations(Vector3(0.f, 0.f, 0.f));
+		m_infBottom->getTransform().setTranslation(Vector3(mapSize.x / 2.f, -70.f, 0.f));
+		m_infLeft->getTransform().setRotations(Vector3(0.f, 0.f, -1.57f));
+		m_infLeft->getTransform().setTranslation(Vector3(-70.f, 0.f, 0.f));
+		m_infRight->getTransform().setRotations(Vector3(0.f, 0.f, 1.57f));
+		m_infRight->getTransform().setTranslation(Vector3(mapSize.x + 70.f, 0.f, 0.f));
+		m_infTop->getTransform().setRotations(Vector3(0.f, 0.f, 3.1415f));
+		m_infTop->getTransform().setTranslation(Vector3(mapSize.x / 2.f, mapSize.y + 70.f, 0.f));
 
-	m_scene.addObject(m_infBottom.get());
-	m_scene.addObject(m_infTop.get());
-	m_scene.addObject(m_infLeft.get());
-	m_scene.addObject(m_infRight.get());
-
+		m_scene.addObject(m_infBottom.get());
+		m_scene.addObject(m_infTop.get());
+		m_scene.addObject(m_infLeft.get());
+		m_scene.addObject(m_infRight.get());
+	}
 
 	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Battle_Sound, true, 0.10f);
 }
@@ -352,20 +354,24 @@ bool GameState::resize(int width, int height) {
 // Updates the state
 bool GameState::update(float dt) {
 
-	// Infinity planes color update
-	static float epilepsyAmount = 0.1f;
-	static float epilepsySpeed = 0.3f;
-	static float counter = 0;
-	counter += dt * epilepsySpeed;
-	Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
-	m_infBottom->setColor(infColor);
-	m_infTop->setColor(infColor);
-	m_infLeft->setColor(infColor);
-	m_infRight->setColor(infColor);
-
+	if (m_info->convertedGraphics.background == 1) {
+		// Infinity planes color update
+		static float epilepsyAmount = 0.1f;
+		static float epilepsySpeed = 0.3f;
+		static float counter = 0;
+		counter += dt * epilepsySpeed;
+		Vector4 infColor(fabs(sinf(counter)) * epilepsyAmount, fabs(sin(counter + 2.f)) * epilepsyAmount, fabs(sinf(counter + 4.f)) * epilepsyAmount, 1.f);
+		m_infBottom->setColor(infColor);
+		m_infTop->setColor(infColor);
+		m_infLeft->setColor(infColor);
+		m_infRight->setColor(infColor);
+	}
 
 	// Update HUD texts
-	m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
+	if (m_info->graphicsSettings.fpsCounter == 0)
+		m_fpsText.setText(L"FPS: " + std::to_wstring(m_app->getFPS()));
+	else
+		m_fpsText.setText(L"");
 
 	auto& camPos = m_cam.getPosition();
 	//m_debugCamText.setText(L"Camera @ " + Utils::vec3ToWStr(camPos) + L" Direction: " + Utils::vec3ToWStr(m_cam.getDirection()) + L" Particles: " + std::to_wstring(m_particleHandler->getParticleCount()));
