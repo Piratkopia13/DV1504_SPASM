@@ -23,6 +23,9 @@ public:
 	~PostProcessPass();
 
 	void run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture, RenderableTexture& particlesTexture);
+
+	void updateFromSettings();
+
 	void resize(UINT width, UINT height);
 
 	void setCamera(const Camera& cam);

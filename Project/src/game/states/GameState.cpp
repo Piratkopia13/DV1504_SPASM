@@ -22,6 +22,7 @@ GameState::GameState(StateStack& stack)
 	// Get the Application instance
 	m_app = Application::getInstance();
 	m_info = GameInfo::getInstance();
+	m_info->isInMenu = false;
 	Application::GameSettings* settings = &m_app->getGameSettings();
 
 	m_app->getResourceManager().LoadDXTexture("background_tile2.tga");
