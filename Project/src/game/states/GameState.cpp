@@ -234,6 +234,7 @@ bool GameState::processInput(float dt) {
 	const Keyboard::KeyboardStateTracker& kbTracker = m_app->getInput().getKbStateTracker();
 	auto& gamePad = m_app->getInput().getGamePad();
 
+#ifdef _DEBUG
 	// Toggle camera controller on 'F' key or 'Y' btn
 	if (kbTracker.pressed.F)
 		m_flyCam = !m_flyCam;
@@ -320,6 +321,7 @@ bool GameState::processInput(float dt) {
 
 
 	}
+#endif
 
 
 

@@ -78,6 +78,7 @@ private:
 		int initialHook = 0;
 		bool dJump;
 		float dJumpTimer;
+		float dJumpTimeReset;
 	};
 	struct Health {
 		float current;

@@ -68,7 +68,7 @@ private:
 			div = 1 / cap;
 		}
 		void addTime(float time) {
-			remaining = min(remaining+time, cap);
+			remaining = remaining+time;
 			percent = remaining * div;
 		}
 		void reset() {
@@ -97,8 +97,9 @@ private:
 		void operator+=(const AutoFire& other) {
 			if (other.active) {
 				instances++;
-				fireRate *= 0.5;
-				time.addTime(other.time.remaining);
+				fireRate = 0.5;
+				if (active)
+					time.addTime(other.time.remaining);
 				active = true;
 			}
 		}
@@ -144,9 +145,9 @@ private:
 		}
 		void operator+=(const ProjectileKnockback& other) {
 			if (other.active) {
+				amount = 2.f;
 				if (active)
-					amount += other.amount;
-				time.addTime(other.time.remaining);
+					time.addTime(other.time.remaining);
 				active = true;
 				instances++;
 			}
@@ -192,9 +193,9 @@ private:
 		}
 		void operator+=(const ExtraDamage& other) {
 			if (other.active) {
-				if (active)
-					multiplier *= 2;
-				time.addTime(other.time.remaining);
+				multiplier = 2.f;
+				if(active)
+					time.addTime(other.time.remaining);
 				active = true;
 				instances++;
 			}
@@ -239,9 +240,9 @@ private:
 		}
 		void operator+=(const ExtraProjectiles& other) {
 			if (other.active) {
+				nr = 1;
 				if (active)
-					nr += 1;
-				time.addTime(other.time.remaining);
+					time.addTime(other.time.remaining);
 				active = true;
 				instances++;
 			}
@@ -283,8 +284,9 @@ private:
 		}
 		void operator+=(const NoGravity& other) {
 			if (other.active) {
-				
-				time.addTime(other.time.remaining);
+
+				if (active)
+					time.addTime(other.time.remaining);
 				active = true;
 				instances++;
 			}
