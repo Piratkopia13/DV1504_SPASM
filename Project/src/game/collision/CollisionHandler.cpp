@@ -230,7 +230,7 @@ bool CollisionHandler::checkCharacterCollisionWith(Projectile* proj, float dt, f
 	
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		Character* chara = m_characterHandler->getCharacter(i);
-		if (proj->getTeam() != chara->getTeam()) {
+		if (proj->getTeam() != chara->getTeam() && chara->isAlive()) {
 
 			Vector3 normalizedVel = proj->getVelocity();
 			normalizedVel.Normalize();
@@ -396,7 +396,7 @@ bool CollisionHandler::resolveProjectileCollision(float dt) {
 			}
 
 			if (levelHit) {
-				m_projectileHandler->projectileHitLevel(levelHitPos);
+				m_projectileHandler->projectileHitLevel(levelHitPos, proj);
 				m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
 				m_level->blockHit(proj->getVelocity(), proj->getDamage(), levelHitPos);
 			}

@@ -40,10 +40,6 @@ private:
 
 	std::unique_ptr<HGaussianBlurDepthTest> m_hGaussDepthStage;
 	std::unique_ptr<VGaussianBlurDepthTest> m_vGaussDepthStage;
-	std::unique_ptr<HGaussianBlurDepthTest> m_hGaussDepthStage2;
-	std::unique_ptr<VGaussianBlurDepthTest> m_vGaussDepthStage2;
-	std::unique_ptr<HGaussianBlurDepthTest> m_hGaussDepthStage3;
-	std::unique_ptr<VGaussianBlurDepthTest> m_vGaussDepthStage3;
 
 	std::unique_ptr<FXAAStage> m_FXAAStage;
 	std::unique_ptr<BrightnessCutoffStage> m_brightnessCutoffStage;
@@ -60,10 +56,12 @@ private:
 	float m_gaussPass3Scale;
 	float m_brightnessCutoffScale;
 	float m_gaussDepthPassScale;
-
-	bool m_FXAAPass;
-	bool m_DOFPass;
 	float m_dofFocusWidth;
+
+	bool m_doFXAAPass;
+	bool m_doDOFPass;
+	bool m_doBloom;
+	float m_bloomStrength;
 
 	// TODO make enableEffect(enum) and disableEffect(enum) and a map that binds the enums to enabled/disabled bool
 

@@ -28,21 +28,55 @@ public:
 	static const float DEFAULT_BLOCKSIZE;
 
 	struct LevelBlock {
-		float maxHP = 100;
+		float maxHP = 60.f;
 		float currentHP = maxHP;
 		DynBlockDeferredInstancedGeometryShader::InstanceData* data = nullptr;
-		float respawnTime = 3.f;
+		float respawnTime = 5.f;
 		float timeDead = 0.0f;
+		float implodingTimer = 0.0f;
+		bool attacked = false;
+		float resetTimer = 0.f;
+		bool imploding = false;
 		bool destroyed = false;
+		bool respawned = false;
+		bool respawning = false;
+		bool blocked = false;
 		void update(float delta) {
 			if (destroyed) {
 				timeDead += delta;
-				if (timeDead > respawnTime) {
+				if (timeDead > respawnTime && !blocked) {
 					timeDead = 0.0f;
 					destroyed = false;
+					respawning = true;
 					currentHP = maxHP;
-					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation().x, data->modelMatrix.Translation().y, 0.f);
-					data->color = DirectX::SimpleMath::Vector3::One;
+					implodingTimer = 0.0f;
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(100.0f) * data->modelMatrix;
+				}
+			}
+			if (attacked) {
+				resetTimer = 0.f;
+				attacked = false;
+			}
+			resetTimer += delta;
+			if (resetTimer > 5.f) {
+				currentHP = maxHP;
+			}
+			if (imploding) {
+				implodingTimer += delta;
+				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.99f + (Utils::rnd() * 0.02f)) * data->modelMatrix;
+				if (implodingTimer > 1.0f) {
+					data->color = DirectX::SimpleMath::Vector3(implodingTimer * 2.f);
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.9f + (Utils::rnd() * 0.02f))
+						* DirectX::SimpleMath::Matrix::CreateRotationX(Utils::rnd())
+						* DirectX::SimpleMath::Matrix::CreateRotationY(Utils::rnd())
+						* DirectX::SimpleMath::Matrix::CreateRotationZ(Utils::rnd())
+						* data->modelMatrix;
+					destroyed = true;
+				}
+				if (implodingTimer > 1.5f) {
+					data->color = DirectX::SimpleMath::Vector3::Zero;
+					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation());
+					imploding = false;
 				}
 			}
 		}
@@ -70,6 +104,7 @@ private:
 	int m_width;
 	// Number of blocks in the y-axis
 	int m_height;
+	bool m_destructible;
 	
 	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;

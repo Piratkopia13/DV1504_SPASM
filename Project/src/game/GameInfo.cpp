@@ -99,14 +99,14 @@ GameInfo::GameInfo()
 	scoreLimitDM.push_back({ "20 kills", 20.0f, 0 });
 	scoreLimitDM.push_back({ "30 kills", 30.0f, 0 });
 	scoreLimitDM.push_back({ "50 kills", 50.0f, 0 });
-	scoreLimitDM.push_back({ "10 kills", 10.0f, 0 });
 	scoreLimitDM.push_back({ "no limit", 0, 0 });
+	scoreLimitDM.push_back({ "10 kills", 10.0f, 0 });
 
 	scoreLimitTDM.push_back({ "30 kills", 30.0f, 0 });
 	scoreLimitTDM.push_back({ "60 kills", 60.0f, 0 });
 	scoreLimitTDM.push_back({ "90 kills", 90.0f, 0 });
-	scoreLimitTDM.push_back({ "20 kills", 20.0f, 0 });
 	scoreLimitTDM.push_back({ "no limit", 0, 0 });
+	scoreLimitTDM.push_back({ "20 kills", 20.0f, 0 });
 
 
 
@@ -126,7 +126,7 @@ GameInfo::GameInfo()
 	playerHealth.push_back({ "30",30,0 });
 
 	destructibleBlocks.push_back({ "on" , 1, 0 });
-	destructibleBlocks.push_back({ "off", 1, 0 });
+	destructibleBlocks.push_back({ "off", 0, 0 });
 
 	
 	// GRAPHICS SETTINGS
@@ -142,8 +142,8 @@ GameInfo::GameInfo()
 	antiAliasing.push_back({ "FXAA",1,0 });
 	antiAliasing.push_back({ "none",0,0 });
 
-	background.push_back({ "standard",1,0 });
-	background.push_back({ "something",2,0 });
+	background.push_back({ "lines",1,0 });
+	//background.push_back({ "something",2,0 });
 	background.push_back({ "none",0,0 });
 
 	fpsCounter.push_back({ "top left",1,0 });
@@ -348,6 +348,7 @@ void GameInfo::convertGameSettings() {
 	convertedGameSettings.respawnTime = respawnTime[gameSettings.respawnTime].value;
 	convertedGameSettings.playerLife = playerHealth[gameSettings.playerLife].value;
 	convertedGameSettings.gravity = gravity[gameSettings.gravity].value;
+	convertedGameSettings.destructability = destructibleBlocks[gameSettings.destructibleBlocks].value;
 
 	for (size_t i = 0; i < gameSettings.teams.size(); i++) {
 		convertedGameSettings.teams.push_back({
@@ -366,7 +367,7 @@ void GameInfo::convertGraphics() {
 	convertedGraphics.background = background[graphicsSettings.backGround].value;
 	convertedGraphics.particles = particles[graphicsSettings.particles].value;
 	convertedGraphics.fpsCounter = fpsCounter[graphicsSettings.fpsCounter].value;
-	convertedGraphics.vSync = fpsCounter[graphicsSettings.fpsCounter].value;
+	convertedGraphics.vSync = vSync[graphicsSettings.vSync].value;
 	convertedGraphics.depthOfField = depthOfField[graphicsSettings.depthOfField].value;
 }
 

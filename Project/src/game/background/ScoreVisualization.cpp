@@ -53,10 +53,12 @@ void ScoreVisualization::update(float dt) {
 	//Animate random blocks by giving them a target position and making them accelerate towards that position
 	float scale = 3.0f;
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
-		int pointBlocks = min((int) ceil(m_blocksPerTeam * finalScore[i] * 0.1f), m_blocksPerTeam);
+		int pointBlocks = min((unsigned int) ceil(m_blocksPerTeam * finalScore[i] * 0.1f), m_blocksPerTeam);
 		for (int j = 0; j < pointBlocks; j++) { //Blocks moving toward or are already in the score pillar (claimed points)
 			Vector3 tempPos = m_scoreBlocks[i][j]->getTransform().getTranslation();
-			m_targetPositions[i][j] = Vector3((float)i * (15.0f) + m_currentLevel->getGridWidth() / 2.0f - 7.5f * (m_numberOfTeams - 1) + (j % 2) * scale, floorf((float)j / 2.0f) * scale + m_currentLevel->getGridHeight() / 2.0f - 15.0f, 100.0f);
+
+
+			m_targetPositions[i][j] = Vector3((float)i * (15.0f) + m_currentLevel->getGridWidth() / 2.0f - scale/3.0f - 7.5f * (m_numberOfTeams - 1) + (j % 2) * scale, floorf((float)j / 2.0f) * scale + m_currentLevel->getGridHeight() / 2.0f - 15.0f, 100.0f);
 			
 			if ((tempPos - m_targetPositions[i][j]).Length() < 0.5f) { //Block is in the right place in the score pillar
 				m_accelerations[i][j] = 0.0f;

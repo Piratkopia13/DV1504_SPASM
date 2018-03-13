@@ -23,6 +23,8 @@ Level::Level(const std::string& filename)
 
 	float variationOffsetRowMul = 1.f / BLOCK_VARIATIONS;
 
+	m_destructible = GameInfo::getInstance()->convertedGameSettings.destructability;
+
 	if (infile) {		
 
 		std::string line;
@@ -70,7 +72,7 @@ Level::Level(const std::string& filename)
 				infile.seekg(seekPos);
 
 				// Init instance data
-				m_instancedBlocks->init(blockCount);
+				m_instancedBlocks->init(blockCount + (m_height * 2 + m_width * 2) + 4);
 
 				y = m_height;
 
@@ -136,7 +138,7 @@ Level::Level(const std::string& filename)
 
 			}
 		}
-
+		
 		m_blocks = std::vector<std::vector<LevelBlock>>(m_width, std::vector<LevelBlock>(m_height, LevelBlock()));
 
 		for (int x = 0; x < m_width; x++) {
@@ -149,8 +151,6 @@ Level::Level(const std::string& filename)
 					instanceData.modelMatrix = Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
 					m_grid->addBlock(&m_instancedBlocks->addInstance(instanceData), x, y);
 					m_blocks[x][y].data = m_grid->getBlock(x, y);
-					//m_blocks[x][y].setHP
-					instanceData.color = Vector3::One;
 
 				} else if (c == 'c') {
 					// Controlnodes
@@ -173,6 +173,32 @@ Level::Level(const std::string& filename)
 				}
 			}
 		}
+
+		//Edge indicators
+		for (int x = -1; x < m_width + 1; x++) {
+			DynBlockDeferredInstancedGeometryShader::InstanceData instanceDataBottom, instanceDataTop;
+			instanceDataTop.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(m_height + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+			instanceDataBottom.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(x + 0.5f) * DEFAULT_BLOCKSIZE, float(-1.f + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+			instanceDataTop.blockVariationOffset = 1.f/16.f;
+			instanceDataBottom.blockVariationOffset = 1.f/16.f;
+			instanceDataTop.color = Vector3(3.0f, 2.f, 3.f);
+			instanceDataBottom.color = Vector3(3.0f, 2.f, 3.f);
+			m_instancedBlocks->addInstance(instanceDataTop);
+			m_instancedBlocks->addInstance(instanceDataBottom);
+		}
+		for (int y = 0; y < m_height; y++) {
+			DynBlockDeferredInstancedGeometryShader::InstanceData instanceDataLeft, instanceDataRight;
+			instanceDataRight.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(m_width + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+			instanceDataLeft.modelMatrix = Matrix::CreateScale(0.05f) * Matrix::CreateTranslation(Vector3(float(-1.f + 0.5f) * DEFAULT_BLOCKSIZE, float(y + 0.5f) * DEFAULT_BLOCKSIZE, 0.f));
+
+			instanceDataLeft.blockVariationOffset = 1.f/16.f;
+			instanceDataRight.blockVariationOffset = 1.f/16.f;
+			instanceDataLeft.color = Vector3(3.0f, 2.f, 3.f);
+			instanceDataRight.color = Vector3(3.0f, 2.f, 3.f);
+			m_instancedBlocks->addInstance(instanceDataLeft);
+			m_instancedBlocks->addInstance(instanceDataRight);
+		}
+
 		for (int x = 0; x < m_width; x++) {
 			for (int y = 0; y < m_height; y++)
 				setBlockVariation(x, y);
@@ -195,33 +221,45 @@ Level::~Level() {
 }
 
 void Level::update(const float delta, CharacterHandler* charHandler) {
-	std::vector<Grid::Index> indices;
-		
-	for (int i = 0; i < charHandler->getNrOfPlayers(); i++) {
-		std::vector<Grid::Index> temp = m_grid->convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
-		indices.insert(indices.end(), temp.begin(),temp.end());
-	}
-	for (int x = 0; x < m_width; x++) {
-		for (int y = 0; y < m_height; y++) {
-			bool blocked = false;
-				if (m_blocks[x][y].data) {
-					for (int j = 0; j < indices.size(); j++) {
-						if (indices.at(j).x == x && indices.at(j).y == y) {
-							blocked = true;
-						}
-					}
-					if (!blocked) {
-						bool respawn = m_blocks[x][y].destroyed;
-						m_blocks[x][y].update(delta);
-						if (respawn != m_blocks[x][y].destroyed && !blocked) {
+	if (m_destructible) {
+		std::vector<Grid::Index> indices;
 
-							m_grid->addBlock(m_blocks[x][y].data, x, y);
-							setBlockVariation(x, y);
-							updateAdjacent(x, y);
+		for (unsigned int i = 0; i < charHandler->getNrOfPlayers(); i++) {
+			std::vector<Grid::Index> temp = m_grid->convertToIndexed(charHandler->getCharacter(i)->getBoundingBox());
+			indices.insert(indices.end(), temp.begin(), temp.end());
+		}
+		for (int x = 0; x < m_width; x++) {
+			for (int y = 0; y < m_height; y++) {
+				if (m_blocks[x][y].data) {
+					m_blocks[x][y].blocked = false;
+					for (unsigned int j = 0; j < indices.size(); j++) {
+						if (indices.at(j).x == x && indices.at(j).y == y) {
+							m_blocks[x][y].blocked = true;
 						}
 					}
+
+					m_blocks[x][y].update(delta);
+					if (m_blocks[x][y].respawned) {
+						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3::One;
+						m_grid->addBlock(m_blocks[x][y].data, x, y);
+						setBlockVariation(x, y);
+						updateAdjacent(x, y);
+						m_blocks[x][y].respawned = false;
+					}
+					if (m_blocks[x][y].respawning) {
+						m_blocks[x][y].respawned = true;
+						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3(3.f);
+						m_blocks[x][y].respawning = false;
+					}
+
+					if (m_blocks[x][y].destroyed) {
+						m_grid->removeBlock(x, y);
+						updateAdjacent(x, y);
+					}
+
 				}
 			}
+		}
 	}
 
 }
@@ -261,14 +299,10 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const flo
 	block = &m_blocks[blockIndex.x][blockIndex.y];
 	if (block->data) {
 		block->currentHP -= damage;
-		float colorChange = 1.f - damage / block->maxHP;
-		block->data->color = DirectX::SimpleMath::Vector3(colorChange);
+		block->attacked = true;
+		block->data->color = DirectX::SimpleMath::Vector3(1.f);
 		if (block->currentHP <= 0) {
-			block->destroyed = true;
-			block->data->modelMatrix = DirectX::SimpleMath::Matrix::CreateTranslation(block->data->modelMatrix.Translation().x, block->data->modelMatrix.Translation().y, 5.0f);
-			block->data->color = DirectX::SimpleMath::Vector3::Zero;
-			m_grid->removeBlock(blockIndex.x, blockIndex.y);
-			updateAdjacent(blockIndex.x, blockIndex.y);
+			block->imploding = true;
 		}
 	}
 }
