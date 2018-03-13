@@ -7,7 +7,6 @@ using namespace DirectX::SimpleMath;
 PostProcessPass::PostProcessPass(const Camera* cam)
 	: m_cam(cam)
 {
-
 	createFullscreenQuad();
 
 	Application* app = Application::getInstance();
@@ -18,52 +17,69 @@ PostProcessPass::PostProcessPass(const Camera* cam)
 	m_gaussPass2Scale = 1.f / 1.5f;
 	m_gaussPass3Scale = 1.f / 2.f;
 	m_brightnessCutoffScale = 1.f / 1.f;
-
 	m_gaussDepthPassScale = 1.f / 2.f;
-
-	m_doFXAAPass = false;
-	m_doDOFPass = true;
 	m_dofFocusWidth = 220.f;
 
-	m_FXAAStage = std::make_unique<FXAAStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	m_doFXAAPass = true;
+	m_doDOFPass = true;
+	m_doBloom = true;
 
-	m_hGaussStage = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
-	m_vGaussStage = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
-	m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
-	m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
-	m_hGaussStage3 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
-	m_vGaussStage3 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
+	// Always create all stages in the menu since there you can toggle things on and off
+	bool isInMenu = GameInfo::getInstance()->isInMenu;
+	if (!isInMenu)
+		updateFromSettings();
 
-	m_hGaussDepthStage = std::make_unique<HGaussianBlurDepthTest>(UINT(windowWidth * m_gaussDepthPassScale), UINT(windowHeight * m_gaussDepthPassScale), &m_fullscreenQuad);
-	m_vGaussDepthStage = std::make_unique<VGaussianBlurDepthTest>(UINT(windowWidth * m_gaussDepthPassScale), UINT(windowHeight * m_gaussDepthPassScale), &m_fullscreenQuad);
-	
-	m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(UINT(windowWidth * m_brightnessCutoffScale), UINT(windowHeight * m_brightnessCutoffScale), &m_fullscreenQuad);
+	if (m_doFXAAPass)
+		m_FXAAStage = std::make_unique<FXAAStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+
+	if (m_doBloom || m_doDOFPass) {
+		m_hGaussStage = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
+		m_vGaussStage = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass1Scale), UINT(windowHeight * m_gaussPass1Scale), &m_fullscreenQuad);
+		m_hGaussStage2 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
+		m_vGaussStage2 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass2Scale), UINT(windowHeight * m_gaussPass2Scale), &m_fullscreenQuad);
+		m_hGaussStage3 = std::make_unique<HGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
+		m_vGaussStage3 = std::make_unique<VGaussianBlurStage>(UINT(windowWidth * m_gaussPass3Scale), UINT(windowHeight * m_gaussPass3Scale), &m_fullscreenQuad);
+	}
+
+	if (m_doDOFPass) {
+		m_hGaussDepthStage = std::make_unique<HGaussianBlurDepthTest>(UINT(windowWidth * m_gaussDepthPassScale), UINT(windowHeight * m_gaussDepthPassScale), &m_fullscreenQuad);
+		m_vGaussDepthStage = std::make_unique<VGaussianBlurDepthTest>(UINT(windowWidth * m_gaussDepthPassScale), UINT(windowHeight * m_gaussDepthPassScale), &m_fullscreenQuad);
+		m_gaussianDofStage = std::make_unique<GaussianDOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	}
+
+	if (m_doBloom) {
+		m_brightnessCutoffStage = std::make_unique<BrightnessCutoffStage>(UINT(windowWidth * m_brightnessCutoffScale), UINT(windowHeight * m_brightnessCutoffScale), &m_fullscreenQuad);
+		m_blendStage = std::make_unique<BlendStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	}
 	//m_dofStage = std::make_unique<DOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
-	m_gaussianDofStage = std::make_unique<GaussianDOFStage>(windowWidth, windowHeight, &m_fullscreenQuad);
-	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(windowWidth, windowHeight, &m_fullscreenQuad);
-	m_blendStage = std::make_unique<BlendStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 	m_blendStage2 = std::make_unique<BlendStage>(windowWidth, windowHeight, &m_fullscreenQuad);
+	m_toneMapHackStage = std::make_unique<ToneMapHackStage>(windowWidth, windowHeight, &m_fullscreenQuad);
 
 }
 
 void PostProcessPass::resize(UINT width, UINT height) {
-	m_hGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
-	m_vGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
-	m_hGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
-	m_vGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
-	m_hGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
-	m_vGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
-
-	m_hGaussDepthStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
-	m_vGaussDepthStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
-
-	m_FXAAStage->resize(width, height);
-	m_brightnessCutoffStage->resize(UINT(width * m_brightnessCutoffScale), UINT(height * m_brightnessCutoffScale));
+	if (m_doBloom || m_doDOFPass) {
+		m_hGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
+		m_vGaussStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
+		m_hGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
+		m_vGaussStage2->resize(UINT(width * m_gaussPass2Scale), UINT(height * m_gaussPass2Scale));
+		m_hGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
+		m_vGaussStage3->resize(UINT(width * m_gaussPass3Scale), UINT(height * m_gaussPass3Scale));
+	}
+	if (m_doDOFPass) {
+		m_hGaussDepthStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
+		m_vGaussDepthStage->resize(UINT(width * m_gaussPass1Scale), UINT(height * m_gaussPass1Scale));
+		m_gaussianDofStage->resize(width, height);
+	}
+	if (m_doFXAAPass)
+		m_FXAAStage->resize(width, height);
+	if (m_doBloom) {
+		m_brightnessCutoffStage->resize(UINT(width * m_brightnessCutoffScale), UINT(height * m_brightnessCutoffScale));
+		m_blendStage->resize(width, height);
+	}
 	m_toneMapHackStage->resize(width, height);
-	//m_dofStage->resize(width, height);
-	m_gaussianDofStage->resize(width, height);
-	m_blendStage->resize(width, height);
 	m_blendStage2->resize(width, height);
+	//m_dofStage->resize(width, height);
 }
 
 void PostProcessPass::setCamera(const Camera& cam) {
@@ -75,7 +91,6 @@ PostProcessPass::~PostProcessPass() {
 
 void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture, RenderableTexture& particlesTexture) {
 
-	auto& graphicsSettings = GameInfo::getInstance()->convertedGraphics;
 	auto* dxm = Application::getInstance()->getDXManager();
 	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
@@ -88,17 +103,14 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 	if (kbState.pressed.Down)
 		m_dofFocusWidth -= 1.f;
 
+	updateFromSettings();
 
-	if (m_cam)
+	if (m_cam && m_doDOFPass)
 		m_gaussianDofStage->setFocus(fabsf(m_cam->getPosition().z), m_dofFocusWidth);
 	//m_gaussianDofStage->setFocus(10.f, m_dofFocusWidth);
 
 	dxm->disableDepthBuffer();
 
-	m_doFXAAPass = graphicsSettings.AA == 1;
-	m_doDOFPass = graphicsSettings.depthOfField == 1;
-	m_doBloom = graphicsSettings.bloom != 0;
-	m_bloomStrength = graphicsSettings.bloom;
 
 	dxm->getPerfProfilerThing()->BeginEvent(L"FXAA");
 	// FXAA pass
@@ -216,4 +228,12 @@ void PostProcessPass::createFullscreenQuad() {
 
 	m_fullscreenQuad.setBuildData(data);
 	m_fullscreenQuad.buildBufferForShader(&m_flushShader);
+}
+
+void PostProcessPass::updateFromSettings() {
+	auto& graphicsSettings = GameInfo::getInstance()->convertedGraphics;
+	m_doFXAAPass = graphicsSettings.AA == 1;
+	m_doDOFPass = graphicsSettings.depthOfField == 1;
+	m_doBloom = graphicsSettings.bloom != 0;
+	m_bloomStrength = graphicsSettings.bloom;
 }
