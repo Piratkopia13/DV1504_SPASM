@@ -121,10 +121,10 @@ GameState::GameState(StateStack& stack)
 	// Set character spawn points
 	std::vector<Grid::Index> playerSpawnPoints = m_level->getGrid()->getPlayerSpawnPointIndices();
 	if (playerSpawnPoints.size() > 0) {
+		
 		for (Grid::Index index : playerSpawnPoints) {
-			if (info->convertedGameSettings.gamemode == GameInfo::DEATHMATCH) {
+			if (m_info->convertedGameSettings.gamemode == GameInfo::DEATHMATCH) {
 				m_characterHandler->addSpawnPoint(0, Vector3((float(index.x) + 0.5f) * Level::DEFAULT_BLOCKSIZE, float(index.y * Level::DEFAULT_BLOCKSIZE), 0.f));
-
 			}
 			else {
 				if (float(index.x) <= m_level->getGridWidth() / 2.f)
@@ -134,6 +134,8 @@ GameState::GameState(StateStack& stack)
 
 			}
 		}
+			
+		
 	}
 	else {
 		m_characterHandler->addSpawnPoint(0, Vector3(2, 2, 0));

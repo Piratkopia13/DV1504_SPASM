@@ -14,8 +14,8 @@ Game::Game(HINSTANCE hInstance)
 	// Set starting state
 #ifdef _DEBUG
 	//m_stateStack.pushState(States::Score);
-	//m_stateStack.pushState(States::MainMenu);
-	m_stateStack.pushState(States::Game);
+	m_stateStack.pushState(States::MainMenu);
+	//m_stateStack.pushState(States::Game);
 #else
 	m_stateStack.pushState(States::MainMenu);
 #endif
