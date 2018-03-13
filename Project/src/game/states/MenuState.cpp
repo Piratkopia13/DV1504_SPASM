@@ -757,17 +757,23 @@ bool MenuState::processInput(float dt) {
 							if (left) {
 								m_mapMenu->left();
 							}
-							//if (left || right) {
-							//	m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
-							//	//m_mapPreview->getModel()->getMaterial()->setDiffuseTexture();
-							//	m_mapPre->getModel()->getMaterial()->setDiffuseTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
+							if (left || right) {
+
+								std::ifstream f("res/levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
+								if (f.good()) {
+									m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
+							
+
+									m_mapPre->getModel()->getMaterial()->setDiffuseTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".tga");
 
 
-							//}
+								}
+
+
+							}
 							updateCamera();
 							if (a) {	
 								// START GAME
-								//set map: gamemode * menu selection
 								m_info->gameSettings.map = m_mapMenu->getOptionAt(0);
 								
 
@@ -1459,8 +1465,9 @@ void MenuState::initMap() {
 		
 
 		m_mapPre = new MenuItem(m_previewModel.get(),Vector3(0,0,0));
-		m_mapPre->setPosition(Vector3(0,-3,0));
-		m_mapPre->setLightColor(m_onColor);
+		m_mapPre->setPosition(Vector3(-5,0,0));
+		m_mapPre->setLightColor(m_offColor);
+		m_mapPre->getTransform().setRotations(Vector3(0,-1.57f,-1.57f));
 		m_scene.addObject(m_mapPre);
 
 
@@ -1777,14 +1784,14 @@ void MenuState::setMapSelect(bool active) {
 		m_activeMenu = STARTMENU;
 		m_activeSubMenu = MAPSELECT;
 		m_mapMenu->activate();
-
+		m_mapPre->setModel(nullptr);
 	}
 	else {
 		m_mapMenu->deActivate();
 		for (size_t i = 0; i < m_playerz.size(); i++) {
 			m_playerz[i]->ready = false;
 		}
-
+		m_mapPre->setModel(m_previewModel.get());
 	}
 }
 
