@@ -1465,7 +1465,7 @@ void MenuState::initMap() {
 
 	if (!m_mapMenu) {
 		m_mapMenu = new MenuHandler();
-		m_scene.addObject(m_mapMenu);
+		m_scene->addObject(m_mapMenu);
 		m_mapPreview = new MenuHandler();
 		
 
@@ -1473,7 +1473,7 @@ void MenuState::initMap() {
 		m_mapPre->setPosition(Vector3(-5,0,0));
 		m_mapPre->setLightColor(m_onColor);
 		m_mapPre->getTransform().setRotations(Vector3(0,-1.57f,-1.57f));
-		m_scene.addObject(m_mapPre);
+		m_scene->addObject(m_mapPre);
 
 
 	}
