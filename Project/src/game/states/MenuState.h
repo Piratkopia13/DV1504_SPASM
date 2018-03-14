@@ -3,6 +3,7 @@
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuHandler.h"
 #include "../GameInfo.h"
+#include "../objects/Menu/MapPreview.h"
 
 class MenuState : public State {
 public:
@@ -204,8 +205,9 @@ private:
 	PlayerMenuModel m_graphicsModel;
 
 	MenuHandler* m_mapMenu;
-	MenuHandler* m_mapPreview;
-	MenuItem* m_mapPre;
+	//MenuHandler* m_mapPreview;
+	MapPreview* m_mapPreview;
+	//MenuItem* m_mapPre;
 
 	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;

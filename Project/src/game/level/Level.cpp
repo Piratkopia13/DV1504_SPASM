@@ -73,6 +73,7 @@ Level::Level(const std::string& filename)
 
 				// Init instance data
 				m_instancedBlocks->init(blockCount + (m_height * 2 + m_width * 2) + 4);
+				m_blockCount = blockCount;
 
 				y = m_height;
 
@@ -294,6 +295,10 @@ const int & Level::getGridWidth() const {
 
 const int & Level::getGridHeight() const {
 	return m_height;
+}
+
+UINT Level::getNumberOfBlocks() const {
+	return m_blockCount;
 }
 
 void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const float damage, const DirectX::SimpleMath::Vector3& hitPos){
