@@ -16,6 +16,13 @@ Scene::Scene(const AABB& worldSize)
 	, m_doPostProcessing(true)
 	, m_doShadows(false)
 {
+
+	auto& settings = GameInfo::getInstance()->convertedGraphics;
+
+	if (settings.AA == 0 && settings.bloom == 0 && settings.depthOfField == 0) {
+		m_doPostProcessing = false;
+	}
+
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(Application::getInstance()->getDXManager()->getDeviceContext());
 	m_timer.startTimer();
 
