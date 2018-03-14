@@ -14,6 +14,7 @@ public:
 	void setTargetPos(const DirectX::SimpleMath::Vector3& target, const float timeToAnimate = 1.f);
 	void setTargetRot(const DirectX::SimpleMath::Vector3& target, const float timeToAnimate = 1.f);
 	void setVelocity(const DirectX::SimpleMath::Vector3& vel);
+	void setStartPos(const DirectX::SimpleMath::Vector3& startPos);
 	void setAcceleration(const DirectX::SimpleMath::Vector3& acc);
 	
 	DirectX::SimpleMath::Vector3 getTargetPos() const;

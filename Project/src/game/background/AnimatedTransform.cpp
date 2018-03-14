@@ -63,6 +63,10 @@ void AnimatedTransform::setVelocity(const DirectX::SimpleMath::Vector3& vel) {
 	m_vel = vel;
 }
 
+void AnimatedTransform::setStartPos(const DirectX::SimpleMath::Vector3& startPos) {
+	m_startPos = startPos;
+}
+
 void AnimatedTransform::setAcceleration(const DirectX::SimpleMath::Vector3& acc) {
 	m_acc = acc;
 }
