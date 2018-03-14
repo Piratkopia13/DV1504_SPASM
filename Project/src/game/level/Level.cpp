@@ -231,7 +231,6 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 		for (int x = 0; x < m_width; x++) {
 			for (int y = 0; y < m_height; y++) {
 				if (m_blocks[x][y].data) {
-					m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3::One;
 					m_blocks[x][y].blocked = false;
 					for (unsigned int j = 0; j < indices.size(); j++) {
 						if (indices.at(j).x == x && indices.at(j).y == y) {
@@ -251,6 +250,8 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 						m_blocks[x][y].respawned = true;
 						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3(3.f);
 						m_blocks[x][y].respawning = false;
+
+						Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Respawn, 0.95f, 1.05f, 0.3f);
 					}
 
 					if (m_blocks[x][y].destroyed) {
@@ -313,6 +314,8 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const flo
 		block->data->color = DirectX::SimpleMath::Vector3(0.f);
 		if (block->currentHP <= 0) {
 			block->imploding = true;
+
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Implosion, 1.2f, 1.4f, 0.2f);
 		}
 	}
 }

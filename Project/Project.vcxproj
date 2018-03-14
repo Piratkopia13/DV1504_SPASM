@@ -242,7 +242,6 @@
     <ClCompile Include="src\game\UpgradeHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />
@@ -566,6 +565,7 @@
     <Media Include="res\sounds\effect\explosion2.wav" />
     <Media Include="res\sounds\effect\hook_hit.wav" />
     <Media Include="res\sounds\effect\hook_shot.wav" />
+    <Media Include="res\sounds\effect\implosion.wav" />
     <Media Include="res\sounds\effect\laser.wav" />
     <Media Include="res\sounds\effect\pickup.wav" />
     <Media Include="res\sounds\effect\shock.wav" />

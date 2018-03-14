@@ -330,12 +330,12 @@ void MenuHandler::back() {
 	if(item) {
 		item->setLightColor(m_offColor);
 		// Sound
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.90f, 1.0f, 2.5f);
 	}
 	if (text) {
 		text->setColor(m_offColor);
 		// Sound
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.90f, 1.0f, 2.5f);
 	}
 	if (selector)
 		selector->setSelectionColor(m_onColor*0.7f);

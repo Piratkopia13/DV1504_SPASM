@@ -316,9 +316,9 @@
     <Media Include="res\sounds\effect\hook_shot.wav" />
     <Media Include="res\sounds\ambient\ambient_capture.wav" />
     <Media Include="res\sounds\ambient\battle_sound.wav" />
+    <Media Include="res\sounds\effect\implosion.wav" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="res\levels\speedrun.level" />
     <None Include="res\levels\sprint_demo.level" />

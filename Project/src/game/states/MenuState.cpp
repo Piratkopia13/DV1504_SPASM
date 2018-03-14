@@ -314,8 +314,6 @@ bool MenuState::processInput(float dt) {
 								break;
 						}
 						updateCamera();
-						// Sound
-						m_app->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Select);
 					}
 				}break;	
 

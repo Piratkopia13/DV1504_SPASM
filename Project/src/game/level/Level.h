@@ -54,6 +54,10 @@ public:
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(100.0f) * data->modelMatrix;
 				}
 			}
+			else {
+				data->color = DirectX::SimpleMath::Vector3::One;
+			}
+
 			if (attacked) {
 				resetTimer = 0.f;
 				attacked = false;
@@ -64,14 +68,14 @@ public:
 			}
 			if (imploding) {
 				implodingTimer += delta;
-				data->color = DirectX::SimpleMath::Vector3(1.f + implodingTimer * 2.f);
-				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.9f + (Utils::rnd() * 0.02f))
+				data->color = DirectX::SimpleMath::Vector3(pow(implodingTimer*1.67f - 0.1f, 5.f) * 200.f + 1.f);
+				data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(Utils::smootherstep(1.f, 0.f, implodingTimer * 1.5f))
 					* DirectX::SimpleMath::Matrix::CreateRotationX(Utils::rnd())
 					* DirectX::SimpleMath::Matrix::CreateRotationY(Utils::rnd())
 					* DirectX::SimpleMath::Matrix::CreateRotationZ(Utils::rnd())
 					* data->modelMatrix;
 				destroyed = true;
-				if (implodingTimer > 0.5f) {
+				if (implodingTimer > 0.6f) {
 					data->color = DirectX::SimpleMath::Vector3::Zero;
 					data->modelMatrix = DirectX::SimpleMath::Matrix::CreateScale(0.01f) * DirectX::SimpleMath::Matrix::CreateTranslation(data->modelMatrix.Translation());
 					imploding = false;

@@ -40,6 +40,8 @@ public:
 		Hook_Hit,
 		Captured,
 		Game_Over,
+		Implosion,
+		Respawn,
 		NumOfSoundEffects
 	};
 

@@ -62,6 +62,8 @@ SoundManager::SoundManager() {
 		loadSoundEffect(SoundEffect::Hook_Hit, L"res/sounds/effect/hook_hit.wav");
 		loadSoundEffect(SoundEffect::Captured, L"res/sounds/effect/captured2.wav");
 		loadSoundEffect(SoundEffect::Game_Over, L"res/sounds/effect/game_over.wav");
+		loadSoundEffect(SoundEffect::Implosion, L"res/sounds/effect/implosion.wav");
+		loadSoundEffect(SoundEffect::Respawn, L"res/sounds/effect/respawn.wav");
 
 		loadAmbientSound(Ambient::Loop1, L"res/sounds/ambient/loop1.wav");
 		loadAmbientSound(Ambient::Loop2, L"res/sounds/ambient/loop2.wav");
