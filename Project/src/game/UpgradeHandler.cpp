@@ -89,10 +89,11 @@ void UpgradeHandler::UpgradeSpawn::update(float dt) {
 }
 
 void UpgradeHandler::UpgradeSpawn::draw() {
-
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->BeginEvent(L"Upgrade spawn");
 	model->setTransform(&getTransform());
 	model->getMaterial()->setColor(lightColor);
 	model->draw();
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->EndEvent();
 
 	if (m_online) {
 		m_upgradeObject->draw();

@@ -151,7 +151,7 @@ void TimeVisualization::draw() {
 	if (!m_run)
 		return;
 
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->BeginEvent(L"Time");
 	m_instancedBlocks->draw();
-	/*for (unsigned int i = 0; i < m_timeTransforms.size(); i++)
-		m_timeTransforms[i]->draw();*/
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->EndEvent();
 }

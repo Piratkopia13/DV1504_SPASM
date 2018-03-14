@@ -123,9 +123,11 @@ void ScoreVisualization::update(float dt) {
 }
 
 void ScoreVisualization::draw() {
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->BeginEvent(L"Score");
 	for (unsigned int i = 0; i < m_numberOfTeams; i++) {
 		for (unsigned int j = 0; j < m_scoreBlocks[i].size(); j++) {
 			m_scoreBlocks[i][j]->draw();
 		}
 	}
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->EndEvent();
 }

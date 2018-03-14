@@ -366,6 +366,7 @@ void Character::update(float dt) {
 
 
 void Character::draw() {
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->BeginEvent(L"Character");
 	//----hooking animations----
 	Transform armTransform;
 	Transform bodyTransform;
@@ -424,6 +425,8 @@ void Character::draw() {
 		m_thrusterEmitter->updateVelocityVariety(Vector3(5.f, -2.f, 0.5f));
 		m_thrusterEmitter->updateGravityScale(1.f);
 	}
+
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->EndEvent();
 }
 
 void Character::setController(const bool usingController) {
