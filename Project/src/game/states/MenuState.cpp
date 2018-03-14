@@ -129,17 +129,19 @@ MenuState::MenuState(StateStack& stack)
 	m_playerCamController->setMoving(false);
 	m_playerCamController->setPosition(Vector3(0,0,0));
 	m_playerCamController->setFollowSpeed(5);
-
+	updateCamera();
 	// Sound
 	m_app->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Theme, true, 0.1f);
 	
 	m_app->getGameSettings().reset();
+
 }
 
 
 MenuState::~MenuState()
 {
 	Memory::safeDelete(m_mainMenu);
+	Memory::safeDelete(m_mainName);
 	Memory::safeDelete(m_gamemodeMenu);
 	for (size_t i = 0; i < m_characterMenu.size(); i++)
 		Memory::safeDelete(m_characterMenu[i]);
@@ -163,7 +165,6 @@ MenuState::~MenuState()
 	}
 	for (size_t i = 0; i < m_playerMenuModelz.size(); i++) {
 		m_playerMenuModelz[i].clear();
-
 	}
 	m_graphicsModel.clear();
 
@@ -1048,6 +1049,8 @@ bool MenuState::update(float dt) {
 
 	if(m_mainMenu)
 		m_mainMenu->update(dt);
+	if (m_mainName)
+		m_mainName->update(dt);
 	if(m_gamemodeMenu)
 		m_gamemodeMenu->update(dt);
 	if(m_optionsMenu)
@@ -1118,14 +1121,25 @@ void MenuState::initMain() {
 	m_mainMenu = new MenuHandler();
 	m_scene->addObject(m_mainMenu);
 
+	m_mainName = new MenuHandler();
+	m_scene->addObject(m_mainName);
+
 	m_mainMenu->addMenuBox("start");
 	m_mainMenu->addMenuBox("profiles");
 	m_mainMenu->addMenuBox("options");
 	m_mainMenu->addMenuBox("exit");
-	m_mainMenu->setPosition(Vector3(0, -0.5, 7));
-	m_mainMenu->setFacingDirection(Vector3(0, 0, -1));
+	m_mainMenu->setPosition(Vector3(0, -1.5f, 7));
+	m_mainMenu->setFacingDirection(Vector3(0, 0, -1.0f));
+	m_mainMenu->setGrowth(Vector3(0,-0.7f,0));
 	m_mainMenu->setSize(1.3f);
 	m_mainMenu->setOffColor(m_offColor);
+	m_mainMenu->setStep(0);
+
+
+	m_mainName->addMenuBox("Spasm");
+	m_mainName->setSize(3);
+	m_mainName->setPosition(Vector3(0,1.7f,7));
+	m_mainName->activate();
 	//m_mainMenu->setOnColor(m_onColor);
 	m_mainMenu->activate();
 	Logger::log("main menu loaded");
@@ -1739,15 +1753,14 @@ void MenuState::initSound() {
 void MenuState::setMainSelect(bool active) {
 	if (active) {
 		m_mainMenu->activate(); 
+		m_mainName->activate();
 		m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget());
 		m_activeMenu = MAINMENU;
 
 	}
 	else {
 		m_mainMenu->deActivate();
-
-
-
+		m_mainName->deActivate();
 	}
 }
 
@@ -1890,7 +1903,7 @@ void MenuState::setSoundMenu(bool active) {
 
 void MenuState::updateCamera() {
 	if (m_activeMenu == MAINMENU) {
-		m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget());
+		m_playerCamController->setTargets(m_mainMenu, m_mainMenu->getTarget(),m_mainName);
 	}
 	if (m_activeMenu == STARTMENU) {
 		if (m_activeSubMenu == GAMEOPTIONSELECT) {
