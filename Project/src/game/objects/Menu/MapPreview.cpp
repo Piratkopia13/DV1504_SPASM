@@ -4,7 +4,7 @@
 using namespace DirectX::SimpleMath;
 
 MapPreview::MapPreview() {
-	m_blocks = std::make_unique<InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>>(10000U);
+	m_previousNumberOfBlocks = 0;
 }
 
 MapPreview::~MapPreview() {
@@ -13,8 +13,13 @@ MapPreview::~MapPreview() {
 
 void MapPreview::setMap(const std::string & newMap) {
 	m_map = newMap;
+
+	for (unsigned int i = 0; i < m_previousNumberOfBlocks; i++) {
+		m_previousTransforms[i] = m_currentTransforms[i];
+	}
+
 	m_level.reset(new Level(m_map));
-	m_blocks.reset(new InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>(m_level->getNumberOfBlocks()));
+	m_blocks.reset(new InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>(max(m_level->getNumberOfBlocks(), m_previousNumberOfBlocks)));
 	float tempScale = min(8.0f/m_level->getGridWidth(), 6.0f/m_level->getGridHeight());
 	for (int x = 0; x < m_level->getGridWidth(); x++) {
 		for (int y = 0; y < m_level->getGridHeight(); y++) {
@@ -31,6 +36,7 @@ void MapPreview::setMap(const std::string & newMap) {
 			}
 		}
 	}
+	m_previousNumberOfBlocks = m_level->getNumberOfBlocks();
 }
 
 void MapPreview::activate() {

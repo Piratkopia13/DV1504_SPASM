@@ -20,7 +20,9 @@ public:
 private:
 	std::string m_map;
 	std::unique_ptr<Level> m_level;
-	std::vector<AnimatedTransform> m_transforms;
+	std::vector<AnimatedTransform> m_previousTransforms;
+	std::vector<AnimatedTransform> m_currentTransforms;
 	std::unique_ptr<InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>> m_blocks;
 	bool m_isActive;
+	unsigned int m_previousNumberOfBlocks;
 };
