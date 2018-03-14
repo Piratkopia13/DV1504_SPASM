@@ -92,6 +92,8 @@ PostProcessPass::~PostProcessPass() {
 void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceView** depthTexture, RenderableTexture& bloomInputTexture, RenderableTexture& particlesTexture) {
 
 	auto* dxm = Application::getInstance()->getDXManager();
+
+#ifdef _DEBUG
 	auto& kbState = Application::getInstance()->getInput().getKbStateTracker();
 
 	if (kbState.pressed.I)
@@ -102,6 +104,7 @@ void PostProcessPass::run(RenderableTexture& baseTexture, ID3D11ShaderResourceVi
 		m_dofFocusWidth += 1.f;
 	if (kbState.pressed.Down)
 		m_dofFocusWidth -= 1.f;
+#endif
 
 	updateFromSettings();
 
