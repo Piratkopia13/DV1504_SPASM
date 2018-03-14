@@ -6,15 +6,16 @@
 class AnimatedTransform : public Transform {
 
 public:
-	AnimatedTransform(DirectX::SimpleMath::Vector3 startPos = DirectX::SimpleMath::Vector3::Zero);
+	AnimatedTransform(const DirectX::SimpleMath::Vector3& startPos = DirectX::SimpleMath::Vector3::Zero);
 	~AnimatedTransform();
 
 	void update(float dt);
 
-	void setTargetPos(DirectX::SimpleMath::Vector3 & target, const float timeToAnimate = 1.f);
-	void setTargetRot(DirectX::SimpleMath::Vector3 & target, const float timeToAnimate = 1.f);
-	void setVelocity(DirectX::SimpleMath::Vector3 & vel);
-	void setAcceleration(DirectX::SimpleMath::Vector3 & acc);
+	void setTargetPos(const DirectX::SimpleMath::Vector3& target, const float timeToAnimate = 1.f);
+	void setTargetRot(const DirectX::SimpleMath::Vector3& target, const float timeToAnimate = 1.f);
+	void setVelocity(const DirectX::SimpleMath::Vector3& vel);
+	void setStartPos(const DirectX::SimpleMath::Vector3& startPos);
+	void setAcceleration(const DirectX::SimpleMath::Vector3& acc);
 	
 	DirectX::SimpleMath::Vector3 getTargetPos() const;
 	DirectX::SimpleMath::Vector3 getTargetRot() const;
@@ -24,11 +25,11 @@ public:
 	bool atTargetRot() const;
 
 private:
-	DirectX::SimpleMath::Vector4 vec3ToQuat(DirectX::SimpleMath::Vector3 vec);
-	DirectX::SimpleMath::Vector3 quatToVec3(DirectX::SimpleMath::Vector4 quat);
-	DirectX::SimpleMath::Vector3 nlerp(DirectX::SimpleMath::Vector3 startPos, DirectX::SimpleMath::Vector3 targetPos, float t);
-	DirectX::SimpleMath::Vector3 lerp(DirectX::SimpleMath::Vector3 startPos, DirectX::SimpleMath::Vector3 targetPos, float t);
-	DirectX::SimpleMath::Vector3 slerp(DirectX::SimpleMath::Vector3 startRot, DirectX::SimpleMath::Vector3 targetRot, float t);
+	DirectX::SimpleMath::Vector4 vec3ToQuat(const DirectX::SimpleMath::Vector3& vec) const;
+	DirectX::SimpleMath::Vector3 quatToVec3(const DirectX::SimpleMath::Vector4& quat) const;
+	DirectX::SimpleMath::Vector3 nlerp(const DirectX::SimpleMath::Vector3& startPos, const DirectX::SimpleMath::Vector3& targetPos, float t) const;
+	DirectX::SimpleMath::Vector3 lerp(const DirectX::SimpleMath::Vector3& startPos, const DirectX::SimpleMath::Vector3& targetPos, float t) const;
+	DirectX::SimpleMath::Vector3 slerp(const DirectX::SimpleMath::Vector3& startRot, const DirectX::SimpleMath::Vector3& targetRot, float t) const;
 
 private:
 	DirectX::SimpleMath::Vector3 m_startPos;

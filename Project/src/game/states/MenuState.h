@@ -3,6 +3,7 @@
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuHandler.h"
 #include "../GameInfo.h"
+#include "../objects/Menu/MapPreview.h"
 
 class MenuState : public State {
 public:
@@ -32,7 +33,6 @@ private:
 
 	// Models
 
-	std::unique_ptr<Model> m_previewModel;
 	std::vector<Model*> m_playerHeadModels;
 	std::vector<Model*> m_playerBodyModels;
 	std::vector<Model*> m_playerLegModels;
@@ -204,8 +204,7 @@ private:
 	PlayerMenuModel m_graphicsModel;
 
 	MenuHandler* m_mapMenu;
-	MenuHandler* m_mapPreview;
-	MenuItem* m_mapPre;
+	MapPreview* m_mapPreview;
 
 	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;

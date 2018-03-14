@@ -95,6 +95,8 @@ public:
 	const int& getGridWidth() const;
 	const int& getGridHeight() const;
 
+	UINT getNumberOfBlocks() const;
+
 	void blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const float damage, const DirectX::SimpleMath::Vector3& hitPos);
 	void setBlockVariation(const int x, const int y);
 	void updateAdjacent(const int x, const int y);
@@ -107,6 +109,8 @@ private:
 	// Number of blocks in the y-axis
 	int m_height;
 	bool m_destructible;
+
+	UINT m_blockCount;
 	
 	// Models used in the level
 	std::vector<std::unique_ptr<FbxModel>> m_models;
