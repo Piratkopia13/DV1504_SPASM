@@ -64,11 +64,6 @@ MenuState::MenuState(StateStack& stack)
 	
 
 	m_app->getResourceManager().LoadDXTexture("brick.tga");
-	m_previewModel = ModelFactory::PlaneModel::Create(Vector2(3.f, 3.f*0.54));
-	m_previewModel->buildBufferForShader(&m_app->getResourceManager().getShaderSet<SimpleTextureShader>());
-	m_previewModel->getMaterial()->setDiffuseTexture("brick.tga");
-
-
 
 	m_targets.push_back(new MenuHandler());
 	m_targets.push_back(new MenuHandler());
@@ -1534,12 +1529,6 @@ void MenuState::initMap() {
 	}
 	m_mapPreview->setMap(preText + m_info->maps[m_info->gameSettings.gameMode][m_mapMenu->getOptionAt(0)] + ".level");
 
-	
-	m_app->getResourceManager().LoadDXTexture("../levels/Preview/" + m_info->maps[m_info->gameSettings.gameMode][0] + ".tga");
-	m_previewModel->getMaterial()->setDiffuseTexture("../levels/Preview/"+m_info->maps[m_info->gameSettings.gameMode][0]+".tga");
-
-
-	}
 	Logger::log("maps loaded");
 }
 
