@@ -252,7 +252,7 @@ void Level::update(const float delta, CharacterHandler* charHandler) {
 						m_blocks[x][y].data->color = DirectX::SimpleMath::Vector3(3.f);
 						m_blocks[x][y].respawning = false;
 
-						Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Respawn, 0.95f, 1.05f, 0.15f);
+						Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Respawn, 0.95f, 1.05f, 0.23f);
 					}
 
 					if (m_blocks[x][y].destroyed) {
@@ -320,7 +320,7 @@ void Level::blockHit(const DirectX::SimpleMath::Vector3& projVelocity, const flo
 		if (block->currentHP <= 0) {
 			block->imploding = true;
 
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Implosion, 1.2f, 1.4f, 0.1f);
+			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Implosion, 1.2f, 1.4f, 0.17f);
 		}
 	}
 }

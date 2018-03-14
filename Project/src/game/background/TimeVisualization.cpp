@@ -15,7 +15,7 @@ TimeVisualization::TimeVisualization(Level* level, Gamemode* gamemode) {
 
 		m_instancedBlocks = std::make_unique<InstancedBlocks<DynBlockDeferredInstancedGeometryShader, DynBlockDeferredInstancedGeometryShader::InstanceData>>();
 
-		m_timeTransforms.resize(1750);
+		m_timeTransforms.resize(200);
 		m_toRemove.resize(m_timeTransforms.size());
 		m_instancedBlocks->init(m_timeTransforms.size());
 

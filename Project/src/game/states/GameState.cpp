@@ -436,7 +436,7 @@ bool GameState::update(float dt) {
 bool GameState::render(float dt) {
 
 	// Clear back buffer
-	m_app->getDXManager()->clear({0.05f, 0.05f, 0.05f, 1.0f});
+	m_app->getDXManager()->clear({0.0f, 0.0f, 0.0f, 1.0f});
 
 	// Draw the scene using deferred rendering
 	m_scene->draw(dt, m_cam, m_level.get(), m_projHandler.get(), m_gamemode.get(), m_particleHandler.get());
