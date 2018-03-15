@@ -5,14 +5,15 @@
 #include "Weapon.h"
 #include "Hook.h"
 #include "../ParticleHandler.h"
+#include "../collision/CollisionHandler.h"
 
 
 class Character : public Moveable {
 friend CharacterHandler;
 public:
 	Character();
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel);
-	Character(Model * bodyModel, Model * lArmModel, Model* headModel, unsigned int usingController, unsigned int port);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, int index);
+	Character(Model * bodyModel, Model * lArmModel, Model* headModel, Model* legsModel, int index, unsigned int usingController, unsigned int port);
 	virtual ~Character();
 
 	void processInput();
@@ -22,6 +23,7 @@ public:
 	void setController(bool usingController);
 	void setControllerPort(unsigned int port);
 	void setTeam(unsigned int team);
+	void setParticleHandler(ParticleHandler* particleHandler);
 	bool isUsingController();
 	unsigned int getPort();
 	unsigned int getTeam();
@@ -29,25 +31,36 @@ public:
 	float getMaxHealth();
 	bool isAlive();
 	void damage(float dmg);
+	const DirectX::SimpleMath::Vector3& getAimDirection() const;
+	void hitByProjectile(const CollisionHandler::CharacterHitResult& hitResult);
 
-	void setVibration(unsigned int index, float strength = 1, float time = 1);
-	void addVibration(unsigned int index, float strength = 1, float time = 1);
+	void VibrateController(unsigned int index, float strength = 1, float timeDecreaseMul = 1);
 
 	void setWeapon(Weapon* weapon);
 	void setHook(Hook* hook);
 	void addUpgrade(const Upgrade& upgrade);
 
-
+	void setRespawnTime(float time);
+	float getRespawnTime() const;
 	void living();
+	void setRespawnPoint(const DirectX::SimpleMath::Vector3& respawnPoint);
 	void dead();
-
+	int getLastAttacker() const;
+	int getIndex() const;
 	void setLightColor(const DirectX::SimpleMath::Vector4& color);
 
 private:
 	Weapon* m_weapon;
 	Hook* m_hook;
 
+	ParticleHandler* m_particleHandler;
 	std::shared_ptr<ParticleEmitter> m_thrusterEmitter;
+
+	DirectX::SimpleMath::Vector3 m_nextRespawnPoint;
+	DirectX::SimpleMath::Vector4 m_lightColor;
+	// Ghost vars
+	DirectX::SimpleMath::Vector3 m_deathPoint;
+	float m_deathInterp;
 
 	struct InputDevice {
 		bool controller;
@@ -62,6 +75,7 @@ private:
 		float speed;
 		bool inCover;
 		float xDirection;
+		int initialHook = 0;
 	};
 	struct Health {
 		float current;
@@ -93,7 +107,7 @@ private:
 	};
 	struct ControllerVibration {
 		float currentStrength;
-		float timeLeft;
+		float decreaseMul;
 	};
 
 
@@ -102,11 +116,15 @@ private:
 	Movement m_movement;
 	Health m_playerHealth;
 	ControllerVibration m_vibration[2];
+	float m_vibFreq;
+	float m_vibDeltaAcc;
+	float m_respawnTime;
 	
 	unsigned int m_currentTeam;
 
 	Model * m_leftArm;
 	Model * m_head;
+	Model * m_legs;
 	
 	void jump();
 	void stopJump();
@@ -114,8 +132,12 @@ private:
 	void hook();
 	void stopHook();
 
+	int m_playerIndex;
+	int m_lastAttackerIndex;
+	float m_resetAttacker;
+
 	bool updateVibration(float dt);
-	float sinDegFromVec(DirectX::SimpleMath:: Vector3 vec) {
+	float sinDegFromVec(DirectX::SimpleMath::Vector3 vec) {
 
 		return atan2(vec.y, vec.x);
 	}

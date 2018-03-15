@@ -2,16 +2,20 @@
 #include "states/GameState.h"
 #include "states/MenuState.h"
 #include "states/PauseState.h"
+#include "states/ScoreState.h"
 
 Game::Game(HINSTANCE hInstance)
-	: Application(1280, 720, "SPASM v0.50", hInstance)
+	: Application(1280, 720, "SPASM v0.75", hInstance)
 	, m_stateStack()
+	
 {
 	// Register states
 	registerStates();
 	// Set starting state
 #ifdef _DEBUG
-	m_stateStack.pushState(States::Game);
+	//m_stateStack.pushState(States::Score);
+	m_stateStack.pushState(States::MainMenu);
+	//m_stateStack.pushState(States::Game);
 #else
 	m_stateStack.pushState(States::MainMenu);
 #endif
@@ -32,6 +36,7 @@ void Game::registerStates() {
 	m_stateStack.registerState<GameState>(States::Game);
 	m_stateStack.registerState<MenuState>(States::MainMenu);
 	m_stateStack.registerState<PauseState>(States::Pause);
+	m_stateStack.registerState<ScoreState>(States::Score);
 }
 
 void Game::resize(int width, int height) {

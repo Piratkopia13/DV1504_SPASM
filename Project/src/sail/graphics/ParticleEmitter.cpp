@@ -1,5 +1,5 @@
 #include "ParticleEmitter.h"
-#include "geometry/factory/InstancedTestModel.h"
+#include "geometry/factory/InstancedParticleModel.h"
 #include <algorithm>
 #include <math.h>
 
@@ -8,9 +8,8 @@ using namespace SimpleMath;
 
 ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector3& velocityRndAdd, const Vector3& velocityVariety, 
 	float spawnsPerSecond, UINT maxParticles, float scale, float lifetime, const Vector4& color, float gravityScale, UINT initialSpawnCount, 
-	bool useAdditiveBlending, const Camera* cam)
-	: m_cam(cam)
-	, m_useAdditiveBlending(useAdditiveBlending)
+	bool useAdditiveBlending, bool singleUse)
+	: m_useAdditiveBlending(useAdditiveBlending)
 	, m_velocityVariety(velocityVariety)
 	, m_velocityRndAdd(velocityRndAdd)
 	, m_spawnsPerSecond(spawnsPerSecond)
@@ -19,6 +18,9 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 	, m_gravityScale(gravityScale)
 	, m_lifetime(lifetime)
 	, m_emitPosition(emitPos)
+	, m_singleUse(singleUse)
+	, m_spawnTimer(0.f)
+	//, m_isBeam(false)
 {
 
 	auto* m_app = Application::getInstance();
@@ -42,11 +44,14 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 		break;
 	}
 
-	m_app->getResourceManager().LoadDXTexture(particleSpritesheet);
+	// Load particle spritesheet if needed
+	if (!m_app->getResourceManager().hasDXTexture(particleSpritesheet))
+		m_app->getResourceManager().LoadDXTexture(particleSpritesheet);
 
+	// Store a pointer to the shader used in rendering
 	m_shader = &m_app->getResourceManager().getShaderSet<ParticleShader>();
 
-	m_instancedModel = ModelFactory::InstancedTestModel::Create(maxParticles);
+	m_instancedModel = ModelFactory::InstancedParticleModel::Create(maxParticles);
 	m_instancedModel->buildBufferForShader(m_shader);
 	m_instancedModel->getMaterial()->setDiffuseTexture(particleSpritesheet);
 
@@ -65,19 +70,18 @@ ParticleEmitter::ParticleEmitter(Type type, const Vector3& emitPos, const Vector
 ParticleEmitter::~ParticleEmitter() {
 }
 
-void ParticleEmitter::update(float dt) {
+bool ParticleEmitter::update(float dt) {
 
-	static float spawnTimer = 0.f;
-	spawnTimer += dt;
-	if (spawnTimer >= 1.f / m_spawnsPerSecond) {
-		while (spawnTimer > 0.f) {
+	m_spawnTimer += dt;
+	if (m_spawnTimer >= 1.f / m_spawnsPerSecond) {
+		while (m_spawnTimer > 0.f) {
 			// Spawn a new particle
 			addParticle(Particle(m_emitPosition, 
 				Vector3((Utils::rnd() + m_velocityRndAdd.x) * m_velocityVariety.x, (Utils::rnd() + m_velocityRndAdd.y) * m_velocityVariety.y, (Utils::rnd() + m_velocityRndAdd.z) * m_velocityVariety.z),
 				1.f, m_gravityScale, m_lifetime));
-			spawnTimer -= 1.f / m_spawnsPerSecond;
+			m_spawnTimer -= 1.f / m_spawnsPerSecond;
 		}
-		spawnTimer = 0.f;
+		m_spawnTimer = 0.f;
 	}
 
 	int i = 0;
@@ -117,11 +121,18 @@ void ParticleEmitter::update(float dt) {
 		}
 	}
 
+	if (m_singleUse && m_particles.size() == 0)
+		return true;
+
+//#ifndef _DEBUG
 	// Only sort if neccessary
-	//if (!m_useAdditiveBlending)
+	if (!m_useAdditiveBlending)
 		// TOOD: try different sorting algorithms
 		std::sort(m_instanceData.begin(), m_instanceData.begin() + m_particles.size(), Compare(*this));
 	//insertionSort();
+//#endif
+
+	return false;
 
 }
 
@@ -169,15 +180,37 @@ void ParticleEmitter::updateVelocityRndAdd(const DirectX::SimpleMath::Vector3& v
 	m_velocityRndAdd = velRndAdd;
 }
 
+const DirectX::SimpleMath::Vector3& ParticleEmitter::getEmitterPosition() const {
+	return m_emitPosition;
+}
+
+void ParticleEmitter::spawnBeamParticles(const DirectX::SimpleMath::Vector3& startPos, const DirectX::SimpleMath::Vector3& endPos, float step, float minDuration, float maxDuration) {
+
+	float dst = Vector3::Distance(startPos, endPos);
+	Vector3 dir = endPos - startPos;
+	dir.Normalize();
+
+	Vector3 rndAdd = -dir - Vector3(0.5f);
+
+	// Step along the beam and spawn particles with different lifetimes
+	for (float i = 0.f; i < dst; i += step) {
+		addParticle(Particle(startPos + dir * i,
+							 Vector3((Utils::rnd() + rndAdd.x) * m_velocityVariety.x, (Utils::rnd() + rndAdd.y) * m_velocityVariety.y, (Utils::rnd() + rndAdd.z) * m_velocityVariety.z),
+							 1.f, m_gravityScale, minDuration + maxDuration * (i / dst)));
+	}
+
+}
 
 void ParticleEmitter::draw() {
 	m_shader->updateSpriteData(m_spritesPerRow, m_scale);
 	m_shader->updateInstanceData(&m_instanceData[0], m_instanceData.size() * sizeof(m_instanceData[0]), m_instancedModel->getInstanceBuffer());
-	if (m_useAdditiveBlending)
+	Application::getInstance()->getDXManager()->enableDepthBufferWithWriteMask();
+	if (m_useAdditiveBlending) {
 		Application::getInstance()->getDXManager()->enableAdditiveBlending();
-	else
+	} else
 		Application::getInstance()->getDXManager()->enableAlphaBlending();
 	m_shader->draw(*m_instancedModel, true, m_particles.size());
+	Application::getInstance()->getDXManager()->enableDepthBuffer();
 }
 
 UINT ParticleEmitter::getParticleCount() const {

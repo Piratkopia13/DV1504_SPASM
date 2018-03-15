@@ -10,6 +10,9 @@
 #include "../UpgradeHandler.h"
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
+#include "../background/ScoreVisualization.h"
+
+#include "../objects/Block.h"
 
 class GameState : public State {
 public:
@@ -27,7 +30,7 @@ public:
 
 private:
 	Application* m_app;
-
+	GameInfo* m_info;
 	// Camera
 	PerspectiveCamera m_cam;
 	FlyingCameraController m_camController;
@@ -59,4 +62,6 @@ private:
 
 	// The current gamemode
 	std::unique_ptr<Gamemode> m_gamemode;
+
+	std::unique_ptr<ScoreVisualization> m_scoreVisualization;
 };

@@ -10,14 +10,14 @@ Grid::Grid() {
 Grid::Grid(const int worldWidth, const int worldHeight){
 	m_gridWidth = worldWidth;
 	m_gridHeight = worldHeight;
-	m_cells = std::vector<std::vector<Block*>>(m_gridWidth, std::vector<Block*>(m_gridHeight, nullptr));
+	m_cells = std::vector<std::vector<BlockInstance*>>(m_gridWidth, std::vector<BlockInstance*>(m_gridHeight, nullptr));
 }
 
 Grid::~Grid() {
 
 }
 
-void Grid::addBlock(Block* block, const int x, const int y){
+void Grid::addBlock(BlockInstance* block, const int x, const int y){
 	m_cells[x][y] = block;
 }
 
@@ -39,6 +39,8 @@ void Grid::addHole(const int x, const int y) {
 
 
 bool Grid::atGrid(const int x, const int y) {
+	if (x < 0 || y < 0 || x > (m_gridWidth - 1) || y > (m_gridHeight - 1))
+		return false;
 	if (m_cells[x][y])
 		return true;
 	return false;
@@ -58,10 +60,11 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 	bottomLeft /= Level::DEFAULT_BLOCKSIZE;
 	topRight /= Level::DEFAULT_BLOCKSIZE;
 
-	int minX = static_cast<int>(floor(bottomLeft.x));
-	int minY = static_cast<int>(floor(bottomLeft.y));
-	int maxX = static_cast<int>(floor(topRight.x));
-	int maxY = static_cast<int>(floor(topRight.y));
+	int minX = max(static_cast<int>(floor(bottomLeft.x)), 0);
+	int minY = max(static_cast<int>(floor(bottomLeft.y)), 0);
+	int maxX = min(static_cast<int>(floor(topRight.x)), m_gridWidth);
+	int maxY = min(static_cast<int>(floor(topRight.y)), m_gridHeight);
+	
 
 	/*minX = max(minX, 1);
 	minY = max(minY, 1);
@@ -81,38 +84,38 @@ std::vector<Grid::Index> Grid::getCollisionIndices(const AABB& boundingBox) {
 	//Getting all the boxes surrounding the bounding box
 	int top = maxY + 1;
 	int bottom = minY - 1;
-	if (minX > 0 && minY > 0 && maxY < m_gridHeight - 1 && maxX < m_gridWidth - 1) {
-		for (int i = minX - 1; i < maxX + 2; i++) {
-			if (m_cells[i][bottom] != nullptr) {
-				Grid::Index index;
-				index.x = i;
-				index.y = bottom;
-				indices.push_back(index);
-			}
-			if (m_cells[i][top] != nullptr) {
-				Grid::Index index;
-				index.x = i;
-				index.y = top;
-				indices.push_back(index);
-			}
+	
+	for (int i = minX - 1; i < maxX + 2; i++) {
+		if (atGrid(i,bottom)) {
+			Grid::Index index;
+			index.x = i;
+			index.y = bottom;
+			indices.push_back(index);
 		}
-		top = maxX + 1;
-		bottom = minX - 1;
-		for (int i = minY; i < maxY + 1; i++) {
-			if (m_cells[bottom][i] != nullptr) {
-				Grid::Index index;
-				index.x = bottom;
-				index.y = i;
-				indices.push_back(index);
-			}
-			if (m_cells[top][i] != nullptr) {
-				Grid::Index index;
-				index.x = top;
-				index.y = i;
-				indices.push_back(index);
-			}
+		if (atGrid(i,top)) {
+			Grid::Index index;
+			index.x = i;
+			index.y = top;
+			indices.push_back(index);
 		}
 	}
+	top = maxX + 1;
+	bottom = minX - 1;
+	for (int i = minY; i < maxY + 1; i++) {
+		if (atGrid(bottom, i)) {
+			Grid::Index index;
+			index.x = bottom;
+			index.y = i;
+			indices.push_back(index);
+		}
+		if (atGrid(top, i)) {
+			Grid::Index index;
+			index.x = top;
+			index.y = i;
+			indices.push_back(index);
+		}
+	}
+
 
 	return indices;
 }
@@ -146,7 +149,7 @@ bool Grid::checkHoles(const Grid::Index& playerPos) {
 	return cover;
 }
 
-std::vector<std::vector<Block*>>& Grid::getAllBlocks() {
+std::vector<std::vector<Grid::BlockInstance*>>& Grid::getAllBlocks() {
 	return m_cells;
 }
 

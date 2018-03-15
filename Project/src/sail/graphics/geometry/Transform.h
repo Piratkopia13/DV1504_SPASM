@@ -46,6 +46,7 @@ public:
 		m_matNeedsUpdate = true;
 	}
 
+
 	void setNonUniScale(float scalex, float scaley, float scalez) {
 		m_scale = DirectX::SimpleMath::Vector3(scalex, scaley, scalez);
 		m_matNeedsUpdate = true;
@@ -65,6 +66,7 @@ public:
 	const DirectX::SimpleMath::Vector3 getScale() const {
 		return m_scale;
 	}
+
 
 	DirectX::SimpleMath::Matrix getMatrix() {
 		if (m_matNeedsUpdate) {

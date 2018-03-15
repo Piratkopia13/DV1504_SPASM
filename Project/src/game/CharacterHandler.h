@@ -1,5 +1,6 @@
 #pragma once
 #include "objects/Character.h"
+#include "GameInfo.h"
 
 class CharacterHandler {
 public:
@@ -20,8 +21,7 @@ public:
 
 private:
 	void addPlayer(Character* player);
-
-	float m_respawnTime;
+	DirectX::SimpleMath::Vector3 getRandomSpawnPoint(UINT team) const;
 
 	ParticleHandler* m_particleHandler;
 	std::vector<Character*> m_characters;
@@ -29,6 +29,6 @@ private:
 	std::vector<DirectX::SimpleMath::Vector3> m_spawns[4];
 
 
-
+	GameInfo* m_info;
 };
 

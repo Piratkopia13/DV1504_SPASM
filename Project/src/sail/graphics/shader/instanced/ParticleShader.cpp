@@ -11,9 +11,7 @@ D3D11_INPUT_ELEMENT_DESC ParticleShader::IED[5] = {
 	{ "TEXCOORD", 3, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 };
 
-ParticleShader::ParticleShader()
-: m_maxParticles(10000)
-{
+ParticleShader::ParticleShader() {
 
 	// Set up constant buffers
 	CameraBuffer defaultCamData = { Matrix::Identity, Vector3::Zero };
@@ -72,9 +70,6 @@ void ParticleShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D
 	if (modelData.numVertices <= 0 || !modelData.positions)
 		Logger::Error("numVertices or position data not set for model");
 
-	if (!modelData.texCoords)
-		Logger::Warning("Texture coordinates not set for model that will render with a texture shader");
-
 	// Create the vertex array that this shader uses
 	ParticleShader::Vertex* vertices = new ParticleShader::Vertex[modelData.numVertices];
 
@@ -132,28 +127,12 @@ void ParticleShader::createBufferFromModelData(ID3D11Buffer** vertexBuffer, ID3D
 	D3D11_BUFFER_DESC ibd;
 	ZeroMemory(&ibd, sizeof(ibd));
 	ibd.Usage = D3D11_USAGE_DYNAMIC;
-	ibd.ByteWidth = sizeof(InstanceData) * m_maxParticles;
+	ibd.ByteWidth = sizeof(InstanceData) * modelData.numInstances;
 	ibd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	ibd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	ibd.MiscFlags = 0;
 	ibd.StructureByteStride = 0;
 
-	/*for (UINT i = 0; i < modelData.numInstances; i++) {
-		InstanceData data;
-		data.position = Vector3(Utils::rnd() * 5, Utils::rnd() * 5, Utils::rnd() * 5);
-		data.color = Utils::getRandomColor();
-		data.blendFactor = 0.5f;
-		data.textureOffset1 = Vector2(0.f);
-		data.textureOffset2 = Vector2(0.f);
-		m_instanceData.push_back(data);
-	}*/
-
-	/*D3D11_SUBRESOURCE_DATA instanceInitData;
-	ZeroMemory(&instanceInitData, sizeof(instanceInitData));
-	instanceInitData.pSysMem = &m_instanceData[0];*/
-
-	// Create the instance buffer
-	//ThrowIfFailed(Application::getInstance()->getDXManager()->getDevice()->CreateBuffer(&ibd, &instanceInitData, instanceBuffer));
 	ThrowIfFailed(Application::getInstance()->getDXManager()->getDevice()->CreateBuffer(&ibd, nullptr, instanceBuffer));
 
 }
@@ -179,7 +158,7 @@ void ParticleShader::draw(Model& model, bool bindFirst, UINT instanceCount) {
 	ID3D11Buffer* bufferPtrs[2] = { *model.getVertexBuffer(), model.getInstanceBuffer() };
 	devCon->IASetVertexBuffers(0, 2, bufferPtrs, strides, offsets);
 
-	// Bind index buffer if one exitsts
+	// Bind index buffer if one exists
 	auto iBuffer = model.getIndexBuffer();
 	if (iBuffer)
 		devCon->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);

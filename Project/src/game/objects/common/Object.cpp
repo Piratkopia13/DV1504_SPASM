@@ -6,12 +6,11 @@ Object::Object()
 	: model(nullptr)
 	, lightColor(Vector4(1.f))
 {
+	boundingBox = nullptr;
 }
 
 Object::~Object() {
-	if (boundingBox) {
-		delete this->boundingBox;
-	}
+	Memory::safeDelete(this->boundingBox);
 }
 
 void Object::setPosition(const DirectX::SimpleMath::Vector3 &newPosition) {
@@ -44,6 +43,10 @@ void Object::setModel(Model* model)
 			
 			Logger::Error("BoundingBox not loaded");
 		}
+	}
+	else {
+		this->model = nullptr;
+		Memory::safeDelete(this->boundingBox);
 	}
 }
 

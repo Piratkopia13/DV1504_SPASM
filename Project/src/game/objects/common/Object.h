@@ -7,8 +7,8 @@ class Object {
 private:
 	Transform m_transform;
 protected:
-	Model* model; //Pointer to be able to detect if a bounding box has been made
-	AABB* boundingBox;
+	Model* model; 
+	AABB* boundingBox; //Pointer to be able to detect if a bounding box has been made
 	DirectX::SimpleMath::Vector4 lightColor;
 
 public:

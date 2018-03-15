@@ -1,7 +1,8 @@
 #pragma once
 #include "../../sail/Sail.h"
 #include "../PlayerCameraController.h"
-#include "../objects/menu/MenuItem.h"
+#include "../objects/menu/MenuHandler.h"
+#include "../GameInfo.h"
 
 class MenuState : public State {
 public:
@@ -19,6 +20,7 @@ public:
 
 private:
 	Application * m_app;
+	GameInfo* m_info;
 
 	// Camera
 	PerspectiveCamera m_cam;
@@ -29,14 +31,19 @@ private:
 	Scene m_scene;
 
 	// Models
-	Model* m_playerModel;
-	Model* m_menuStartModel;
 
-	Model* m_menuOptionsModel;
-	Model* m_menuExitModel;
+	std::vector<Model*> m_playerHeadModels;
+	std::vector<Model*> m_playerBodyModels;
+	std::vector<Model*> m_playerLegModels;
+	std::vector<Model*> m_playerArmLModels;
+	std::vector<Model*> m_playerArmRModels;
 
-	Model* m_menuBlockModel;
+
 	Model* m_backGroundModel;
+
+	Model* m_block;
+
+
 
 	// Texts
 	SailFont m_font;
@@ -45,36 +52,79 @@ private:
 
 	DirectX::SimpleMath::Vector4 m_onColor;
 	DirectX::SimpleMath::Vector4 m_offColor;
+
+	std::vector<DirectX::SimpleMath::Vector4> m_teamColors;
+
+
 	DirectX::SimpleMath::Vector4 m_orangeColor;
-	DirectX::SimpleMath::Vector4 m_blueColor;
-
-
-
+	
 	// MENU 0
 
 	enum m_activeMenu {
 		MAINMENU,
 		STARTMENU,
+		PROFILEMENU,
 		OPTIONSMENU
 	};
 
-	enum MainMenu {
-		NOTHING = -1,
+	enum MainMenuSelections {
 		START,
+		PROFILE,
 		OPTIONS,
 		EXIT
 	};
 
-	enum StartMenu {
+	enum StartMenuPart {
+		GAMEOPTIONSELECT,
 		PLAYERSELECT,
 		MAPSELECT
 	};
+	
+	enum GameOptionsOptions {
+		GAMEMODE,
+		TIMELIMIT,
+		SCORELIMIT,
+		RESPAWNTIME,
+		GRAVITY,
+		PLAYERLIFE
+
+	};
+
+	enum GameModeSelection {
+		PAYLOAD,
+		DEATHMATCH,
+		TEAMDEATHMATCH
+	};
+
+
+	enum ProfileMenu {
+		PMAIN,
+		PCREATE,
+		PVIEW
+	};
 
 	enum OptionsMenu {
-		CHOICE0,
-		CHOICE1,
-		CHOICE2
+		MAIN,
+		GRAPHICS,
+		SOUND
 	};
+
+	enum GraphicsMenu {
+		PARTICLES,
+		BLOOM,
+		ANTIALIASING,
+		BACKGROUND,
+		FPSCOUNTER,
+		VSYNC,
+		WTFG
+	};
+	enum SoundMenu {
+		MASTERVOLUME,
+		BACKGROUNDVOLUME,
+		EFFECTVOLUME,
+		WTFS
+	};
+
 
 	enum PlayerSelect {
 		OFFLINE,
@@ -84,36 +134,123 @@ private:
 	};
 
 
+
 	int m_activeMenu;
 	int m_activeSubMenu;
-	int m_selector;
-	int m_menu;
-	int m_startMenu;
-	int m_maxChoices;
 
-
-	int m_gamemode;
-	int m_map;
-	int players[4];
-	int playersReady[4];
-	int m_playerModelIndex[4];
-	int m_playerTeam[4];
-
-	DirectX::SimpleMath::Vector4 playerColor[4];
 
 	MenuItem* background;
-	std::vector<MenuItem*> menuList;
-	std::vector<MenuItem*> playerMenu;
-	std::vector<MenuItem*> mapMenu;
+	
 
-	std::vector<MenuItem*> optionsMenuList;
+	//MAIN MENU
+	MenuHandler* m_mainMenu;
+
+	//GAMEMODE MENU
+	MenuHandler* m_gamemodeMenu;
+
+	std::vector<MenuHandler*> m_characterMenu;
+
+	struct MenuPlayer {
+		GameInfo::Player player;
+		bool ready;
+
+	};
+	std::vector<MenuPlayer*> m_playerz;
+	//std::vector<MenuItem*> m_playerMenuModels;
+
+	struct PlayerMenuModel {
+		MenuItem* head;
+		MenuItem* body;
+		MenuItem* legs;
+		MenuItem* armL;
+		MenuItem* armR;
+
+		void setLight(const DirectX::SimpleMath::Vector4& color) {
+			if (head) 
+				head->setLightColor(color);
+			if (body)
+				body->setLightColor(color);
+			if (legs)
+				legs->setLightColor(color);
+			if (armL)
+				armL->setLightColor(color);
+			if (armR)
+				armR->setLightColor(color);
+		}
+		void clear() {
+			Memory::safeDelete(head);
+			Memory::safeDelete(body);
+			Memory::safeDelete(legs);
+			Memory::safeDelete(armL);
+			Memory::safeDelete(armR);
+		}
+		void reset() {
+			if(head)
+				head->setModel(nullptr);
+			if(body)
+				body->setModel(nullptr);
+			if(legs)
+				legs->setModel(nullptr);
+			if(armL)
+				armL->setModel(nullptr);
+			if(armR)
+				armR->setModel(nullptr);
+		}
+
+	};
+	std::vector<PlayerMenuModel> m_playerMenuModelz;
+	PlayerMenuModel m_graphicsModel;
+
+	MenuHandler* m_mapMenu;
+
+	//OPTIONS N SHIT
+	MenuHandler* m_profileMenu;
+	MenuHandler* m_profileCreator;
+	MenuHandler* m_profileViewer;
+	MenuHandler* m_profileViewerStats;
+	
+
+	MenuHandler* m_optionsMenu;
+	MenuHandler* m_graphicsMenu;
+	MenuHandler* m_soundMenu;
+private:
+	void initMain();
+	void initGamemode();
+	void initCharacterModels();
+	void initCharacterModel(size_t spot);
+	void initCharacter(size_t spot, bool online);
+	void removeCharacter(size_t spot);
+	void initMap();
+
+	void initProfile();
+	void initProfileCreator();
+	void initProfileViewer();
+
+	void initOptions();
+	void initGraphics();
+	void initSound();
 
 
-	void changeMenu(int change, int active);
-	void setColor(int player, DirectX::SimpleMath::Vector4 color) {
-		this->playerColor[player] = color;
-		this->playerMenu[player]->setLightColor(this->playerColor[player]);
-	}
+
+	void setMainSelect(bool active);
+	void setGamemodeSelect(bool active);
+	void setCharacterSelect(bool active);
+	void setMapSelect(bool active);
+
+	void setProfileMenu(bool active);
+	void setProfileCreator(bool active);
+	void setProfileViewer(bool active);
+
+	void setOptionsMenu(bool active);
+	void setGraphicsMenu(bool active);
+	void setSoundMenu(bool active);
+
+	void updateCamera();
+	
+	void startGame();
+	void updateGraphics();
+	void updateSound();
+
 	
 };
 

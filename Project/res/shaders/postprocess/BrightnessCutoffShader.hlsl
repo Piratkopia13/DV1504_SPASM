@@ -13,6 +13,6 @@ SamplerState ss : register(s0);
 float4 PSMain(PSIn input) : SV_Target0 {
 
   float4 color = tex.Sample(ss, input.texCoord);
-  return float4(color.rgb * dot(color.rgb, float3(0.2126, 0.7152, 0.0722)) * 0.5f, color.a);
+  return float4(color.rgb * dot(color.rgb, float3(0.333, 0.333, 0.333)), 1.f);
 
 }
