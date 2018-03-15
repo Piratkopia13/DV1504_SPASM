@@ -52,7 +52,7 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 			float bMinY = index.y * Level::DEFAULT_BLOCKSIZE;
 			float bMaxY = (index.y + 1) * Level::DEFAULT_BLOCKSIZE;
 
-			if (mMax.x + mVel.x > bMinX && mMin.x + mVel.x < bMaxX &&
+			if (mMax.x + mVel.x + EPS > bMinX && mMin.x + mVel.x - EPS < bMaxX &&
 				mMax.y > bMinY && mMin.y < bMaxY) {
 				if (mVel.x < 0.f)
 					toMove.x = bMaxX - mMin.x + EPS;
@@ -71,7 +71,7 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 			if (toMove.x && !(colX)) {
 				colX = true;
-				if (abs(toMove.x) <= EPS) toMove.x = 0.f;
+				//if (abs(toMove.x) <= EPS) toMove.x = 0.f;
 				DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 				tempVel.x = 0.f;
 				moveable.setVelocity(tempVel);
@@ -81,7 +81,7 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 
 			if (toMove.y && !(colY)) {
 				colY = true;
-				if (abs(toMove.y) <= EPS) toMove.y = 0.f;
+				//if (abs(toMove.y) <= EPS) toMove.y = 0.f;
 				DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 				tempVel.y = 0.f;
 				moveable.setVelocity(tempVel);
@@ -110,21 +110,23 @@ void CollisionHandler::resolveLevelCollisionWith(Character* chara, float dt) {
 						toMove.y = bMinY - mMax.y - EPS;
 				}
 
-				if (abs(toMove.x) < abs(toMove.y)) {
+				/*if (abs(toMove.x) < abs(toMove.y)) {
 					if (abs(toMove.x) <= EPS) toMove.x = 0.f;
 					DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 					tempVel.x = 0.f;
 					moveable.setVelocity(tempVel);
 					toMove.y = 0.f;
 					moveable.move(toMove);
-				}
-
-				if (abs(toMove.y) < abs(toMove.x)) {
-					if (abs(toMove.y) <= EPS) toMove.y = 0.f;
+				}*/
+				if (abs(toMove.x) > 0 || abs(toMove.y) > 0) {
 					DirectX::SimpleMath::Vector3 tempVel = moveable.getVelocity();
 					tempVel.y = 0.f;
+					tempVel.x = 0.f;
 					moveable.setVelocity(tempVel);
-					toMove.x = 0.f;
+					if (toMove.x < 0)
+						toMove.x -= EPS;
+					else if (toMove.x > 0)
+						toMove.x += EPS;
 					moveable.move(toMove);
 				}
 			}
@@ -203,10 +205,22 @@ bool CollisionHandler::resolveCoverCollision(const DirectX::SimpleMath::Vector3&
 }
 
 bool CollisionHandler::outOfBounds(Character* character) {
+
 	float x = character->getTransform().getTranslation().x;
 	float y = character->getTransform().getTranslation().y;
 	bool oob = false;
-	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight())
+	std::vector<Grid::Index> indices = m_level->getGrid()->getCurrentCollisionIndices(*character->getBoundingBox());
+	if (x < 0 || y < 0 || x > m_level->getGridWidth() || y > m_level->getGridHeight() || indices.size() > 1)
+		oob = true;
+
+	return oob;
+}
+
+bool CollisionHandler::outOfBounds(Projectile* projectile) {
+	float x = projectile->getTransform().getTranslation().x;
+	float y = projectile->getTransform().getTranslation().y;
+	bool oob = false;
+	if (x < -5.f || y < -5.f || x > m_level->getGridWidth() + 5.f || y > m_level->getGridHeight() + 5.f)
 		oob = true;
 
 	return oob;
@@ -218,7 +232,7 @@ bool CollisionHandler::checkCharacterCollisionWith(Projectile* proj, float dt, f
 	
 	for (unsigned int i = 0; i < m_characterHandler->getNrOfPlayers(); i++) {
 		Character* chara = m_characterHandler->getCharacter(i);
-		if (proj->getTeam() != chara->getTeam()) {
+		if (proj->getTeam() != chara->getTeam() && chara->isAlive()) {
 
 			Vector3 normalizedVel = proj->getVelocity();
 			normalizedVel.Normalize();
@@ -360,36 +374,48 @@ bool CollisionHandler::resolveProjectileCollision(float dt) {
 
 	for (unsigned int i = 0; i < projectiles.size(); i++) {
 		auto& proj = projectiles.at(i);
-		bool hit = false;
 
-		float tLevel = -1.f;
-		float tCharacter = -1.f;
-		Vector3 levelHitPos;
-		Character* hitCharacter = nullptr;
-		CharacterHitResult charaHitRes;
-		bool levelHit = checkLevelCollisionWith(proj, dt, tLevel, levelHitPos);
-		bool characterHit = checkCharacterCollisionWith(proj, dt, tCharacter, &hitCharacter, charaHitRes);
+		if (!outOfBounds(proj)) {
 
-		if (levelHit && characterHit) {
+			bool hit = false;
 
-			// Only the closest should be hit
-			if (tLevel < tCharacter)
-				characterHit = false;
-			else
-				levelHit = false;
+			float tLevel = -1.f;
+			float tCharacter = -1.f;
+			Vector3 levelHitPos;
+			Character* hitCharacter = nullptr;
+			CharacterHitResult charaHitRes;
+			bool levelHit = checkLevelCollisionWith(proj, dt, tLevel, levelHitPos);
+			bool characterHit = checkCharacterCollisionWith(proj, dt, tCharacter, &hitCharacter, charaHitRes);
 
+			if (levelHit && characterHit) {
+
+				// Only the closest should be hit
+				if (tLevel < tCharacter)
+					characterHit = false;
+				else
+					levelHit = false;
+
+			}
+
+			if (levelHit) {
+				m_projectileHandler->projectileHitLevel(levelHitPos, proj);
+				m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
+				m_level->blockHit(proj->getVelocity(), proj->getDamage(), levelHitPos);
+			}
+			else if (characterHit) {
+				hitCharacter->hitByProjectile(charaHitRes);
+				m_projectileHandler->projectileHitSomething(proj, charaHitRes.hitPos, dt);
+			}
+
+
+
+
+			if (levelHit || characterHit) {
+				m_projectileHandler->removeAt(i);
+				i--;
+			}
 		}
-		
-		if (levelHit) {
-			m_projectileHandler->projectileHitLevel(levelHitPos);
-			m_projectileHandler->projectileHitSomething(proj, levelHitPos, dt);
-		} else if (characterHit) {
-			hitCharacter->hitByProjectile(charaHitRes);
-			m_projectileHandler->projectileHitSomething(proj, charaHitRes.hitPos, dt);
-		}
-
-
-		if (levelHit || characterHit) {
+		else {
 			m_projectileHandler->removeAt(i);
 			i--;
 		}

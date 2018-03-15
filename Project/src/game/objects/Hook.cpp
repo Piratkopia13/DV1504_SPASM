@@ -5,6 +5,7 @@ Hook::Hook(Model *drawModel, ParticleHandler* particleHandler) {
 	model = drawModel;
 	m_hookVelocity = 60.f;
 	setLightColor(DirectX::SimpleMath::Vector4(3.f));
+	this->getTransform().setScale(0.f);
 	m_hookEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f),
 	DirectX::SimpleMath::Vector3(-0.5f, -0.5f, -0.5f), DirectX::SimpleMath::Vector3(2.0f, 2.0f, 2.0f), 0.f, 800, 0.15f, 0.5f, DirectX::SimpleMath::Vector4(0.8f, 0.5f, 0.2f, 1.f), 0.0f, 0U, true, false));
 	particleHandler->addEmitter(m_hookEmitter);
@@ -20,16 +21,30 @@ bool Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 		m_direction.z = 0.f;
 		m_distance = m_direction.Length();
 		m_direction.Normalize();
+		 /*
+		DirectX::SimpleMath::Vector3 tempPos;
+		float t;
+		bool blockIntact = CollisionHandler::getInstance()->rayTraceLevel({ position, m_direction }, tempPos, t);
+		
+		if (!blockIntact) {
+			m_outOfBounds = true;
+		}*/
+	
 
 
 		if (!m_outOfBounds) {
-			DirectX::SimpleMath::Vector3 tempPos;
-			float t;
+			DirectX::SimpleMath::Vector3 tempPos;// = DirectX::SimpleMath::Vector3(1000.f, 1000.f, 1000.f);
+			float t; // = 10000.0;
 			CollisionHandler::getInstance()->rayTraceLevel({ position, m_direction }, tempPos, t);
+
 			float tempDistance = (tempPos - position).Length();
+			t = tempDistance - m_distance;
 			if (m_distance > tempDistance) {
 				m_position = tempPos;
 				m_distance = tempDistance;
+			}
+			else if (tempPos.x != m_position.x && tempPos.y != m_position.y && t > 0.5f) {
+				m_outOfBounds = true;
 			}
 		}
 		m_timeHooked += dt;
@@ -45,13 +60,15 @@ bool Hook::update(float dt, const DirectX::SimpleMath::Vector3& position) {
 		this->getTransform().setRotations(DirectX::SimpleMath::Vector3(0.0f, 0.0f, atan2(m_direction.y, m_direction.x)));
 		this->getTransform().setNonUniScale(m_distance*hookPos*20.0f, 2.0f, 1.0f);
 		
-		if (hookPos == 0.5f) {
+		if (hookPos == 0.5f && !m_outOfBounds) {
 			m_hookEmitter->updateSpawnsPerSecond(100.f);
 			//m_hookEmitter->updateColor(this->lightColor * 6.f);
 			m_hookEmitter->updateVelocityRndAdd(-m_direction -DirectX::SimpleMath::Vector3(0.5f));
 			m_hookEmitter->updateEmitPosition(position + (m_direction * m_distance * hookPos * 2.f));
 			return true;
 		}
+		else
+			m_hookEmitter->updateSpawnsPerSecond(0.f);
 	}
 	return false;
 }
@@ -85,7 +102,7 @@ void Hook::triggerRelease() {
 
 void Hook::draw() {
 	model->setTransform(&getTransform());
-	model->getMaterial()->setColor(this->lightColor * 3.f);
+	model->getMaterial()->setColor(DirectX::SimpleMath::Vector4(3.0f));
 	model->draw();
 }
 

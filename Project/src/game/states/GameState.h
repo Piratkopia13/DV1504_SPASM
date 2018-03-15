@@ -11,6 +11,10 @@
 #include "../gamemodes/Gamemode.h"
 #include "../ParticleHandler.h"
 #include "../background/ScoreVisualization.h"
+#include "../background/TimeVisualization.h"
+
+#include "../objects/InstancedBlocks.h"
+#include "../../sail/graphics/shader/deferred/DeferredInstancedGeometryShader.h"
 
 #include "../objects/Block.h"
 
@@ -38,7 +42,7 @@ private:
 	bool m_flyCam;
 
 	// Scene
-	Scene m_scene;
+	std::unique_ptr<Scene> m_scene;
 
 	// Models
 	std::unique_ptr<Model> m_infinityPlane;
@@ -64,4 +68,5 @@ private:
 	std::unique_ptr<Gamemode> m_gamemode;
 
 	std::unique_ptr<ScoreVisualization> m_scoreVisualization;
+	std::unique_ptr<TimeVisualization> m_timeVisualization;
 };

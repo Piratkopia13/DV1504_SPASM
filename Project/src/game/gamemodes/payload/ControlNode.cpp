@@ -7,8 +7,9 @@ ControlNode::ControlNode(Model* model) {
 
 	m_beingCaptured = false;
 	m_timeTillCapture = 3.f;
-	m_maxTimeCaptured = 10.f;
-	m_timeCaptured = 0.f;
+	m_maxTimeCaptured = 20.f;
+	m_timeCapturedTeamOne = 0.f;
+	m_timeCapturedTeamTwo = 0.f;
 
 	m_teamZeroColor = DirectX::SimpleMath::Vector4(1.f, 1.f, 1.f, 1.f);
 	m_teamOneColor = DirectX::SimpleMath::Vector4(3.f, 0.0f, 0.0f, 1.f);
@@ -80,11 +81,15 @@ int ControlNode::getTeam() {
 void ControlNode::capture(const int teamOne, const int teamTwo) {
 	// If no one is on the point, no one is capturing it
 	if (teamOne > 0 || teamTwo > 0) {
+		if((teamOne && !m_teamOne.isOwner) || (teamTwo && !m_teamTwo.isOwner))
+			Application::getInstance()->getResourceManager().getSoundManager()->playAmbientSound(SoundManager::Ambient::Ambient_Capture, true, 0.1f);
+
 		// First checks if theres equal amount of each team on point
 		if (teamOne == teamTwo) {
 			m_teamOne.capturing = true;
 			m_teamTwo.capturing = true;
 			m_beingCaptured = false;
+			Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
 		}
 		// Checks if no one is currently capturing and puts a team on capturing depending on which team is more
 		if (!m_teamOne.capturing && !m_teamTwo.capturing) {
@@ -134,6 +139,7 @@ void ControlNode::capture(const int teamOne, const int teamTwo) {
 	}
 	else {
 		m_beingCaptured = false;
+		Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
 	}
 }
 
@@ -201,6 +207,13 @@ bool ControlNode::updateNodeTimer(float dt) {
 				m_teamTwo.timeCapturing = m_timeTillCapture;
 		}
 	}
+	
+	//if(!m_beingCaptured && ((m_teamOne.capturing && m_teamOne.isOwner) || (m_teamTwo.capturing && m_teamTwo.isOwner)))
+		//Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
+	
+	//if (!m_beingCaptured) {
+	//	Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
+	//}
 
 	// Set team to not capture if the timer goes to zero
 	if (m_teamOne.timeCapturing <= 0.f && m_teamOne.isOwner) {
@@ -216,6 +229,8 @@ bool ControlNode::updateNodeTimer(float dt) {
 		m_teamOne.isOwner = true;
 		m_teamOne.timeCapturing = m_timeTillCapture;
 		m_ownershipColor = m_teamOneColor;
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Captured, 0.3f);
+		Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
 	}
 
 	// Set team to not capture if the timer goes to zero
@@ -232,6 +247,8 @@ bool ControlNode::updateNodeTimer(float dt) {
 		m_teamTwo.isOwner = true;
 		m_teamTwo.timeCapturing = m_timeTillCapture;
 		m_ownershipColor = m_teamTwoColor;
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Captured, 0.3f);
+		Application::getInstance()->getResourceManager().getSoundManager()->stopAmbientSound(SoundManager::Ambient::Ambient_Capture);
 	}
 
 	// Set the node color depending on the timing
@@ -242,19 +259,19 @@ bool ControlNode::updateNodeTimer(float dt) {
 	if (m_teamOne.isOwner) {
 		if (m_team != m_teamOne.id) {
 			setTeam(m_teamOne.id);
-			m_timeCaptured = 0.f;
+			//m_timeCapturedTeamOne = 0.f;
 		}
-		m_timeCaptured += dt;
+		m_timeCapturedTeamOne += dt;
 	}
 	if (m_teamTwo.isOwner) {
 		if (m_team != m_teamTwo.id) {
 			setTeam(m_teamTwo.id);
-			m_timeCaptured = 0.f;
+			//m_timeCapturedTeamTwo = 0.f;
 		}
-		m_timeCaptured += dt;
+		m_timeCapturedTeamTwo += dt;
 	}
 
-	if (m_timeCaptured >= m_maxTimeCaptured) {
+	if (m_timeCapturedTeamOne >= m_maxTimeCaptured || m_timeCapturedTeamTwo >= m_maxTimeCaptured) {
 		reset();
 		return true;
 	}
@@ -268,7 +285,8 @@ void ControlNode::reset() {
 	m_team = -1;
 
 	m_beingCaptured = false;
-	m_timeCaptured = 0.f;
+	m_timeCapturedTeamOne = 0.f;
+	m_timeCapturedTeamTwo = 0.f;
 
 	m_teamOne.ownershipTime = 0.f;
 	m_teamOne.capturing = false;

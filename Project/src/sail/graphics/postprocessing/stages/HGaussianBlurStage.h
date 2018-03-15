@@ -13,6 +13,7 @@ public:
 	virtual ~HGaussianBlurStage();
 
 	void run(RenderableTexture& inputTexture);
+	void resize(UINT width, UINT height);
 
 private:
 	//GaussianBlurCShader m_gaussianShader;

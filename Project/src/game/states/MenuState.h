@@ -3,6 +3,7 @@
 #include "../PlayerCameraController.h"
 #include "../objects/menu/MenuHandler.h"
 #include "../GameInfo.h"
+#include "../objects/Menu/MapPreview.h"
 
 class MenuState : public State {
 public:
@@ -28,7 +29,7 @@ private:
 	bool m_flyCam;
 
 	// Scene
-	Scene m_scene;
+	std::unique_ptr<Scene> m_scene;
 
 	// Models
 
@@ -37,7 +38,7 @@ private:
 	std::vector<Model*> m_playerLegModels;
 	std::vector<Model*> m_playerArmLModels;
 	std::vector<Model*> m_playerArmRModels;
-
+	std::vector<MenuHandler*> m_targets;
 
 	Model* m_backGroundModel;
 
@@ -144,6 +145,7 @@ private:
 
 	//MAIN MENU
 	MenuHandler* m_mainMenu;
+	MenuHandler* m_mainName;
 
 	//GAMEMODE MENU
 	MenuHandler* m_gamemodeMenu;
@@ -202,11 +204,13 @@ private:
 	PlayerMenuModel m_graphicsModel;
 
 	MenuHandler* m_mapMenu;
+	MapPreview* m_mapPreview;
 
 	//OPTIONS N SHIT
 	MenuHandler* m_profileMenu;
 	MenuHandler* m_profileCreator;
 	MenuHandler* m_profileViewer;
+	MenuHandler* m_profileViewerLines;
 	MenuHandler* m_profileViewerStats;
 	
 
@@ -216,6 +220,7 @@ private:
 private:
 	void initMain();
 	void initGamemode();
+	void updateGameMode();
 	void initCharacterModels();
 	void initCharacterModel(size_t spot);
 	void initCharacter(size_t spot, bool online);
@@ -225,6 +230,7 @@ private:
 	void initProfile();
 	void initProfileCreator();
 	void initProfileViewer();
+	void updateProfileViewer();
 
 	void initOptions();
 	void initGraphics();
@@ -251,6 +257,7 @@ private:
 	void updateGraphics();
 	void updateSound();
 
+	
 	
 };
 

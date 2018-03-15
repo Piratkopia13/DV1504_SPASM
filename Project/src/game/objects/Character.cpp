@@ -1,6 +1,7 @@
 #pragma once
 #include "Character.h"
 #include "../collision/CollisionHandler.h"
+#include "../GameInfo.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -12,7 +13,7 @@ Character::Character()
 {
 	m_inputDevice = { 1, 0 };
 	m_input = {Vector3(0.f,0.f,0.f), Vector3(1.f,0.f,0.f)};
-	m_movement = { 0.f, 10.f, 0.f, 1.0f, 0};
+	m_movement = { 0.f, 10.f, false, 1.0f, 0, false, 0.f, 2.5f};
 	m_playerHealth.setMax(100.f);
 	m_playerHealth.setHealth(100.f);
 	m_playerHealth.regen = 5.f;
@@ -26,7 +27,7 @@ Character::Character()
 
 	m_thrusterEmitter = std::shared_ptr<ParticleEmitter>(new ParticleEmitter(ParticleEmitter::EXPLOSION, Vector3(-1.f, 0.f, 0.f), 
 		Vector3(-0.5f, 0.f, -0.5f), Vector3(5.f, -5.f, 0.5f), 500.f, 200, 0.15f, 0.3f, lightColor, 1.f, 0U, true, false));
-	setLightColor(Vector4(1, 1, 1, 1));
+	//setLightColor(Vector4(1, 1, 1, 1));
 
 	m_nextRespawnPoint = Vector3::Zero;
 
@@ -237,27 +238,29 @@ void Character::update(float dt) {
 		m_lastAttackerIndex = -1;
 
 	m_playerHealth.updatePercent();
+	m_movement.dJumpTimer += dt;
+	// Jump timer
+	if (m_movement.dJumpTimer > m_movement.dJumpTimeReset) {
+		m_movement.dJump = true;
+	}
 
 		if (!m_movement.inCover && getTransform().getTranslation().z == 0.f) {
 			if (grounded()) {
+				m_movement.dJump = true;
 				if (!m_movement.hooked) {//Movement while on the ground
-					if(m_input.movement.x > 0)
-						this->setVelocity(DirectX::SimpleMath::Vector3(min(this->getVelocity().x + 1.0f, m_movement.speed), this->getVelocity().y, 0.f));
-					else if(m_input.movement.x < 0)
-						this->setVelocity(DirectX::SimpleMath::Vector3(max(this->getVelocity().x - 1.0f, -m_movement.speed), this->getVelocity().y, 0.f));
-					else
-						this->setVelocity(DirectX::SimpleMath::Vector3(this->getVelocity().x, this->getVelocity().y, 0.f));
-
-					if (fabs(this->getVelocity().x) > 5)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(this->getVelocity().x * -6.f, 0.f, 0.f));
-					else if (this->getVelocity().x < -1)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(20.f, 0.f, 0.f));
-					else if (this->getVelocity().x > 1)
-						this->setAcceleration(DirectX::SimpleMath::Vector3(-20.f, 0.f, 0.f));
-					else if (fabs(this->getVelocity().x) < 1.f) {
-						this->setAcceleration(DirectX::SimpleMath::Vector3(0.f, 0.f, 0.f));
-						this->setVelocity(DirectX::SimpleMath::Vector3(0.f, this->getVelocity().y, 0.f));
+					if (fabs(m_input.movement.x) > 0.1f) {
+						// Add velocity when needed to keep player at the max speed
+						if (fabs(getVelocity().x) < m_movement.speed * max(fabs(m_input.movement.x), 0.5f))
+							this->addVelocity(Vector3(m_input.movement.x, 0.f, 0.f));
 					}
+
+					if (getVelocity().LengthSquared() < 0.01f) {
+						setVelocity(Vector3::Zero);
+					}
+					// Ground friction
+					float frictionCoeff = 2.0f * GameInfo::getInstance()->convertedGameSettings.gravity * 9.82f;
+					Vector3 direction(Utils::clamp(this->getVelocity().x, -1.f, 1.f), 0.f, 0.f);
+					this->setAcceleration(-direction * frictionCoeff);
 				}
 				else//Movement on the ground while using grappling hook
 				{	
@@ -304,9 +307,10 @@ void Character::update(float dt) {
 				//m_hook->update(dt, m_weapon->getTransform().getTranslation() + m_hook->getDirection() * 0.60f + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from hand
 				m_movement.hooked = m_hook->update(dt, getTransform().getTranslation() + Vector3(0.0f, 0.0f, 0.28f - std::signbit(m_input.aim.x) * 0.56f)); //Hook starts from shoulder
 				if (m_movement.hooked && m_movement.initialHook == 0) {
-					VibrateController(0, 1.0f, 1.5f);
-					VibrateController(1, 1.0, 1.5f);
+					VibrateController(1, 0.75f, 1.f);
 					m_movement.initialHook++;
+
+					app->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Hook_Hit, 0.8f, 1.f, 0.2f);
 				}
 			}
 		}
@@ -362,6 +366,7 @@ void Character::update(float dt) {
 
 
 void Character::draw() {
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->BeginEvent(L"Character");
 	//----hooking animations----
 	Transform armTransform;
 	Transform bodyTransform;
@@ -382,7 +387,7 @@ void Character::draw() {
 	m_head->setTransform(&bodyTransform);
 	m_legs->setTransform(&bodyTransform);
 
-	float colorGrad = m_playerHealth.healthPercent * 2 + 0.5f;
+	float colorGrad = powf(m_playerHealth.healthPercent, 3) * 2.5f + 0.5f;
 	DirectX::SimpleMath::Vector4 color = lightColor * colorGrad;
 	/*color.w = 3.f;
 	color.w *= colorGrad;*/
@@ -420,6 +425,8 @@ void Character::draw() {
 		m_thrusterEmitter->updateVelocityVariety(Vector3(5.f, -2.f, 0.5f));
 		m_thrusterEmitter->updateGravityScale(1.f);
 	}
+
+	Application::getInstance()->getDXManager()->getPerfProfilerThing()->EndEvent();
 }
 
 void Character::setController(const bool usingController) {
@@ -532,6 +539,7 @@ void Character::dead() {
 	m_playerHealth.updatePercent();
 	m_playerHealth.alive = false;
 	m_weapon->triggerRelease();
+	m_weapon->resetUpgrade();
 	stopHook();
 	setVelocity(Vector3::Zero);
 	m_weapon->setHeld(true);
@@ -539,7 +547,7 @@ void Character::dead() {
 	VibrateController(1, 1.f, 0.3f);
 
 	// Ghost setup
-	Vector4 color(0.8f, 0.8f, 0.8f, 1.f);
+	Vector4 color(2.0f, 2.0f, 2.0f, 1.f);
 	Object::setLightColor(color);
 	m_deathPoint = getTransform().getTranslation();
 	m_deathInterp = 0.f;
@@ -556,9 +564,13 @@ void Character::setLightColor(const Vector4& color) {
 
 void Character::jump() {
 	//this->jumping = true;
-	if (grounded()) {
-		setVelocity(getVelocity() + Vector3(0.f, 10.f, 0.f));
+	if (grounded() || m_movement.dJump) {
+		setVelocity(Vector3(getVelocity().x, 10.f, 0.f));
 		VibrateController(1, 0.5f, 1);
+		if (m_movement.dJump && !grounded()) {
+			m_movement.dJump = false;
+			m_movement.dJumpTimer = 0.f;
+		}
 	}
 
 	//this->getTransform().translate(Vector3(0,10,0));
@@ -576,6 +588,7 @@ void Character::fire()
 
 void Character::hook() {
 	m_hook->triggerPull(m_weapon->getNozzlePos(), m_input.aim);
+	Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Hook_Shot, 0.8f, 1.f, 0.2f);
 }
 
 void Character::stopHook() {

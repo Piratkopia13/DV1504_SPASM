@@ -58,6 +58,7 @@ namespace ModelFactory {
 			};
 
 			Vector2* texCoords = new Vector2[numVerts]{
+				// Neg z (front)
 				Vector2(0.f, 1.0f),
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 1.f),
@@ -65,6 +66,29 @@ namespace ModelFactory {
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 0.f),
 
+				// Pos x (right)
+				Vector2(0.99f, 0.99f),
+				Vector2(0.99f, 0.99f),
+				Vector2(0.99f, 0.99f),
+				Vector2(0.99f, 0.99f),
+				Vector2(0.99f, 0.99f),
+				Vector2(0.99f, 0.99f),
+				/*Vector2(0.f, 1.0f),
+				Vector2(0.f, 0.f),
+				Vector2(1.f, 1.f),
+				Vector2(1.f, 1.f),
+				Vector2(0.f, 0.f),
+				Vector2(1.f, 0.f),*/
+
+				// Pos z (back)
+				Vector2(1.f, 1.0f),
+				Vector2(1.f, 0.f),
+				Vector2(0.f, 1.f),
+				Vector2(0.f, 1.f),
+				Vector2(1.f, 0.f),
+				Vector2(0.f, 0.f),
+
+				// Neg x (left)
 				Vector2(0.f, 1.0f),
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 1.f),
@@ -72,6 +96,7 @@ namespace ModelFactory {
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 0.f),
 
+				// Pos y (up)
 				Vector2(0.f, 1.0f),
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 1.f),
@@ -79,26 +104,13 @@ namespace ModelFactory {
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 0.f),
 
-				Vector2(0.f, 1.0f),
-				Vector2(0.f, 0.f),
-				Vector2(1.f, 1.f),
-				Vector2(1.f, 1.f),
+				// Neg y (down)
 				Vector2(0.f, 0.f),
 				Vector2(1.f, 0.f),
-
-				Vector2(0.f, 1.0f),
-				Vector2(0.f, 0.f),
-				Vector2(1.f, 1.f),
-				Vector2(1.f, 1.f),
-				Vector2(0.f, 0.f),
+				Vector2(0.f, 1.f),
+				Vector2(0.f, 1.f),
 				Vector2(1.f, 0.f),
-
-				Vector2(0.f, 1.0f),
-				Vector2(0.f, 0.f),
 				Vector2(1.f, 1.f),
-				Vector2(1.f, 1.f),
-				Vector2(0.f, 0.f),
-				Vector2(1.f, 0.f),
 			};
 
 			Vector3* normals = new Vector3[numVerts]{

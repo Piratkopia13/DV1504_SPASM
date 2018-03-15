@@ -86,7 +86,7 @@ int Application::startGameLoop() {
 			
 			// Get delta time from last frame
 			float delta = static_cast<float>(m_timer.getFrameTime());
-			delta = min(delta, 1.f);
+			delta = min(delta, 0.04f);
 
 			// Update fps counter
 			secCounter += delta;

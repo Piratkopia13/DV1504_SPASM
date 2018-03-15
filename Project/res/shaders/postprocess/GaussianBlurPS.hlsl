@@ -1,33 +1,36 @@
 #define BLOOM_THRESHOLD 0.5
 
-static const float filter[13] =
-{
-  0.076838, 0.076881, 0.076915, 0.076942, 0.076962, 0.076973, 0.076977, 0.076973, 0.076962, 0.076942, 0.076915, 0.076881, 0.076838
+// Kernel from http://dev.theomader.com/gaussian-kernel-calculator/
+//    0.382925f, 0.24173f, 0.060598f, 0.005977f, 0.000229f
+// Offsets and weights calculated using formula provided by Daniel Rákos
+// https://web.archive.org/web/20170926040515/http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+static const float offset[3] = {
+    0.f, 1.20043793f, 3.03689977f
+};
+static const float weight[3] = {
+    0.382925f, 0.302328f, 0.006206f
 };
 
-float getBrightness(float3 color)
-{
+
+float getBrightness(float3 color) {
   return dot(color, float3(0.2126, 0.7152, 0.0722));
 }
 
-struct VSIn
-{
+struct VSIn {
     float4 position : POSITION0;
 };
 
-struct PSIn
-{
+struct PSIn {
     float4 position : SV_Position;
     float2 texCoord : TEXCOORD0;
 };
 
 cbuffer CBuffer : register(b0) {
-  float windowWidth;
-  float windowHeight;
+  float invWindowWidth;
+  float invWindowHeight;
 }
 
-PSIn VSMain(VSIn input)
-{
+PSIn VSMain(VSIn input) {
     PSIn output;
 
     input.position.w = 1.f;
@@ -43,39 +46,29 @@ PSIn VSMain(VSIn input)
 Texture2D tex : register(t0);
 SamplerState ss : register(s0);
 
-float4 PSHorizontal(PSIn input) : SV_Target0
-{
+float4 PSHorizontal(PSIn input) : SV_Target0 {
 
-  //if (getBrightness(tex.Sample(ss, input.texCoord).rgb) < BLOOM_THRESHOLD)
-  //  discard;
+    float4 color = tex.Sample(ss, input.texCoord) * weight[0];
 
-  float4 color;
+    for (int x = 1; x < 3; x++) {
+        color += tex.Sample(ss, input.texCoord + float2(offset[x] * invWindowWidth, 0.f)) * weight[x];
+        color += tex.Sample(ss, input.texCoord - float2(offset[x] * invWindowWidth, 0.f)) * weight[x];
+    }
 
-  for (int x = 0; x < 13; x++) {
-    //float2 index = float2(input.texCoord.x + (x - 6.f) / width, input.texCoord.y);
-    color += tex.Sample(ss, input.texCoord + float2((x - 6.f) / windowWidth, 0.f)) * filter[x];
-  }
-
-  return color/* * getBrightness(tex.Sample(ss, input.texCoord).rgb)*/;
-  //return float4(1,0,0,1);
-
-  //return tex.Sample(ss, input.texCoord);
+    return color;
 
 }
 
-float4 PSVertical(PSIn input) : SV_Target0
-{
+float4 PSVertical(PSIn input) : SV_Target0 {
 
-  float4 color;
+    float4 color = tex.Sample(ss, input.texCoord) * weight[0];
 
-  for (int y = 0; y < 13; y++) {
-    color += tex.Sample(ss, input.texCoord + float2(0.f, (y - 6.f) / windowHeight)) * filter[y];
-  }
+    for (int y = 1; y < 3; y++) {
+        color += tex.Sample(ss, input.texCoord + float2(0.f, offset[y] * invWindowHeight)) * weight[y];
+        color += tex.Sample(ss, input.texCoord - float2(0.f, offset[y] * invWindowHeight)) * weight[y];
+    }
 
-  return color;
-  //return tex.Sample(ss, input.texCoord);
-  //return float4(1, 0, 0, 1);
-
+    return color;
 
 }
 

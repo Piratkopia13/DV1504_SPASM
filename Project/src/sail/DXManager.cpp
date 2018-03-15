@@ -29,6 +29,7 @@ DXManager::~DXManager() {
 	Memory::safeRelease(m_blendStateEnabled);
 	Memory::safeRelease(m_blendStateDisabled);
 	Memory::safeRelease(m_blendStateAdditive);
+	Memory::safeRelease(m_perf);
 
 	//m_debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 
@@ -120,6 +121,8 @@ int DXManager::initDirect3D(const HWND* hwnd, UINT windowWidth, UINT windowHeigh
 		infoQueue = nullptr;
 	}
 	m_device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&m_debug));
+	// Performance thing used to put markers in performance profiler data
+	m_deviceContext->QueryInterface(__uuidof(m_perf), reinterpret_cast<void**>(&m_perf));
 
 
 	// Create render target view
@@ -382,6 +385,10 @@ UINT DXManager::getAASamples() {
 }
 ID3D11RenderTargetView* const* DXManager::getBackBufferRTV() const {
 	return &m_renderTargetView;
+}
+
+ID3DUserDefinedAnnotation* DXManager::getPerfProfilerThing() {
+	return m_perf;
 }
 
 void DXManager::renderToBackBuffer() const {

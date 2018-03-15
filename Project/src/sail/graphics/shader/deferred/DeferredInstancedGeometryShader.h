@@ -33,25 +33,23 @@ public:
 		DirectX::SimpleMath::Vector3 bitangent;
 	};
 	struct InstanceData {
-		DirectX::SimpleMath::Vector3 position;
-		DirectX::SimpleMath::Vector4 color;
+		DirectX::SimpleMath::Matrix modelMatrix = DirectX::SimpleMath::Matrix::Identity;
+		DirectX::SimpleMath::Vector3 color = DirectX::SimpleMath::Vector3::One;
 	};
 
 private:
-	void updateModelDataBuffer(const Material& material, const DirectX::SimpleMath::Matrix& wv, const DirectX::SimpleMath::Matrix& p) const;
+	void updateModelDataBuffer(const Material& material, const DirectX::SimpleMath::Matrix& v, const DirectX::SimpleMath::Matrix& p) const;
 	void updateWorldDataBuffer(const DirectX::SimpleMath::Vector4& clippingPlaneVS) const;
 
 private:
-	// Input element descriptions
-	static D3D11_INPUT_ELEMENT_DESC IED[5];
-	static D3D11_INPUT_ELEMENT_DESC INSTANCED_IED[7];
-	// Input layouts
+	// Input element description
+	static D3D11_INPUT_ELEMENT_DESC IED[10];
+	// Input layout
 	ID3D11InputLayout* m_inputLayout;
-	ID3D11InputLayout* m_inputLayoutInstanced;
 
 	// Transform constant buffer structure
 	struct ModelDataBuffer {
-		DirectX::SimpleMath::Matrix mWV;
+		DirectX::SimpleMath::Matrix mV;
 		DirectX::SimpleMath::Matrix mP;
 		DirectX::SimpleMath::Vector4 modelColor;
 		float ka;

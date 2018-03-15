@@ -10,9 +10,15 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 	Application* app = Application::getInstance();
 	m_info = GameInfo::getInstance();
 
+	app->getResourceManager().LoadDXTexture("laser.tga");
+
 	std::vector<Model*> bodies;
 
-	Model* laserModel = app->getResourceManager().getFBXModel("laser").getModel();
+	//m_laserModel = std::unique_ptr<Model>(new Model(*app->getResourceManager().getFBXModel("laser").getModel()));
+	m_laserModel = ModelFactory::CubeModel::Create(Vector3(0.05f, 0.01f, 0.01f));
+	m_laserModel->buildBufferForShader(&app->getResourceManager().getShaderSet<DeferredGeometryShader>());
+	m_laserModel->getMaterial()->setDiffuseTexture("laser.tga");
+
 	Model* projectileModel = app->getResourceManager().getFBXModel("sphere").getModel();
 	Model* hookModel = app->getResourceManager().getFBXModel("projectile").getModel();
 	Model* headModel = app->getResourceManager().getFBXModel("fisk/" + m_info->botHeadNames[0] + "_head").getModel();
@@ -29,7 +35,7 @@ CharacterHandler::CharacterHandler(ParticleHandler* particleHandler, ProjectileH
 
 		Hook* tempHook = new Hook(hookModel, particleHandler);
 		Character* tempChar = new Character(bodyModel, armLeftModel, headModel, legsModel, i);
-		Weapon* tempWeapon = new Weapon(armRightModel, laserModel, projectileModel, projHandler, particleHandler, tempChar);
+		Weapon* tempWeapon = new Weapon(armRightModel, m_laserModel.get(), projectileModel, projHandler, particleHandler, tempChar);
 		tempChar->setHook(tempHook);
 		tempChar->setWeapon(tempWeapon);
 		tempChar->setLightColor(m_info->getDefaultColor(m_info->getPlayers()[i].color, m_info->getPlayers()[i].hue));
@@ -74,15 +80,26 @@ void CharacterHandler::addPlayer(Character* player) {
 
 Vector3 CharacterHandler::getRandomSpawnPoint(UINT team) const {
 	Vector3 respawnPos(0, 0, 0);
+	GameInfo* info = GameInfo::getInstance();
+	if (info->convertedGameSettings.gamemode == GameInfo::DEATHMATCH) {
+		team = 0;
+	}
+	
 	if (m_spawns[team].size() > 0) {
+
 		unsigned int spawn = unsigned int(Utils::rnd()*m_spawns[team].size());
 		respawnPos = m_spawns[team][spawn];
 	}
+	
 	return respawnPos + Vector3(0.f, 1.f, 0.f);
 }
 
 void CharacterHandler::addSpawnPoint(unsigned int team, const Vector3& position) {
 	m_spawns[team].push_back(position);
+	if(m_info->convertedGameSettings.gamemode == GameInfo::DEATHMATCH)
+		m_drawSpawns.push_back(std::make_unique<PlayerSpawn>(position, DirectX::SimpleMath::Vector4::One));
+	else 
+		m_drawSpawns.push_back(std::make_unique<PlayerSpawn>(position, m_info->convertedGameSettings.teams[team].color));
 }
 
 void CharacterHandler::killPlayer(unsigned int index) {
@@ -100,16 +117,9 @@ void CharacterHandler::killPlayer(unsigned int index) {
 		if(m_characters[index]->getLastAttacker() != -1)
 			m_info->getScore().addKill(m_characters[index]->getLastAttacker());
 		m_respawnTimers[index] = 0.01f;
-		int rnd = static_cast<int>(floor(Utils::rnd() * 2.f));
+
 		float fRnd = Utils::rnd() * 0.4f + 0.8f;
-		switch (rnd) {
-		case 0:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion2, 3.f, fRnd);
-			break;
-		default:
-			Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.f, fRnd);
-			break;
-		}
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffect(SoundManager::SoundEffect::Explosion, 3.f, fRnd);
 	}
 }
 
@@ -166,6 +176,14 @@ void CharacterHandler::processInput() {
 		character->processInput();
 }
 
+size_t CharacterHandler::getNumberOfSpawns() {
+	return m_drawSpawns.size();
+}
+
+PlayerSpawn * CharacterHandler::getSpawn(size_t index) {
+	return m_drawSpawns[index].get();
+}
+
 unsigned int CharacterHandler::getNrOfPlayers()
 {
 	return m_characters.size();
@@ -193,4 +211,26 @@ bool CharacterHandler::useableTarget(unsigned int index)
 	}
 	else
 		return false;
+}
+
+
+
+/* PlayerSpawn class */
+
+PlayerSpawn::PlayerSpawn(const DirectX::SimpleMath::Vector3 & position, const DirectX::SimpleMath::Vector4 & color) {
+	setModel(Application::getInstance()->getResourceManager().getFBXModel("upgrade_spawner").getModel());
+	Object::setPosition(position);
+	Object::getTransform().setNonUniScale(1.f, 2.f, 1.f);
+	updateBoundingBox();
+	Object::setLightColor(color);
+}
+
+PlayerSpawn::~PlayerSpawn() {
+
+}
+
+void PlayerSpawn::draw() {
+	Object::getModel()->setTransform(&getTransform());
+	Object::getModel()->getMaterial()->setColor(lightColor);
+	Object::getModel()->draw();
 }

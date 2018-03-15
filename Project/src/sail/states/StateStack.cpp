@@ -1,5 +1,6 @@
 #include "StateStack.h"
 #include "../Application.h"
+#include "../../game/GameInfo.h"
 
 StateStack::StateStack()
 {
@@ -77,7 +78,7 @@ void StateStack::render(float dt) {
 	for (auto& state : m_stack)
 		state->render(dt);
 
-	Application::getInstance()->getDXManager()->present(false);
+	Application::getInstance()->getDXManager()->present(GameInfo::getInstance()->convertedGraphics.vSync == 1);
 }
 
 void StateStack::pushState(States::ID stateID) {

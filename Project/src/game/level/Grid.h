@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../../sail/Sail.h"
-#include "../../sail/graphics/shader/deferred/DeferredInstancedGeometryShader.h"
+#include "../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
 
 class Grid {
 public:
-	typedef DeferredInstancedGeometryShader::InstanceData BlockInstance;
+	//typedef DynBlockDeferredInstancedGeometryShader::InstanceData BlockInstance<
 
 	struct Index {
 		int x;
@@ -38,7 +38,9 @@ public:
 	Grid(const int worldWidth, const int worldHeight);
 	~Grid();
 
-	void addBlock(BlockInstance* block, const int x, const int y);
+	void addBlock(DynBlockDeferredInstancedGeometryShader::InstanceData* block, const int x, const int y);
+	DynBlockDeferredInstancedGeometryShader::InstanceData* getBlock(const int x, const int y);
+	void removeBlock(const int x, const int y);
 
 	bool checkHoles(const Index& index);
 
@@ -52,14 +54,14 @@ public:
 	// getCollisionIndices returns a list of all indices that a bounding box is currently colliding with
 	std::vector<Index> getCurrentCollisionIndices(const AABB& boundingBox);
 
-	std::vector<std::vector<BlockInstance*>>& getAllBlocks();
+	std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>>& getAllBlocks();
 	std::vector<Index> & getControlpointIndices();
 	std::vector<Index> & getPlayerSpawnPointIndices();
 	std::vector<Index> & getUpgradeSpawnPointIndices();
 	
 
 private:
-	std::vector<std::vector<BlockInstance*>> m_cells;
+	std::vector<std::vector<DynBlockDeferredInstancedGeometryShader::InstanceData*>> m_cells;
 	// Controlpoint indices
 	std::vector<Index> m_cpIndices;
 	// Player spawnpoint indices

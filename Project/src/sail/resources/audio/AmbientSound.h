@@ -21,6 +21,9 @@ public:
 	void Pause();
 	void Stop();
 
+	void setVolume(float volume = 1.0f);
+	float getVolume();
+
 private:
 	IXAudio2SourceVoice* m_sourceVoice;
 

@@ -2,12 +2,17 @@
 #include "../GameInfo.h"
 
 Gamemode::Gamemode() {
-	m_teamScore.resize(GameInfo::getInstance()->getPlayers().size());
+	m_teamScore.resize(GameInfo::getInstance()->convertedGameSettings.teams.size());
 	for (unsigned int i = 0; i < m_teamScore.size(); i++) {
 		m_teamScore[i] = 0;
 	}
 
-	m_gametime = GameInfo::getInstance()->convertedGameSettings.timeLimit;
+	if (GameInfo::getInstance()->convertedGameSettings.timeLimit > 0.f)
+		m_gametime = GameInfo::getInstance()->convertedGameSettings.timeLimit;
+	else
+		m_gametime = 60000000000000.f;
+
+	//m_gametime = 5.f;
 
 }
 
@@ -27,7 +32,7 @@ const std::vector<float> & Gamemode::getScore() {
 	return m_teamScore;
 }
 
-const float & Gamemode::getScore(const unsigned int team) {
+const float Gamemode::getScore(const unsigned int team) {
 	if (team < 0 || team > m_teamScore.size()) {
 		Logger::Warning("Tried to fetch an out of bounds teamscore");
 		return 0.f;

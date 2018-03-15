@@ -6,7 +6,7 @@
 
 class PostProcessStage {
 public:
-	PostProcessStage(UINT width, UINT height, Model* fullscreenQuad);
+	PostProcessStage(UINT width, UINT height, Model* fullscreenQuad, UINT outputTexBindFlags = 0);
 	virtual ~PostProcessStage();
 
 	virtual void run(RenderableTexture& inputTexture) = 0;
@@ -16,6 +16,7 @@ public:
 protected:
 	RenderableTexture OutputTexture;
 	Model* FullscreenQuad;
+	UINT Width, Height;
 
 	struct Vertex {
 		DirectX::SimpleMath::Vector3 position;

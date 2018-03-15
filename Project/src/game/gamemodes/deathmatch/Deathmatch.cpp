@@ -4,8 +4,10 @@
 #include "../../GameInfo.h"
 
 Deathmatch::Deathmatch() {
-	m_winnerID = -1;
+	m_winnerID = Gamemode::NONE;
 	m_maxKills = GameInfo::getInstance()->convertedGameSettings.scoreLimit;
+
+	
 }
 
 
@@ -15,7 +17,7 @@ Deathmatch::~Deathmatch() {
 
 
 void Deathmatch::update(CharacterHandler* charHandler, float delta) {
-	Gamemode::update(charHandler, delta);
+	Gamemode::update(nullptr, delta);
 	
 	unsigned int numOfPlayers = charHandler->getNrOfPlayers();
 	Character* character = nullptr;
@@ -37,5 +39,21 @@ void Deathmatch::draw() {
 
 
 int Deathmatch::checkWin() {
+
+	if (getGametime() <= 0.f) {
+		std::vector<float> playerScore = getScore();
+		
+		float score = 0;
+		for (unsigned int i = 0; i < playerScore.size(); i++) {
+			if (playerScore[i] > score) {
+				score = playerScore[i];
+				m_winnerID = static_cast<int>(i);
+			}
+		}
+
+		if (m_winnerID = Gamemode::NONE)
+			m_winnerID = Gamemode::DRAW;
+	}
+
 	return m_winnerID;
 }

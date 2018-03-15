@@ -1,5 +1,5 @@
 #include "MenuHandler.h"
-
+#include "../../../sail/graphics/shader/deferred/DynBlockDeferredInstancedGeometryShader.h"
 
 using namespace DirectX::SimpleMath;
 
@@ -9,11 +9,16 @@ MenuHandler::MenuHandler() {
 	m_step = 0;
 	m_activeItem = 0;
 	m_active = false;
+	m_visible = false;
 	m_position = Vector3(0, 0, 0);
 	m_growth = Vector3(0, -1.0f, 0);
 	m_direction = Vector3(0, 0, -1.0f);
-	m_onColor = Vector4(1, 1, 1, 1);
+	m_onColor = Vector4(0.9f, 0.9f, 0.9f, 1);
 	m_offColor = Vector4(0.4f, 0.4f, 0.4f, 1);
+	//m_targetColor = Vector4(1, 1, 1, 1);
+	m_currentColor = Vector4(0, 0, 0, 1);
+
+
 
 	m_crazy = false;
 	m_crazyAcc = 0;
@@ -29,7 +34,7 @@ MenuHandler::MenuHandler() {
 	m_pointers[1]->getTransform().setRotations(Vector3(3.14f, 0, -1.57f));
 	updateTransform();
 }
-
+ 
 
 MenuHandler::~MenuHandler() {
 
@@ -44,38 +49,88 @@ MenuHandler::~MenuHandler() {
 }
 
 void MenuHandler::draw() {
-	for (size_t i = 0; i < m_itemList.size(); i++) {
-		if (m_itemList[i].item) {
-			m_itemList[i].item->draw();
-		}
-		if (m_itemList[i].text) {
-			m_itemList[i].text->draw();
-		}
-		if (m_itemList[i].selector) {
-			m_itemList[i].selector->draw();
-		}
-		if (m_itemList[i].extraText){
-			m_itemList[i].extraText->draw();
-			if (m_itemList[i].editable) {
-				if (m_pointers[0])
-					m_pointers[0]->draw();
-				if (m_pointers[1])
-					m_pointers[1]->draw();
+	if (m_visible) {
+		for (size_t i = 0; i < m_itemList.size(); i++) {
+			if (m_itemList[i].item) {
+				m_itemList[i].item->draw();
 			}
+			if (m_itemList[i].text) {
+				m_itemList[i].text->draw();
+			}
+			if (m_itemList[i].selector) {
+				m_itemList[i].selector->draw();
+			}
+			if (m_itemList[i].extraText){
+				m_itemList[i].extraText->draw();
+				if (m_itemList[i].editable) {
+					if (m_pointers[0])
+						m_pointers[0]->draw();
+					if (m_pointers[1])
+						m_pointers[1]->draw();
+				}
 			
+			}
 		}
+		
 	}
+	
 }
 
 void MenuHandler::update(float dt) {
-	if (m_crazy) {
-		m_crazyAcc += dt;
-		if (dt >= m_crazyThresh) {
-			
+
+	Vector4 bright = m_onColor;
+	Vector4 dim = m_offColor;
+
+	if (!m_active) {
+		bright = Vector4(0, 0, 0, 0);
+		dim = Vector4(0, 0, 0, 0);
+	}
+
+
+	if (m_colorChange.active) {
+		if (m_active) {
+
+			bright = interpolateColor(m_colorChange.interp(), Vector4(0,0,0,1), m_onColor);
+			dim = interpolateColor(m_colorChange.interp(), Vector4(0,0,0,1), m_offColor);
 
 
 		}
+		else {
+			bright = interpolateColor(m_colorChange.interp(), m_onColor, Vector4(0, 0, 0, 1));
+			dim = interpolateColor(m_colorChange.interp(), m_offColor, Vector4(0, 0, 0, 1));
+
+
+		}
+
+		m_colorChange.update(dt);
+
+
+
+
+
+		
 	}
+
+	for (size_t i = 0; i < m_itemList.size(); i++) {
+		MenuIndex* index = &m_itemList[i];
+		if (index->text) {
+			index->text->setColor(i == m_activeItem ? bright : dim);
+		}
+		if (index->selector) {
+			index->selector->setLightColor(i == m_activeItem ? bright : dim);
+			index->selector->setSelectionColor(bright);
+		}
+		if (index->extraText) {
+			index->extraText->setColor(bright);
+			m_pointers[0]->setLightColor(bright);
+			m_pointers[1]->setLightColor(bright);
+
+
+		}
+	
+	}
+	if (!m_colorChange.active && !m_active)
+		m_visible = false;
 
 
 }
@@ -88,7 +143,6 @@ void MenuHandler::reset() {
 	}
 	m_itemList.clear();
 	m_activeItem = 0;
-	m_active = false;
 
 }
 
@@ -105,6 +159,7 @@ void MenuHandler::setGrowth(const DirectX::SimpleMath::Vector3 & growth) {
 
 void MenuHandler::setFacingDirection(const DirectX::SimpleMath::Vector3 & direction) {
 	m_direction = direction;
+	this->getTransform().setRotations(Vector3(0, -atan2(m_direction.z, m_direction.x), 0));
 	updateTransform();
 }
 
@@ -122,9 +177,10 @@ void MenuHandler::setOnColor(const DirectX::SimpleMath::Vector4 & color) {
 void MenuHandler::setOffColor(const DirectX::SimpleMath::Vector4 & color) {
 	m_offColor = color;
 	for (size_t i = 0; i < m_itemList.size(); i++) {
-		m_itemList[i].item->setLightColor(color);
+		if(m_itemList[i].item)
+			m_itemList[i].item->setLightColor(color);
 
-		if (m_itemList[m_activeItem].text)
+		if (m_itemList[i].text)
 			m_itemList[i].text->setColor(color);
 	}
 }
@@ -165,8 +221,12 @@ bool MenuHandler::getEditing()
 void MenuHandler::addMenuBox(std::string text) {
 	MenuIndex temp;
 
-	temp.item = new MenuItem(Application::getInstance()->getResourceManager().getFBXModel("buttons/emptyButtonFlat").getModel(), Vector3(0,0,0));
+	//temp.item = new MenuItem(Application::getInstance()->getResourceManager().getFBXModel("buttons/emptyButtonFlat").getModel(), Vector3(0,0,0));
+	temp.item = new MenuItem(nullptr, Vector3(0,0,0));
 	temp.item->setLightColor(m_offColor);
+	//temp.item = nullptr;
+	
+
 	if (text.size() > 0) {
 		temp.text = new MenuText(text);
 		temp.text->setColor(m_offColor);
@@ -270,12 +330,12 @@ void MenuHandler::back() {
 	if(item) {
 		item->setLightColor(m_offColor);
 		// Sound
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.90f, 1.0f, 2.5f);
 	}
 	if (text) {
 		text->setColor(m_offColor);
 		// Sound
-		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.95f, 1.05f, 3.f);
+		Application::getInstance()->getResourceManager().getSoundManager()->playSoundEffectWithRndPitch(SoundManager::SoundEffect::Switch, 0.90f, 1.0f, 2.5f);
 	}
 	if (selector)
 		selector->setSelectionColor(m_onColor*0.7f);
@@ -403,18 +463,16 @@ std::string MenuHandler::getEditorText() {
 
 void MenuHandler::activate() {
 	m_active = true;
-	if(m_itemList[m_activeItem].item)
-		m_itemList[m_activeItem].item->setLightColor(m_onColor);
-	if (m_itemList[m_activeItem].text)
-		m_itemList[m_activeItem].text->setColor(m_onColor);
+	m_visible = true;
+	m_colorChange.active = true;
+
+
 }
 
 void MenuHandler::deActivate() {
 	m_active = false;
-	if(m_itemList[m_activeItem].item)
-		m_itemList[m_activeItem].item->setLightColor(m_offColor);
-	if (m_itemList[m_activeItem].text)
-		m_itemList[m_activeItem].text->setColor(m_offColor);
+	m_colorChange.active = true;
+	
 }
 
 bool MenuHandler::isActive() {
@@ -445,11 +503,13 @@ void MenuHandler::updateTransform() {
 		if (m_itemList[i].item) {
 			Vector3 position = m_position + m_growth * ((float)i - (float)(m_itemList.size()-1)*0.5f) * (m_size + m_offset);
 			position += selectionSpace;
-			Vector3 right = m_growth.Cross(m_direction);
+			Vector3 growth = m_growth;
+			growth.Normalize();
+			Vector3 right = growth.Cross(m_direction);
 			m_itemList[i].item->setPosition(position + extraHeight);
 			m_itemList[i].item->getTransform().setRotations(Vector3(0, -atan2(m_direction.z, m_direction.x) + 1.55f, 0));
 			if (m_itemList[m_activeItem].text) {
-				m_itemList[i].text->setPosition(position + m_direction*m_size*0.2f - m_growth*0.3f*m_size + extraHeight);
+				m_itemList[i].text->setPosition(position + m_direction*m_size*0.2f - m_growth*0.1f*m_size + extraHeight);
 				m_itemList[i].text->setDirection(right);
 				m_itemList[i].text->setSize(m_size*4);
 				m_itemList[i].text->setFacingDirection(m_direction);
@@ -483,15 +543,15 @@ void MenuHandler::updateTransform() {
 			position += selectionSpace;
 			Vector3 right = m_growth.Cross(m_direction);
 
-			m_itemList[i].extraText->setPosition(position + extraHeight + m_growth*m_size*0.1);
+			m_itemList[i].extraText->setPosition(position + extraHeight + m_growth*m_size*0.1f);
 			m_itemList[i].extraText->setSize(m_size * 2);
 			m_itemList[i].extraText->setDirection(right);
 			m_itemList[i].extraText->setFacingDirection(m_direction);
 			if (m_itemList[i].editable) {
 				
 				Vector3 textHeight(0, 0.3f*m_size, 0);
-				m_pointers[0]->setPosition(position+textHeight + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1);
-				m_pointers[1]->setPosition(position-textHeight*0.5 + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1);
+				m_pointers[0]->setPosition(position+textHeight + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1f);
+				m_pointers[1]->setPosition(position-textHeight*0.5 + right * (((float)m_itemList[i].index - 3.5f) * 0.2f*m_size) + m_growth * m_size*0.1f);
 
 			}
 
@@ -513,3 +573,19 @@ void MenuHandler::updateTransform() {
 	}
 
 }
+
+DirectX::SimpleMath::Vector4 MenuHandler::interpolateColor(float progress, const DirectX::SimpleMath::Vector4 & from, const DirectX::SimpleMath::Vector4 & to)
+{
+	progress = min(max(progress,0),1.000f);
+	Vector4 diff(to-from);
+
+	Vector4 res = from + diff * progress;
+	res.w = 1;
+	return res;
+}
+
+void MenuHandler::setColor(const DirectX::SimpleMath::Vector4 & color) {
+
+
+}
+
