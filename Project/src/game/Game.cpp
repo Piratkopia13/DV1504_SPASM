@@ -5,7 +5,7 @@
 #include "states/ScoreState.h"
 
 Game::Game(HINSTANCE hInstance)
-	: Application(1280, 720, "SPASM v0.25", hInstance)
+	: Application(1280, 720, "SPASM v1.0", hInstance)
 	, m_stateStack()
 	
 {
