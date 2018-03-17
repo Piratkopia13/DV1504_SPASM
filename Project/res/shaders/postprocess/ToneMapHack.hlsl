@@ -1,5 +1,3 @@
-#include "../noiseSimplex.hlsl"
-
 struct VSIn {
   float4 position : POSITION0;
 };

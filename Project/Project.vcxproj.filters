@@ -11,7 +11,6 @@
     <FxCompile Include="res\shaders\DirectionalLightShader.hlsl" />
     <FxCompile Include="res\shaders\instanced\ParticleShader.hlsl" />
     <FxCompile Include="res\shaders\MaterialShader.hlsl" />
-    <FxCompile Include="res\shaders\noiseSimplex.hlsl" />
     <FxCompile Include="res\shaders\Phong.hlsl" />
     <FxCompile Include="res\shaders\postprocess\BrightnessCutoffShader.hlsl" />
     <FxCompile Include="res\shaders\postprocess\DepthOfField.hlsl" />

@@ -62,9 +62,6 @@ MenuState::MenuState(StateStack& stack)
 
 	m_block = resMan.getFBXModel("block").getModel();
 	
-
-	m_app->getResourceManager().LoadDXTexture("brick.tga");
-
 	m_targets.push_back(new MenuHandler());
 	m_targets.push_back(new MenuHandler());
 	m_targets[0]->setPosition(Vector3(0, 0, -7));
